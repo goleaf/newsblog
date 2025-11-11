@@ -18,7 +18,7 @@ return new class extends Migration
             $table->json('meta_data')->nullable();
             $table->string('revision_note')->nullable();
             $table->timestamps();
-            
+
             $table->index('post_id');
         });
     }

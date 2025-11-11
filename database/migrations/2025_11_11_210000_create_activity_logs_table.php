@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('ip_address')->nullable();
             $table->string('user_agent')->nullable();
             $table->timestamps();
-            
+
             $table->index(['subject_type', 'subject_id']);
             $table->index(['causer_type', 'causer_id']);
             $table->index('log_name');
@@ -33,4 +33,3 @@ return new class extends Migration
         Schema::dropIfExists('activity_logs');
     }
 };
-

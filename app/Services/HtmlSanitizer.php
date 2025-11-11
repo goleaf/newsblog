@@ -12,20 +12,20 @@ class HtmlSanitizer
     public function __construct()
     {
         $config = HTMLPurifier_Config::createDefault();
-        
+
         $config->set('HTML.Allowed', 'p,br,strong,em,u,h2,h3,h4,h5,h6,ul,ol,li,a[href|title|target],img[src|alt|width|height],blockquote,pre,code,table,thead,tbody,tr,th,td,hr,span[class],div[class]');
-        
+
         $config->set('HTML.AllowedAttributes', 'a.href,a.title,a.target,img.src,img.alt,img.width,img.height,span.class,div.class');
-        
+
         $config->set('URI.AllowedSchemes', ['http' => true, 'https' => true]);
-        
+
         $config->set('AutoFormat.RemoveEmpty', true);
         $config->set('AutoFormat.RemoveEmpty.RemoveNbsp', true);
         $config->set('AutoFormat.AutoParagraph', false);
-        
+
         $config->set('HTML.TargetBlank', true);
         $config->set('HTML.Nofollow', false);
-        
+
         $this->purifier = new HTMLPurifier($config);
     }
 

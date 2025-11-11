@@ -19,7 +19,7 @@ class CategoryController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('slug', 'like', "%{$search}%");
+                    ->orWhere('slug', 'like', "%{$search}%");
             });
         }
 
@@ -35,7 +35,7 @@ class CategoryController extends Controller
     public function create()
     {
         $parentCategories = Category::active()->parents()->ordered()->get();
-        
+
         return view('admin.categories.create', compact('parentCategories'));
     }
 
@@ -45,11 +45,11 @@ class CategoryController extends Controller
 
         if (empty($data['slug'])) {
             $data['slug'] = Str::slug($data['name']);
-            
+
             $originalSlug = $data['slug'];
             $count = 1;
             while (Category::where('slug', $data['slug'])->exists()) {
-                $data['slug'] = $originalSlug . '-' . $count;
+                $data['slug'] = $originalSlug.'-'.$count;
                 $count++;
             }
         }
@@ -63,14 +63,14 @@ class CategoryController extends Controller
     public function show(Category $category)
     {
         $category->load(['parent', 'children', 'posts']);
-        
+
         return view('admin.categories.show', compact('category'));
     }
 
     public function edit(Category $category)
     {
         $parentCategories = Category::active()->parents()->ordered()->get();
-        
+
         return view('admin.categories.edit', compact('category', 'parentCategories'));
     }
 
@@ -80,11 +80,11 @@ class CategoryController extends Controller
 
         if ($category->isDirty('name') && empty($data['slug'])) {
             $data['slug'] = Str::slug($data['name']);
-            
+
             $originalSlug = $data['slug'];
             $count = 1;
             while (Category::where('slug', $data['slug'])->where('id', '!=', $category->id)->exists()) {
-                $data['slug'] = $originalSlug . '-' . $count;
+                $data['slug'] = $originalSlug.'-'.$count;
                 $count++;
             }
         }

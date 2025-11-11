@@ -27,7 +27,7 @@ class Media extends Model
 
     public function getUrlAttribute()
     {
-        return asset('storage/' . $this->file_path);
+        return asset('storage/'.$this->file_path);
     }
 
     public function getSizeHumanReadableAttribute()
@@ -39,7 +39,8 @@ class Media extends Model
             $bytes /= 1024;
             $i++;
         }
-        return round($bytes, 2) . ' ' . $units[$i];
+
+        return round($bytes, 2).' '.$units[$i];
     }
 
     public function scopeImages($query)

@@ -5,10 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StorePostRequest;
 use App\Http\Requests\Admin\UpdatePostRequest;
-use App\Models\Post;
 use App\Models\Category;
-use App\Models\Tag;
+use App\Models\Post;
 use App\Models\PostRevision;
+use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -23,8 +23,8 @@ class PostController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('excerpt', 'like', "%{$search}%")
-                  ->orWhere('content', 'like', "%{$search}%");
+                    ->orWhere('excerpt', 'like', "%{$search}%")
+                    ->orWhere('content', 'like', "%{$search}%");
             });
         }
 
@@ -53,28 +53,28 @@ class PostController extends Controller
     {
         $categories = Category::active()->orderBy('name')->get();
         $tags = Tag::orderBy('name')->get();
-        
+
         return view('admin.posts.create', compact('categories', 'tags'));
     }
 
     public function store(StorePostRequest $request)
     {
         $data = $request->validated();
-        
+
         // Set user_id if not admin/editor assigning to someone else
-        if (!isset($data['user_id'])) {
+        if (! isset($data['user_id'])) {
             $data['user_id'] = $request->user()->id;
         }
 
         // Generate slug if not provided
         if (empty($data['slug'])) {
             $data['slug'] = Str::slug($data['title']);
-            
+
             // Ensure uniqueness
             $originalSlug = $data['slug'];
             $count = 1;
             while (Post::where('slug', $data['slug'])->exists()) {
-                $data['slug'] = $originalSlug . '-' . $count;
+                $data['slug'] = $originalSlug.'-'.$count;
                 $count++;
             }
         }
@@ -98,7 +98,7 @@ class PostController extends Controller
     public function show(Post $post)
     {
         $post->load(['user', 'category', 'tags', 'comments']);
-        
+
         return view('admin.posts.show', compact('post'));
     }
 
@@ -107,7 +107,7 @@ class PostController extends Controller
         $categories = Category::active()->orderBy('name')->get();
         $tags = Tag::orderBy('name')->get();
         $post->load('tags');
-        
+
         return view('admin.posts.edit', compact('post', 'categories', 'tags'));
     }
 
@@ -132,12 +132,12 @@ class PostController extends Controller
         // Generate slug if title changed and slug is empty
         if ($post->isDirty('title') && empty($data['slug'])) {
             $data['slug'] = Str::slug($data['title']);
-            
+
             // Ensure uniqueness
             $originalSlug = $data['slug'];
             $count = 1;
             while (Post::where('slug', $data['slug'])->where('id', '!=', $post->id)->exists()) {
-                $data['slug'] = $originalSlug . '-' . $count;
+                $data['slug'] = $originalSlug.'-'.$count;
                 $count++;
             }
         }

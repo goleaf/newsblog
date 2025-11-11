@@ -23,8 +23,8 @@ class CheckBrokenLinks implements ShouldQueue
         foreach ($posts as $post) {
             // Extract links from content
             preg_match_all('/<a[^>]+href=["\']([^"\']+)["\'][^>]*>/i', $post->content, $matches);
-            
-            if (!empty($matches[1])) {
+
+            if (! empty($matches[1])) {
                 foreach ($matches[1] as $url) {
                     // Skip internal links and mailto links
                     if (str_starts_with($url, '/') || str_starts_with($url, 'mailto:') || str_starts_with($url, '#')) {
@@ -33,7 +33,7 @@ class CheckBrokenLinks implements ShouldQueue
 
                     try {
                         $response = Http::timeout(5)->head($url);
-                        
+
                         if ($response->failed()) {
                             $brokenLinks[] = [
                                 'post_id' => $post->id,
@@ -54,7 +54,7 @@ class CheckBrokenLinks implements ShouldQueue
             }
         }
 
-        if (!empty($brokenLinks)) {
+        if (! empty($brokenLinks)) {
             Log::warning('Broken links detected', ['broken_links' => $brokenLinks]);
         }
     }

@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Comment;
-use App\Models\Post;
 use Illuminate\Http\Request;
 
 class CommentController extends Controller
@@ -22,8 +21,8 @@ class CommentController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('author_name', 'like', "%{$search}%")
-                  ->orWhere('author_email', 'like', "%{$search}%")
-                  ->orWhere('content', 'like', "%{$search}%");
+                    ->orWhere('author_email', 'like', "%{$search}%")
+                    ->orWhere('content', 'like', "%{$search}%");
             });
         }
 
@@ -35,19 +34,21 @@ class CommentController extends Controller
     public function approve(Comment $comment)
     {
         $comment->markAsApproved();
+
         return redirect()->back()->with('success', 'Comment approved.');
     }
 
     public function spam(Comment $comment)
     {
         $comment->markAsSpam();
+
         return redirect()->back()->with('success', 'Comment marked as spam.');
     }
 
     public function destroy(Comment $comment)
     {
         $comment->delete();
+
         return redirect()->back()->with('success', 'Comment deleted.');
     }
 }
-

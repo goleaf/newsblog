@@ -20,7 +20,7 @@ class CommentController extends Controller
         // Basic spam protection: check for common spam patterns
         $spamKeywords = ['viagra', 'casino', 'loan', 'click here'];
         $contentLower = strtolower($validated['content']);
-        
+
         $isSpam = false;
         foreach ($spamKeywords as $keyword) {
             if (str_contains($contentLower, $keyword)) {
@@ -47,4 +47,3 @@ class CommentController extends Controller
         return redirect()->back()->with('success', 'Your comment has been submitted and is pending approval.');
     }
 }
-

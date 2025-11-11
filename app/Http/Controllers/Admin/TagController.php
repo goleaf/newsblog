@@ -17,7 +17,7 @@ class TagController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('slug', 'like', "%{$search}%");
+                    ->orWhere('slug', 'like', "%{$search}%");
             });
         }
 
@@ -36,7 +36,7 @@ class TagController extends Controller
         $originalSlug = $slug;
         $count = 1;
         while (Tag::where('slug', $slug)->exists()) {
-            $slug = $originalSlug . '-' . $count;
+            $slug = $originalSlug.'-'.$count;
             $count++;
         }
 
@@ -52,14 +52,14 @@ class TagController extends Controller
     public function update(Request $request, Tag $tag)
     {
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255', 'unique:tags,name,' . $tag->id],
+            'name' => ['required', 'string', 'max:255', 'unique:tags,name,'.$tag->id],
         ]);
 
         $slug = Str::slug($validated['name']);
         $originalSlug = $slug;
         $count = 1;
         while (Tag::where('slug', $slug)->where('id', '!=', $tag->id)->exists()) {
-            $slug = $originalSlug . '-' . $count;
+            $slug = $originalSlug.'-'.$count;
             $count++;
         }
 
@@ -80,4 +80,3 @@ class TagController extends Controller
             ->with('success', 'Tag deleted successfully.');
     }
 }
-

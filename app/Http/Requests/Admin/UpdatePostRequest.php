@@ -10,6 +10,7 @@ class UpdatePostRequest extends FormRequest
     public function authorize(): bool
     {
         $post = $this->route('post');
+
         return $this->user()->isAdmin() || $this->user()->isEditor() || $post->canBeEditedBy($this->user());
     }
 
@@ -52,4 +53,3 @@ class UpdatePostRequest extends FormRequest
         ];
     }
 }
-

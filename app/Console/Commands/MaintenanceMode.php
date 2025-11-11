@@ -19,6 +19,7 @@ class MaintenanceMode extends Command
         if ($action === 'enable') {
             if (File::exists($file)) {
                 $this->info('Maintenance mode is already enabled.');
+
                 return Command::SUCCESS;
             }
 
@@ -30,8 +31,9 @@ class MaintenanceMode extends Command
 
             $this->info('Maintenance mode enabled.');
         } elseif ($action === 'disable') {
-            if (!File::exists($file)) {
+            if (! File::exists($file)) {
                 $this->info('Maintenance mode is not enabled.');
+
                 return Command::SUCCESS;
             }
 
@@ -39,6 +41,7 @@ class MaintenanceMode extends Command
             $this->info('Maintenance mode disabled.');
         } else {
             $this->error('Invalid action. Use "enable" or "disable".');
+
             return Command::FAILURE;
         }
 

@@ -10,6 +10,7 @@ use Illuminate\Support\Str;
 class Category extends Model
 {
     use HasFactory, LogsActivity;
+
     protected $fillable = [
         'name',
         'slug',

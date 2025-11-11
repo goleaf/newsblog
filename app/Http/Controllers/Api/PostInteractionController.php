@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Post;
 use App\Models\Bookmark;
+use App\Models\Post;
 use App\Models\Reaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,7 +14,7 @@ class PostInteractionController extends Controller
     public function react(Request $request, $postId)
     {
         $request->validate([
-            'type' => ['required', 'in:' . implode(',', Reaction::TYPES)],
+            'type' => ['required', 'in:'.implode(',', Reaction::TYPES)],
         ]);
 
         $post = Post::findOrFail($postId);
@@ -67,4 +67,3 @@ class PostInteractionController extends Controller
         ]);
     }
 }
-

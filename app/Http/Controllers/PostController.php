@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Post;
 use App\Models\Category;
-use App\Models\Tag;
+use App\Models\Post;
 use App\Models\PostView;
+use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
@@ -16,7 +16,7 @@ class PostController extends Controller
         $post = Cache::remember("post.{$slug}", 3600, function () use ($slug) {
             return Post::where('slug', $slug)
                 ->published()
-                ->with(['user', 'category', 'tags', 'reactions', 'comments' => function($query) {
+                ->with(['user', 'category', 'tags', 'reactions', 'comments' => function ($query) {
                     $query->where('status', 'approved')->orderBy('created_at', 'desc');
                 }])
                 ->firstOrFail();
@@ -71,7 +71,7 @@ class PostController extends Controller
     public function search(Request $request)
     {
         $query = $request->get('q');
-        
+
         if (empty($query)) {
             return view('search', ['posts' => collect([]), 'query' => '']);
         }
@@ -79,8 +79,8 @@ class PostController extends Controller
         $posts = Post::published()
             ->where(function ($q) use ($query) {
                 $q->where('title', 'like', "%{$query}%")
-                  ->orWhere('content', 'like', "%{$query}%")
-                  ->orWhere('excerpt', 'like', "%{$query}%");
+                    ->orWhere('content', 'like', "%{$query}%")
+                    ->orWhere('excerpt', 'like', "%{$query}%");
             })
             ->latest()
             ->paginate(12);
@@ -88,4 +88,3 @@ class PostController extends Controller
         return view('search', compact('posts', 'query'));
     }
 }
-

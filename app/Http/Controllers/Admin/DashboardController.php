@@ -3,13 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Post;
-use App\Models\User;
+use App\Models\Category;
 use App\Models\Comment;
 use App\Models\Newsletter;
-use App\Models\Category;
+use App\Models\Post;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
@@ -54,8 +53,8 @@ class DashboardController extends Controller
             ->get();
 
         $categoriesStats = Category::withCount(['posts' => function ($query) {
-                $query->published();
-            }])
+            $query->published();
+        }])
             ->orderBy('posts_count', 'desc')
             ->take(8)
             ->get();

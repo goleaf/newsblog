@@ -46,8 +46,8 @@ trait LogsActivity
     protected function getActivityDescription(string $event): string
     {
         $modelName = class_basename($this);
-        
-        return match($event) {
+
+        return match ($event) {
             'created' => "{$modelName} created",
             'updated' => "{$modelName} updated",
             'deleted' => "{$modelName} deleted",
@@ -67,4 +67,3 @@ trait LogsActivity
         return $this->toArray();
     }
 }
-

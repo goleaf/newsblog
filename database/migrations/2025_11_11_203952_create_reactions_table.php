@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('ip_address')->nullable();
             $table->string('user_agent')->nullable();
             $table->timestamps();
-            
+
             $table->unique(['post_id', 'user_id', 'type']);
             $table->index(['post_id', 'type']);
         });

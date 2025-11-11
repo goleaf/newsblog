@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
 
 class Post extends Model
 {
-    use HasFactory, SoftDeletes, LogsActivity;
+    use HasFactory, LogsActivity, SoftDeletes;
 
     protected $fillable = [
         'user_id',
@@ -141,12 +141,12 @@ class Post extends Model
 
     public function getReadingTimeTextAttribute()
     {
-        return $this->reading_time ? $this->reading_time . ' min read' : null;
+        return $this->reading_time ? $this->reading_time.' min read' : null;
     }
 
     public function getFeaturedImageUrlAttribute()
     {
-        return $this->featured_image ? asset('storage/' . $this->featured_image) : null;
+        return $this->featured_image ? asset('storage/'.$this->featured_image) : null;
     }
 
     public function incrementViewCount()
@@ -164,6 +164,7 @@ class Post extends Model
         if ($user->isAdmin() || $user->isEditor()) {
             return true;
         }
+
         return $this->user_id === $user->id;
     }
 
@@ -175,7 +176,7 @@ class Post extends Model
             if (empty($post->slug)) {
                 $post->slug = Str::slug($post->title);
             }
-            
+
             if (empty($post->reading_time)) {
                 $post->reading_time = static::calculateReadingTime($post->content);
             }
@@ -185,7 +186,7 @@ class Post extends Model
             if ($post->isDirty('title') && empty($post->slug)) {
                 $post->slug = Str::slug($post->title);
             }
-            
+
             if ($post->isDirty('content')) {
                 $post->reading_time = static::calculateReadingTime($post->content);
             }
@@ -195,6 +196,7 @@ class Post extends Model
     protected static function calculateReadingTime($content)
     {
         $wordCount = str_word_count(strip_tags($content));
+
         return (int) ceil($wordCount / 200);
     }
 }

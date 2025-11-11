@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Post;
 use App\Models\Category;
+use App\Models\Post;
 use Illuminate\Support\Facades\Cache;
 
 class HomeController extends Controller
@@ -29,4 +29,3 @@ class HomeController extends Controller
         return view('home', compact('featuredPosts', 'trendingPosts', 'recentPosts', 'categories'));
     }
 }
-

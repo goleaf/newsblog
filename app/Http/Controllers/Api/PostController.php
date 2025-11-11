@@ -9,21 +9,21 @@ use Illuminate\Http\Request;
 
 /**
  * @group Posts
- * 
+ *
  * API endpoints for managing and retrieving blog posts.
  */
 class PostController extends Controller
 {
     /**
      * List Posts
-     * 
+     *
      * Get a paginated list of published posts. You can filter by category, tag, or search term.
-     * 
+     *
      * @queryParam category string Filter by category slug. Example: technology
      * @queryParam tag string Filter by tag slug. Example: laravel
      * @queryParam search string Search in title and content. Example: php
      * @queryParam page int Page number for pagination. Example: 1
-     * 
+     *
      * @response 200 {
      *   "data": [
      *     {
@@ -66,7 +66,7 @@ class PostController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('content', 'like', "%{$search}%");
+                    ->orWhere('content', 'like', "%{$search}%");
             });
         }
 
@@ -77,11 +77,11 @@ class PostController extends Controller
 
     /**
      * Get Single Post
-     * 
+     *
      * Retrieve a single published post by its slug.
-     * 
+     *
      * @urlParam slug string required The post slug. Example: example-post
-     * 
+     *
      * @response 200 {
      *   "data": {
      *     "id": 1,
@@ -95,7 +95,6 @@ class PostController extends Controller
      *     "comments_count": 5
      *   }
      * }
-     * 
      * @response 404 {
      *   "message": "Post not found"
      * }
@@ -104,7 +103,7 @@ class PostController extends Controller
     {
         $post = Post::where('slug', $slug)
             ->published()
-            ->with(['user', 'category', 'tags', 'comments' => function($query) {
+            ->with(['user', 'category', 'tags', 'comments' => function ($query) {
                 $query->where('status', 'approved');
             }])
             ->firstOrFail();
@@ -112,4 +111,3 @@ class PostController extends Controller
         return new PostResource($post);
     }
 }
-

@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Models\Post;
 use App\Models\Category;
+use App\Models\Post;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -24,7 +24,7 @@ class PostTest extends TestCase
     {
         $user = User::factory()->create();
         $category = Category::factory()->create();
-        
+
         $post = Post::factory()->create([
             'user_id' => $user->id,
             'category_id' => $category->id,
@@ -42,7 +42,7 @@ class PostTest extends TestCase
     public function test_category_page_displays_posts(): void
     {
         $category = Category::factory()->create(['status' => 'active']);
-        
+
         $response = $this->get("/category/{$category->slug}");
 
         $response->assertStatus(200);
@@ -53,7 +53,7 @@ class PostTest extends TestCase
     {
         $user = User::factory()->create();
         $category = Category::factory()->create();
-        
+
         $post = Post::factory()->create([
             'user_id' => $user->id,
             'category_id' => $category->id,

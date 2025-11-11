@@ -17,8 +17,7 @@ class SendPostPublishedNotification implements ShouldQueue
      */
     public function __construct(
         public Post $post
-    ) {
-    }
+    ) {}
 
     /**
      * Execute the job.

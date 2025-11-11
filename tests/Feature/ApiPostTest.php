@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\Category;
 use App\Models\Post;
 use App\Models\User;
-use App\Models\Category;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -16,7 +16,7 @@ class ApiPostTest extends TestCase
     {
         $user = User::factory()->create();
         $category = Category::factory()->create();
-        
+
         Post::factory()->count(5)->create([
             'user_id' => $user->id,
             'category_id' => $category->id,
@@ -29,8 +29,8 @@ class ApiPostTest extends TestCase
         $response->assertStatus(200)
             ->assertJsonStructure([
                 'data' => [
-                    '*' => ['id', 'title', 'slug', 'excerpt']
-                ]
+                    '*' => ['id', 'title', 'slug', 'excerpt'],
+                ],
             ]);
     }
 
@@ -38,7 +38,7 @@ class ApiPostTest extends TestCase
     {
         $user = User::factory()->create();
         $category = Category::factory()->create();
-        
+
         $post = Post::factory()->create([
             'user_id' => $user->id,
             'category_id' => $category->id,
@@ -50,7 +50,7 @@ class ApiPostTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonStructure([
-                'data' => ['id', 'title', 'slug', 'content', 'author', 'category']
+                'data' => ['id', 'title', 'slug', 'content', 'author', 'category'],
             ]);
     }
 
@@ -64,4 +64,3 @@ class ApiPostTest extends TestCase
         }
     }
 }
-

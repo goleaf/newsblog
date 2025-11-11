@@ -15,13 +15,13 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             return redirect()->route('login')->with('error', 'Please login to access admin area.');
         }
 
         $user = auth()->user();
-        
-        if (!in_array($user->role, ['admin', 'editor', 'author'])) {
+
+        if (! in_array($user->role, ['admin', 'editor', 'author'])) {
             abort(403, 'Unauthorized access to admin area.');
         }
 

@@ -36,7 +36,7 @@ class Newsletter extends Model
     {
         $this->update([
             'status' => 'subscribed',
-            'verified_at' => now()
+            'verified_at' => now(),
         ]);
     }
 

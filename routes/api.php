@@ -20,4 +20,3 @@ Route::prefix('v1')->middleware(['throttle:60,1'])->group(function () {
         // Add admin routes here
     });
 });
-

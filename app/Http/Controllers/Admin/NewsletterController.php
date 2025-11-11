@@ -29,7 +29,7 @@ class NewsletterController extends Controller
     public function destroy(Newsletter $newsletter)
     {
         $newsletter->delete();
+
         return redirect()->back()->with('success', 'Subscriber removed.');
     }
 }
-
