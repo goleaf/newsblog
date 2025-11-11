@@ -1,0 +1,19 @@
+{
+  "enabled": true,
+  "name": "Feature Flag Management",
+  "description": "Triggers when feature flag configuration files are modified to guide proper implementation, testing, rollout, and cleanup of feature flags",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "config/features.php",
+      "config/feature*.php",
+      "app/Services/*Feature*.php",
+      "app/FeatureFlags/**/*"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A feature flag configuration has been modified. Help manage this feature flag effectively:\n\n1. **Flag Definition:**\n   - Verify flag is properly defined in config/features.php\n   - Ensure flag has a clear key and description\n   - Check default value is set appropriately\n   - Confirm environment override capability exists\n\n2. **Implementation:**\n   - Add feature gate checks where needed\n   - Implement proper fallback behavior\n   - Add logging for flag usage tracking\n   - Set up flag impression tracking\n\n3. **Gradual Rollout:**\n   - Implement percentage-based rollout if needed\n   - Support user targeting capabilities\n   - Add A/B testing support where applicable\n   - Configure rollout schedule\n\n4. **Testing:**\n   - Create tests with flag enabled\n   - Create tests with flag disabled\n   - Test rollout logic thoroughly\n   - Add dedicated feature flag tests\n\n5. **Documentation:**\n   - Document the flag's purpose clearly\n   - List all affected features\n   - Add removal timeline/expiration date\n   - Include usage examples\n\n6. **Monitoring:**\n   - Set up flag usage metrics tracking\n   - Monitor error rates per flag state\n   - Measure performance impact\n   - Configure alerts for issues\n\n7. **Cleanup Planning:**\n   - Plan for removing old flags\n   - Identify dead code to clean up\n   - Schedule documentation updates\n   - Plan config removal\n\n8. **Best Practices:**\n   - Use descriptive, clear names\n   - Keep flags short-lived (set expiration)\n   - Avoid deep flag nesting\n   - Minimize flag dependencies\n\nReview the changes and provide guidance on proper feature flag implementation, testing strategy, rollout plan, and cleanup timeline."
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Database Schema Visualization",
+  "description": "Automatically generates database schema visualizations, ER diagrams, table documentation, relationship maps, migration history, data dictionary, and optimization suggestions when migration files change",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "database/migrations/*.php"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Generate comprehensive database schema visualization and documentation:\n\n1. **Entity Relationship Diagram:**\n   - Create Mermaid ER diagram showing all tables and relationships\n   - Include cardinality (1:1, 1:N, N:M)\n   - Highlight foreign keys and constraints\n\n2. **Table Documentation:**\n   - List all columns with types and nullable status\n   - Document indexes (primary, unique, composite)\n   - Explain constraints and validation rules\n   - Show default values\n\n3. **Relationship Documentation:**\n   - Document all relationships (hasMany, belongsTo, belongsToMany, etc.)\n   - Explain cascade behaviors (onDelete, onUpdate)\n   - Show pivot tables with their columns\n   - Include polymorphic relationships if present\n\n4. **Migration History:**\n   - List all migrations chronologically\n   - Show schema changes over time\n   - Document breaking changes\n   - Include rollback considerations\n\n5. **Data Dictionary:**\n   - Generate markdown documentation for all tables\n   - Include column descriptions and purposes\n   - Document enums and constants\n   - Add usage examples for complex fields\n\n6. **Schema Optimization:**\n   - Identify missing indexes on foreign keys\n   - Suggest composite indexes for common queries\n   - Check for redundant indexes\n   - Recommend partitioning strategies if needed\n   - Flag potential N+1 query issues\n\nAnalyze the migrations in database/migrations/ and provide actionable insights."
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "enabled": true,
+  "name": "Accessibility Audit",
+  "description": "Automatically audits Blade, Vue, and React components for accessibility compliance including semantic HTML, ARIA attributes, keyboard navigation, screen reader support, color contrast, forms, and focus management",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "**/*.blade.php",
+      "**/*.vue",
+      "**/*.jsx",
+      "**/*.tsx"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Auditing accessibility compliance for the modified component:\n\n1. **Semantic HTML:**\n   - Use proper heading hierarchy (h1-h6)\n   - Implement landmark regions (nav, main, aside)\n   - Use semantic elements (article, section)\n   - Avoid div soup\n\n2. **ARIA Attributes:**\n   - Add aria-label for icon buttons\n   - Use aria-describedby for help text\n   - Implement aria-live for dynamic content\n   - Add role attributes where needed\n\n3. **Keyboard Navigation:**\n   - Ensure all interactive elements are keyboard accessible\n   - Implement logical tab order\n   - Add focus styles\n   - Handle Escape key for modals\n\n4. **Screen Reader Support:**\n   - Add alt text to images\n   - Use sr-only for visual-only content\n   - Implement skip navigation links\n   - Label form inputs properly\n\n5. **Color Contrast:**\n   - Check WCAG AA compliance (4.5:1)\n   - Verify interactive elements meet requirements\n   - Don't rely on color alone\n   - Test in high contrast mode\n\n6. **Forms:**\n   - Associate labels with inputs\n   - Group related fields with fieldset\n   - Add helpful error messages\n   - Indicate required fields\n\n7. **Focus Management:**\n   - Trap focus in modals\n   - Return focus on close\n   - Highlight focused element\n   - Ensure visible focus indicator\n\n8. **Testing Tools:**\n   - Run axe-core automated tests\n   - Use WAVE browser extension\n   - Test with screen reader (NVDA/JAWS)\n   - Validate with keyboard only\n\nPlease review the component code and provide specific accessibility recommendations and improvements."
+  }
+}

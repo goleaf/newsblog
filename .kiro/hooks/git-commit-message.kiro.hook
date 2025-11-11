@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Git Commit Message Generator",
+  "description": "Analyzes git diff and staged files to generate conventional commit messages following best practices",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      ".git/index"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Generate a conventional commit message for these changes:\n\n1. **Analyze Changes:**\n   - Review git diff\n   - Identify type (feat, fix, docs, style, refactor, test, chore)\n   - Determine scope (controller, model, service, etc.)\n   - Find breaking changes\n\n2. **Conventional Commits Format:**\n   - type(scope): subject\n   - Optional body explaining what and why\n   - Optional footer for breaking changes\n   - Follow 50/72 rule\n\n3. **Types:**\n   - feat: New feature\n   - fix: Bug fix\n   - docs: Documentation only\n   - style: Code style (formatting, missing semicolons)\n   - refactor: Code change that neither fixes bug nor adds feature\n   - perf: Performance improvement\n   - test: Adding or correcting tests\n   - build: Changes to build system or dependencies\n   - ci: Changes to CI configuration\n   - chore: Other changes that don't modify src or test files\n   - revert: Reverts a previous commit\n\n4. **Subject Guidelines:**\n   - Use imperative mood (\"add\" not \"added\")\n   - Don't capitalize first letter\n   - No period at the end\n   - Limit to 50 characters\n\n5. **Body Guidelines:**\n   - Wrap at 72 characters\n   - Explain what and why vs. how\n   - Separate from subject with blank line\n   - Use bullet points for multiple changes\n\n6. **Examples:**\n   ```\n   feat(auth): add two-factor authentication\n   \n   - Implement TOTP-based 2FA\n   - Add recovery codes\n   - Update user settings page\n   \n   BREAKING CHANGE: Users must enable 2FA to access admin panel\n   ```\n\nGit diff:\n```\n[git diff output]\n```\n\nStaged files: [list of staged files]"
+  }
+}

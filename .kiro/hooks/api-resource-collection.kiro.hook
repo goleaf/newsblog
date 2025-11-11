@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "API Resource Collection Hook",
+  "description": "Automatically reviews API Resources for data transformation, security, performance, and consistency when Resource files are saved",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "app/Http/Resources/*.php"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "I've created/updated an API Resource. Please verify:\n\n1. **Data Transformation:**\n   - Ensure all model attributes are appropriately transformed\n   - Hide sensitive data (passwords, tokens)\n   - Format dates consistently (ISO 8601)\n   - Transform nested relationships\n\n2. **Conditional Fields:**\n   - Use $this->when() for optional fields\n   - Implement $this->whenLoaded() for relationships\n   - Add $this->merge() for computed fields\n\n3. **Collection Resource:**\n   - Create corresponding collection class if needed\n   - Add meta data (pagination info, totals)\n   - Implement withoutWrapping() if needed\n\n4. **Consistency:**\n   - Match response structure across resources\n   - Use consistent naming (camelCase vs snake_case)\n   - Standardize null handling\n\n5. **Performance:**\n   - Check for N+1 queries in relationships\n   - Suggest eager loading in controller\n   - Implement pagination\n\n6. **Documentation:**\n   - Generate OpenAPI/Swagger schemas\n   - Document all returned fields\n   - Include example responses\n\n7. **Versioning:**\n   - Consider API version compatibility\n   - Suggest version-specific resources if needed\n\n8. **Testing:**\n   - Test resource transformation\n   - Verify relationship loading\n   - Test conditional field logic\n\nResource File: {{CHANGED_FILES}}"
+  }
+}

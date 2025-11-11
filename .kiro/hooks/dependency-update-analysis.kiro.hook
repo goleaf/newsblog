@@ -1,0 +1,17 @@
+{
+  "enabled": true,
+  "name": "Dependency Update Analysis",
+  "description": "Triggers after composer.lock or package-lock.json changes to analyze dependency updates, breaking changes, security patches, deprecations, testing impacts, performance changes, configuration updates, compatibility issues, and rollback planning",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "composer.lock",
+      "package-lock.json"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Analyze dependency updates and their impacts:\n\n1. **Breaking Changes:**\n   - Review CHANGELOG files for updated packages\n   - Identify breaking changes in the updates\n   - List affected code areas in the application\n   - Suggest migration steps and code changes needed\n\n2. **Security Updates:**\n   - Check for security patches in the updates\n   - Review CVE details if available\n   - Assess severity levels\n   - Prioritize critical security updates\n\n3. **Deprecations:**\n   - Find deprecated APIs in updated packages\n   - List upcoming removals and timeline\n   - Suggest replacement APIs and patterns\n   - Plan migration timeline for deprecated features\n\n4. **Testing Impact:**\n   - Identify tests that may break due to updates\n   - Update test dependencies if needed\n   - Check for API changes affecting tests\n   - Recommend running full test suite with `php artisan test`\n\n5. **Performance Changes:**\n   - Review performance improvements in changelogs\n   - Check for potential regressions\n   - Suggest benchmarking critical paths\n   - Measure bundle size changes for frontend dependencies\n\n6. **Configuration Changes:**\n   - Check for new configuration options\n   - Update environment variables if needed\n   - Adjust service configurations\n   - Update relevant documentation\n\n7. **Compatibility:**\n   - Verify PHP version support (currently 8.4.13)\n   - Check Node.js compatibility\n   - Review browser support for frontend changes\n   - Test on target platforms\n\n8. **Rollback Plan:**\n   - Document current versions before update\n   - Create rollback instructions\n   - Test rollback procedure\n   - Keep backup of old composer.lock/package-lock.json\n\nPlease analyze the changes in the lock files and provide a comprehensive report with actionable recommendations."
+  }
+}

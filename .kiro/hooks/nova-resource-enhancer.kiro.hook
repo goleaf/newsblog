@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Nova Resource Enhancer",
+  "description": "Automatically enhances Nova Resources with comprehensive fields, relationships, filters, actions, lenses, metrics, authorization, search configuration, and display settings when Nova resource files are saved",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "app/Nova/*.php"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "I've created/updated a Nova Resource. Please enhance:\n\n1. **Fields:**\n   - Add all model attributes as appropriate fields\n   - Use proper field types (Text, Boolean, BelongsTo, etc.)\n   - Add field validation rules\n   - Configure field display (onlyOnIndex, onlyOnDetail, etc.)\n\n2. **Relationships:**\n   - Add BelongsTo, HasMany, BelongsToMany fields\n   - Configure relationship display\n   - Add searchable() for select fields\n\n3. **Filters:**\n   - Create filters in app/Nova/Filters/\n   - Add date, status, relationship filters\n   - Configure filter defaults\n\n4. **Actions:**\n   - Create custom actions in app/Nova/Actions/\n   - Implement bulk actions\n   - Add inline actions\n   - Queue long-running actions\n\n5. **Lenses:**\n   - Create lenses for common queries\n   - Configure lens fields\n   - Add lens filters\n\n6. **Cards/Metrics:**\n   - Add value metrics for KPIs\n   - Create trend metrics\n   - Add partition metrics\n   - Create custom cards\n\n7. **Authorization:**\n   - Configure viewAny, view, create, update, delete\n   - Implement field-level authorization\n   - Add action authorization\n\n8. **Search:**\n   - Define searchable columns\n   - Configure global search\n   - Add relationship searching\n\n9. **Display:**\n   - Set title and subtitle\n   - Configure per-page options\n   - Customize table columns\n   - Add resource icons\n\nNova Resource File: [paste resource code]"
+  }
+}

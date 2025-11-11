@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "PHP Test Runner",
+  "description": "Automatically runs PHPUnit tests when PHP files are saved. For test files, runs that specific test. For source files in app/, finds and runs related tests based on class name.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "**/*.php"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A PHP file was saved at {{filePath}}. \n\nIf the file is in the tests/ directory (e.g., tests/Feature/PostTest.php or tests/Unit/ExampleTest.php), run that specific test file using:\n`php artisan test {{filePath}}`\n\nIf the file is a source file in the app/ directory (e.g., app/Models/Post.php, app/Http/Controllers/PostController.php), try to find and run related tests:\n1. Extract the class name from the file path (e.g., \"Post\" from app/Models/Post.php, \"PostController\" from app/Http/Controllers/PostController.php)\n2. Run tests filtered by that class name using: `php artisan test --filter=<ClassName>`\n   - For example, for Post.php, use: `php artisan test --filter=Post`\n   - For PostController.php, use: `php artisan test --filter=PostController`\n\nAfter running the tests, report:\n- The command that was executed\n- Test results (passed/failed counts)\n- Any failures with details\n- A summary of the test run\n\nIf no related tests are found or the file is neither in tests/ nor app/, simply acknowledge the file save without running tests."
+  }
+}

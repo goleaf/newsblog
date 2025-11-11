@@ -1,0 +1,21 @@
+{
+  "enabled": true,
+  "name": "Auth Pattern Review",
+  "description": "Monitors authentication and authorization files (middleware, policies, controllers, requests) and prompts the AI to review security patterns, ensure proper gate/policy usage, validate authentication flows, and check for authorization vulnerabilities",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "app/Http/Middleware/*.php",
+      "app/Policies/*.php",
+      "app/Http/Controllers/Auth/*.php",
+      "app/Http/Requests/Auth/*.php",
+      "config/auth.php",
+      "routes/auth.php"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Review the authentication and authorization patterns in the modified files. Check for:\n1. Proper use of Laravel's authentication features (gates, policies, middleware)\n2. Secure password handling and validation\n3. Authorization checks before sensitive operations\n4. CSRF protection and session security\n5. Rate limiting on authentication endpoints\n6. Proper use of Sanctum for API authentication\n7. Email verification flows\n8. Password reset security\n9. Role and permission checks\n10. Any potential security vulnerabilities or bypasses\n\nEnsure all patterns follow Laravel best practices and the application's existing conventions. Suggest improvements if needed."
+  }
+}

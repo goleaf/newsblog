@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Mailable Assistant",
+  "description": "Triggers when saving Mailable files to provide comprehensive guidance on email templates, queuing, content, testing, and best practices",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "app/Mail/*.php"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "I've created/updated a Mailable. Please check:\n\n1. **View Template:**\n   - Create Blade template in resources/views/emails/\n   - Use markdown view for clean emails\n   - Ensure mobile responsiveness\n\n2. **Build Method:**\n   - Set subject, from, replyTo\n   - Attach files if needed\n   - Pass data to view\n   - Add CC and BCC if needed\n\n3. **Queue:**\n   - Implement ShouldQueue for async sending\n   - Set appropriate queue and delay\n   - Configure retries\n\n4. **Content:**\n   - Include action buttons with url()\n   - Add brand styling\n   - Use email components (button, panel, table)\n\n5. **Preview:**\n   - Create route for email preview\n   - Test in multiple email clients\n   - Check spam score\n\n6. **Localization:**\n   - Support multilingual emails\n   - Use translation strings\n   - Handle RTL languages\n\n7. **Testing:**\n   - Use Mail::fake() in tests\n   - Assert email sent to users\n   - Verify email content\n   - Test attachments\n\n8. **Tracking:**\n   - Add UTM parameters to links\n   - Implement open tracking if needed\n   - Track click-through rates\n\nMailable File: {ABSOLUTE_FILE_PATH}"
+  }
+}

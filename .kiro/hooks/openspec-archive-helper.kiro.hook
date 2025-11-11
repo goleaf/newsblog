@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "OpenSpec Archive Helper",
+  "description": "Guides you through archiving a completed OpenSpec change by listing active changes, confirming task completion, handling spec updates, running archive commands, and validating the result",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      ".cursor/commands/openspec-archive.md"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Help me archive a completed OpenSpec change. Follow these steps:\n1. Run `openspec list` to show active changes\n2. Ask me which change-id to archive\n3. Confirm all tasks in tasks.md are marked [x] complete\n4. Ask if this change updated specs (if yes, use `openspec archive <change-id> --yes`, if no use `openspec archive <change-id> --skip-specs --yes`)\n5. Run the appropriate archive command\n6. Run `openspec validate --strict` to confirm the archived change passes checks\n7. Remind me to create a separate PR for the archive if needed"
+  }
+}

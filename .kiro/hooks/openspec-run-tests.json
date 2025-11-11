@@ -1,0 +1,10 @@
+{
+  "name": "Laravel: Run Related Tests on Save",
+  "description": "Runs relevant PHPUnit tests when test files or related source files are saved",
+  "trigger": {
+    "type": "onSave",
+    "filePattern": "{tests/**/*.php,app/**/*.php}"
+  },
+  "prompt": "A PHP file was saved. If it's a test file, run that specific test using `php artisan test <filepath>`. If it's a source file in app/, try to find and run related tests using an appropriate filter based on the class name. Report test results.",
+  "enabled": false
+}

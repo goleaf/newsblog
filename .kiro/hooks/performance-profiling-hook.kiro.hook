@@ -1,0 +1,26 @@
+{
+  "enabled": true,
+  "name": "Performance Profiling Analysis",
+  "description": "Analyzes application performance including routes, database queries, memory usage, assets, caching, sessions, queues, and OPcache with actionable recommendations",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "config/database.php",
+      "config/cache.php",
+      "config/session.php",
+      "config/queue.php",
+      "routes/*.php",
+      "app/Http/Controllers/**/*.php",
+      "app/Http/Middleware/*.php",
+      "webpack.mix.js",
+      "vite.config.js",
+      "package.json",
+      "composer.json"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Analyzing application performance:\n\n1. **Route Performance:**\n   - Identify slow endpoints\n   - Measure middleware overhead\n   - Check for unnecessary middleware\n   - Profile controller execution time\n\n2. **Database Performance:**\n   - Count queries per request\n   - Identify slow queries\n   - Check connection pooling\n   - Analyze query execution plans\n\n3. **Memory Usage:**\n   - Check memory_limit settings\n   - Identify memory leaks\n   - Analyze per-request memory usage\n   - Suggest optimization strategies\n\n4. **Asset Loading:**\n   - Check bundle sizes\n   - Identify unused JavaScript\n   - Analyze CSS bloat\n   - Suggest code splitting\n\n5. **Caching:**\n   - Verify cache hit rates\n   - Check cache key patterns\n   - Identify cache stampede risks\n   - Optimize cache TTLs\n\n6. **Session Storage:**\n   - Analyze session size\n   - Check session driver performance\n   - Verify session cleanup\n   - Suggest Redis for sessions\n\n7. **Queue Performance:**\n   - Check job processing times\n   - Identify failing jobs\n   - Analyze queue backlog\n   - Optimize job batching\n\n8. **OPcache:**\n   - Verify OPcache enabled\n   - Check hit rate\n   - Optimize configuration\n   - Clear cache strategy\n\n9. **Recommendations:**\n   - Suggest specific optimizations\n   - Prioritize by impact\n   - Provide implementation steps\n   - Estimate performance gains\n\nPerformance context: [describe performance issues or \"full audit\"]"
+  }
+}

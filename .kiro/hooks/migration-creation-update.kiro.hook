@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Migration Creation/Update Hook",
+  "description": "Automatically validates schema, syncs models, ensures rollback safety, updates seeders and factories when migrations are created or modified",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "database/migrations/*.php"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "I've created/updated a migration. Please verify and optimize:\n\n1. **Schema Validation:**\n   - Check column types are appropriate for data\n   - Ensure foreign keys have proper constraints (onDelete, onUpdate)\n   - Verify indexes on foreign keys and searchable columns\n   - Add unique constraints where needed\n\n2. **Model Sync:**\n   - Update corresponding model's $fillable/$guarded\n   - Add $casts for dates, booleans, JSON columns\n   - Create/update accessors and mutators if needed\n\n3. **Rollback Safety:**\n   - Ensure down() method properly reverses up()\n   - Check for data loss risks\n\n4. **Seeder:**\n   - Create/update seeder in database/seeders/\n   - Generate realistic test data\n   - Handle relationships properly\n\n5. **Factory Update:**\n   - Update factory to match new schema\n   - Add states for different scenarios\n\n6. **Documentation:**\n   - Add comments explaining complex schema decisions\n   - Document relationships and constraints\n\nMigration File: {file_path}\n\nPlease analyze the migration and provide specific recommendations or make the necessary updates to related files."
+  }
+}

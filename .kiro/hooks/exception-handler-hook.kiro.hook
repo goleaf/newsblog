@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Exception Handler Hook",
+  "description": "Automatically enhances Laravel exception classes with proper structure, rendering, reporting, logging, testing, and documentation when exception files are saved",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "app/Exceptions/*.php"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "I've created/updated an Exception class. Please enhance:\n\n1. **Exception Structure:**\n   - Extend proper base exception\n   - Add constructor with meaningful parameters\n   - Include context data for logging\n   - Set appropriate HTTP status code\n\n2. **Renderable:**\n   - Implement render() for custom responses\n   - Return JSON for API exceptions\n   - Create user-friendly error views\n   - Add proper status codes\n\n3. **Reportable:**\n   - Implement report() for custom logging\n   - Add context data for debugging\n   - Configure external reporting (Sentry, Bugsnag)\n   - Set severity levels\n\n4. **Exception Handler Registration:**\n   - Register in app/Exceptions/Handler.php\n   - Configure reportable/renderable callbacks\n   - Set up throttling for exception types\n\n5. **Error Messages:**\n   - Provide clear, actionable messages\n   - Avoid exposing sensitive data\n   - Localize messages\n   - Include error codes\n\n6. **Logging:**\n   - Log appropriate context\n   - Include stack traces\n   - Add user information if relevant\n   - Tag for filtering\n\n7. **Testing:**\n   - Test exception is thrown correctly\n   - Verify error responses\n   - Test logging behavior\n   - Check status codes\n\n8. **Documentation:**\n   - Document when exception is thrown\n   - Explain how to handle it\n   - Provide recovery suggestions\n\nException File: {file_path}\n\nPlease review the exception class and implement these enhancements following Laravel 12 best practices."
+  }
+}

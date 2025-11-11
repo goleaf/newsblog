@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Blade View Analysis",
+  "description": "Analyzes Blade views for component extraction, layout optimization, security, accessibility, Alpine.js/Livewire enhancements, validation display, and asset management",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "resources/views/**/*.blade.php"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "I've created/updated a Blade view. Please analyze and:\n\n1. **Component Extraction:**\n   - Identify reusable UI patterns\n   - Suggest Blade components in resources/views/components/\n   - Convert to component with slots and props\n\n2. **Layout Optimization:**\n   - Ensure proper @extends and @section usage\n   - Check for @include opportunities\n   - Verify consistent layout structure\n\n3. **Security:**\n   - Check all variables use {{ }} for XSS protection\n   - Flag any {!! !!} usage for review\n   - Ensure CSRF tokens in forms\n\n4. **Accessibility:**\n   - Add missing ARIA labels\n   - Verify semantic HTML\n   - Check form label associations\n   - Ensure keyboard navigation\n\n5. **Alpine.js/Livewire:**\n   - Suggest interactive enhancements\n   - Optimize reactivity\n\n6. **Validation Display:**\n   - Add @error directives for form fields\n   - Ensure consistent error styling\n\n7. **Asset Management:**\n   - Verify @vite directives\n   - Check asset paths\n\nView File: {{CHANGED_FILES}}"
+  }
+}

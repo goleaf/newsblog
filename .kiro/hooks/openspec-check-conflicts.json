@@ -1,0 +1,9 @@
+{
+  "name": "OpenSpec: Check for Conflicts",
+  "description": "Manual hook to check if a new change conflicts with existing active changes",
+  "trigger": {
+    "type": "manual"
+  },
+  "prompt": "Check for potential conflicts with active OpenSpec changes:\n1. Run `openspec list` to see all active changes\n2. Ask me which capability or area I'm planning to work on\n3. Check if any active changes affect the same specs or capabilities\n4. Review the proposal.md files of potentially conflicting changes\n5. Report any overlaps and suggest coordination or combining proposals",
+  "enabled": true
+}

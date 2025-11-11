@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Notification Review Hook",
+  "description": "Triggers AI review when Laravel Notification files are saved in app/Notifications directory",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "app/Notifications/*.php"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "I've created/updated a Notification. Please check:\n\n1. **Channels:**\n   - Implement via() method with appropriate channels\n   - Configure mail, database, broadcast, SMS (Vonage)\n   - Add Slack, Discord, or custom channels\n\n2. **Mail Notification:**\n   - Implement toMail() with proper MailMessage\n   - Add subject, greeting, line(), action()\n   - Include markdown views if needed\n   - Attach files if necessary\n\n3. **Database Notification:**\n   - Implement toArray() with notification data\n   - Include actionable data (URLs, IDs)\n   - Store relevant context\n\n4. **Broadcast Notification:**\n   - Implement toBroadcast() for real-time\n   - Configure broadcast channel\n   - Add front-end Echo listeners\n\n5. **Queue:**\n   - Implement ShouldQueue for async delivery\n   - Configure retry logic\n   - Set timeout appropriately\n\n6. **Routing:**\n   - Implement routeNotificationFor() for channels\n   - Handle missing notification routes\n\n7. **Customization:**\n   - Allow recipient preferences\n   - Implement notification settings\n   - Add opt-out logic\n\n8. **Testing:**\n   - Use Notification::fake() in tests\n   - Assert notifications sent to users\n   - Test notification content\n   - Verify channel selection\n\n9. **Documentation:**\n   - Document when notification is sent\n   - Explain notification content\n   - List all channels used\n\nPlease review the notification file and provide feedback on implementation, best practices, and any improvements needed."
+  }
+}

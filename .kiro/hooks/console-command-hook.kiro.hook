@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Console Command Review",
+  "description": "Automatically reviews Artisan console commands for best practices including signature, validation, user interaction, scheduling, error handling, and testing",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "app/Console/Commands/*.php"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "I've created/updated an Artisan command. Please check:\n\n1. **Signature:**\n   - Define clear, descriptive signature\n   - Add all necessary arguments and options\n   - Use proper types and defaults\n   - Add helpful descriptions\n\n2. **Handle Method:**\n   - Implement clear execution flow\n   - Add progress bars for long operations\n   - Use proper output methods (info, error, warn, line)\n   - Return appropriate exit codes\n\n3. **Validation:**\n   - Validate arguments and options\n   - Check preconditions before execution\n   - Handle missing dependencies\n\n4. **User Interaction:**\n   - Add confirmation prompts for destructive actions\n   - Use choice() for selections\n   - Implement ask() for user input\n   - Add secret() for sensitive data\n\n5. **Scheduling:**\n   - Register in app/Console/Kernel.php schedule() or routes/console.php\n   - Configure frequency and timezone\n   - Add withoutOverlapping() if needed\n   - Set up email notifications on failure\n\n6. **Job Queue:**\n   - Consider queuing heavy operations\n   - Use chunks for large datasets\n   - Add job batching if applicable\n\n7. **Error Handling:**\n   - Wrap in try-catch blocks\n   - Log errors appropriately\n   - Provide helpful error messages\n   - Implement rollback if needed\n\n8. **Testing:**\n   - Use artisan test to test commands\n   - Test with different arguments\n   - Verify output matches expectations\n   - Test error scenarios\n\n9. **Documentation:**\n   - Add comprehensive command description\n   - Document all arguments and options\n   - Include usage examples\n\nCommand File: {file_path}\n{file_content}"
+  }
+}

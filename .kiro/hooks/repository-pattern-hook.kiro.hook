@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Repository Pattern Hook",
+  "description": "Triggers AI verification when saving Repository classes to ensure proper interface definition, implementation, query methods, caching, transactions, service provider binding, testing, and documentation",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "app/Repositories/*.php"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "I've created/updated a Repository class. Please verify:\n\n1. **Interface Definition:**\n   - Create interface in app/Contracts/ or app/Interfaces/\n   - Define all public methods\n   - Add proper type hints\n   - Document method purposes\n\n2. **Implementation:**\n   - Implement interface completely\n   - Inject model in constructor\n   - Return consistent types (Model, Collection, Paginator)\n   - Handle eloquent relationships\n\n3. **Query Methods:**\n   - Implement CRUD operations (create, read, update, delete)\n   - Add finder methods (findById, findBySlug, etc.)\n   - Create search/filter methods\n   - Implement pagination helpers\n\n4. **Scopes:**\n   - Wrap common query scopes\n   - Chain methods fluently\n   - Add sorting methods\n\n5. **Caching:**\n   - Cache frequent queries\n   - Implement cache invalidation\n   - Use cache tags appropriately\n\n6. **Transactions:**\n   - Wrap multi-model operations in DB::transaction()\n   - Handle rollbacks properly\n\n7. **Service Provider Binding:**\n   - Bind interface to implementation\n   - Register in service provider\n   - Consider singleton binding\n\n8. **Testing:**\n   - Create repository tests\n   - Mock repository in service tests\n   - Test all query methods\n   - Verify caching behavior\n\n9. **Documentation:**\n   - Document query capabilities\n   - Explain caching strategy\n   - Include usage examples\n\nRepository File: {EDITED_FILE_CONTENT}"
+  }
+}

@@ -1,0 +1,3114 @@
+# Complete News/Blog Platform Specification for Cursor AI
+
+## Project Overview
+Create a modern, full-featured news/blog platform using Laravel and SQLite, focused on information systems, programming, and technology content. This is a complete content management system with public-facing website and comprehensive admin panel.
+
+---
+
+## PROMPT 1: Project Setup & Database Architecture
+
+```
+Create a Laravel 11 blog/news platform with the following specifications:
+
+PROJECT SETUP:
+- Initialize Laravel 11 project named "TechNewsHub"
+- Configure SQLite database in .env
+- Install required dependencies: Laravel Breeze for authentication, intervention/image for image processing, laravel/sanctum for API
+
+DATABASE SCHEMA:
+Create migrations for the following tables:
+
+1. users table (extends default):
+   - id, name, email, password, role (admin/editor/author), avatar, bio, status (active/inactive), email_verified_at, remember_token, timestamps
+
+2. categories table:
+   - id, name, slug, description, parent_id (nullable for subcategories), icon, color_code, meta_title, meta_description, status (active/inactive), display_order, timestamps
+
+3. tags table:
+   - id, name, slug, timestamps
+
+4. posts table:
+   - id, user_id, category_id, title, slug, excerpt, content (longText), featured_image, image_alt_text, status (draft/published/scheduled/archived), is_featured, is_trending, view_count, published_at, scheduled_at, reading_time (in minutes), meta_title, meta_description, meta_keywords, timestamps, soft deletes
+
+5. post_tag (pivot table):
+   - post_id, tag_id
+
+6. comments table:
+   - id, post_id, user_id (nullable), parent_id (for nested comments), author_name, author_email, content, status (pending/approved/spam), ip_address, user_agent, timestamps, soft deletes
+
+7. media_library table:
+   - id, user_id, file_name, file_path, file_type, file_size, mime_type, alt_text, title, caption, timestamps
+
+8. pages table (for static pages like About, Contact):
+   - id, title, slug, content, meta_title, meta_description, status, template, display_order, timestamps
+
+9. newsletters table:
+   - id, email, status (subscribed/unsubscribed), verified_at, token, timestamps
+
+10. settings table:
+    - id, key, value, group, timestamps
+
+11. post_views table (for analytics):
+    - id, post_id, ip_address, user_agent, viewed_at
+
+12. contact_messages table:
+    - id, name, email, subject, message, status (new/read/replied), timestamps
+
+Set up proper foreign keys, indexes, and relationships. Use soft deletes where appropriate.
+```
+
+---
+
+## PROMPT 2: Models & Relationships
+
+```
+Create Eloquent models for the TechNewsHub platform with the following relationships and features:
+
+USER MODEL:
+- HasMany: posts, comments, media
+- Attributes: full_name accessor, avatar_url accessor
+- Scopes: active, admins, editors, authors
+- Methods: isAdmin(), isEditor(), isAuthor()
+
+CATEGORY MODEL:
+- BelongsTo: parent (self-referencing)
+- HasMany: children (subcategories), posts
+- Attributes: url accessor
+- Scopes: active, parent categories, ordered
+- Method: getPostsCount()
+
+POST MODEL:
+- BelongsTo: user, category
+- BelongsToMany: tags
+- HasMany: comments (approved comments), views
+- Attributes: formatted_date, excerpt_limited, reading_time_text, featured_image_url
+- Scopes: published, featured, trending, scheduled, byCategory, byTag, byAuthor, recent, popular
+- Methods: incrementViewCount(), isPublished(), canBeEditedBy($user)
+- Observers: auto-generate slug, calculate reading time on save
+
+TAG MODEL:
+- BelongsToMany: posts
+- Attributes: url accessor
+- Method: getPostsCount()
+
+COMMENT MODEL:
+- BelongsTo: post, user, parent
+- HasMany: replies (children)
+- Scopes: approved, pending, recent, forPost
+- Methods: isApproved(), markAsApproved(), markAsSpam()
+
+MEDIA MODEL:
+- BelongsTo: user
+- Attributes: url accessor, size_human_readable
+- Scopes: images, documents, recent
+
+PAGE MODEL:
+- Attributes: url accessor
+- Scopes: active, ordered
+
+NEWSLETTER MODEL:
+- Scopes: subscribed, unsubscribed, verified
+- Methods: verify(), unsubscribe()
+
+Add proper mutators, accessors, and query scopes for efficient data retrieval.
+```
+
+---
+
+## PROMPT 3: Admin Panel - Dashboard & Layout
+
+```
+Create admin panel structure for TechNewsHub:
+
+ADMIN LAYOUT (resources/views/admin/layouts/app.blade.php):
+- Responsive sidebar navigation with collapsible menu
+- Top header with user profile dropdown, notifications, search
+- Breadcrumb navigation
+- Use Tailwind CSS for styling
+- Dark/light mode toggle
+
+DASHBOARD (AdminDashboardController & view):
+Display statistics cards:
+- Total posts (with percentage change)
+- Total views (today/this week/this month)
+- Total comments (pending approval count)
+- Newsletter subscribers
+- New users registered
+
+Charts and graphs:
+- Posts published over time (line chart - last 30 days)
+- Most popular categories (bar chart)
+- Top 10 most viewed posts table
+- Recent comments list (with approve/delete actions)
+- Traffic sources (if available)
+
+Quick actions:
+- Create new post button
+- View pending comments
+- Manage categories
+- Site settings
+
+SIDEBAR MENU STRUCTURE:
+- Dashboard
+- Content Management
+  - All Posts
+  - Add New Post
+  - Categories
+  - Tags
+- Media Library
+- Comments
+- Pages
+- Users
+- Newsletter Subscribers
+- Contact Messages
+- Appearance
+  - Menus
+  - Widgets
+- Settings
+  - General
+  - SEO
+  - Social Media
+  - Email Configuration
+
+Add icons (use Heroicons or Font Awesome) and active state highlighting.
+```
+
+---
+
+## PROMPT 4: Admin Panel - Posts Management (CRUD)
+
+```
+Create comprehensive post management system for admin panel:
+
+POSTS LIST PAGE (admin/posts/index):
+- DataTables implementation with server-side processing
+- Columns: Featured Image (thumbnail), Title, Author, Category, Tags, Status, Views, Comments, Published Date
+- Filters: Status (all/draft/published/scheduled), Category dropdown, Author dropdown, Date range picker
+- Bulk actions: Delete, Change status (publish/draft), Change category
+- Search functionality (title, content, author)
+- Per-page records selector (10, 25, 50, 100)
+- Status badges with colors: Draft (gray), Published (green), Scheduled (blue), Archived (orange)
+- Quick actions per row: Edit, View, Duplicate, Trash
+
+CREATE/EDIT POST PAGE (admin/posts/create & edit):
+Left Column (Main Content):
+- Title input (with auto-slug generation preview)
+- Rich text editor (use TinyMCE or CKEditor) with:
+  - Text formatting (bold, italic, underline, headings)
+  - Insert image from media library
+  - Insert video embed
+  - Code block with syntax highlighting
+  - Insert link
+  - Lists (ordered/unordered)
+  - Blockquotes
+  - Tables
+  - Horizontal rule
+- Excerpt textarea (auto-generate option from content)
+- Content word count display
+
+Right Sidebar:
+1. Publish Box:
+   - Status dropdown (Draft/Published)
+   - Visibility: Public/Password Protected/Private
+   - Publish immediately / Schedule for later (datetime picker)
+   - Save Draft button
+   - Preview button (opens in new tab)
+   - Publish/Update button
+
+2. Featured Image Box:
+   - Upload/Select from media library
+   - Image preview
+   - Remove image button
+   - Alt text input
+
+3. Category Selection:
+   - Dropdown or searchable select
+   - Add new category (inline form)
+   - Display category hierarchy
+
+4. Tags:
+   - Tag input with autocomplete
+   - Add new tags inline
+   - Display selected tags as removable chips
+
+5. Post Settings:
+   - Featured post checkbox
+   - Trending post checkbox
+   - Allow comments checkbox
+   - Reading time (auto-calculated, editable)
+
+6. SEO Section:
+   - Meta title (with character count, max 60)
+   - Meta description (with character count, max 160)
+   - Meta keywords
+   - SEO preview snippet
+
+7. Post Author:
+   - Dropdown to assign/change author
+
+VALIDATION:
+- Title: required, max 255 characters
+- Slug: unique, auto-generated, editable
+- Category: required
+- Content: required, minimum 100 characters
+- Featured image: recommended (show warning if missing)
+- Scheduled date: must be future date
+
+AUTO-SAVE:
+- Implement auto-save as draft every 60 seconds
+- Show last saved timestamp
+- Restore unsaved changes if browser crashes
+```
+
+---
+
+## PROMPT 5: Admin Panel - Categories & Tags Management
+
+```
+Create category and tag management system:
+
+CATEGORIES PAGE (admin/categories):
+- Tree/hierarchical display with drag-and-drop reordering
+- Columns: Icon, Name, Slug, Parent Category, Posts Count, Status, Actions
+- Inline editing for quick updates
+- Bulk actions: Delete, Activate, Deactivate
+- Search functionality
+
+CREATE/EDIT CATEGORY MODAL:
+- Name input
+- Slug (auto-generated, editable)
+- Parent category dropdown (for subcategories)
+- Description textarea
+- Icon selector (emoji or icon class)
+- Color code picker (for badges/highlights)
+- Display order number input
+- Status toggle (Active/Inactive)
+- SEO fields:
+  - Meta title
+  - Meta description
+- Save & Create New button
+- Save & Close button
+
+CATEGORY FEATURES:
+- Show posts count per category
+- Quick view of posts in category
+- Merge categories option (move all posts to another category)
+- Delete protection (can't delete if has posts, must reassign first)
+
+TAGS PAGE (admin/tags):
+- Table view with columns: Name, Slug, Posts Count, Created Date, Actions
+- Bulk actions: Delete, Merge tags
+- Search and filter
+- Sort by: Name, Posts count, Recent
+
+CREATE/EDIT TAG INLINE:
+- Name input
+- Slug (auto-generated)
+- Quick save with AJAX
+
+TAG FEATURES:
+- Merge multiple tags into one
+- Find unused tags (0 posts) with bulk delete option
+- Popular tags highlight
+- Tag cloud visualization
+```
+
+---
+
+## PROMPT 6: Admin Panel - Media Library
+
+```
+Create media library management system:
+
+MEDIA LIBRARY PAGE (admin/media):
+Display Modes:
+- Grid view (default): Thumbnails with hover actions
+- List view: Detailed table with columns
+
+Upload Area:
+- Drag and drop zone
+- File browser button
+- Multiple file upload support
+- Upload progress bars
+- Accepted formats: JPG, PNG, GIF, WebP, PDF, DOC, DOCX
+- Max file size: 10MB (configurable)
+- Auto-optimize images on upload
+
+Filters:
+- All media / Images / Documents
+- Date uploaded (dropdown: Last 7 days, Last 30 days, Custom range)
+- Uploaded by (user filter)
+- Search by filename or alt text
+
+GRID VIEW:
+Each media item shows:
+- Thumbnail/icon preview
+- Filename (truncated)
+- File size
+- Upload date
+- Hover actions: View, Edit, Delete, Copy URL
+
+MEDIA DETAILS MODAL (on click):
+Left side: Full image preview or file icon
+Right side:
+- Filename (editable)
+- File type and size
+- Dimensions (for images)
+- Uploaded by and date
+- URL (click to copy)
+- Alt text input
+- Title input
+- Caption textarea
+- Delete button (with confirmation)
+- Replace file button
+
+FEATURES:
+- Image editing: Crop, Resize, Rotate (basic transformations)
+- Generate thumbnails in multiple sizes (thumbnail, medium, large)
+- Bulk delete
+- Bulk download
+- Search functionality
+- Filter unused media (not attached to any post)
+- Storage usage statistics
+
+Insert into Post:
+- When opened from post editor, show "Insert" button
+- Multiple selection mode
+- Create gallery option (select multiple images)
+```
+
+---
+
+## PROMPT 7: Admin Panel - Comments Management
+
+```
+Create comment moderation system:
+
+COMMENTS PAGE (admin/comments):
+Tabs:
+- All comments
+- Pending approval (with count badge)
+- Approved
+- Spam
+- Trash
+
+Table Columns:
+- Checkbox (for bulk actions)
+- Comment avatar/gravatar
+- Author name (with email on hover)
+- Comment excerpt (first 100 chars, expandable)
+- In response to (post title, clickable)
+- Submitted date/time
+- Status badge
+- Actions dropdown
+
+Filters:
+- Search (author name, email, comment content)
+- Date range
+- Post filter (dropdown)
+- Comment type (Regular/Reply)
+
+Bulk Actions:
+- Approve
+- Mark as spam
+- Move to trash
+- Delete permanently
+
+INDIVIDUAL COMMENT VIEW:
+Quick expand inline to show:
+- Full comment text
+- Author details: Name, Email, IP address, User agent
+- Post title (link to edit post)
+- Parent comment (if reply)
+- Quick actions:
+  - Approve / Unapprove
+  - Reply (as admin)
+  - Edit
+  - Mark as spam
+  - Trash
+  - View on site (frontend link)
+
+COMMENT EDITING:
+- Edit comment content inline
+- Change author name/email
+- Move to different post
+- Save changes
+
+SPAM DETECTION:
+- Implement basic spam detection:
+  - Duplicate comments
+  - Comments with multiple links
+  - Blacklisted words
+  - Suspicious patterns
+- Akismet integration option (configurable)
+
+NOTIFICATION SYSTEM:
+- Email admin on new comment
+- Badge counter on admin sidebar for pending comments
+- Desktop notification option
+```
+
+---
+
+## PROMPT 8: Admin Panel - User Management
+
+```
+Create user management system:
+
+USERS PAGE (admin/users):
+Table Columns:
+- Avatar
+- Name
+- Email
+- Role (badge with color)
+- Posts count
+- Status (Active/Inactive badge)
+- Registered date
+- Last login
+- Actions
+
+Filters:
+- Role filter: All / Admin / Editor / Author
+- Status filter: All / Active / Inactive
+- Search: Name or email
+- Registration date range
+
+Bulk Actions:
+- Delete users
+- Change role
+- Activate/Deactivate
+
+CREATE/EDIT USER FORM:
+Personal Information:
+- Profile avatar upload
+- Full name (required)
+- Email (required, unique)
+- Password (required on create, optional on edit)
+- Confirm password
+- Bio textarea
+
+Account Settings:
+- Role selection (Admin/Editor/Author)
+- Status toggle (Active/Inactive)
+- Email verified checkbox
+
+Social Links:
+- Twitter/X URL
+- LinkedIn URL
+- GitHub URL
+- Website URL
+
+Permissions by Role:
+ADMIN:
+- Full access to everything
+- Manage users
+- Manage settings
+- Delete any content
+
+EDITOR:
+- Create, edit, publish, delete all posts
+- Manage categories and tags
+- Moderate comments
+- Cannot manage users or settings
+
+AUTHOR:
+- Create and edit own posts
+- Submit posts for review (editor/admin publishes)
+- Cannot delete published posts
+- Cannot manage site settings
+
+USER PROFILE PAGE (for logged-in admin):
+- Edit own profile information
+- Change password section
+- Activity log (recent actions)
+- Statistics (posts written, comments received)
+
+FEATURES:
+- Password reset link generator
+- Send welcome email to new users
+- View user's published posts
+- Impersonate user (for admins, for testing purposes)
+- Activity log per user
+```
+
+---
+
+## PROMPT 9: Admin Panel - Pages Management
+
+```
+Create static pages management system:
+
+PAGES LIST (admin/pages):
+- Table view: Title, Slug, Template, Status, Order, Date, Actions
+- Drag-and-drop reordering
+- Quick edit inline
+- Bulk delete
+
+CREATE/EDIT PAGE:
+Similar to post editor but simpler:
+
+Main Content:
+- Page title
+- Slug (auto-generated)
+- Rich text editor (same as posts)
+
+Sidebar:
+1. Publish Box:
+   - Status: Draft/Published
+   - Save Draft button
+   - Publish/Update button
+
+2. Page Attributes:
+   - Parent page (for subpages hierarchy)
+   - Template selection:
+     * Default template
+     * Full width template
+     * Contact template (with form)
+     * About template
+     * Custom template
+   - Order (for menu ordering)
+
+3. Featured Image:
+   - Optional for pages
+   - Upload/select
+
+4. SEO Settings:
+   - Meta title
+   - Meta description
+
+DEFAULT PAGES TO CREATE:
+- About Us
+- Contact Us (with contact form)
+- Privacy Policy
+- Terms of Service
+- FAQ
+
+CONTACT PAGE FEATURES:
+Built-in contact form with fields:
+- Name (required)
+- Email (required)
+- Subject
+- Message (required)
+- Submit button
+
+Contact form submissions saved to contact_messages table.
+
+PAGE TEMPLATES:
+Create blade templates for different page layouts:
+- default.blade.php (standard page layout)
+- full-width.blade.php (no sidebar)
+- contact.blade.php (includes contact form)
+- about.blade.php (team member sections)
+```
+
+---
+
+## PROMPT 10: Admin Panel - Newsletter Management
+
+```
+Create newsletter subscriber management:
+
+SUBSCRIBERS LIST (admin/newsletters):
+Table Columns:
+- Email
+- Status (Subscribed/Unsubscribed badge)
+- Verified status
+- Subscription date
+- Source (Footer form, Post popup, Manual)
+- Actions
+
+Filters:
+- Status: All / Subscribed / Unsubscribed
+- Verified: All / Verified / Unverified
+- Date range
+- Search by email
+
+Bulk Actions:
+- Export to CSV
+- Delete subscribers
+- Send mass email (future feature)
+
+ADD SUBSCRIBER MANUALLY:
+- Email input
+- Auto-verify option
+- Source note
+
+SUBSCRIBER DETAILS:
+- Email address
+- Subscription date
+- Last activity
+- Verification status
+- Subscription source
+- Unsubscribe history (if resubscribed)
+- Actions: Edit, Delete, Send test email
+
+EXPORT SUBSCRIBERS:
+- Export all or filtered subscribers
+- CSV format with columns: Email, Status, Verified, Date
+- Use for external email marketing services
+
+FEATURES:
+- Double opt-in email confirmation
+- Unsubscribe token generation
+- Subscription widgets for frontend
+- Statistics: Total subscribers, Growth chart, Subscription sources
+- Duplicate email prevention
+```
+
+---
+
+## PROMPT 11: Admin Panel - Settings
+
+```
+Create comprehensive settings system using the settings table:
+
+GENERAL SETTINGS (admin/settings/general):
+- Site name
+- Site tagline/description
+- Site logo upload
+- Site favicon upload
+- Admin email address
+- Timezone selection
+- Date format (dropdown)
+- Time format (12h/24h)
+- Posts per page (frontend)
+- Admin items per page
+- Default post status (Draft/Published)
+- Allow user registration (Yes/No)
+- Default user role
+- Site language
+
+SEO SETTINGS (admin/settings/seo):
+- Default meta description
+- Default meta keywords
+- Google Analytics tracking ID
+- Google Tag Manager ID
+- Facebook Pixel ID
+- Robots.txt editor
+- XML sitemap generator (auto-generate)
+- Enable/disable indexing
+- Schema.org markup options
+
+SOCIAL MEDIA SETTINGS (admin/settings/social):
+- Facebook page URL
+- Twitter/X handle
+- Instagram URL
+- LinkedIn URL
+- YouTube channel URL
+- GitHub URL
+- Open Graph default image
+- Twitter card type
+
+EMAIL SETTINGS (admin/settings/email):
+- Mail driver (SMTP, Mailgun, etc.)
+- SMTP host
+- SMTP port
+- SMTP username
+- SMTP password
+- SMTP encryption (TLS/SSL)
+- From email address
+- From name
+- Test email feature (send test email button)
+
+COMMENT SETTINGS (admin/settings/comments):
+- Allow comments on posts (Yes/No)
+- Comment moderation (Auto-approve/Manual approval)
+- Require name and email
+- Require user registration to comment
+- Close comments after X days
+- Enable nested comments
+- Max nesting level
+- Comments per page
+- Blacklisted words (textarea, one per line)
+
+MEDIA SETTINGS (admin/settings/media):
+- Max upload size
+- Allowed file types
+- Image optimization (Yes/No)
+- Generate thumbnails
+- Thumbnail size (width x height)
+- Medium size
+- Large size
+- Delete files when post is deleted
+
+READING SETTINGS (admin/settings/reading):
+- Homepage displays: Latest posts / Static page
+- Select homepage (if static)
+- Select blog page
+- Reading time calculation (words per minute)
+
+APPEARANCE SETTINGS (admin/settings/appearance):
+- Enable dark mode
+- Primary color picker
+- Secondary color picker
+- Enable sidebar (Left/Right/None)
+- Footer text (copyright)
+- Enable breadcrumbs
+
+SAVE FUNCTIONALITY:
+- Group settings by category
+- Save each section separately
+- Show success/error messages
+- Validate inputs before saving
+- Cache settings for performance
+```
+
+---
+
+## PROMPT 12: Frontend - Homepage & Layout
+
+```
+Create modern, responsive frontend design for TechNewsHub:
+
+LAYOUT STRUCTURE (resources/views/layouts/app.blade.php):
+
+HEADER:
+- Top bar (small, above main nav):
+  - Logo (left)
+  - Social media icons (right)
+  - Dark mode toggle
+  - Search icon
+- Main navigation:
+  - Horizontal menu with categories
+  - Mega menu for dropdown (show subcategories + featured posts)
+  - Mobile hamburger menu (responsive)
+  - Search bar (expandable)
+
+NAVIGATION MENU:
+- Home
+- Categories (dropdown with all categories)
+- About
+- Contact
+- More (dropdown: Privacy Policy, Terms)
+
+HOMEPAGE DESIGN:
+
+1. Hero Section:
+   - Large featured post with:
+     * Full-width background image
+     * Overlay gradient
+     * Category badge
+     * Title (large, bold)
+     * Excerpt
+     * Author avatar, name, date
+     * Read more button
+   - Side panel: 3-4 trending posts (thumbnails + titles)
+
+2. Latest Posts Section:
+   - Grid layout (3 columns on desktop, responsive)
+   - Each card shows:
+     * Featured image
+     * Category badge (colored)
+     * Title
+     * Excerpt (2 lines, ellipsis)
+     * Author info with avatar
+     * Date and reading time
+     * View count
+   - Load more button / Pagination
+
+3. Popular Categories Section:
+   - Display 6-8 main categories
+   - Each category card:
+     * Icon
+     * Category name
+     * Post count
+     * Link to category page
+
+4. Editor's Picks / Featured Posts:
+   - Horizontal scrollable section
+   - Cards with image, title, author
+
+5. Newsletter Subscription Box:
+   - Heading: "Stay Updated"
+   - Email input
+   - Subscribe button
+   - Privacy note
+
+SIDEBAR (for pages with sidebar):
+- Search widget
+- Categories list
+- Popular posts (thumbnails + titles)
+- Tags cloud
+- Newsletter signup form
+- Social media follow buttons
+- Ad space (placeholder)
+
+FOOTER:
+Three columns:
+- Column 1: About site (logo + description)
+- Column 2: Quick links (Categories, About, Contact, Privacy)
+- Column 3: Newsletter signup
+Bottom bar:
+- Copyright text
+- Social media icons
+- Back to top button
+
+DESIGN PRINCIPLES:
+- Use Tailwind CSS
+- Mobile-first responsive design
+- Modern, clean aesthetics
+- Fast loading (lazy load images)
+- Smooth animations (hover effects, transitions)
+- Accessible (ARIA labels, keyboard navigation)
+- SEO-friendly markup
+```
+
+---
+
+## PROMPT 13: Frontend - Single Post Page
+
+```
+Create detailed single post view:
+
+POST LAYOUT:
+
+Header Section:
+- Category badge (colored, linked)
+- Post title (large, bold heading)
+- Post meta information:
+  * Author avatar and name (linked to author page)
+  * Published date (relative time: "2 days ago")
+  * Reading time (e.g., "5 min read")
+  * View count
+  * Social share buttons (Facebook, Twitter, LinkedIn, Copy link)
+
+Featured Image:
+- Full-width or contained
+- Image caption if provided
+- Alt text for accessibility
+
+Content Area:
+- Well-formatted article content
+- Proper typography (line height, font size)
+- Headings hierarchy (H2, H3)
+- Code blocks with syntax highlighting
+- Images within content (responsive)
+- Blockquotes styled
+- Tables styled
+- Lists formatted
+- Embedded videos responsive
+
+Post Footer:
+- Tags (clickable chips)
+- Share section: "Share this article" with social buttons
+
+Author Bio Box:
+- Author avatar (larger)
+- Author name
+- Author bio
+- Social media links
+- "View all posts by [Author]" link
+- Post count by author
+
+Related Posts Section:
+- "You might also like" or "Related Articles"
+- 3-4 posts from same category
+- Card layout with image, title, date
+
+Comments Section:
+- Comment count heading
+- Comment form (if allowed):
+  * Name field (required)
+  * Email field (required, not displayed publicly)
+  * Website field (optional)
+  * Comment textarea (required)
+  * Submit button
+  * Note: "Your email address will not be published"
+- Comments list:
+  * Commenter avatar (Gravatar)
+  * Name, date
+  * Comment text
+  * Reply button (for nested comments)
+  * Nested replies (indented, max 3 levels)
+- Load more comments if many
+- Message if comments disabled
+- Pending approval message after submission
+
+SIDEBAR (if not full-width template):
+- Table of contents (auto-generated from headings)
+- Author widget
+- Popular posts
+- Categories
+- Tags
+- Newsletter signup
+- Ad space
+
+NAVIGATION:
+- Previous/Next post navigation (at bottom)
+- Breadcrumb: Home > Category > Post Title
+
+FEATURES:
+- Reading progress bar (top of page)
+- Sticky share buttons (sidebar or floating)
+- Print-friendly version
+- Font size adjuster
+- Estimated time to read
+- Schema.org Article markup for SEO
+- Open Graph meta tags
+- Twitter Card meta tags
+```
+
+---
+
+## PROMPT 14: Frontend - Category & Archive Pages
+
+```
+Create category, tag, and archive listing pages:
+
+CATEGORY PAGE (category/[slug]):
+
+Page Header:
+- Category name (large heading)
+- Category description
+- Post count
+- Subscribe to category option (RSS or notification)
+- Breadcrumb: Home > Category Name
+
+Filters & Sorting:
+- Sort by: Latest, Popular (most viewed), Most commented
+- View toggle: Grid / List view
+- Time filter: All time, Today, This week, This month
+
+Posts Grid/List:
+Grid View (default):
+- 3-column layout (responsive: 2 on tablet, 1 on mobile)
+- Each card:
+  * Featured image (hover zoom effect)
+  * Category badge
+  * Title (2 lines, ellipsis)
+  * Excerpt (3 lines)
+  * Author avatar, name
+  * Date, reading time, view count
+  * Hover effect: lift shadow
+
+List View:
+- Single column
+- Larger cards:
+  * Image on left (fixed size)
+  * Content on right
+  * More text visible
+
+Pagination:
+- Standard pagination (1, 2, 3... Next)
+- OR infinite scroll with "Loading..." indicator
+- Show: "Showing 1-12 of 45 posts"
+
+Empty State:
+- If no posts: "No posts found in this category"
+- Suggest popular categories
+
+---
+
+TAG PAGE (tag/[slug]):
+Similar to category page but:
+- "Posts tagged with: [Tag Name]"
+- No description
+- Show related tags
+
+---
+
+AUTHOR PAGE (author/[username]):
+
+Author Header:
+- Large avatar
+- Author name
+- Bio
+- Social media links
+- Post count
+- Join date
+
+Author Stats:
+- Total posts published
+- Total views
+- Total comments received
+
+Posts by Author:
+- Similar grid layout to category page
+- All posts by this author
+- Sorted by date (latest first)
+
+---
+
+ARCHIVE PAGE (archive/2024/11):
+
+Page Header:
+- "Posts from [Month Year]"
+- Archive navigation:
+  * Previous month / Next month arrows
+  * Dropdown to select month/year
+
+Archive Posts:
+- Grouped by date
+- Date heading: "November 15, 2024"
+- Posts listed under each date
+- Simple list format
+
+Archive Sidebar:
+- Archive dropdown (all months)
+- Popular posts from that month
+- Categories
+
+---
+
+SEARCH RESULTS PAGE (search?q=query):
+
+Search Header:
+- "Search Results for: [query]"
+- Number of results found
+- Search box (prepopulated with query)
+
+Results:
+- Similar to category grid
+- Highlight search terms in title/excerpt
+- Relevance sorting
+
+Filters:
+- Filter by: Posts, Pages, All
+- Filter by category
+- Sort by: Relevance, Date
+
+Empty State:
+- "No results found for '[query]'"
+- Search suggestions
+- Popular posts
+
+---
+
+404 ERROR PAGE:
+- Friendly message: "Oops! Page Not Found"
+- Search box: "Try searching for what you need"
+- Links to:
+  * Homepage
+  * Popular categories
+  * Recent posts
+- Animated 404 illustration
+```
+
+---
+
+## PROMPT 15: Frontend - Interactive Features
+
+```
+Implement interactive frontend features:
+
+1. SEARCH FUNCTIONALITY:
+
+Global Search:
+- Live search (AJAX as user types)
+- Search icon in header
+- Click to expand search bar
+- Search suggestions dropdown:
+  * Show matching posts (title + thumbnail)
+  * Show matching categories
+  * Show matching tags
+  * "View all results" link
+- Debounce search (wait 300ms after typing)
+- Keyboard navigation (arrow keys, enter)
+- Close on ESC or click outside
+
+Search Results:
+- Full search results page
+- Highlight matched terms
+- Filter options
+- Pagination
+
+2. COMMENTS SYSTEM:
+
+Comment Form:
+- Name, Email, Website fields
+- Comment textarea
+- Character count (min 10, max 1000)
+- Submit button
+- Validation (real-time)
+- Remember user info (localStorage)
+
+AJAX Comment Submission:
+- Submit without page reload
+- Show loading spinner
+- Success message: "Comment submitted for approval"
+- Or if auto-approved: "Comment published"
+- Clear form after submission
+- Add new comment to list (if approved)
+
+Reply Functionality:
+- Reply button on each comment
+- Reply form appears inline (below comment)
+- Show "Replying to [Name]" indicator
+- Cancel reply button
+- Nested comment layout (indent)
+
+Comment Actions:
+- Report inappropriate (for logged users)
+- Edit (for comment author, within 5 mins)
+- Delete (for comment author)
+
+3. SOCIAL SHARING:
+
+Share Buttons:
+- Facebook: Open share dialog
+- Twitter/X: Pre-filled tweet with title + URL
+- LinkedIn: Share to LinkedIn
+- WhatsApp: Mobile-friendly share
+- Copy link: Copy URL to clipboard (show "Copied!" feedback)
+- Email: Open email client with pre-filled subject/body
+
+Share Count Display:
+- Show share count per platform (if available)
+- Total shares badge
+
+Floating Share Bar:
+- Sticky sidebar on desktop
+- Fixed bottom bar on mobile
+- Fade in/out on scroll
+
+4. NEWSLETTER SUBSCRIPTION:
+
+Footer Subscription Form:
+- Email input (validation)
+- Subscribe button
+- Submit with AJAX
+- Show success: "Check your email to confirm subscription"
+- Show error if already subscribed
+- Double opt-in email sent
+
+Pop-up Subscription Box:
+- Trigger after 30 seconds or on scroll (50% of page)
+- Only show once per session (cookie)
+- Close button
+- Email input + Subscribe button
+- "No thanks" option
+- Slide-in animation
+
+5. VIEW COUNTER:
+
+Post Views:
+- Increment on page load (with session check to avoid duplicates)
+- Display view count (with icon)
+- Update via AJAX
+
+Popular Posts:
+- Based on view count
+- Update rankings daily (cron job)
+
+6. READING PROGRESS:
+
+Progress Bar:
+- Fixed at top of page (thin colored bar)
+- Fill from left to right as user scrolls
+- Calculate based on article height
+- Smooth animation
+
+Estimated Reading Time:
+- Display at top of post
+- Calculate: word count / 200 words per minute
+- Icon: clock or hourglass
+
+7. DARK MODE TOGGLE:
+
+Toggle Switch:
+- Icon button (sun/moon icon)
+- Position: Top bar or header
+- Click to toggle
+- Save preference (localStorage)
+- Apply on page load
+- Smooth transition between modes
+- Use CSS variables for colors
+
+Dark Mode Colors:
+- Background: Dark gray/black
+- Text: Light gray/white
+- Cards: Slightly lighter gray
+- Proper contrast ratios
+
+8. LAZY LOADING:
+
+Images:
+- Lazy load all images (loading="lazy")
+- Blur-up placeholder while loading
+- Fade-in animation when loaded
+
+Infinite Scroll:
+- Detect scroll to bottom
+- Load next page of posts via AJAX
+- Append to grid
+- Show loading spinner
+- Update browser URL (pushState)
+
+9. PRINT STYLES:
+
+Print Button:
+- "Print article" option
+- Open browser print dialog
+
+Print CSS:
+- Remove header, footer, sidebar, comments
+- Keep only article content
+- Black text on white background
+- Proper page breaks
+- Show full URLs for links
+
+10. ACCESSIBILITY (continued):
+
+Keyboard Navigation:
+- Tab through all interactive elements
+- Enter to activate buttons/links
+- Escape to close modals/dropdowns
+- Arrow keys for navigation menus
+- Focus indicators (visible outline)
+
+Screen Reader Support:
+- Proper ARIA labels on all interactive elements
+- Alt text for all images
+- Semantic HTML (nav, main, article, aside)
+- Skip to content link
+- Landmark regions properly labeled
+
+Text Accessibility:
+- Minimum font size 16px
+- Sufficient line height (1.6)
+- High contrast ratios (WCAG AA compliant)
+- Resizable text (up to 200% without breaking layout)
+- No text in images (use CSS/HTML)
+
+Focus Management:
+- Visible focus states for all interactive elements
+- Focus trap in modals
+- Return focus after modal closes
+- Skip navigation links
+
+11. TOAST NOTIFICATIONS:
+
+Notification System:
+- Success messages (green)
+- Error messages (red)
+- Info messages (blue)
+- Warning messages (yellow)
+- Position: Top-right corner
+- Auto-dismiss after 5 seconds
+- Close button
+- Slide-in animation
+- Stack multiple notifications
+- Pause on hover
+
+Use Cases:
+- "Comment submitted successfully"
+- "Subscribed to newsletter"
+- "Link copied to clipboard"
+- "Error: Please fill all required fields"
+
+12. IMAGE LIGHTBOX:
+
+Click to Enlarge:
+- Click any image in post content
+- Open lightbox overlay
+- Full-screen image view
+- Dark background (80% opacity)
+- Close button (X)
+- Close on ESC key
+- Close on background click
+- Navigation arrows (if multiple images)
+- Image counter (1/5)
+- Zoom in/out functionality
+- Image caption display
+
+13. STICKY ELEMENTS:
+
+Sticky Header:
+- Hide header on scroll down
+- Show header on scroll up
+- Smooth slide animation
+- Smaller logo when sticky
+- Add shadow when sticky
+
+Sticky Sidebar:
+- Sidebar sticks while scrolling
+- Stop at footer (don't overlap)
+- Only on desktop (disable on mobile)
+
+14. SMOOTH SCROLLING:
+
+Anchor Links:
+- Smooth scroll to sections
+- Table of contents links
+- Back to top button
+- Comment links
+
+Back to Top:
+- Button appears after scrolling 500px
+- Fixed bottom-right
+- Smooth scroll to top
+- Fade in/out animation
+
+15. LOADING STATES:
+
+Page Loading:
+- Initial page load spinner
+- Skeleton screens for content
+- Progressive content loading
+
+AJAX Loading:
+- Loading spinner on buttons
+- Disable button while loading
+- Show "Loading..." text
+
+Image Loading:
+- Blur placeholder while loading
+- Fade-in when loaded
+- Broken image fallback
+```
+
+---
+
+## PROMPT 16: API Development
+
+```
+Create RESTful API for TechNewsHub (Laravel Sanctum authentication):
+
+API ROUTES (routes/api.php):
+
+PUBLIC ENDPOINTS (no auth required):
+
+Posts:
+- GET /api/posts - List all published posts
+  * Pagination (per_page, page)
+  * Filters: category, tag, author, search
+  * Sort: latest, popular, trending
+  * Response: posts array, pagination meta
+
+- GET /api/posts/{slug} - Single post details
+  * Response: post object with author, category, tags, comments
+
+- GET /api/posts/{id}/related - Related posts
+  * Response: array of related posts (same category)
+
+Categories:
+- GET /api/categories - List all categories
+  * Response: categories with post count
+
+- GET /api/categories/{slug} - Category details
+  * Response: category with posts
+
+- GET /api/categories/{slug}/posts - Posts in category
+  * Pagination and filters
+
+Tags:
+- GET /api/tags - List all tags
+- GET /api/tags/{slug}/posts - Posts with tag
+
+Search:
+- GET /api/search?q={query} - Search posts
+  * Full-text search in title and content
+  * Response: matching posts array
+
+Newsletter:
+- POST /api/newsletter/subscribe - Subscribe email
+  * Request: {email}
+  * Response: {message, verification_sent}
+
+- GET /api/newsletter/verify/{token} - Verify subscription
+  * Response: {message, verified}
+
+- POST /api/newsletter/unsubscribe - Unsubscribe
+  * Request: {email, token}
+  * Response: {message}
+
+Comments:
+- GET /api/posts/{id}/comments - Get post comments
+  * Pagination
+  * Only approved comments
+
+- POST /api/comments - Submit comment
+  * Request: {post_id, author_name, author_email, content, parent_id}
+  * Response: {message, comment}
+
+Contact:
+- POST /api/contact - Submit contact form
+  * Request: {name, email, subject, message}
+  * Response: {message}
+
+---
+
+AUTHENTICATED ENDPOINTS (require Sanctum token):
+
+User Authentication:
+- POST /api/register - Register new user
+  * Request: {name, email, password, password_confirmation}
+  * Response: {user, token}
+
+- POST /api/login - Login
+  * Request: {email, password}
+  * Response: {user, token}
+
+- POST /api/logout - Logout (revoke token)
+  * Response: {message}
+
+- GET /api/user - Get authenticated user
+  * Response: {user}
+
+User Posts:
+- GET /api/user/posts - User's own posts
+- POST /api/user/posts - Create post (draft)
+  * Request: post data
+  * Response: {post}
+
+- PUT /api/user/posts/{id} - Update own post
+- DELETE /api/user/posts/{id} - Delete own post
+
+User Comments:
+- GET /api/user/comments - User's comments
+- PUT /api/user/comments/{id} - Edit own comment
+- DELETE /api/user/comments/{id} - Delete own comment
+
+---
+
+ADMIN ENDPOINTS (require admin role):
+
+All CRUD operations for:
+- /api/admin/posts
+- /api/admin/categories
+- /api/admin/tags
+- /api/admin/users
+- /api/admin/comments
+- /api/admin/pages
+- /api/admin/settings
+
+Dashboard Stats:
+- GET /api/admin/stats - Dashboard statistics
+  * Response: {total_posts, total_views, total_comments, subscribers}
+
+---
+
+API FEATURES:
+
+Rate Limiting:
+- Public endpoints: 60 requests per minute
+- Authenticated: 100 requests per minute
+- Admin: 200 requests per minute
+
+Response Format:
+Standard JSON structure:
+```json
+{
+  "success": true,
+  "data": {...},
+  "message": "Success message",
+  "meta": {
+    "current_page": 1,
+    "total": 100,
+    "per_page": 15
+  }
+}
+```
+
+Error Format:
+```json
+{
+  "success": false,
+  "message": "Error message",
+  "errors": {
+    "field": ["validation error"]
+  }
+}
+```
+
+API Documentation:
+- Use Laravel Scribe to auto-generate API docs
+- Available at /docs endpoint
+- Interactive API testing
+- Request/response examples
+
+Versioning:
+- Use URL versioning: /api/v1/
+- Maintain backward compatibility
+
+CORS Configuration:
+- Allow specific origins
+- Configurable in config/cors.php
+- Support for credentials
+
+API Resources:
+Create API Resources for consistent response formatting:
+- PostResource
+- CategoryResource
+- TagResource
+- UserResource
+- CommentResource
+
+Include:
+- Selective field exposure
+- Relationship loading
+- Computed attributes
+- Conditional fields based on auth
+
+Middleware:
+- api.auth - Check authentication
+- api.admin - Check admin role
+- throttle - Rate limiting
+- json.response - Force JSON responses
+```
+
+---
+
+## PROMPT 17: Advanced Features & Optimization
+
+```
+Implement advanced features and performance optimizations:
+
+1. CACHING STRATEGY:
+
+Cache Configuration:
+- Use Redis for caching (or file cache for simplicity)
+- Cache driver in .env
+
+Cache Implementation:
+- Cache homepage for 10 minutes
+- Cache category pages for 15 minutes
+- Cache single posts for 30 minutes
+- Cache popular posts for 1 hour
+- Cache categories list for 1 day
+- Cache settings for 1 day
+
+Cache Tags:
+- 'posts' - All post-related caches
+- 'categories' - Category caches
+- 'post:{id}' - Individual post cache
+
+Cache Invalidation:
+- Clear post cache when post is updated/deleted
+- Clear category cache when category is updated
+- Clear homepage cache when new post is published
+- Use cache tags for bulk invalidation
+
+Query Optimization:
+- Eager load relationships to avoid N+1 queries
+- Cache database queries
+- Use query caching for common queries
+
+Fragment Caching:
+- Cache sidebar widgets
+- Cache footer content
+- Cache navigation menu
+- Cache popular posts widget
+
+2. IMAGE OPTIMIZATION:
+
+Image Processing:
+- Auto-resize images on upload
+- Generate multiple sizes (thumbnail, medium, large)
+- Convert to WebP format (with fallback)
+- Compress images (maintain quality)
+- Strip metadata
+
+Responsive Images:
+- Use srcset for different screen sizes
+- Picture element for art direction
+- Lazy loading (native loading="lazy")
+
+CDN Integration:
+- Optional CDN URL configuration
+- Serve images from CDN
+- Asset URLs configurable
+
+3. SEO ENHANCEMENTS:
+
+XML Sitemap:
+- Auto-generate sitemap.xml
+- Include posts, categories, pages
+- Update on content change
+- Submit to search engines
+
+Robots.txt:
+- Configurable robots.txt
+- Allow/disallow specific paths
+- Sitemap location
+
+Schema.org Markup:
+- Article schema for posts
+- Organization schema for site
+- Author schema for authors
+- BreadcrumbList schema
+- WebSite schema with search action
+
+Meta Tags:
+- Dynamic meta titles and descriptions
+- Open Graph tags for social sharing
+- Twitter Card tags
+- Canonical URLs
+- Alternate language tags (if multilingual)
+
+Permalink Structure:
+- Clean URLs (no .html)
+- Slug-based URLs
+- Configurable structure
+- 301 redirects for changed slugs
+
+4. PERFORMANCE OPTIMIZATION:
+
+Database Indexing:
+- Index on slug columns
+- Index on foreign keys
+- Index on status and published_at
+- Composite indexes for common queries
+
+Asset Optimization:
+- Minify CSS and JS
+- Combine files (Laravel Mix/Vite)
+- Use asset versioning (cache busting)
+- Defer non-critical JavaScript
+- Critical CSS inline
+
+Database Optimization:
+- Use database query logging (only in dev)
+- Optimize slow queries
+- Use database query caching
+- Regular database maintenance
+
+Lazy Loading:
+- Lazy load images
+- Lazy load comments
+- Lazy load related posts
+- Infinite scroll for post lists
+
+HTTP/2 Support:
+- Enable HTTP/2 on server
+- Server push for critical assets
+
+5. SECURITY FEATURES:
+
+CSRF Protection:
+- Laravel CSRF tokens on all forms
+- Verify tokens on submission
+
+XSS Prevention:
+- Escape all user input
+- Sanitize HTML content
+- Use {{ }} blade syntax (auto-escaping)
+
+SQL Injection Prevention:
+- Use Eloquent ORM (parameterized queries)
+- Never use raw queries with user input
+
+Rate Limiting:
+- Login rate limiting (5 attempts per minute)
+- Comment rate limiting (3 per minute)
+- Contact form rate limiting (2 per minute)
+- API rate limiting
+
+File Upload Security:
+- Validate file types
+- Validate file size
+- Store outside public directory
+- Serve through controller
+- Scan for malware (optional)
+
+Password Security:
+- Strong password requirements
+- Password hashing (bcrypt)
+- Password confirmation for sensitive actions
+
+Session Security:
+- Secure session cookies
+- HTTP-only cookies
+- SameSite cookie attribute
+- Session timeout
+
+Headers Security:
+- X-Frame-Options: DENY
+- X-Content-Type-Options: nosniff
+- X-XSS-Protection: 1; mode=block
+- Strict-Transport-Security (HTTPS)
+- Content-Security-Policy
+
+6. ANALYTICS & TRACKING:
+
+View Tracking:
+- Track post views (unique per session)
+- Track popular posts
+- Store view analytics
+
+User Analytics:
+- Track user actions
+- Login tracking
+- Activity logs for admins
+
+Dashboard Analytics:
+- Views over time (chart)
+- Popular posts
+- Popular categories
+- Traffic sources (if integrated with GA)
+- User engagement metrics
+
+Export Analytics:
+- Export views data to CSV
+- Export user activity logs
+- Date range filters
+
+7. BACKUP & MAINTENANCE:
+
+Automated Backups:
+- Daily database backup
+- Weekly full backup (files + database)
+- Store backups in cloud storage (S3, etc.)
+- Backup retention policy (keep 30 days)
+
+Database Maintenance:
+- Optimize tables weekly (command)
+- Clean up spam comments (command)
+- Delete old drafts (optional, command)
+- Delete unused media (command)
+
+Log Management:
+- Rotate logs daily
+- Keep logs for 30 days
+- Error logging
+- Activity logging
+
+8. MULTILINGUAL SUPPORT (Optional):
+
+Language Switching:
+- Language selector in header
+- Store preference in session/cookie
+- Translate UI elements
+
+Translatable Content:
+- Posts in multiple languages
+- Categories in multiple languages
+- Use Laravel localization
+
+RTL Support:
+- RTL CSS for Arabic, Hebrew
+- Switch direction based on language
+
+9. PWA FEATURES (Optional):
+
+Progressive Web App:
+- Service worker for offline support
+- Web manifest file
+- Add to home screen prompt
+- Offline page
+- Cache static assets
+
+Push Notifications:
+- Browser push notifications
+- Notify subscribers of new posts
+- Notification preferences
+
+10. EMAIL NOTIFICATIONS:
+
+Email Templates:
+Design email templates for:
+- Welcome email (new user registration)
+- Email verification
+- Password reset
+- New comment notification (to author)
+- Comment reply notification
+- Newsletter subscription confirmation
+- Newsletter unsubscribe confirmation
+- Contact form submission (to admin)
+- Weekly digest (optional)
+
+Email Queue:
+- Queue all emails (don't send synchronously)
+- Use Laravel queues
+- Process queue with supervisor or cron
+
+Email Preferences:
+- User can enable/disable notifications
+- Per-notification-type settings
+```
+
+---
+
+## PROMPT 18: Testing & Quality Assurance
+
+```
+Implement comprehensive testing for TechNewsHub:
+
+TESTING SETUP:
+
+Install PHPUnit and configure:
+- phpunit.xml configuration
+- SQLite in-memory database for tests
+- Factory definitions for all models
+- Database seeders for test data
+
+1. FEATURE TESTS:
+
+Authentication Tests:
+- Test user registration
+- Test login/logout
+- Test password reset
+- Test email verification
+- Test remember me functionality
+
+Post Management Tests:
+- Test creating a post
+- Test updating a post
+- Test deleting a post
+- Test publishing a post
+- Test scheduling a post
+- Test post slug generation
+- Test post view increment
+- Test featured post marking
+
+Category Tests:
+- Test category creation
+- Test category hierarchy (parent/child)
+- Test category deletion (with posts protection)
+- Test category slug uniqueness
+
+Comment Tests:
+- Test comment submission
+- Test comment approval
+- Test comment replies (nesting)
+- Test spam detection
+- Test comment deletion
+
+API Tests:
+- Test all public API endpoints
+- Test authentication endpoints
+- Test rate limiting
+- Test API error responses
+- Test pagination
+
+Search Tests:
+- Test search functionality
+- Test search with filters
+- Test empty search results
+
+Newsletter Tests:
+- Test subscription
+- Test double opt-in email
+- Test unsubscribe
+- Test duplicate email prevention
+
+2. UNIT TESTS:
+
+Model Tests:
+- Test model relationships
+- Test model scopes
+- Test model accessors/mutators
+- Test model methods
+
+Service Tests:
+- Test image upload service
+- Test email service
+- Test cache service
+- Test SEO service
+
+Helper Tests:
+- Test helper functions
+- Test slug generation
+- Test reading time calculation
+- Test excerpt generation
+
+3. BROWSER TESTS (Laravel Dusk):
+
+User Flow Tests:
+- Test complete registration flow
+- Test login flow
+- Test post creation flow (admin)
+- Test comment submission flow
+- Test search flow
+
+Admin Panel Tests:
+- Test admin dashboard access
+- Test creating/editing posts through UI
+- Test media upload
+- Test settings update
+
+Responsive Tests:
+- Test on mobile viewport
+- Test on tablet viewport
+- Test on desktop viewport
+
+4. CODE QUALITY:
+
+PHP Code Style:
+- Use Laravel Pint for code formatting
+- Follow PSR-12 standards
+- Run pint check in CI/CD
+
+Static Analysis:
+- Use PHPStan or Larastan
+- Level 5 or higher
+- Zero errors policy
+
+Code Coverage:
+- Aim for 80%+ coverage
+- Generate coverage reports
+- Track coverage trends
+
+5. PERFORMANCE TESTS:
+
+Load Testing:
+- Test homepage load time
+- Test single post page load time
+- Test API endpoint response time
+- Test under concurrent users (use Apache Bench or Loader.io)
+
+Database Query Tests:
+- Monitor N+1 query issues
+- Log slow queries (>100ms)
+- Optimize problematic queries
+
+6. SECURITY TESTS:
+
+Vulnerability Scanning:
+- Test for XSS vulnerabilities
+- Test for SQL injection
+- Test for CSRF vulnerabilities
+- Test file upload security
+- Test authentication bypass
+
+Dependency Checking:
+- Use Composer audit for vulnerable packages
+- Regular updates of dependencies
+
+7. ACCESSIBILITY TESTS:
+
+WCAG Compliance:
+- Test with aXe or WAVE tools
+- Check keyboard navigation
+- Check screen reader compatibility
+- Check color contrast ratios
+
+8. SEO TESTS:
+
+SEO Validation:
+- Test meta tags presence
+- Test canonical URLs
+- Test sitemap generation
+- Test robots.txt
+- Test structured data (schema.org)
+- Test page speed scores
+
+9. CONTINUOUS INTEGRATION:
+
+GitHub Actions / GitLab CI:
+```yaml
+name: Tests
+
+on: [push, pull_request]
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.2
+          
+      - name: Install Dependencies
+        run: composer install
+        
+      - name: Run Tests
+        run: php artisan test
+        
+      - name: Code Style Check
+        run: ./vendor/bin/pint --test
+        
+      - name: Static Analysis
+        run: ./vendor/bin/phpstan analyse
+```
+
+10. MANUAL TESTING CHECKLIST:
+
+Frontend Testing:
+□ All pages load without errors
+□ Navigation works on all devices
+□ Forms validate correctly
+□ Images load properly
+□ Search works
+□ Comments can be submitted
+□ Newsletter subscription works
+□ Social sharing buttons work
+□ Dark mode toggle works
+□ Responsive design on mobile/tablet
+
+Admin Panel Testing:
+□ Login/logout works
+□ Dashboard displays stats
+□ Create/edit/delete posts
+□ Upload media
+□ Manage categories
+□ Approve/delete comments
+□ Manage users
+□ Update settings
+□ All forms validate
+
+Cross-Browser Testing:
+□ Chrome
+□ Firefox
+□ Safari
+□ Edge
+□ Mobile browsers
+
+Performance Testing:
+□ Page load under 3 seconds
+□ Lighthouse score >90
+□ No console errors
+□ No memory leaks
+```
+
+---
+
+## PROMPT 19: Deployment & DevOps
+
+```
+Set up deployment and server configuration for TechNewsHub:
+
+1. SERVER REQUIREMENTS:
+
+Minimum Requirements:
+- PHP 8.2 or higher
+- Composer 2.x
+- SQLite 3.x
+- Node.js 18.x and NPM
+- Web server (Nginx or Apache)
+- Supervisor (for queues)
+- Cron access
+
+Recommended Server:
+- 2 CPU cores
+- 4GB RAM
+- 40GB SSD storage
+- Ubuntu 22.04 LTS
+
+2. SERVER SETUP (Ubuntu):
+
+```bash
+# Update system
+sudo apt update && sudo apt upgrade -y
+
+# Install PHP and extensions
+sudo apt install php8.2 php8.2-fpm php8.2-cli php8.2-mbstring \
+  php8.2-xml php8.2-bcmath php8.2-sqlite3 php8.2-curl \
+  php8.2-gd php8.2-zip -y
+
+# Install Composer
+curl -sS https://getcomposer.org/installer | php
+sudo mv composer.phar /usr/local/bin/composer
+
+# Install Node.js
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+sudo apt install -y nodejs
+
+# Install Nginx
+sudo apt install nginx -y
+
+# Install Supervisor
+sudo apt install supervisor -y
+```
+
+3. NGINX CONFIGURATION:
+
+```nginx
+server {
+    listen 80;
+    server_name technewshub.com www.technewshub.com;
+    root /var/www/technewshub/public;
+
+    add_header X-Frame-Options "SAMEORIGIN";
+    add_header X-Content-Type-Options "nosniff";
+
+    index index.php;
+
+    charset utf-8;
+
+    # Gzip compression
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_types text/plain text/css text/xml text/javascript 
+               application/x-javascript application/xml+rss 
+               application/json application/javascript;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location = /robots.txt  { access_log off; log_not_found off; }
+
+    error_page 404 /index.php;
+
+    location ~ \.php$ {
+        fastcgi_pass unix:/var/run/php/php8.2-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+
+    location ~ /\.(?!well-known).* {
+        deny all;
+    }
+
+    # Cache static assets
+    location ~* \.(jpg|jpeg|png|gif|ico|css|js|svg|woff|woff2|ttf|eot)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+}
+```
+
+4. DEPLOYMENT SCRIPT:
+
+Create deploy.sh:
+```bash
+#!/bin/bash
+
+echo "🚀 Starting deployment..."
+
+# Pull latest code
+git pull origin main
+
+# Install dependencies
+composer install --no-dev --optimize-autoloader
+npm install
+npm run build
+
+# Run migrations
+php artisan migrate --force
+
+# Clear and cache
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+
+# Storage permissions
+chmod -R 775 storage bootstrap/cache
+chown -R www-data:www-data storage bootstrap/cache
+
+# Restart services
+sudo supervisorctl restart technewshub-worker:*
+sudo systemctl reload php8.2-fpm
+
+echo "✅ Deployment completed!"
+```
+
+5. QUEUE WORKER SETUP (Supervisor):
+
+/etc/supervisor/conf.d/technewshub-worker.conf:
+```ini
+[program:technewshub-worker]
+process_name=%(program_name)s_%(process_num)02d
+command=php /var/www/technewshub/artisan queue:work --sleep=3 --tries=3 --max-time=3600
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+user=www-data
+numprocs=2
+redirect_stderr=true
+stdout_logfile=/var/www/technewshub/storage/logs/worker.log
+stopwaitsecs=3600
+```
+
+6. CRON JOBS:
+
+Add to crontab (crontab -e):
+```bash
+* * * * * cd /var/www/technewshub && php artisan schedule:run >> /dev/null 2>&1
+```
+
+Laravel scheduler commands to add (app/Console/Kernel.php):
+```php
+protected function schedule(Schedule $schedule)
+{
+    // Backup database daily at 2 AM
+    $schedule->command('backup:run')->dailyAt('02:00');
+    
+    // Clean up old logs
+    $schedule->command('log:clear')->weekly();
+    
+    // Generate sitemap daily
+    $schedule->command('sitemap:generate')->daily();
+    
+    // Clear expired cache
+    $schedule->command('cache:prune-stale-tags')->hourly();
+    
+    // Update popular posts ranking
+    $schedule->command('posts:update-popular')->hourly();
+    
+    // Send newsletter (if scheduled)
+    $schedule->command('newsletter:send')->daily();
+}
+```
+
+7. ENVIRONMENT CONFIGURATION:
+
+Production .env:
+```env
+APP_NAME="TechNewsHub"
+APP_ENV=production
+APP_KEY=base64:YOUR_APP_KEY
+APP_DEBUG=false
+APP_URL=https://technewshub.com
+
+LOG_CHANNEL=stack
+LOG_LEVEL=error
+
+DB_CONNECTION=sqlite
+DB_DATABASE=/var/www/technewshub/database/database.sqlite
+
+CACHE_DRIVER=file
+QUEUE_CONNECTION=database
+SESSION_DRIVER=file
+
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.mailtrap.io
+MAIL_PORT=2525
+MAIL_USERNAME=your_username
+MAIL_PASSWORD=your_password
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=noreply@technewshub.com
+MAIL_FROM_NAME="${APP_NAME}"
+
+# Optional: CDN URL
+ASSET_URL=https://cdn.technewshub.com
+```
+
+8. SSL CERTIFICATE (Let's Encrypt):
+
+```bash
+# Install Certbot
+sudo apt install certbot python3-certbot-nginx -y
+
+# Generate certificate
+sudo certbot --nginx -d technewshub.com -d www.technewshub.com
+
+# Auto-renewal is automatic, but test it
+sudo certbot renew --dry-run
+```
+
+9. AUTOMATED BACKUPS:
+
+Create backup command:
+```php
+// app/Console/Commands/BackupDatabase.php
+public function handle()
+{
+    $filename = 'backup-' . date('Y-m-d-H-i-s') . '.sqlite';
+    $source = database_path('database.sqlite');
+    $destination = storage_path('backups/' . $filename);
+    
+    File::copy($source, $destination);
+    
+    // Upload to S3 or external storage
+    Storage::disk('s3')->put('backups/' . $filename, 
+        File::get($destination)
+    );
+    
+    // Keep only last 30 days
+    $this->deleteOldBackups();
+}
+```
+
+10. MONITORING & LOGGING:
+
+Error Tracking:
+- Integrate Sentry or Bugsnag for error tracking
+- Set up in config/logging.php
+
+Application Monitoring:
+- Use Laravel Telescope (dev only) for debugging
+- Monitor queue jobs
+- Track slow queries
+
+Server Monitoring:
+- Set up Uptime monitoring (UptimeRobot, Pingdom)
+- Monitor disk space
+- Monitor CPU/RAM usage
+- Set up alerts for downtime
+
+Log Management:
+- Rotate logs daily
+- Ship logs to external service (Papertrail, Loggly)
+- Set up log alerts for critical errors
+
+11. CI/CD PIPELINE (GitHub Actions):
+
+.github/workflows/deploy.yml:
+```yaml
+name: Deploy to Production
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.2
+          
+      - name: Run Tests
+        run: |
+          composer install
+          php artisan test
+          
+      - name: Deploy to Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /var/www/technewshub
+            ./deploy.sh
+```
+
+12. SECURITY HARDENING:
+
+- Disable directory listing
+- Hide server version info
+- Set proper file permissions (644 for files, 755 for directories)
+- Use firewall (UFW) - only allow ports 22, 80, 443
+- Disable unused PHP functions
+- Regular security updates
+- Use fail2ban for brute force protection
+- Implement WAF (Web Application Firewall) if available
+```
+
+---
+
+## PROMPT 20: Additional Features & Polish
+
+```
+Implement final features and polish for production-ready TechNewsHub:
+
+1. READING LIST / BOOKMARKS (Optional):
+
+For logged-in users:
+- "Save for later" button on posts
+- Bookmarks page showing saved posts
+- Remove from bookmarks option
+
+Database:
+- bookmarks table: id, user_id, post_id, created_at
+
+Frontend:
+- Bookmark icon (toggle filled/outline)
+- Bookmarks page in user profile
+- Count of saved posts
+
+2. POST REACTIONS (Optional):
+
+Beyond comments, add reactions:
+- Like button
+- Reactions: 👍 ❤️ 😂 😮 😢 😡
+- Show reaction count
+- Animated reaction picker
+
+Database:
+- reactions table: id, user_id, post_id, reaction_type, created_at
+
+3. RELATED POSTS ALGORITHM:
+
+Improve related posts suggestions:
+- Same category (weight: 40%)
+- Shared tags (weight: 40%)
+- Similar publish date (weight: 10%)
+- Author (weight: 10%)
+- Limit to 4-6 related posts
+- Cache results
+
+4. AUTHOR PROFILES:
+
+Enhanced author pages:
+- Author bio (rich text)
+- Social media links
+- Expertise tags
+- Total views of author's posts
+- Average reading time
+- Follower count (if implemented)
+- Contact author button
+
+5. BREADCRUMBS:
+
+Implement breadcrumb navigation:
+- Home > Category > Subcategory > Post Title
+- Schema.org BreadcrumbList markup
+- Responsive (collapse on mobile)
+- Show on all pages except homepage
+
+6. TABLE OF CONTENTS:
+
+Auto-generate TOC for long posts:
+- Parse H2 and H3 headings from content
+- Create clickable list
+- Sticky sidebar on desktop
+- Smooth scroll to sections
+- Highlight current section on scroll
+- Collapse/expand toggle
+
+7. ESTIMATED READ TIME:
+
+Accurate reading time calculation:
+- Count words in content
+- Calculate: words / 200 (average reading speed)
+- Account for images (add 12 seconds per image)
+- Account for code blocks (add 20 seconds per block)
+- Display: "5 min read"
+
+8. CONTENT WARNINGS:
+
+For sensitive content:
+- Optional content warning field on posts
+- Blur content with warning overlay
+- "Click to view content" button
+- Remember user preference per session
+
+9. POST TEMPLATES:
+
+Predefined templates for common post types:
+- Tutorial template (with steps)
+- Review template (with pros/cons)
+- List article template (numbered points)
+- Interview template (Q&A format)
+- How-to guide template
+
+10. DRAFT PREVIEW:
+
+Share draft posts:
+- Generate preview token
+- Shareable preview URL (time-limited)
+- Password-protected previews
+- Track preview views
+- Expire after 7 days
+
+11. POST SCHEDULING:
+
+Enhanced scheduling:
+- Schedule post publication
+- Schedule post updates
+- Schedule post unpublishing
+- Timezone support
+- Recurring posts (optional)
+
+12. CONTENT VERSIONING:
+
+Track post revisions:
+- Save version on each update
+- Compare versions (diff view)
+- Restore previous version
+- Show revision history
+- Track who made changes
+
+Database:
+- post_revisions table: id, post_id, user_id, title, content, created_at
+
+13. GUEST POSTING:
+
+Allow guest submissions:
+- Public submission form
+- Guest details: name, email, bio
+- Submit post for review
+- Admin approval workflow
+- Guest author credit on post
+
+14. FEATURED AUTHORS:
+
+Highlight top contributors:
+- "Featured Author" badge
+- Author of the month
+- Top authors widget (sidebar)
+- Criteria: post count, views, engagement
+
+15. POST SERIES:
+
+Group related posts:
+- Create series (e.g., "Laravel Tutorial Series")
+- Assign posts to series
+- Display series navigation on posts
+- Series landing page
+- Progress indicator
+
+Database:
+- series table: id, name, slug, description, created_at
+- post_series: post_id, series_id, order
+
+16. READING PROGRESS SYNC:
+
+For logged-in users:
+- Save reading position
+- Resume where user left off
+- Sync across devices
+- "Continue reading" section
+
+17. CONTENT RECOMMENDATIONS:
+
+Personalized recommendations:
+- Based on user's reading history
+- Based on bookmarked posts
+- Based on commented posts
+- Machine learning (optional, advanced)
+- "Recommended for you" section
+
+18. SOCIAL PROOF:
+
+Display engagement metrics:
+- "X people are reading this"
+- "Trending now" badge
+- "Most shared this week"
+- Real-time view counter
+
+
+
+19. PRINT STYLESHEET (continued):
+
+Optimize for printing:
+- Remove header, footer, sidebar, comments
+- Black text on white background
+- Adjust font sizes for readability
+- Show full URLs for links in parentheses
+- Add page breaks before major headings
+- Include site logo and post metadata
+- QR code to post URL (optional)
+- Print date and URL at bottom
+
+CSS file (resources/css/print.css):
+```css
+@media print {
+    header, footer, aside, .comments, .share-buttons, 
+    .navigation, .ads { display: none !important; }
+    
+    body { 
+        background: white;
+        color: black;
+        font-size: 12pt;
+    }
+    
+    a[href]:after {
+        content: " (" attr(href) ")";
+        font-size: 90%;
+    }
+    
+    h1, h2, h3 {
+        page-break-after: avoid;
+    }
+    
+    img {
+        max-width: 100%;
+        page-break-inside: avoid;
+    }
+}
+```
+
+20. EXPORT CONTENT:
+
+Allow exporting posts:
+- Export as PDF
+- Export as Markdown
+- Export as HTML
+- Export as plain text
+- Include images in export
+- Batch export multiple posts
+
+Implementation:
+- Use DomPDF or Browsershot for PDF
+- Generate clean Markdown from HTML
+- Add export buttons in admin panel
+
+21. IMPORT CONTENT:
+
+Migrate from other platforms:
+- Import from WordPress (XML)
+- Import from Medium (HTML)
+- Import from Markdown files
+- Bulk import via CSV
+- Map fields during import
+- Preview before final import
+
+Create import command:
+```bash
+php artisan import:wordpress /path/to/export.xml
+php artisan import:medium /path/to/posts/
+php artisan import:markdown /path/to/folder/
+```
+
+22. ADVANCED SEARCH:
+
+Enhanced search functionality:
+- Filter by date range
+- Filter by author
+- Filter by category
+- Filter by tags
+- Sort by relevance/date/popularity
+- Search within search results
+- Save search queries
+- Recent searches (for logged users)
+
+Full-text search:
+- Use Laravel Scout with database driver
+- Or integrate Meilisearch/Algolia for better performance
+- Search in title, content, excerpt
+- Highlight matching terms in results
+
+23. WIDGETS SYSTEM:
+
+Customizable sidebar widgets:
+- Widget areas (Primary Sidebar, Footer 1-4)
+- Drag-and-drop widget management
+- Built-in widgets:
+  * Recent posts
+  * Popular posts
+  * Categories
+  * Tags cloud
+  * Newsletter signup
+  * Search
+  * Custom HTML
+  * Social media links
+  * Advertisement
+  * Author bio
+
+Database:
+- widgets table: id, area, type, title, settings (JSON), order, status
+
+Admin interface:
+- Visual widget manager
+- Live preview
+- Enable/disable widgets
+- Configure widget settings
+- Reorder widgets
+
+24. MENU BUILDER:
+
+Custom navigation menus:
+- Drag-and-drop menu builder
+- Menu locations: Header, Footer, Mobile
+- Menu items types:
+  * Custom links
+  * Pages
+  * Categories
+  * Tags
+- Nested menus (unlimited depth)
+- CSS classes for styling
+- Open in new tab option
+- Add icons to menu items
+
+Database:
+- menus table: id, name, location, created_at
+- menu_items table: id, menu_id, parent_id, title, url, type, order, target, css_classes
+
+25. MAINTENANCE MODE:
+
+Graceful maintenance page:
+- Enable maintenance mode command
+- Custom maintenance page design
+- Show estimated time
+- Allow admin access via secret token
+- IP whitelist for testing
+- Maintenance mode status indicator
+
+Commands:
+```bash
+php artisan down --secret="my-secret-token"
+php artisan up
+```
+
+Custom maintenance view:
+- Branded maintenance page
+- Progress indicator
+- Social media links
+- Contact information
+
+26. ACTIVITY LOG:
+
+Track all admin actions:
+- Log who did what and when
+- Track: Created, Updated, Deleted
+- For: Posts, Categories, Users, Settings
+- IP address and user agent
+- Searchable activity log
+- Filter by user, action type, date
+- Export activity log
+
+Database:
+- activity_logs table: id, user_id, action, model_type, model_id, description, ip_address, user_agent, created_at
+
+Admin page:
+- View all activities
+- Filter and search
+- Detailed view per activity
+
+27. NOTIFICATION SYSTEM:
+
+In-app notifications:
+- Bell icon in admin header
+- Notification dropdown
+- Notification types:
+  * New comment on your post
+  * Comment reply
+  * New user registration (admin)
+  * Post published (author)
+  * Post scheduled (author)
+- Mark as read/unread
+- Mark all as read
+- Delete notifications
+- Notification settings
+
+Database:
+- notifications table: id, user_id, type, data (JSON), read_at, created_at
+
+Real-time notifications:
+- Use Laravel Echo + Pusher (optional)
+- Or polling every 30 seconds
+- Badge counter on notification icon
+
+28. TWO-FACTOR AUTHENTICATION:
+
+Enhanced security for admins:
+- Enable 2FA in user profile
+- QR code generation (Google Authenticator)
+- Backup codes
+- Verify code on login
+- Remember device option (30 days)
+- Recovery codes for account recovery
+
+Package: laravel/fortify or pragmarx/google2fa
+
+29. API RATE LIMITING DASHBOARD:
+
+Monitor API usage:
+- API calls per endpoint
+- Rate limit violations
+- Top API consumers
+- Response time metrics
+- Error rate tracking
+- Charts and graphs
+
+Admin dashboard:
+- API usage statistics
+- Block abusive IPs
+- Adjust rate limits
+- API key management (if using API keys)
+
+30. GDPR COMPLIANCE:
+
+Privacy features:
+- Cookie consent banner
+- Privacy policy generator
+- Data export (user can download their data)
+- Data deletion (right to be forgotten)
+- Consent management
+- Audit trail for data access
+
+User data export:
+- Export all user data to JSON/CSV
+- Include: profile, posts, comments, activity
+
+Data deletion:
+- User can request account deletion
+- Admin review and approval
+- Anonymize or delete data
+- Keep backups for legal requirements
+
+31. PERFORMANCE DASHBOARD:
+
+Monitor site performance:
+- Page load times
+- Database query times
+- Cache hit/miss ratio
+- Memory usage
+- Slow queries log
+- Error rate
+- Uptime percentage
+
+Admin widgets:
+- Real-time performance metrics
+- Historical data charts
+- Alerts for performance degradation
+- Recommendations for optimization
+
+32. A/B TESTING:
+
+Test different elements:
+- Test post titles
+- Test featured images
+- Test CTAs (Call to Action)
+- Split traffic 50/50
+- Track metrics: clicks, views, engagement
+- Declare winner after statistical significance
+
+Implementation:
+- Simple variant system in database
+- Track which variant shown to each user
+- Analytics per variant
+- Admin interface to create tests
+
+33. CONTENT CALENDAR:
+
+Editorial calendar:
+- Calendar view of scheduled posts
+- Drag-and-drop rescheduling
+- Filter by author/category
+- Monthly/weekly/daily views
+- Content gaps visualization
+- Publishing frequency stats
+
+Admin page:
+- FullCalendar.js integration
+- Color-coded by status
+- Quick edit from calendar
+- Export calendar to iCal
+
+34. INTERNAL LINKING SUGGESTIONS:
+
+SEO improvement:
+- Suggest relevant internal links while writing
+- Based on content similarity
+- Show in post editor sidebar
+- One-click insert link
+- Track internal link usage
+- Orphaned posts report (posts with no internal links)
+
+35. BROKEN LINK CHECKER:
+
+Maintain link health:
+- Scan all posts for broken links
+- Check external links periodically
+- Report broken links in admin
+- Suggest replacements
+- Fix or remove broken links
+
+Scheduled command:
+```bash
+php artisan links:check
+```
+
+Admin page:
+- List of broken links
+- Affected posts
+- Last checked date
+- Fix/ignore options
+
+36. IMAGE ALT TEXT CHECKER:
+
+Accessibility and SEO:
+- Check all images for alt text
+- Report missing alt text
+- Suggest alt text from AI (optional)
+- Bulk edit alt text
+- Alt text best practices tips
+
+37. SPAM PROTECTION:
+
+Enhanced spam prevention:
+- Honeypot fields in forms
+- Time-based validation (too fast = bot)
+- reCAPTCHA v3 integration
+- Akismet for comment spam
+- IP blacklist
+- Keyword blacklist
+- Rate limiting per IP
+
+Spam settings:
+- Configure sensitivity
+- Review spam log
+- Whitelist trusted users
+- Blacklist known spammers
+
+38. SOCIAL MEDIA AUTO-POST:
+
+Share new posts automatically:
+- Post to Twitter/X on publish
+- Post to Facebook page
+- Post to LinkedIn
+- Customize message per platform
+- Include featured image
+- Add hashtags automatically
+- Schedule social posts
+
+Integration:
+- Social media API credentials in settings
+- Queue social posts
+- Retry on failure
+- Track social post success
+
+39. EMAIL DIGEST:
+
+Send periodic newsletters:
+- Daily digest option
+- Weekly digest (default)
+- Monthly digest
+- Include: New posts, popular posts, trending topics
+- Personalized based on user interests
+- Unsubscribe link in every email
+
+Email template:
+- Responsive design
+- Post thumbnails and excerpts
+- Clear CTAs
+- Track email opens and clicks
+
+40. FINAL POLISH:
+
+Code quality:
+- Remove all dd(), dump() statements
+- Remove commented code
+- Consistent code formatting
+- Add PHPDoc comments
+- Update README.md
+
+Documentation:
+- Installation guide
+- Configuration guide
+- Admin user guide
+- API documentation
+- Troubleshooting guide
+
+User experience:
+- Test all forms
+- Check all error messages
+- Verify success messages
+- Test email templates
+- Check responsive design
+- Test accessibility
+- Cross-browser testing
+
+SEO:
+- Generate sitemap
+- Submit to search engines
+- Set up Google Search Console
+- Set up Google Analytics
+- Verify meta tags
+- Check page speed
+
+Security:
+- Run security audit
+- Update all dependencies
+- Check file permissions
+- Test authentication
+- Verify CSRF protection
+- Test rate limiting
+
+Pre-launch checklist:
+□ All features tested
+□ No console errors
+□ Database optimized
+□ Caching configured
+□ Backups scheduled
+□ SSL certificate installed
+□ Monitoring set up
+□ Error tracking configured
+□ Analytics installed
+□ Email tested
+□ Forms tested
+□ Payment gateways tested (if applicable)
+□ Legal pages added (Privacy, Terms)
+□ Favicon added
+□ Social media configured
+□ SEO optimized
+□ Performance optimized
+□ Security hardened
+□ Documentation complete
+
+Launch:
+1. Final backup
+2. Enable maintenance mode
+3. Deploy to production
+4. Run migrations
+5. Clear all caches
+6. Test critical features
+7. Disable maintenance mode
+8. Monitor for errors
+9. Announce launch
+10. Celebrate! 🎉
+```
+
+---
+
+## COMPLETE FEATURE LIST SUMMARY:
+
+**Core Features:**
+- User authentication & authorization (Admin/Editor/Author roles)
+- Post management (Create, Read, Update, Delete)
+- Categories & subcategories with hierarchy
+- Tags system
+- Media library with upload & management
+- Rich text editor (TinyMCE/CKEditor)
+- Comments system with moderation
+- Newsletter subscription with double opt-in
+- Contact form
+- Static pages management
+- Responsive design (mobile-first)
+- Dark mode toggle
+- Search functionality
+- SEO optimization (meta tags, sitemap, schema.org)
+
+**Admin Panel Features:**
+- Dashboard with statistics & analytics
+- Post scheduling
+- Bulk actions
+- Media management
+- User management
+- Comment moderation
+- Newsletter subscribers management
+- Settings management (General, SEO, Social, Email, Comments)
+- Activity logging
+- Menu builder
+- Widget system
+- Content calendar
+- Performance dashboard
+
+**Advanced Features:**
+- API (RESTful with Laravel Sanctum)
+- Caching strategy (Redis/File)
+- Image optimization & responsive images
+- Related posts algorithm
+- Reading time calculation
+- View counter & analytics
+- Social sharing
+- Author profiles
+- Bookmarks/Reading list
+- Post series
+- Content versioning
+- Draft preview sharing
+- Import/Export content
+- A/B testing
+- Broken link checker
+- Internal linking suggestions
+- Spam protection
+- Two-factor authentication
+- GDPR compliance
+- Multilingual support (optional)
+- PWA features (optional)
+
+**Performance & Security:**
+- Database indexing & query optimization
+- Asset minification & bundling
+- Lazy loading
+- CDN support
+- Rate limiting
+- CSRF protection
+- XSS prevention
+- SQL injection prevention
+- Regular backups
+- SSL encryption
+- Security headers
+- File upload security
+
+**Deployment & DevOps:**
+- Automated deployment script
+- Queue workers with Supervisor
+- Cron job scheduling
+- CI/CD pipeline (GitHub Actions)
+- Server monitoring
+- Error tracking (Sentry)
+- Log management
+- Uptime monitoring
+
+---
+
+This is a **complete, production-ready** blog/news platform specification. Each prompt can be used individually with Cursor AI to build the application step by step.

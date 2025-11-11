@@ -1,0 +1,18 @@
+{
+  "enabled": true,
+  "name": "Monitoring & Alerting Setup",
+  "description": "Triggers when new features or endpoints are added to configure comprehensive monitoring, alerting, metrics tracking, and observability infrastructure",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "routes/*.php",
+      "app/Http/Controllers/**/*.php",
+      "app/Http/Controllers/Api/*.php"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A new feature or endpoint has been added. Configure comprehensive monitoring and alerting:\n\n1. **Application Metrics:**\n   - Track response times for new endpoints\n   - Monitor error rates and exceptions\n   - Measure throughput and request volume\n   - Track user actions and interactions\n\n2. **Database Metrics:**\n   - Query execution time monitoring\n   - Connection pool usage tracking\n   - Slow query log configuration\n   - Database size growth monitoring\n\n3. **Infrastructure Metrics:**\n   - CPU usage monitoring\n   - Memory usage tracking\n   - Disk I/O performance\n   - Network traffic analysis\n\n4. **Business Metrics:**\n   - User signups tracking\n   - Conversion rates measurement\n   - Revenue metrics (if applicable)\n   - Feature usage analytics\n\n5. **Error Tracking:**\n   - Exception monitoring (consider Sentry integration)\n   - Log aggregation setup\n   - Error grouping and categorization\n   - Stack traces collection\n\n6. **Alerts Configuration:**\n   - Set up alert thresholds for critical metrics\n   - Configure notification channels (email, Slack, etc.)\n   - Define escalation policies\n   - Add on-call schedules if needed\n\n7. **Dashboards:**\n   - Create overview dashboard for system health\n   - Add performance dashboard for response times\n   - Include business metrics visualization\n   - Add real-time monitoring views\n\n8. **SLO/SLA Tracking:**\n   - Define service level objectives\n   - Track uptime and availability\n   - Measure MTTR (Mean Time To Recovery)\n   - Report on SLA compliance\n\nReview the changed files and implement appropriate monitoring for the new feature or endpoint."
+  }
+}

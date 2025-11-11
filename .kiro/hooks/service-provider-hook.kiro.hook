@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Service Provider Hook",
+  "description": "Triggers AI verification when Service Provider files are saved to ensure proper registration, bindings, boot operations, and Laravel best practices",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "app/Providers/*.php"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "I've created/updated a Service Provider. Please verify:\n\n1. **Registration:**\n   - Ensure provider is registered in config/app.php\n   - Check deferred loading opportunities\n   - Verify singleton vs bind usage\n\n2. **Register Method:**\n   - Bind interfaces to implementations\n   - Register services in container\n   - Configure package services\n   - Set up repositories pattern if used\n\n3. **Boot Method:**\n   - Register event listeners\n   - Publish package assets\n   - Load routes, migrations, translations\n   - Register policies\n   - Configure middleware\n\n4. **Model Events:**\n   - Register global scopes\n   - Set up model observers\n   - Configure model relations\n\n5. **View Composers:**\n   - Share data across views\n   - Register view composers\n   - Add global view variables\n\n6. **Macros:**\n   - Extend Laravel classes with macros\n   - Add custom collection methods\n   - Extend request/response\n\n7. **Commands:**\n   - Register custom Artisan commands\n   - Schedule commands if needed\n\n8. **Performance:**\n   - Use deferred providers where possible\n   - Avoid heavy operations in register()\n   - Cache service resolutions\n\n9. **Testing:**\n   - Test service registrations\n   - Verify bindings resolve correctly\n   - Test boot operations\n\nProvider File: {{EDITED_FILE_CONTENT}}"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "enabled": true,
+  "name": "OpenSpec Validation",
+  "description": "Automatically runs openspec validate --strict when OpenSpec files are modified to catch validation errors immediately",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "openspec/**/*.md",
+      "openspec/**/*.yaml",
+      "openspec/**/*.yml"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Run `openspec validate --strict` to validate the OpenSpec changes that were just modified. Report any validation errors found, including the specific file, line number, and error message. If validation passes, confirm that all OpenSpec files are valid."
+  }
+}

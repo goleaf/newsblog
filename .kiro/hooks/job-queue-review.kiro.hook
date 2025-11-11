@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Job/Queue Review Hook",
+  "description": "Automatically reviews Laravel job files for queue configuration, error handling, idempotency, job chaining opportunities, monitoring, testing, and optimization when jobs are created or updated",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "app/Jobs/*.php"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "I've created/updated a job. Please review:\n\n1. **Queue Configuration:**\n   - Verify ShouldQueue implementation\n   - Check queue name assignment\n   - Configure retries and timeout\n\n2. **Handle Method:**\n   - Ensure idempotency\n   - Add proper error handling\n   - Implement failure handling\n\n3. **Job Chaining:**\n   - Suggest job chains if applicable\n   - Check for job batching opportunities\n\n4. **Monitoring:**\n   - Add job status tracking\n   - Implement progress updates for long jobs\n\n5. **Testing:**\n   - Create job tests with Queue::fake()\n   - Test failure scenarios\n   - Verify job is dispatched correctly\n\n6. **Optimization:**\n   - Check for unnecessary data serialization\n   - Suggest chunking for large datasets\n\nPlease analyze the modified job file and provide specific recommendations."
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Observer Pattern Hook",
+  "description": "Analyzes Model Observers for proper registration, event methods, business logic, performance, data integrity, logging, testing, and documentation",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "app/Observers/*.php"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "I've created/updated a Model Observer. Please analyze:\n\n1. **Registration:**\n   - Verify observer is registered in EventServiceProvider or Provider\n   - Check if observer should be registered globally\n\n2. **Event Methods:**\n   - Implement all needed lifecycle methods:\n     - creating, created, updating, updated\n     - saving, saved, deleting, deleted\n     - restoring, restored, forceDeleting, forceDeleted\n     - retrieved\n   - Ensure proper return values (false stops operation)\n\n3. **Business Logic:**\n   - Check if logic belongs in observer vs listener\n   - Verify side effects are intentional\n   - Add transaction handling if needed\n\n4. **Performance:**\n   - Avoid N+1 queries\n   - Check if operations should be queued\n   - Consider using events for heavy operations\n\n5. **Data Integrity:**\n   - Implement cascading operations if needed\n   - Update related models appropriately\n   - Handle soft deletes properly\n\n6. **Logging/Auditing:**\n   - Add activity logging\n   - Track model changes\n   - Record user actions\n\n7. **Testing:**\n   - Test each observer method\n   - Verify side effects occur\n   - Test transaction rollbacks\n\n8. **Documentation:**\n   - Document side effects\n   - Explain business logic\n   - Note dependencies\n\nObserver File: {{filePath}}"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Seeder Enhancement Hook",
+  "description": "Automatically enhances database seeders with factory usage, relationships, performance optimizations, proper ordering, environment awareness, idempotency, progress feedback, and testing data when seeder files are saved",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "database/seeders/*.php"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "I've created/updated a database seeder. Please enhance:\n\n1. **Factory Usage:**\n   - Use model factories instead of manual creation\n   - Create realistic data with faker\n   - Use factory states for variations\n\n2. **Relationships:**\n   - Seed related data properly\n   - Use has() and for() methods\n   - Maintain referential integrity\n\n3. **Performance:**\n   - Use DB::table()->insert() for bulk data\n   - Disable foreign key checks if needed\n   - Chunk large datasets\n\n4. **Order:**\n   - Seed in correct dependency order\n   - Register seeders in DatabaseSeeder\n   - Handle circular dependencies\n\n5. **Environment Awareness:**\n   - Only seed appropriate data per environment\n   - Use different data for local vs staging\n   - Skip seeders in production\n\n6. **Idempotency:**\n   - Check if data already exists\n   - Use updateOrCreate() where appropriate\n   - Implement --force flag if needed\n\n7. **Progress Feedback:**\n   - Add console output for long operations\n   - Use progress bars\n   - Report seeding stats\n\n8. **Testing Data:**\n   - Create specific test scenarios\n   - Include edge cases\n   - Add demo accounts with known credentials\n\nReview the seeder file and suggest improvements following Laravel best practices."
+  }
+}

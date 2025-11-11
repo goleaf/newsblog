@@ -1,0 +1,10 @@
+{
+  "name": "OpenSpec: Validate on Save",
+  "description": "Automatically validates OpenSpec changes when proposal, tasks, or spec files are saved",
+  "trigger": {
+    "type": "onSave",
+    "filePattern": "openspec/changes/**/+(proposal|tasks|design).md"
+  },
+  "prompt": "Run `openspec validate --strict` to validate the OpenSpec change that was just modified. Report any validation errors found.",
+  "enabled": true
+}

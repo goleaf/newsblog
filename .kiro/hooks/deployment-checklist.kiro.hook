@@ -1,0 +1,20 @@
+{
+  "enabled": true,
+  "name": "Deployment Checklist",
+  "description": "Triggers a comprehensive pre-deployment checklist before production deployment to ensure configuration, optimization, security, testing, and monitoring are properly set up",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "deploy.sh",
+      ".env",
+      "config/app.php",
+      "composer.json",
+      "package.json"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Pre-deployment checklist for production:\n\n1. **Configuration:**\n   - [ ] APP_ENV=production\n   - [ ] APP_DEBUG=false\n   - [ ] APP_KEY generated\n   - [ ] Database credentials correct\n   - [ ] Cache/Session drivers set\n   - [ ] Queue driver configured\n   - [ ] Mail settings verified\n\n2. **Optimization:**\n   - [ ] Run composer install --optimize-autoloader --no-dev\n   - [ ] Execute php artisan config:cache\n   - [ ] Run php artisan route:cache\n   - [ ] Execute php artisan view:cache\n   - [ ] Build assets (npm run build)\n   - [ ] Enable OPcache\n\n3. **Database:**\n   - [ ] Backup production database\n   - [ ] Test migrations on staging\n   - [ ] Review migration down() methods\n   - [ ] Check for data loss operations\n   - [ ] Verify seeder for production data only\n\n4. **Security:**\n   - [ ] Run composer audit\n   - [ ] Execute npm audit\n   - [ ] Review security headers\n   - [ ] Verify HTTPS enforced\n   - [ ] Check CORS configuration\n   - [ ] Validate API rate limiting\n\n5. **Testing:**\n   - [ ] All tests passing\n   - [ ] Browser tests executed\n   - [ ] Load testing completed\n   - [ ] Security scan performed\n   - [ ] Accessibility checked\n\n6. **Monitoring:**\n   - [ ] Error tracking enabled (Sentry/Bugsnag)\n   - [ ] Logging configured\n   - [ ] Performance monitoring active\n   - [ ] Uptime monitoring set\n   - [ ] Alerting configured\n\n7. **Backups:**\n   - [ ] Database backup scheduled\n   - [ ] File storage backup configured\n   - [ ] Backup restoration tested\n   - [ ] Backup retention policy set\n\n8. **Documentation:**\n   - [ ] Deployment instructions updated\n   - [ ] API documentation current\n   - [ ] Changelog updated\n   - [ ] Team notified\n\n9. **Rollback Plan:**\n   - [ ] Rollback procedure documented\n   - [ ] Previous version backed up\n   - [ ] Rollback tested on staging\n   - [ ] Database rollback strategy defined\n\nReview the deployment context and verify all checklist items are complete before proceeding with production deployment."
+  }
+}

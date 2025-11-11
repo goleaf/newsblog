@@ -1,0 +1,28 @@
+{
+  "enabled": true,
+  "name": "Security Audit Hook",
+  "description": "Performs comprehensive security audits on Laravel codebase including authentication, authorization, input validation, XSS prevention, CSRF protection, SQL injection checks, file security, sensitive data handling, dependencies, and security headers",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "app/Http/Controllers/**/*.php",
+      "app/Http/Middleware/*.php",
+      "app/Http/Requests/**/*.php",
+      "app/Models/*.php",
+      "app/Policies/*.php",
+      "config/auth.php",
+      "config/session.php",
+      "config/cors.php",
+      "resources/views/**/*.blade.php",
+      "routes/*.php",
+      ".env.example",
+      "composer.json",
+      "package.json"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Performing security audit on the codebase:\n\n1. **Authentication:**\n   - Verify password hashing (bcrypt/argon2)\n   - Check rate limiting on login\n   - Validate two-factor authentication\n   - Ensure proper session configuration\n\n2. **Authorization:**\n   - Check all controller methods have authorization\n   - Verify policy usage\n   - Look for direct permission checks\n   - Ensure API endpoints are protected\n\n3. **Input Validation:**\n   - Verify all user input is validated\n   - Check for mass assignment vulnerabilities\n   - Ensure file upload validation\n   - Validate API request bodies\n\n4. **XSS Prevention:**\n   - Check for {!! !!} usage in Blade\n   - Verify all user content is escaped\n   - Validate rich text editor output\n   - Check JavaScript variable injection\n\n5. **CSRF Protection:**\n   - Ensure all forms have @csrf\n   - Verify API uses Sanctum tokens\n   - Check AJAX requests include token\n   - Validate stateful vs stateless routes\n\n6. **SQL Injection:**\n   - Check all raw queries use bindings\n   - Verify whereRaw() uses parameters\n   - Look for string concatenation in queries\n   - Validate dynamic table/column names\n\n7. **File Security:**\n   - Check file upload validation (type, size)\n   - Verify files stored outside public\n   - Ensure file access is authorized\n   - Check for path traversal vulnerabilities\n\n8. **Sensitive Data:**\n   - Verify secrets not in version control\n   - Check .env is in .gitignore\n   - Ensure API keys are in environment\n   - Validate database credentials security\n\n9. **Dependencies:**\n   - Run composer audit\n   - Check npm audit\n   - Update vulnerable packages\n   - Review package permissions\n\n10. **Headers:**\n    - Verify security headers (CSP, HSTS, X-Frame-Options)\n    - Check CORS configuration\n    - Ensure proper SSL/TLS setup\n    - Validate cookie security settings\n\nFiles to audit: [analyze the changed files and related security-critical files in the codebase]\n\nProvide a detailed security audit report with:\n- Security issues found (categorized by severity: Critical, High, Medium, Low)\n- Specific file locations and line numbers\n- Recommended fixes with code examples\n- Best practices to implement\n- Compliance status for each security category"
+  }
+}

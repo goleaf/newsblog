@@ -1,0 +1,17 @@
+{
+  "enabled": true,
+  "name": "Database Naming Conventions",
+  "description": "Monitors database migrations and models to ensure proper naming conventions are followed for tables, columns, indexes, and foreign keys",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "database/migrations/*.php",
+      "app/Models/*.php"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Review the modified database migration or model files and verify they follow Laravel database naming conventions:\n\n1. **Table Names**: plural, snake_case (e.g., `users`, `post_tags`, `activity_logs`)\n2. **Column Names**: snake_case (e.g., `created_at`, `user_id`, `is_active`)\n3. **Primary Keys**: `id` (auto-incrementing integer)\n4. **Foreign Keys**: singular_table_name_id (e.g., `user_id`, `post_id`, `category_id`)\n5. **Pivot Tables**: alphabetically ordered singular table names with underscore (e.g., `post_tag`, not `tag_post`)\n6. **Indexes**: descriptive with table prefix (e.g., `users_email_unique`, `posts_user_id_foreign`)\n7. **Timestamps**: `created_at` and `updated_at`\n8. **Soft Deletes**: `deleted_at`\n9. **Model Names**: singular, PascalCase (e.g., `User`, `Post`, `ActivityLog`)\n\nCheck for:\n- Incorrect pluralization or casing\n- Missing or improperly named foreign key constraints\n- Pivot table naming order\n- Index naming consistency\n- Model-table name mismatches\n\nIf violations are found, provide specific corrections with code examples. If conventions are followed correctly, confirm compliance."
+  }
+}

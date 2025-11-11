@@ -1,0 +1,26 @@
+{
+  "enabled": true,
+  "name": "Code Generation from Comments",
+  "description": "Detects actionable comments (TODO, FIXME, HACK, XXX, NOTE) in saved files and generates implementation code with proper error handling, tests, and documentation",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "**/*.php",
+      "**/*.js",
+      "**/*.ts",
+      "**/*.jsx",
+      "**/*.tsx",
+      "**/*.vue",
+      "**/*.py",
+      "**/*.rb",
+      "**/*.go",
+      "**/*.java",
+      "**/*.cs"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Found actionable comments in code. Analyze and generate implementations:\n\n1. **TODO Comments:**\n   - Parse TODO comments and understand the intent\n   - Generate complete implementation code\n   - Add proper error handling and validation\n   - Include relevant unit/feature tests\n\n2. **FIXME Comments:**\n   - Identify the bug or issue described\n   - Suggest fix with detailed explanation\n   - Provide alternative approaches if applicable\n   - Add regression tests to prevent recurrence\n\n3. **HACK Comments:**\n   - Analyze the temporary hack solution\n   - Provide proper, production-ready solution\n   - Explain trade-offs between approaches\n   - Refactor to clean, maintainable code\n\n4. **XXX/WARNING Comments:**\n   - Address the warning or concern\n   - Implement proper solution with best practices\n   - Add comprehensive documentation\n   - Include safety checks and validation\n\n5. **NOTE Comments:**\n   - Expand on the note with context\n   - Add to relevant documentation files\n   - Create related code examples\n   - Link to external resources if helpful\n\nFor each comment found:\n- Show the original comment and surrounding code\n- Provide the generated implementation\n- Explain the approach and any important decisions\n- Include tests that verify the implementation\n- Follow Laravel/project conventions and best practices\n\nExample transformation:\n```php\n// TODO: Implement caching for user permissions\npublic function getUserPermissions($userId) {\n    return Permission::where('user_id', $userId)->get();\n}\n```\n\nShould become:\n```php\npublic function getUserPermissions($userId): Collection\n{\n    return Cache::remember(\"user_permissions_{$userId}\", 3600, function () use ($userId) {\n        return Permission::where('user_id', $userId)->get();\n    });\n}\n```\n\nAnalyze the changed files for actionable comments and provide implementations."
+  }
+}

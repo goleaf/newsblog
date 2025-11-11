@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Laravel Model Scaffolding",
+  "description": "Automatically analyzes Laravel models and scaffolds migrations, factories, form requests, resources, policies, tests, and documentation when model files are saved",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "app/Models/*.php"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "I've created/updated a Laravel model. Please analyze this model and:\n\n1. **Migration Check:**\n   - Verify if corresponding migration exists in database/migrations/\n   - If missing, create migration with proper schema based on model attributes\n   - Include indexes for foreign keys and frequently queried fields\n   - Add soft deletes if model uses SoftDeletes trait\n\n2. **Relationships:**\n   - Identify missing relationship methods based on foreign keys\n   - Suggest inverse relationships in related models\n   - Check for proper return types (hasOne, hasMany, belongsTo, belongsToMany)\n\n3. **Factory:**\n   - Create/update factory in database/factories/\n   - Generate realistic fake data for all fillable attributes\n   - Handle relationships in factory states\n\n4. **Validation:**\n   - Create/update FormRequest in app/Http/Requests/\n   - Add validation rules based on migration columns\n   - Include store and update request classes\n\n5. **Resource/Collection:**\n   - Create API resource in app/Http/Resources/\n   - Transform all model attributes appropriately\n   - Include conditional relationships\n\n6. **Policy:**\n   - Create authorization policy in app/Policies/\n   - Implement standard actions: viewAny, view, create, update, delete, restore, forceDelete\n   - Register policy in AuthServiceProvider\n\n7. **Tests:**\n   - Create feature tests for CRUD operations\n   - Create unit tests for model methods, scopes, and accessors\n   - Include relationship tests\n\n8. **Documentation:**\n   - Add PHPDoc blocks with @property annotations for all attributes\n   - Document relationships, scopes, and custom methods\n   - Add @mixin for IDE support\n\nPlease analyze the changed model file and suggest or create the necessary scaffolding."
+  }
+}

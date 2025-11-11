@@ -1,0 +1,10 @@
+{
+  "name": "OpenSpec: Validate Spec Delta on Save",
+  "description": "Validates spec delta files when saved in changes directory",
+  "trigger": {
+    "type": "onSave",
+    "filePattern": "openspec/changes/**/specs/**/spec.md"
+  },
+  "prompt": "A spec delta file was just saved. Extract the change-id from the file path and run `openspec validate <change-id> --strict` to ensure the delta is properly formatted with correct scenario headers and requirement structure. Report any issues.",
+  "enabled": true
+}

@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Middleware Creation/Update Hook",
+  "description": "Automatically reviews middleware files for proper registration, security, performance, error handling, and testing when saved",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "app/Http/Middleware/*.php"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "I've created/updated middleware. Please check:\n\n1. **Registration:**\n   - Add to bootstrap/app.php in appropriate group (Laravel 12 structure)\n   - Configure priority if needed\n   - Add route middleware alias\n\n2. **Handle Method:**\n   - Verify request inspection logic\n   - Ensure proper response handling\n   - Add termination logic if needed (terminate method)\n\n3. **Performance:**\n   - Check if middleware should be skipped for certain routes\n   - Verify no heavy database queries\n   - Consider caching opportunities\n\n4. **Security:**\n   - Validate authentication checks\n   - Ensure authorization is proper\n   - Add rate limiting if needed\n   - Check CORS configuration\n\n5. **Error Handling:**\n   - Return appropriate HTTP status codes\n   - Provide clear error messages\n   - Log security-relevant events\n\n6. **Testing:**\n   - Create middleware tests using PHPUnit\n   - Test authorized and unauthorized scenarios\n   - Verify exception handling\n\n7. **Documentation:**\n   - Document middleware purpose\n   - Explain configuration options\n   - Include usage examples\n\nPlease review the middleware file and provide specific recommendations."
+  }
+}

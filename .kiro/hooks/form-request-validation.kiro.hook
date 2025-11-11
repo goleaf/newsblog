@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Form Request Validation Hook",
+  "description": "Automatically enhances Laravel Form Request classes with comprehensive validation rules, authorization logic, custom messages, attributes, conditional rules, data preparation, response handling, reusability patterns, and testing recommendations",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "app/Http/Requests/**/*.php"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "I've created/updated a Form Request. Please enhance:\n\n1. **Validation Rules:**\n   - Add all necessary validation rules from migration\n   - Include proper rule objects for complex validation\n   - Add custom validation rules if needed\n   - Use Rule::exists() for foreign keys\n\n2. **Authorization:**\n   - Implement authorize() method with proper policy checks\n   - Return descriptive authorization failures\n\n3. **Custom Messages:**\n   - Add messages() method for user-friendly errors\n   - Localize error messages\n   - Provide field-specific messages\n\n4. **Custom Attributes:**\n   - Add attributes() method for readable field names\n   - Match form label text\n\n5. **Conditional Rules:**\n   - Use sometimes() for conditional validation\n   - Implement rule arrays with closures\n   - Add after validation hooks with after()\n\n6. **Data Preparation:**\n   - Use prepareForValidation() to sanitize input\n   - Transform data before validation\n   - Handle file uploads\n\n7. **Response Handling:**\n   - Customize failed validation response for APIs\n   - Return JSON for API endpoints\n   - Add proper error formatting\n\n8. **Reusability:**\n   - Extract common rules to shared traits\n   - Create base request classes\n   - Use rule inheritance\n\n9. **Testing:**\n   - Test all validation rules\n   - Test boundary conditions\n   - Verify authorization logic\n   - Test custom messages display\n\nRequest File: {file_content}"
+  }
+}

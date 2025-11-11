@@ -1,0 +1,22 @@
+{
+  "enabled": true,
+  "name": "Include Project Patterns",
+  "description": "Automatically includes project-specific patterns, conventions, and guidelines from AGENTS.md, openspec files, and Laravel Boost rules when working on code files",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "app/**/*.php",
+      "resources/**/*.blade.php",
+      "resources/**/*.js",
+      "routes/*.php",
+      "database/**/*.php",
+      "tests/**/*.php",
+      "config/*.php"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "When working on these files, always consider and apply the project-specific patterns and conventions defined in:\n- @AGENTS.md for Laravel Boost guidelines, PHP conventions, and testing requirements\n- @openspec/AGENTS.md for OpenSpec workflow and change proposal processes\n- @openspec/project.md for project context and architecture\n- Existing sibling files for consistent naming, structure, and approach\n\nKey reminders:\n- Follow Laravel 12 conventions (streamlined structure, no Kernel files)\n- Use Eloquent relationships and avoid N+1 queries\n- Create Form Request classes for validation\n- Write PHPUnit tests for all changes\n- Use Tailwind CSS v3 classes consistently\n- Run `vendor/bin/pint --dirty` before finalizing\n- Use `search-docs` tool for Laravel ecosystem documentation\n\nReview the relevant guidelines before making changes to ensure consistency with project standards."
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "enabled": true,
+  "name": "API Rate Limiting Strategy",
+  "description": "Triggers when creating new API endpoints to design comprehensive rate limiting strategy including tiers, throttle configuration, headers, endpoint-specific limits, bypass mechanisms, response handling, monitoring, and documentation",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "app/Http/Controllers/Api/*.php",
+      "routes/api.php"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Design API rate limiting strategy:\n\n1. **Rate Limit Tiers:**\n   - Anonymous users: 60 requests/hour\n   - Authenticated users: 600 requests/hour\n   - Premium users: 6000 requests/hour\n   - Enterprise: Custom limits\n\n2. **Throttle Configuration:**\n   - Configure in RouteServiceProvider\n   - Set up Redis for rate limiting\n   - Add custom rate limiters\n   - Implement sliding window\n\n3. **Headers:**\n   - X-RateLimit-Limit\n   - X-RateLimit-Remaining\n   - X-RateLimit-Reset\n   - Retry-After on 429\n\n4. **Endpoint-Specific Limits:**\n   - Identify expensive endpoints\n   - Apply stricter limits\n   - Allow burst traffic\n   - Implement cost-based limiting\n\n5. **Bypass Mechanisms:**\n   - Admin bypass\n   - Service account exclusions\n   - IP whitelist\n   - API key tiers\n\n6. **Response Handling:**\n   - Return 429 Too Many Requests\n   - Provide clear error message\n   - Include retry information\n   - Log rate limit hits\n\n7. **Monitoring:**\n   - Track rate limit hits\n   - Identify abusive patterns\n   - Monitor quota usage\n   - Alert on threshold breaches\n\n8. **Documentation:**\n   - Document rate limits clearly\n   - Explain headers\n   - Provide best practices\n   - Show example responses\n\nEndpoints: [list API endpoints from the modified files]"
+  }
+}

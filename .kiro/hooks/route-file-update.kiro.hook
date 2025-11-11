@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Route File Update Hook",
+  "description": "Triggers when saving routes/*.php files to verify RESTful conventions, middleware, route model binding, API versioning, documentation, and testing",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "routes/*.php"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "I've updated routes. Please verify:\n\n1. **RESTful Conventions:**\n   - Check if resource routes can be used\n   - Verify HTTP verb usage (GET, POST, PUT, DELETE)\n   - Ensure plural resource names\n\n2. **Middleware:**\n   - Add missing authentication middleware\n   - Include throttling for API routes\n   - Check authorization middleware\n\n3. **Route Model Binding:**\n   - Use implicit binding where possible\n   - Configure custom key names if needed\n\n4. **API Versioning:**\n   - Organize API routes with version prefixing\n   - Suggest route grouping\n\n5. **Documentation:**\n   - Add route comments for clarity\n   - Generate route list documentation\n\n6. **Testing:**\n   - Create route tests if missing\n   - Verify all routes are tested\n\nPlease analyze the updated routes file and provide specific recommendations."
+  }
+}

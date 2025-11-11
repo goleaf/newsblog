@@ -1,0 +1,22 @@
+{
+  "enabled": true,
+  "name": "Localization Management",
+  "description": "Monitors translation files and source code for localization management tasks including extracting hardcoded strings, generating translation keys, updating language files, finding missing translations, handling pluralization, date/time formatting, and testing locales",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "resources/lang/**/*.php",
+      "lang/**/*.php",
+      "resources/views/**/*.blade.php",
+      "app/Http/Controllers/**/*.php",
+      "app/Http/Resources/**/*.php",
+      "resources/js/**/*.js",
+      "resources/js/**/*.vue"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Managing application localization:\n\n1. **Extract Strings:**\n   - Find hardcoded strings in Blade views\n   - Identify untranslated text in controllers\n   - Extract JavaScript strings\n   - Find API response messages\n\n2. **Generate Translation Keys:**\n   - Create meaningful key names\n   - Follow naming convention (dot notation)\n   - Group related translations\n   - Avoid conflicts\n\n3. **Update Language Files:**\n   - Add to resources/lang/{locale}/*.php\n   - Maintain alphabetical order\n   - Keep consistent formatting\n   - Add contextual comments\n\n4. **Missing Translations:**\n   - Compare language files\n   - List missing keys per locale\n   - Flag outdated translations\n   - Suggest translation services\n\n5. **Pluralization:**\n   - Handle plural forms correctly\n   - Use Laravel's trans_choice()\n   - Support multiple plural forms\n   - Document rules per language\n\n6. **Date/Time Formatting:**\n   - Localize date formats\n   - Handle time zones\n   - Format numbers/currency\n   - Support RTL languages\n\n7. **Testing:**\n   - Test all supported locales\n   - Verify placeholder replacement\n   - Check character encoding\n   - Validate HTML in translations\n\nAnalyze the changed files and provide recommendations for localization improvements."
+  }
+}

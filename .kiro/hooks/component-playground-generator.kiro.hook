@@ -1,0 +1,18 @@
+{
+  "enabled": true,
+  "name": "Component Playground Generator",
+  "description": "Automatically generates interactive component playgrounds with Storybook stories, state examples, props documentation, accessibility notes, and code snippets when new UI components are created",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "resources/views/components/**/*.blade.php",
+      "resources/js/components/**/*.vue",
+      "resources/js/components/**/*.jsx"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Generate interactive component playground for the newly created UI component:\n\n1. **Storybook Stories:**\n   - Create stories for all variants\n   - Add controls for props\n   - Include action handlers\n   - Add documentation\n\n2. **Component States:**\n   - Show default state\n   - Display loading state\n   - Show error state\n   - Add disabled state\n   - Include hover/focus states\n\n3. **Examples:**\n   - Basic usage example\n   - Complex use case\n   - Integration examples\n   - Edge cases\n\n4. **Props Table:**\n   - List all props\n   - Document types\n   - Show default values\n   - Mark required props\n\n5. **Interactive Demo:**\n   - Add live code editor\n   - Allow prop modification\n   - Show component output\n   - Include copy code button\n\n6. **Accessibility:**\n   - Document ARIA usage\n   - Show keyboard interactions\n   - Test with screen readers\n   - Include accessibility notes\n\n7. **Code Snippets:**\n   - Vue example\n   - React example\n   - Blade example\n   - Plain HTML example\n\nComponent: [analyze the component code from the changed file]"
+  }
+}

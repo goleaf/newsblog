@@ -1,0 +1,17 @@
+{
+  "enabled": true,
+  "name": "Trait Creation Hook",
+  "description": "Analyzes trait files for single responsibility, boot methods, property conflicts, method visibility, dependencies, scopes, relationships, testing, and documentation when traits are created or updated",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "app/Traits/*.php",
+      "app/Models/Traits/*.php"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "I've created/updated a Trait. Please analyze:\n\n1. **Single Responsibility:**\n   - Verify trait has one clear purpose\n   - Check for proper abstraction level\n   - Avoid god traits\n\n2. **Boot Method:**\n   - Add bootTraitName() for model trait initialization\n   - Register model events if needed\n   - Set up relationships or scopes\n\n3. **Property Conflicts:**\n   - Check for property name conflicts\n   - Use unique property names\n   - Document required properties\n\n4. **Method Visibility:**\n   - Use appropriate visibility (public, protected, private)\n   - Prefix private methods to avoid conflicts\n\n5. **Dependencies:**\n   - Document required traits\n   - Check for circular dependencies\n   - Ensure proper trait ordering\n\n6. **Scope Traits:**\n   - Add query scopes for common filters\n   - Chain scopes properly\n   - Document scope usage\n\n7. **Relationship Traits:**\n   - Implement polymorphic relationships\n   - Add relationship methods\n   - Configure eager loading\n\n8. **Testing:**\n   - Create tests for trait functionality\n   - Test in isolation where possible\n   - Test integration with models\n\n9. **Documentation:**\n   - Add comprehensive PHPDoc\n   - Document required methods/properties\n   - Include usage examples\n   - List incompatible traits\n\nTrait File: {{CHANGED_FILES}}"
+  }
+}

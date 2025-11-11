@@ -1,0 +1,9 @@
+{
+  "name": "Laravel: Update Tests for Changes",
+  "description": "Manual hook to ensure tests are updated when modifying features",
+  "trigger": {
+    "type": "manual"
+  },
+  "prompt": "Help me update or create tests for recent changes:\n1. Ask me what feature or file was modified\n2. Search for existing related tests in tests/ directory\n3. If tests exist, review and suggest updates to cover new behavior\n4. If no tests exist, create appropriate feature or unit tests using `php artisan make:test`\n5. Run the tests with `php artisan test --filter=<testname>` to verify they pass\n6. Remind me that every change must be programmatically tested per project guidelines",
+  "enabled": true
+}

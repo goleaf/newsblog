@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Config File Review",
+  "description": "Automatically reviews Laravel config files for environment variables, validation, organization, and documentation when config/*.php files are saved",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "config/*.php"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "I've created/updated a config file. Please check:\n\n1. **Environment Variables:**\n   - Ensure all values use env() helper\n   - Add missing variables to .env.example\n   - Document in .env.example with comments\n\n2. **Validation:**\n   - Verify default values are appropriate\n   - Check type casting\n\n3. **Organization:**\n   - Group related settings\n   - Use nested arrays appropriately\n\n4. **Documentation:**\n   - Add comments explaining each option\n   - Include examples for complex configurations\n\n5. **Usage:**\n   - Show how to access config in code\n   - Suggest facade or helper usage\n\nConfig File: {ADDED_OR_UPDATED_FILE_CONTENT}"
+  }
+}

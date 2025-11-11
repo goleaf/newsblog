@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Service Class Analysis",
+  "description": "Analyzes service classes for single responsibility, dependency injection, error handling, testing, interfaces, and documentation when saved",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "app/Services/*.php"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "I've created/updated a service class. Please analyze:\n\n1. **Single Responsibility:**\n   - Verify class has one clear purpose\n   - Suggest splitting if too complex\n\n2. **Dependency Injection:**\n   - Check constructor dependencies\n   - Ensure proper type hints\n   - Verify service provider registration\n\n3. **Error Handling:**\n   - Add try-catch blocks for external calls\n   - Use custom exceptions in app/Exceptions/\n   - Implement proper logging\n\n4. **Testing:**\n   - Create unit tests for all public methods\n   - Mock external dependencies\n   - Test error scenarios\n\n5. **Interface:**\n   - Suggest interface extraction in app/Contracts/\n   - Enable dependency inversion\n   - Register binding in service provider\n\n6. **Documentation:**\n   - Add comprehensive PHPDoc blocks\n   - Document exceptions thrown\n   - Include usage examples\n\nService File: {{file_path}}\n\n```\n{{file_content}}\n```"
+  }
+}

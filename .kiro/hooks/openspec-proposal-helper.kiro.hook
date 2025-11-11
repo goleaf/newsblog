@@ -1,0 +1,18 @@
+{
+  "enabled": true,
+  "name": "OpenSpec Proposal Helper",
+  "description": "Automatically assists with creating and managing OpenSpec change proposals following the workflow in openspec/AGENTS.md. Triggers when files in the openspec/changes directory are modified to help guide the proposal creation process.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "openspec/changes/**/*",
+      "openspec/AGENTS.md",
+      "openspec/project.md"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Help me create a new OpenSpec change proposal. Follow the workflow from openspec/AGENTS.md:\n1. Run `openspec list` and `openspec spec list --long` to understand current state\n2. Ask me for the change description and help me choose a unique kebab-case change-id with a verb prefix (add-, update-, remove-, refactor-)\n3. Create the directory structure: openspec/changes/<change-id>/\n4. Create proposal.md with Why, What Changes, and Impact sections\n5. Create tasks.md with implementation checklist\n6. Ask if I need design.md (for cross-cutting changes, new dependencies, security/performance concerns)\n7. Help me identify affected capabilities and create spec delta files\n8. Run `openspec validate <change-id> --strict` to verify the structure\n\nGuide me through this process step by step, asking for input when needed."
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Query Optimization Hook",
+  "description": "Analyzes PHP files containing Eloquent queries for N+1 issues, query efficiency, indexing needs, caching opportunities, and other performance optimizations",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "**/*.php"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Analyze the following PHP code for Eloquent query performance issues and optimization opportunities:\n\n**1. N+1 Detection:**\n- Identify missing eager loading opportunities\n- Suggest with() for relationships\n- Add withCount() for relationship counts\n- Use lazy eager loading where appropriate\n\n**2. Query Efficiency:**\n- Check for select() to limit columns\n- Identify queries in loops\n- Suggest chunk() for large datasets\n- Use cursor() for memory efficiency\n\n**3. Indexing:**\n- Identify columns needing indexes\n- Suggest composite indexes\n- Check for unused indexes\n- Recommend full-text search where applicable\n\n**4. Caching:**\n- Suggest query result caching\n- Identify cacheable relationships\n- Add remember() to expensive queries\n- Configure cache tags\n\n**5. Database Design:**\n- Check for proper normalization\n- Identify redundant queries\n- Suggest denormalization where beneficial\n- Recommend database views\n\n**6. Raw Queries:**\n- Convert to query builder where possible\n- Add parameter binding to raw queries\n- Check for SQL injection risks\n- Document why raw query is needed\n\n**7. Monitoring:**\n- Add query logging in development\n- Suggest Telescope for debugging\n- Add slow query alerts\n- Track query counts per request\n\nCode to analyze:\n```php\n{file_content}\n```\n\nProvide specific, actionable recommendations with code examples for any issues found."
+  }
+}

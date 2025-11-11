@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Validate Spec Delta",
+  "description": "Watches for changes to spec delta files in the openspec/changes directory. When a delta file is saved, extracts the change-id from the file path and runs openspec validate with strict mode to ensure proper formatting, correct scenario headers, and requirement structure.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "openspec/changes/**/specs/**/spec.md"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A spec delta file was just saved at {filePath}. Extract the change-id from the file path (it's the directory name under openspec/changes/) and run `openspec validate <change-id> --strict` to validate the delta. Check for proper formatting, correct scenario headers, and requirement structure. Report any validation issues found, or confirm if the spec is valid."
+  }
+}

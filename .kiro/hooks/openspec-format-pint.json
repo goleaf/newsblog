@@ -1,0 +1,10 @@
+{
+  "name": "Laravel: Format with Pint on Save",
+  "description": "Automatically runs Laravel Pint on PHP files when saved",
+  "trigger": {
+    "type": "onSave",
+    "filePattern": "**/*.php"
+  },
+  "prompt": "Run `vendor/bin/pint --dirty` to format the PHP file that was just saved according to the project's code style.",
+  "enabled": true
+}

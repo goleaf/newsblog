@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Test Creation/Update Hook",
+  "description": "Automatically reviews and suggests enhancements for PHP test files when they are saved, including coverage analysis, test quality checks, database usage, assertions, mocking, and organization",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "tests/**/*.php"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "I've created/updated a test. Please review and enhance:\n\n1. **Coverage Analysis:**\n   - Identify untested code paths\n   - Suggest additional test cases\n   - Check edge cases and boundary conditions\n\n2. **Test Quality:**\n   - Ensure Arrange-Act-Assert pattern\n   - Verify meaningful assertions\n   - Check for proper setup and teardown\n   - Use factories instead of raw model creation\n\n3. **Database:**\n   - Ensure RefreshDatabase trait is used\n   - Check for proper database transactions\n   - Verify seeder usage if needed\n\n4. **Assertions:**\n   - Use specific assertions (assertStatus, assertJson, assertDatabaseHas)\n   - Add response structure validation\n   - Check for assertSee/assertDontSee usage\n\n5. **Mocking:**\n   - Identify services that should be mocked\n   - Ensure external APIs are mocked\n   - Check Mail, Notification, Queue facades\n\n6. **Test Organization:**\n   - Verify descriptive test method names\n   - Suggest test grouping with data providers\n   - Check for proper test annotations (@test, @group)\n\nPlease analyze the test file and provide specific, actionable recommendations."
+  }
+}

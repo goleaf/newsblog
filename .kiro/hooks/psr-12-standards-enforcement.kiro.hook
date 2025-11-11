@@ -1,0 +1,21 @@
+{
+  "enabled": true,
+  "name": "PSR-12 Coding Standards",
+  "description": "Monitors PHP files for changes and ensures all code follows PSR-12 standards and Laravel conventions by running Pint formatter and validating code structure",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "app/**/*.php",
+      "tests/**/*.php",
+      "database/**/*.php",
+      "routes/**/*.php",
+      "config/**/*.php",
+      "bootstrap/**/*.php"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "PHP files have been modified. Review the changes and ensure they comply with PSR-12 coding standards and Laravel conventions:\n\n1. Run `vendor/bin/pint --dirty` to automatically fix any formatting issues\n2. Verify the code follows these standards:\n   - Proper type declarations for all method parameters and return types\n   - PHP 8 constructor property promotion where appropriate\n   - Curly braces for all control structures\n   - Proper PHPDoc blocks with array shapes when needed\n   - Descriptive variable and method names\n   - No `env()` calls outside config files\n   - Proper use of Eloquent relationships with type hints\n   - Form Request classes for validation (not inline)\n   - Named routes with `route()` helper for URL generation\n\n3. After formatting, run relevant tests with `php artisan test --filter=<testName>` to ensure nothing broke\n4. Confirm all changes align with existing project conventions by checking sibling files\n\nReport any violations found and the actions taken to fix them."
+  }
+}

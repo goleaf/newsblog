@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Database Migration Safety Review",
+  "description": "Automatically reviews database migrations for production safety, checking for data loss risks, performance impacts, rollback procedures, and zero-downtime deployment strategies",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "database/migrations/*.php"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Review the following database migration files for production safety:\n\n## Migration Safety Checklist\n\n### 1. Data Loss Risks\n- Check for DROP TABLE/COLUMN operations\n- Verify no data truncation will occur\n- Ensure backup strategy exists\n- Identify irreversible operations\n\n### 2. Performance Impact\n- Estimate migration duration based on table size\n- Check for table locks (ALTER TABLE operations)\n- Identify blocking operations\n- Suggest appropriate maintenance window\n\n### 3. Rollback Safety\n- Verify down() method exists and is complete\n- Test rollback procedure logic\n- Check for orphaned data after rollback\n- Ensure referential integrity maintained\n\n### 4. Zero Downtime Strategy\n- Suggest multi-step migrations if needed\n- Check for backwards compatibility\n- Identify required code changes\n- Plan deployment sequence (migration before/after code)\n\n### 5. Index Creation\n- Use ALGORITHM=INPLACE where possible (MySQL)\n- Create indexes concurrently (PostgreSQL)\n- Estimate index build time\n- Check for index name conflicts\n\n### 6. Foreign Keys\n- Verify constraint names are explicit\n- Check ON DELETE/UPDATE actions are appropriate\n- Ensure referenced tables exist\n- Validate data integrity will be maintained\n\n### 7. Column Changes\n- Check for ALTER TABLE issues\n- Verify column type changes are safe (no data loss)\n- Ensure default values provided for NOT NULL columns\n- Test with production data volume estimates\n\n### 8. Testing Requirements\n- Verify tested on staging with production-like data\n- Check for edge cases\n- Validate data transformations\n- Test rollback procedure\n\n## Migration Files to Review:\n{{{ files }}}\n\nProvide a detailed safety assessment with specific recommendations and warnings."
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "enabled": true,
+  "name": "Refactoring Suggestions",
+  "description": "Analyzes code for refactoring opportunities including code smells, SOLID principles, design patterns, and complexity metrics",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "app/**/*.php",
+      "tests/**/*.php",
+      "database/**/*.php",
+      "routes/**/*.php"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Analyze the following code for refactoring opportunities:\n\n1. **Code Smells:**\n   - Identify long methods (>20 lines)\n   - Find large classes (>200 lines)\n   - Detect duplicate code\n   - Spot complex conditions\n\n2. **SOLID Principles:**\n   - Check Single Responsibility\n   - Verify Open/Closed principle\n   - Review Liskov Substitution\n   - Ensure Interface Segregation\n   - Check Dependency Inversion\n\n3. **Design Patterns:**\n   - Suggest appropriate patterns\n   - Identify anti-patterns\n   - Recommend strategy pattern for complex logic\n   - Consider factory pattern for object creation\n\n4. **Extraction:**\n   - Extract methods from long functions\n   - Create service classes\n   - Extract interfaces\n   - Move to traits\n\n5. **Naming:**\n   - Improve variable names\n   - Clarify method names\n   - Use domain language\n   - Avoid abbreviations\n\n6. **Dependencies:**\n   - Reduce coupling\n   - Identify circular dependencies\n   - Suggest dependency injection\n   - Use facades appropriately\n\n7. **Complexity:**\n   - Calculate cyclomatic complexity\n   - Simplify nested conditions\n   - Reduce nesting depth\n   - Break down complex expressions\n\n8. **Testing:**\n   - Improve testability\n   - Identify hard-to-test code\n   - Suggest mocking points\n   - Reduce test complexity\n\nProvide specific, actionable refactoring suggestions with code examples where appropriate."
+  }
+}

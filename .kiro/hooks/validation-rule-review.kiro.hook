@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Validation Rule Review",
+  "description": "Automatically reviews custom Laravel validation rules for implementation quality, performance, testing, and best practices when files in app/Rules/ are saved",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "app/Rules/*.php"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "I've created a custom validation rule. Please verify:\n\n1. **Rule Implementation:**\n   - Implement passes() method with clear logic\n   - Return boolean appropriately\n   - Handle edge cases\n\n2. **Message:**\n   - Implement message() with clear error message\n   - Use :attribute placeholder\n   - Support localization\n\n3. **Parameters:**\n   - Accept parameters in constructor\n   - Validate parameters\n   - Use parameters in validation\n\n4. **Dependencies:**\n   - Inject required dependencies\n   - Query database if needed\n   - Call external APIs with caching\n\n5. **Performance:**\n   - Optimize database queries\n   - Cache expensive operations\n   - Consider async validation\n\n6. **Testing:**\n   - Test passing and failing cases\n   - Test with various parameters\n   - Test edge cases\n   - Verify error messages\n\n7. **Reusability:**\n   - Make rule generic where possible\n   - Extract to package if useful broadly\n   - Document use cases\n\n8. **Documentation:**\n   - Explain validation logic\n   - Include usage examples\n   - Document parameters\n\nRule File: {ABSOLUTE_FILE_PATH}"
+  }
+}

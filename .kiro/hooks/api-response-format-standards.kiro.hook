@@ -1,0 +1,18 @@
+{
+  "enabled": true,
+  "name": "API Response Format Standards",
+  "description": "Monitors API controllers and resources to ensure consistent response format standards are maintained across all API endpoints",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "app/Http/Controllers/Api/*.php",
+      "app/Http/Resources/*.php",
+      "routes/api.php"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Review the modified API files and ensure they follow these response format standards:\n\n1. **Success Responses**: All successful API responses should use a consistent structure with appropriate HTTP status codes (200, 201, etc.)\n2. **Error Responses**: Errors should return standardized JSON with 'message' and 'errors' fields where applicable\n3. **Resource Formatting**: Eloquent API Resources should be used for data transformation\n4. **Pagination**: Paginated responses should use Laravel's built-in pagination with meta and links\n5. **Status Codes**: Verify correct HTTP status codes are used (200 OK, 201 Created, 204 No Content, 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found, 422 Unprocessable Entity, 500 Internal Server Error)\n6. **Consistency**: All endpoints should follow the same response structure pattern\n7. **API Versioning**: Check if API versioning is being used and maintained properly\n\nAnalyze the changes and provide specific feedback on:\n- Any deviations from standard response formats\n- Missing or incorrect HTTP status codes\n- Inconsistent data structures\n- Opportunities to use API Resources\n- Missing error handling or validation responses\n\nSuggest improvements to align with Laravel best practices and maintain API consistency."
+  }
+}

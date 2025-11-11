@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "OpenSpec Conflict Checker",
+  "description": "Monitors for new OpenSpec proposal files and checks for potential conflicts with other active changes by analyzing overlapping specs and capabilities",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "openspec/changes/*/proposal.md"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A new OpenSpec proposal has been detected or modified. Please help check for potential conflicts:\n\n1. Run `openspec list` to see all active changes in the openspec/changes directory\n2. Ask the user which capability or area they're planning to work on\n3. Analyze the specs directories in each active change folder to identify overlapping capabilities or specs\n4. Review the proposal.md files of potentially conflicting changes to understand their scope\n5. Report any overlaps found, including:\n   - Which active changes affect the same specs or capabilities\n   - What specific areas overlap\n   - Recommendations for coordination or combining proposals\n6. If no conflicts are found, confirm that the change appears safe to proceed with\n\nBe thorough but concise in your analysis."
+  }
+}

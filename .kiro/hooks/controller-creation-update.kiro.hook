@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Controller Creation/Update Hook",
+  "description": "Triggers when saving Laravel controller files to analyze routes, services, validation, responses, authorization, tests, and API documentation",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "app/Http/Controllers/**/*.php"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "I've created/updated a Laravel controller. Please analyze the controller and provide recommendations for:\n\n1. **Route Registration:**\n   - Generate appropriate routes in routes/web.php or routes/api.php\n   - Use resource routes where applicable\n   - Include route model binding\n   - Add middleware (auth, verified, throttle)\n\n2. **Service Layer:**\n   - Check if business logic should be extracted to service classes\n   - Create service class in app/Services/ if needed\n   - Implement dependency injection\n\n3. **Request Validation:**\n   - Ensure FormRequests are used instead of inline validation\n   - Create missing request classes in app/Http/Requests/\n   - Follow existing validation conventions (array vs string based)\n\n4. **Response Structure:**\n   - Standardize API responses with proper status codes\n   - Implement consistent error handling\n   - Use Eloquent API Resources for API responses\n\n5. **Authorization:**\n   - Add policy checks using authorize() or Gate\n   - Ensure middleware is properly configured\n   - Create policies if needed\n\n6. **Tests:**\n   - Create controller tests in tests/Feature/Http/Controllers/\n   - Test all HTTP methods (index, show, store, update, destroy)\n   - Include authorization tests\n   - Test validation rules\n   - Use PHPUnit (not Pest)\n\n7. **OpenAPI/Swagger:**\n   - Generate API documentation annotations if API controller\n   - Document request/response schemas\n\nPlease review the changed controller file and provide specific, actionable recommendations."
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "enabled": true,
+  "name": "Event/Listener Hook",
+  "description": "Automatically reviews Laravel events and listeners to ensure proper registration, data structure, error handling, broadcasting configuration, testing, and documentation",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "app/Events/*.php",
+      "app/Listeners/*.php"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "I've created or modified an event or listener. Please ensure:\n\n1. **Event Registration:**\n   - Verify registration in EventServiceProvider\n   - Check if event should be queued (ShouldQueue)\n\n2. **Data Structure:**\n   - Ensure event has all necessary data\n   - Verify public properties are properly typed\n\n3. **Listeners:**\n   - Create missing listener classes\n   - Implement handle() method properly\n   - Add error handling\n\n4. **Broadcasting:**\n   - Check if event should implement ShouldBroadcast\n   - Configure broadcasting channels\n   - Add Echo configuration\n\n5. **Testing:**\n   - Create event tests\n   - Use Event::fake() in tests\n   - Verify listener execution\n\n6. **Documentation:**\n   - Document when event is dispatched\n   - Explain listener side effects\n\nEvent/Listener File: [paste code]"
+  }
+}
