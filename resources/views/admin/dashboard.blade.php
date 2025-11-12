@@ -106,6 +106,78 @@
         </div>
     </div>
 
+    <!-- Search Statistics Widget -->
+    <div class="mt-8 grid grid-cols-1 gap-5 lg:grid-cols-2">
+        <div class="overflow-hidden rounded-lg bg-white shadow">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-medium leading-6 text-gray-900">Search Statistics</h3>
+                    <a href="{{ route('admin.search.analytics') }}" class="text-sm text-indigo-600 hover:text-indigo-900">View Analytics →</a>
+                </div>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <p class="text-sm text-gray-500">Today</p>
+                        <p class="text-2xl font-semibold text-gray-900">{{ number_format($searchStats['total_searches_today']) }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">This Week</p>
+                        <p class="text-2xl font-semibold text-gray-900">{{ number_format($searchStats['total_searches_week']) }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">This Month</p>
+                        <p class="text-2xl font-semibold text-gray-900">{{ number_format($searchStats['total_searches_month']) }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">No Results (Week)</p>
+                        <p class="text-2xl font-semibold {{ $searchStats['no_result_searches'] > 0 ? 'text-red-600' : 'text-gray-900' }}">{{ number_format($searchStats['no_result_searches']) }}</p>
+                    </div>
+                </div>
+                @if($topSearchQueries->isNotEmpty())
+                    <div class="mt-4 pt-4 border-t border-gray-200">
+                        <h4 class="text-sm font-medium text-gray-700 mb-2">Top Queries (This Week)</h4>
+                        <ul class="space-y-1">
+                            @foreach($topSearchQueries->take(5) as $query)
+                                <li class="text-sm text-gray-600 flex justify-between">
+                                    <span>{{ $query->query }}</span>
+                                    <span class="text-gray-400">{{ $query->count }}x</span>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+            </div>
+        </div>
+
+        <div class="overflow-hidden rounded-lg bg-white shadow">
+            <div class="p-6">
+                <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">Recent Searches</h3>
+                <div class="flow-root">
+                    <ul role="list" class="-my-5 divide-y divide-gray-200">
+                        @forelse($recentSearches as $search)
+                        <li class="py-3">
+                            <div class="flex items-center justify-between">
+                                <div class="min-w-0 flex-1">
+                                    <p class="truncate text-sm font-medium text-gray-900">{{ $search->query }}</p>
+                                    <p class="truncate text-sm text-gray-500">
+                                        {{ $search->user ? $search->user->name : 'Guest' }} • {{ $search->created_at->diffForHumans() }}
+                                    </p>
+                                </div>
+                                <div class="ml-4 flex-shrink-0">
+                                    <span class="text-sm {{ $search->result_count === 0 ? 'text-red-600' : 'text-gray-500' }}">
+                                        {{ $search->result_count }} results
+                                    </span>
+                                </div>
+                            </div>
+                        </li>
+                        @empty
+                        <li class="py-3 text-sm text-gray-500">No recent searches</li>
+                        @endforelse
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="mt-8 grid grid-cols-1 gap-5 lg:grid-cols-2">
         <div class="overflow-hidden rounded-lg bg-white shadow">
             <div class="p-6">

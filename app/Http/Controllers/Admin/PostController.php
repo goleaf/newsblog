@@ -9,7 +9,9 @@ use App\Models\Category;
 use App\Models\Post;
 use App\Models\PostRevision;
 use App\Models\Tag;
+use App\Services\SearchIndexService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
 
 class PostController extends Controller
@@ -20,7 +22,7 @@ class PostController extends Controller
 
         // Search
         if ($request->filled('search')) {
-            $search = $request->search;
+            $search = trim(strip_tags($request->search));
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
                     ->orWhere('excerpt', 'like', "%{$search}%")
@@ -89,6 +91,10 @@ class PostController extends Controller
         // Sync tags
         if ($request->filled('tags')) {
             $post->tags()->sync($request->tags);
+            // Invalidate search cache when tags are synced
+            if ($post->isPublished()) {
+                App::make(SearchIndexService::class)->invalidateSearchCaches();
+            }
         }
 
         return redirect()->route('admin.posts.index')
@@ -152,8 +158,12 @@ class PostController extends Controller
         // Sync tags
         if ($request->filled('tags')) {
             $post->tags()->sync($request->tags);
+            // Invalidate search cache when tags are synced (post update already invalidates, but ensure it happens)
+            App::make(SearchIndexService::class)->invalidateSearchCaches();
         } else {
             $post->tags()->detach();
+            // Invalidate search cache when tags are detached
+            App::make(SearchIndexService::class)->invalidateSearchCaches();
         }
 
         return redirect()->route('admin.posts.index')

@@ -179,9 +179,12 @@
         <!-- Comment Form -->
         <div class="mt-8">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Leave a Comment</h3>
-            <form method="POST" action="{{ route('comments.store') }}" class="space-y-4">
+            <form method="POST" action="{{ route('comments.store') }}" class="space-y-4" id="comment-form">
                 @csrf
                 <input type="hidden" name="post_id" value="{{ $post->id }}">
+                <!-- Honeypot field - hidden from humans, visible to bots -->
+                <input type="text" name="honeypot" value="" id="honeypot-field" style="position: absolute; left: -9999px; width: 1px; height: 1px;" tabindex="-1" autocomplete="off">
+                <input type="hidden" name="page_load_time" value="" id="page-load-time-field">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <input type="text" name="author_name" placeholder="Your name" required class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                     <input type="email" name="author_email" placeholder="Your email" required class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white">
@@ -209,6 +212,15 @@
 </style>
 
 <script>
+// Track page load time for spam detection
+(function() {
+    const pageLoadTime = Math.floor(Date.now() / 1000);
+    const pageLoadTimeField = document.getElementById('page-load-time-field');
+    if (pageLoadTimeField) {
+        pageLoadTimeField.value = pageLoadTime;
+    }
+})();
+
 // Reading progress bar
 window.addEventListener('scroll', function() {
     const article = document.querySelector('article');

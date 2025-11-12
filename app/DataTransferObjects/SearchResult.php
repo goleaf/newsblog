@@ -24,11 +24,11 @@ class SearchResult
         return [
             'id' => $this->id,
             'type' => $this->type,
-            'title' => $this->title,
-            'excerpt' => $this->excerpt,
+            'title' => e($this->title), // Escape HTML in title
+            'excerpt' => $this->excerpt ? e($this->excerpt) : null, // Escape HTML in excerpt
             'url' => $this->url,
             'relevance_score' => $this->relevanceScore,
-            'highlights' => $this->highlights,
+            'highlights' => $this->highlights, // Already escaped by FuzzySearchService
             'metadata' => $this->metadata,
         ];
     }

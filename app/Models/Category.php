@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use App\Services\SearchIndexService;
 use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
 
 class Category extends Model
@@ -83,6 +85,19 @@ class Category extends Model
             if ($category->isDirty('name') && empty($category->slug)) {
                 $category->slug = Str::slug($category->name);
             }
+        });
+
+        static::updated(function ($category) {
+            // Invalidate search index cache when category is updated
+            // Check if search-relevant fields changed
+            if ($category->isDirty(['name', 'description'])) {
+                App::make(SearchIndexService::class)->invalidateSearchCaches();
+            }
+        });
+
+        static::deleted(function ($category) {
+            // Invalidate search index cache when category is deleted
+            App::make(SearchIndexService::class)->invalidateSearchCaches();
         });
     }
 }

@@ -8,6 +8,7 @@ use App\Models\SearchLog;
 use App\Models\User;
 use App\Services\SearchAnalyticsService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Tests\TestCase;
 
 class SearchAnalyticsServiceTest extends TestCase
@@ -307,5 +308,83 @@ class SearchAnalyticsServiceTest extends TestCase
         $this->assertEquals(3, $mostClicked->first()->click_count);
         $this->assertEquals($post2->id, $mostClicked->get(1)->post_id);
         $this->assertEquals(2, $mostClicked->get(1)->click_count);
+    }
+
+    public function test_can_log_cache_hit(): void
+    {
+        Cache::flush();
+
+        $this->analyticsService->logCacheHit('posts', 'test query');
+
+        $this->assertEquals(1, Cache::get('search_cache_hits:posts', 0));
+    }
+
+    public function test_can_log_cache_miss(): void
+    {
+        Cache::flush();
+
+        $this->analyticsService->logCacheMiss('posts', 'test query');
+
+        $this->assertEquals(1, Cache::get('search_cache_misses:posts', 0));
+    }
+
+    public function test_can_log_slow_query(): void
+    {
+        Cache::flush();
+
+        $this->analyticsService->logSlowQuery('slow query', 1500.0, [
+            'search_type' => 'posts',
+            'result_count' => 10,
+        ]);
+
+        $this->assertEquals(1, Cache::get('search_slow_queries_count', 0));
+    }
+
+    public function test_get_performance_metrics_includes_cache_stats(): void
+    {
+        Cache::flush();
+
+        // Set up cache stats
+        Cache::put('search_cache_hits:posts', 75, 3600);
+        Cache::put('search_cache_misses:posts', 25, 3600);
+
+        SearchLog::create([
+            'query' => 'Query 1',
+            'result_count' => 5,
+            'execution_time' => 0.1,
+            'search_type' => 'posts',
+            'fuzzy_enabled' => true,
+        ]);
+
+        SearchLog::create([
+            'query' => 'Query 2',
+            'result_count' => 0,
+            'execution_time' => 1200.0, // Slow query
+            'search_type' => 'posts',
+            'fuzzy_enabled' => true,
+        ]);
+
+        $metrics = $this->analyticsService->getPerformanceMetrics(period: 'day');
+
+        $this->assertArrayHasKey('cache_hits', $metrics);
+        $this->assertArrayHasKey('cache_misses', $metrics);
+        $this->assertArrayHasKey('cache_hit_rate', $metrics);
+        $this->assertArrayHasKey('slow_queries_count', $metrics);
+
+        $this->assertEquals(75, $metrics['cache_hits']);
+        $this->assertEquals(25, $metrics['cache_misses']);
+        $this->assertEquals(75.0, $metrics['cache_hit_rate']); // 75 / (75 + 25) * 100
+        $this->assertEquals(1, $metrics['slow_queries_count']);
+    }
+
+    public function test_get_performance_metrics_handles_zero_cache_requests(): void
+    {
+        Cache::flush();
+
+        $metrics = $this->analyticsService->getPerformanceMetrics(period: 'day');
+
+        $this->assertEquals(0, $metrics['cache_hits']);
+        $this->assertEquals(0, $metrics['cache_misses']);
+        $this->assertEquals(0, $metrics['cache_hit_rate']);
     }
 }

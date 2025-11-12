@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Log;
+
 class SpamDetectionService
 {
     /**
@@ -19,6 +21,18 @@ class SpamDetectionService
         'weight loss',
         'make money fast',
     ];
+
+    protected FuzzySearchService $fuzzySearchService;
+
+    /**
+     * Fuzzy matching threshold for spam detection (0-100).
+     */
+    protected int $fuzzyThreshold = 70;
+
+    public function __construct(FuzzySearchService $fuzzySearchService)
+    {
+        $this->fuzzySearchService = $fuzzySearchService;
+    }
 
     /**
      * Maximum allowed links in a comment.
@@ -82,19 +96,63 @@ class SpamDetectionService
     }
 
     /**
-     * Check if content contains blacklisted keywords.
+     * Check if content contains blacklisted keywords using fuzzy matching.
      */
     public function containsBlacklistedWords(string $content): bool
     {
-        $contentLower = strtolower($content);
+        $contentLower = mb_strtolower($content);
+        $matchedKeywords = [];
+        $maxScore = 0;
+        $bestMatch = null;
 
         foreach ($this->blacklistedKeywords as $keyword) {
+            // First check for exact match (faster)
             if (str_contains($contentLower, $keyword)) {
-                return true;
+                $matchedKeywords[] = [
+                    'keyword' => $keyword,
+                    'score' => 100,
+                    'match_type' => 'exact',
+                ];
+                $maxScore = 100;
+                $bestMatch = $keyword;
+
+                Log::info('Spam detection: Exact keyword match found', [
+                    'keyword' => $keyword,
+                    'score' => 100,
+                    'match_type' => 'exact',
+                ]);
+
+                continue;
+            }
+
+            // Use fuzzy matching for variations
+            $score = $this->fuzzySearchService->calculateFuzzyScore($keyword, $contentLower);
+
+            if ($score >= $this->fuzzyThreshold) {
+                $matchedKeywords[] = [
+                    'keyword' => $keyword,
+                    'score' => $score,
+                    'match_type' => 'fuzzy',
+                ];
+
+                if ($score > $maxScore) {
+                    $maxScore = $score;
+                    $bestMatch = $keyword;
+                }
             }
         }
 
-        return false;
+        // Log matched keywords and scores
+        if (! empty($matchedKeywords)) {
+            Log::warning('Spam detection: Blacklisted keywords matched', [
+                'matched_keywords' => $matchedKeywords,
+                'max_score' => $maxScore,
+                'best_match' => $bestMatch,
+                'content_preview' => mb_substr($content, 0, 100),
+            ]);
+        }
+
+        return ! empty($matchedKeywords);
     }
 
     /**
@@ -131,6 +189,24 @@ class SpamDetectionService
     public function getBlacklistedKeywords(): array
     {
         return $this->blacklistedKeywords;
+    }
+
+    /**
+     * Set the fuzzy matching threshold for spam detection.
+     */
+    public function setFuzzyThreshold(int $threshold): self
+    {
+        $this->fuzzyThreshold = max(0, min(100, $threshold));
+
+        return $this;
+    }
+
+    /**
+     * Get the current fuzzy matching threshold.
+     */
+    public function getFuzzyThreshold(): int
+    {
+        return $this->fuzzyThreshold;
     }
 
     /**

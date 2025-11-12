@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Models\Post;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
 class PostService
@@ -283,5 +285,197 @@ class PostService
             'reading_time' => $post->reading_time,
             'word_count' => str_word_count(strip_tags($post->content)),
         ];
+    }
+
+    /**
+     * Get related posts with enhanced fuzzy text matching algorithm.
+     *
+     * Scoring weights:
+     * - Category match: 30%
+     * - Tag match: 30%
+     * - Fuzzy text similarity: 30% (title, excerpt, content)
+     * - Publication date proximity: 10%
+     */
+    public function getRelatedPosts(Post $post, int $limit = 4): Collection
+    {
+        $cacheKey = "post.{$post->id}.related";
+        $cacheTtl = 3600; // 1 hour
+
+        return Cache::remember($cacheKey, $cacheTtl, function () use ($post, $limit) {
+            // Ensure relationships are loaded
+            $post->loadMissing(['category', 'tags']);
+
+            // Get all published posts except the current one
+            $candidates = Post::published()
+                ->where('id', '!=', $post->id)
+                ->with(['category', 'tags'])
+                ->get();
+
+            // Score each candidate post
+            $scored = $candidates->map(function ($candidate) use ($post) {
+                $score = 0;
+
+                // Category match: 30%
+                if ($candidate->category_id === $post->category_id) {
+                    $score += 30;
+                }
+
+                // Tag match: 30%
+                $postTagIds = $post->tags->pluck('id');
+                $candidateTagIds = $candidate->tags->pluck('id');
+                $sharedTags = $postTagIds->intersect($candidateTagIds)->count();
+                $totalTags = max($postTagIds->count(), 1);
+                $tagScore = ($sharedTags / $totalTags) * 30;
+                $score += min($tagScore, 30); // Cap at 30%
+
+                // Fuzzy text similarity: 30%
+                $textScore = $this->calculateTextSimilarity($post, $candidate);
+                $score += $textScore * 0.3; // Apply 30% weight
+
+                // Publication date proximity: 10%
+                if ($post->published_at && $candidate->published_at) {
+                    $daysDiff = abs($post->published_at->diffInDays($candidate->published_at));
+                    // Score decreases linearly over 90 days, max 10 points
+                    $dateScore = max(0, 10 - ($daysDiff / 90) * 10);
+                    $score += $dateScore;
+                }
+
+                return [
+                    'post' => $candidate,
+                    'score' => $score,
+                ];
+            });
+
+            // Sort by score descending and return top N posts
+            return $scored
+                ->sortByDesc('score')
+                ->take($limit)
+                ->pluck('post');
+        });
+    }
+
+    /**
+     * Calculate fuzzy text similarity score between two posts (0-100).
+     */
+    protected function calculateTextSimilarity(Post $post1, Post $post2): float
+    {
+        $scores = [];
+
+        // Title similarity (weight: 50%)
+        if ($post1->title && $post2->title) {
+            $titleScore = $this->calculateFuzzyScore($post1->title, $post2->title);
+            $scores[] = ['score' => $titleScore, 'weight' => 0.5];
+        }
+
+        // Excerpt similarity (weight: 30%)
+        if ($post1->excerpt && $post2->excerpt) {
+            $excerptScore = $this->calculateFuzzyScore($post1->excerpt, $post2->excerpt);
+            $scores[] = ['score' => $excerptScore, 'weight' => 0.3];
+        }
+
+        // Content similarity (weight: 20%) - use first 500 chars for performance
+        if ($post1->content && $post2->content) {
+            $content1 = Str::limit(strip_tags($post1->content), 500);
+            $content2 = Str::limit(strip_tags($post2->content), 500);
+            $contentScore = $this->calculateFuzzyScore($content1, $content2);
+            $scores[] = ['score' => $contentScore, 'weight' => 0.2];
+        }
+
+        // Calculate weighted average
+        if (empty($scores)) {
+            return 0;
+        }
+
+        $totalWeight = array_sum(array_column($scores, 'weight'));
+        $weightedSum = array_sum(array_map(function ($item) {
+            return $item['score'] * $item['weight'];
+        }, $scores));
+
+        return $totalWeight > 0 ? ($weightedSum / $totalWeight) : 0;
+    }
+
+    /**
+     * Calculate fuzzy match score between two strings using multiple algorithms.
+     */
+    protected function calculateFuzzyScore(string $text1, string $text2): float
+    {
+        $text1 = mb_strtolower(trim($text1));
+        $text2 = mb_strtolower(trim($text2));
+
+        // Exact match
+        if ($text1 === $text2) {
+            return 100.0;
+        }
+
+        // One contains the other
+        if (str_contains($text1, $text2) || str_contains($text2, $text1)) {
+            return 95.0;
+        }
+
+        // Use similar_text for similarity percentage
+        $similarity = 0;
+        similar_text($text1, $text2, $similarity);
+
+        // Use Levenshtein distance for additional scoring
+        $maxLength = max(mb_strlen($text1), mb_strlen($text2));
+        if ($maxLength > 0) {
+            $distance = levenshtein($text1, $text2);
+            $levenshteinScore = max(0, 100 - (($distance / $maxLength) * 100));
+        } else {
+            $levenshteinScore = 0;
+        }
+
+        // Combine both scores (weighted average)
+        $combinedScore = ($similarity * 0.6) + ($levenshteinScore * 0.4);
+
+        // Check for word-level matches
+        $words1 = array_filter(explode(' ', $text1), function ($word) {
+            return mb_strlen($word) >= 3;
+        });
+        $words2 = array_filter(explode(' ', $text2), function ($word) {
+            return mb_strlen($word) >= 3;
+        });
+
+        if (! empty($words1) && ! empty($words2)) {
+            $commonWords = array_intersect($words1, $words2);
+            $wordMatchScore = (count($commonWords) / max(count($words1), count($words2))) * 100;
+            // Boost score if there are common words
+            $combinedScore = max($combinedScore, $wordMatchScore * 0.8);
+        }
+
+        return min(100, max(0, $combinedScore));
+    }
+
+    /**
+     * Invalidate related posts cache for a specific post.
+     */
+    public function invalidateRelatedPostsCache(Post $post): void
+    {
+        Cache::forget("post.{$post->id}.related");
+    }
+
+    /**
+     * Invalidate related posts cache for posts in the same category.
+     */
+    public function invalidateRelatedPostsCacheByCategory(int $categoryId): void
+    {
+        $postIds = Post::where('category_id', $categoryId)->pluck('id');
+        foreach ($postIds as $postId) {
+            Cache::forget("post.{$postId}.related");
+        }
+    }
+
+    /**
+     * Invalidate related posts cache for posts with specific tags.
+     */
+    public function invalidateRelatedPostsCacheByTags(array $tagIds): void
+    {
+        $postIds = Post::whereHas('tags', function ($query) use ($tagIds) {
+            $query->whereIn('tags.id', $tagIds);
+        })->pluck('id');
+
+        foreach ($postIds as $postId) {
+            Cache::forget("post.{$postId}.related");
+        }
     }
 }

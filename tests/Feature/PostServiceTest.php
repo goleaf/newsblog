@@ -4,9 +4,11 @@ namespace Tests\Feature;
 
 use App\Models\Category;
 use App\Models\Post;
+use App\Models\Tag;
 use App\Models\User;
 use App\Services\PostService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Tests\TestCase;
 
 class PostServiceTest extends TestCase
@@ -392,5 +394,321 @@ class PostServiceTest extends TestCase
         $this->assertArrayHasKey('comment_count', $stats);
         $this->assertArrayHasKey('bookmark_count', $stats);
         $this->assertArrayHasKey('reaction_count', $stats);
+    }
+
+    public function test_gets_related_posts_by_category(): void
+    {
+        $user = User::factory()->create();
+        $category1 = Category::factory()->create();
+        $category2 = Category::factory()->create();
+
+        $post1 = Post::factory()->create([
+            'user_id' => $user->id,
+            'category_id' => $category1->id,
+            'title' => 'Post 1',
+            'status' => 'published',
+            'published_at' => now(),
+        ]);
+
+        $post2 = Post::factory()->create([
+            'user_id' => $user->id,
+            'category_id' => $category1->id,
+            'title' => 'Post 2',
+            'status' => 'published',
+            'published_at' => now(),
+        ]);
+
+        $post3 = Post::factory()->create([
+            'user_id' => $user->id,
+            'category_id' => $category2->id,
+            'title' => 'Post 3',
+            'status' => 'published',
+            'published_at' => now(),
+        ]);
+
+        $post4 = Post::factory()->create([
+            'user_id' => $user->id,
+            'category_id' => $category1->id,
+            'title' => 'Post 4',
+            'status' => 'published',
+            'published_at' => now(),
+        ]);
+
+        $relatedPosts = $this->postService->getRelatedPosts($post1, 4);
+
+        $this->assertGreaterThanOrEqual(2, $relatedPosts->count());
+        $this->assertContains($post2->id, $relatedPosts->pluck('id'));
+        $this->assertContains($post4->id, $relatedPosts->pluck('id'));
+        $this->assertNotContains($post1->id, $relatedPosts->pluck('id'));
+
+        // Posts from same category should be prioritized (higher scores)
+        // Verify that post2 and post4 appear before post3 if post3 is included
+        $relatedIds = $relatedPosts->pluck('id')->toArray();
+        $post2Index = array_search($post2->id, $relatedIds);
+        $post4Index = array_search($post4->id, $relatedIds);
+        $post3Index = array_search($post3->id, $relatedIds);
+
+        if ($post3Index !== false) {
+            // If post3 is included, post2 and post4 should come before it
+            $this->assertTrue($post2Index < $post3Index || $post4Index < $post3Index,
+                'Posts from same category should be ranked higher');
+        }
+    }
+
+    public function test_gets_related_posts_by_tags(): void
+    {
+        $user = User::factory()->create();
+        $category = Category::factory()->create();
+        $tag1 = Tag::factory()->create(['name' => 'Laravel']);
+        $tag2 = Tag::factory()->create(['name' => 'PHP']);
+        $tag3 = Tag::factory()->create(['name' => 'JavaScript']);
+
+        $post1 = Post::factory()->create([
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+            'title' => 'Post 1',
+            'status' => 'published',
+            'published_at' => now(),
+        ]);
+        $post1->tags()->attach([$tag1->id, $tag2->id]);
+
+        $post2 = Post::factory()->create([
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+            'title' => 'Post 2',
+            'status' => 'published',
+            'published_at' => now(),
+        ]);
+        $post2->tags()->attach([$tag1->id, $tag2->id]);
+
+        $post3 = Post::factory()->create([
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+            'title' => 'Post 3',
+            'status' => 'published',
+            'published_at' => now(),
+        ]);
+        $post3->tags()->attach([$tag3->id]);
+
+        $relatedPosts = $this->postService->getRelatedPosts($post1, 4);
+
+        $this->assertGreaterThanOrEqual(1, $relatedPosts->count());
+        $this->assertContains($post2->id, $relatedPosts->pluck('id'));
+        $this->assertNotContains($post1->id, $relatedPosts->pluck('id'));
+    }
+
+    public function test_gets_related_posts_by_fuzzy_text_similarity(): void
+    {
+        $user = User::factory()->create();
+        $category = Category::factory()->create();
+
+        $post1 = Post::factory()->create([
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+            'title' => 'Laravel Framework Tutorial',
+            'excerpt' => 'Learn Laravel framework basics',
+            'content' => 'This is a comprehensive guide to Laravel framework',
+            'status' => 'published',
+            'published_at' => now(),
+        ]);
+
+        $post2 = Post::factory()->create([
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+            'title' => 'Laravel Framework Advanced Guide',
+            'excerpt' => 'Advanced Laravel framework techniques',
+            'content' => 'Learn advanced Laravel framework concepts',
+            'status' => 'published',
+            'published_at' => now(),
+        ]);
+
+        $post3 = Post::factory()->create([
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+            'title' => 'JavaScript Basics',
+            'excerpt' => 'Learn JavaScript fundamentals',
+            'content' => 'This is a guide to JavaScript',
+            'status' => 'published',
+            'published_at' => now(),
+        ]);
+
+        $relatedPosts = $this->postService->getRelatedPosts($post1, 4);
+
+        $this->assertGreaterThanOrEqual(1, $relatedPosts->count());
+        // Post2 should be more related due to text similarity
+        $relatedIds = $relatedPosts->pluck('id')->toArray();
+        $this->assertNotContains($post1->id, $relatedIds);
+    }
+
+    public function test_related_posts_are_cached(): void
+    {
+        $user = User::factory()->create();
+        $category = Category::factory()->create();
+
+        $post1 = Post::factory()->create([
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+            'title' => 'Post 1',
+            'status' => 'published',
+            'published_at' => now(),
+        ]);
+
+        $post2 = Post::factory()->create([
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+            'title' => 'Post 2',
+            'status' => 'published',
+            'published_at' => now(),
+        ]);
+
+        Cache::flush();
+
+        $relatedPosts1 = $this->postService->getRelatedPosts($post1, 4);
+        $this->assertTrue(Cache::has("post.{$post1->id}.related"));
+
+        // Second call should use cache
+        $relatedPosts2 = $this->postService->getRelatedPosts($post1, 4);
+        $this->assertEquals($relatedPosts1->pluck('id'), $relatedPosts2->pluck('id'));
+    }
+
+    public function test_invalidates_related_posts_cache(): void
+    {
+        $user = User::factory()->create();
+        $category = Category::factory()->create();
+
+        $post = Post::factory()->create([
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+            'title' => 'Post 1',
+            'status' => 'published',
+            'published_at' => now(),
+        ]);
+
+        // Generate cache
+        $this->postService->getRelatedPosts($post, 4);
+        $this->assertTrue(Cache::has("post.{$post->id}.related"));
+
+        // Invalidate cache
+        $this->postService->invalidateRelatedPostsCache($post);
+        $this->assertFalse(Cache::has("post.{$post->id}.related"));
+    }
+
+    public function test_invalidates_related_posts_cache_by_category(): void
+    {
+        $user = User::factory()->create();
+        $category = Category::factory()->create();
+
+        $post1 = Post::factory()->create([
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+            'title' => 'Post 1',
+            'status' => 'published',
+            'published_at' => now(),
+        ]);
+
+        $post2 = Post::factory()->create([
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+            'title' => 'Post 2',
+            'status' => 'published',
+            'published_at' => now(),
+        ]);
+
+        // Generate cache for both posts
+        $this->postService->getRelatedPosts($post1, 4);
+        $this->postService->getRelatedPosts($post2, 4);
+
+        $this->assertTrue(Cache::has("post.{$post1->id}.related"));
+        $this->assertTrue(Cache::has("post.{$post2->id}.related"));
+
+        // Invalidate by category
+        $this->postService->invalidateRelatedPostsCacheByCategory($category->id);
+
+        $this->assertFalse(Cache::has("post.{$post1->id}.related"));
+        $this->assertFalse(Cache::has("post.{$post2->id}.related"));
+    }
+
+    public function test_invalidates_related_posts_cache_by_tags(): void
+    {
+        $user = User::factory()->create();
+        $category = Category::factory()->create();
+        $tag = Tag::factory()->create(['name' => 'Laravel']);
+
+        $post1 = Post::factory()->create([
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+            'title' => 'Post 1',
+            'status' => 'published',
+            'published_at' => now(),
+        ]);
+        $post1->tags()->attach($tag->id);
+
+        $post2 = Post::factory()->create([
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+            'title' => 'Post 2',
+            'status' => 'published',
+            'published_at' => now(),
+        ]);
+        $post2->tags()->attach($tag->id);
+
+        // Generate cache for both posts
+        $this->postService->getRelatedPosts($post1, 4);
+        $this->postService->getRelatedPosts($post2, 4);
+
+        $this->assertTrue(Cache::has("post.{$post1->id}.related"));
+        $this->assertTrue(Cache::has("post.{$post2->id}.related"));
+
+        // Invalidate by tag
+        $this->postService->invalidateRelatedPostsCacheByTags([$tag->id]);
+
+        $this->assertFalse(Cache::has("post.{$post1->id}.related"));
+        $this->assertFalse(Cache::has("post.{$post2->id}.related"));
+    }
+
+    public function test_related_posts_excludes_current_post(): void
+    {
+        $user = User::factory()->create();
+        $category = Category::factory()->create();
+
+        $post = Post::factory()->create([
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+            'title' => 'Post 1',
+            'status' => 'published',
+            'published_at' => now(),
+        ]);
+
+        $relatedPosts = $this->postService->getRelatedPosts($post, 4);
+
+        $this->assertNotContains($post->id, $relatedPosts->pluck('id'));
+    }
+
+    public function test_related_posts_only_includes_published_posts(): void
+    {
+        $user = User::factory()->create();
+        $category = Category::factory()->create();
+
+        $post1 = Post::factory()->create([
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+            'title' => 'Post 1',
+            'status' => 'published',
+            'published_at' => now(),
+        ]);
+
+        Post::factory()->create([
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+            'title' => 'Draft Post',
+            'status' => 'draft',
+        ]);
+
+        $relatedPosts = $this->postService->getRelatedPosts($post1, 4);
+
+        foreach ($relatedPosts as $relatedPost) {
+            $this->assertEquals('published', $relatedPost->status);
+            $this->assertNotNull($relatedPost->published_at);
+        }
     }
 }

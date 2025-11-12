@@ -33,8 +33,15 @@
                     </div>
                 </div>
                 <div class="flex items-center">
-                    <form method="GET" action="{{ route('search') }}" class="flex">
-                        <input type="text" name="q" placeholder="Search..." class="rounded-l-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    <form method="GET" action="{{ route('search') }}" class="flex relative w-full max-w-md">
+                        <input 
+                            type="text" 
+                            name="q" 
+                            value="{{ request('q') }}"
+                            placeholder="Search..." 
+                            class="flex-1 rounded-l-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white px-4 py-2"
+                            autocomplete="off"
+                        >
                         <button type="submit" class="rounded-r-md bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700">Search</button>
                     </form>
                 </div>

@@ -68,4 +68,104 @@ class PostTest extends TestCase
         $response->assertViewIs('search');
         $response->assertSee('Test Search Post');
     }
+
+    public function test_scope_without_content_filters_posts_with_null_content(): void
+    {
+        $user = User::factory()->create();
+        $category = Category::factory()->create();
+
+        $postWithEmptyContent = Post::factory()->create([
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+            'title' => 'Post with empty content',
+            'content' => '',
+        ]);
+
+        $postWithContent = Post::factory()->create([
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+            'title' => 'Post with content',
+            'content' => 'This post has content',
+        ]);
+
+        $results = Post::withoutContent()->get();
+
+        $this->assertTrue($results->contains('id', $postWithEmptyContent->id));
+        $this->assertFalse($results->contains('id', $postWithContent->id));
+    }
+
+    public function test_scope_without_content_filters_posts_with_empty_content(): void
+    {
+        $user = User::factory()->create();
+        $category = Category::factory()->create();
+
+        $postWithEmptyContent = Post::factory()->create([
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+            'title' => 'Post with empty content',
+            'content' => '',
+        ]);
+
+        $postWithContent = Post::factory()->create([
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+            'title' => 'Post with content',
+            'content' => 'This post has content',
+        ]);
+
+        $results = Post::withoutContent()->get();
+
+        $this->assertTrue($results->contains('id', $postWithEmptyContent->id));
+        $this->assertFalse($results->contains('id', $postWithContent->id));
+    }
+
+    public function test_scope_without_content_filters_posts_with_whitespace_only_content(): void
+    {
+        $user = User::factory()->create();
+        $category = Category::factory()->create();
+
+        $postWithWhitespaceContent = Post::factory()->create([
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+            'title' => 'Post with whitespace content',
+            'content' => '   ',
+        ]);
+
+        $postWithContent = Post::factory()->create([
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+            'title' => 'Post with content',
+            'content' => 'This post has content',
+        ]);
+
+        $results = Post::withoutContent()->get();
+
+        $this->assertTrue($results->contains('id', $postWithWhitespaceContent->id));
+        $this->assertFalse($results->contains('id', $postWithContent->id));
+    }
+
+    public function test_scope_without_content_excludes_posts_with_content(): void
+    {
+        $user = User::factory()->create();
+        $category = Category::factory()->create();
+
+        $postWithTitle = Post::factory()->create([
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+            'title' => 'Post with title',
+            'content' => '',
+        ]);
+
+        $postWithContent = Post::factory()->create([
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+            'title' => 'Post with content',
+            'content' => 'This post has content',
+        ]);
+
+        $results = Post::withoutContent()->get();
+
+        $this->assertTrue($results->contains('id', $postWithTitle->id));
+        $this->assertFalse($results->contains('id', $postWithContent->id));
+    }
 }

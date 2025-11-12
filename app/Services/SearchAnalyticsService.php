@@ -5,11 +5,51 @@ namespace App\Services;
 use App\Models\SearchClick;
 use App\Models\SearchLog;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class SearchAnalyticsService
 {
+    protected int $cacheHitCount = 0;
+
+    protected int $cacheMissCount = 0;
+
+    /**
+     * Log a cache hit
+     */
+    public function logCacheHit(string $searchType, string $query): void
+    {
+        $this->cacheHitCount++;
+        Cache::increment("search_cache_hits:{$searchType}", 1);
+    }
+
+    /**
+     * Log a cache miss
+     */
+    public function logCacheMiss(string $searchType, string $query): void
+    {
+        $this->cacheMissCount++;
+        Cache::increment("search_cache_misses:{$searchType}", 1);
+    }
+
+    /**
+     * Log a slow query (>1 second)
+     */
+    public function logSlowQuery(string $query, float $executionTime, array $metadata = []): void
+    {
+        Log::warning('Slow search query detected', [
+            'query' => $query,
+            'execution_time' => $executionTime,
+            'search_type' => $metadata['search_type'] ?? 'posts',
+            'result_count' => $metadata['result_count'] ?? 0,
+            'ip_address' => request()->ip(),
+        ]);
+
+        // Track slow queries in cache for analytics
+        Cache::increment('search_slow_queries_count', 1);
+    }
+
     /**
      * Log a search query
      */
@@ -100,8 +140,20 @@ class SearchAnalyticsService
             MIN(execution_time) as min_execution_time,
             COUNT(*) as total_searches,
             SUM(CASE WHEN result_count = 0 THEN 1 ELSE 0 END) as no_result_searches,
-            AVG(result_count) as avg_result_count
+            AVG(result_count) as avg_result_count,
+            SUM(CASE WHEN execution_time > 1000 THEN 1 ELSE 0 END) as slow_queries_count
         ')->first();
+
+        // Get cache hit rates
+        $cacheHits = Cache::get('search_cache_hits:posts', 0);
+        $cacheMisses = Cache::get('search_cache_misses:posts', 0);
+        $totalCacheRequests = $cacheHits + $cacheMisses;
+        $cacheHitRate = $totalCacheRequests > 0
+            ? round(($cacheHits / $totalCacheRequests) * 100, 2)
+            : 0;
+
+        // Get slow queries count
+        $slowQueriesCount = Cache::get('search_slow_queries_count', 0);
 
         return [
             'avg_execution_time' => round($metrics->avg_execution_time ?? 0, 2),
@@ -113,6 +165,10 @@ class SearchAnalyticsService
             'no_result_percentage' => $metrics->total_searches > 0
                 ? round(($metrics->no_result_searches / $metrics->total_searches) * 100, 2)
                 : 0,
+            'slow_queries_count' => $metrics->slow_queries_count ?? 0,
+            'cache_hits' => $cacheHits,
+            'cache_misses' => $cacheMisses,
+            'cache_hit_rate' => $cacheHitRate,
         ];
     }
 

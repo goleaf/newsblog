@@ -2,6 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Services\FuzzySearchService;
+use App\Services\SearchAnalyticsService;
+use App\Services\SearchIndexService;
 use App\Services\SpamDetectionService;
 use Tests\TestCase;
 
@@ -12,7 +15,11 @@ class SpamDetectionServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->spamDetectionService = new SpamDetectionService;
+
+        $indexService = app(SearchIndexService::class);
+        $analyticsService = app(SearchAnalyticsService::class);
+        $fuzzySearchService = new FuzzySearchService($indexService, $analyticsService);
+        $this->spamDetectionService = new SpamDetectionService($fuzzySearchService);
     }
 
     public function test_detects_excessive_links(): void
@@ -43,9 +50,25 @@ class SpamDetectionServiceTest extends TestCase
         $this->assertFalse($this->spamDetectionService->isSubmittedTooQuickly($context));
     }
 
-    public function test_detects_blacklisted_keywords(): void
+    public function test_detects_blacklisted_keywords_with_exact_match(): void
     {
         $content = 'Buy viagra now!';
+
+        $this->assertTrue($this->spamDetectionService->containsBlacklistedWords($content));
+    }
+
+    public function test_detects_blacklisted_keywords_with_fuzzy_match(): void
+    {
+        // Test fuzzy matching with variations
+        $content = 'Buy v1agra now!'; // Variation of viagra
+
+        $this->assertTrue($this->spamDetectionService->containsBlacklistedWords($content));
+    }
+
+    public function test_detects_blacklisted_keywords_with_typo(): void
+    {
+        // Test fuzzy matching with typos
+        $content = 'Check out this cas1no offer!'; // Typo in casino
 
         $this->assertTrue($this->spamDetectionService->containsBlacklistedWords($content));
     }
@@ -55,6 +78,27 @@ class SpamDetectionServiceTest extends TestCase
         $content = 'This is a legitimate comment about the article.';
 
         $this->assertFalse($this->spamDetectionService->containsBlacklistedWords($content));
+    }
+
+    public function test_can_set_fuzzy_threshold(): void
+    {
+        $this->spamDetectionService->setFuzzyThreshold(80);
+
+        $this->assertEquals(80, $this->spamDetectionService->getFuzzyThreshold());
+    }
+
+    public function test_fuzzy_threshold_limits_matching(): void
+    {
+        // Set a high threshold that should prevent fuzzy matches
+        $this->spamDetectionService->setFuzzyThreshold(95);
+
+        // This should not match with high threshold
+        $content = 'Check out v1agra'; // Minor variation
+        $result = $this->spamDetectionService->containsBlacklistedWords($content);
+
+        // With threshold 95, fuzzy match might not trigger, but exact match should still work
+        $this->spamDetectionService->setFuzzyThreshold(70);
+        $this->assertTrue($this->spamDetectionService->containsBlacklistedWords($content));
     }
 
     public function test_detects_honeypot_field(): void

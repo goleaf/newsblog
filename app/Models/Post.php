@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\Services\SearchIndexService;
 use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
 
 class Post extends Model
@@ -129,6 +131,16 @@ class Post extends Model
         return $query->orderBy('view_count', 'desc');
     }
 
+    public function scopeWithoutContent($query)
+    {
+        return $query->whereNotNull('title')
+            ->where(function ($q) {
+                $q->whereNull('content')
+                    ->orWhere('content', '')
+                    ->orWhereRaw("TRIM(content) = ''");
+            });
+    }
+
     public function getFormattedDateAttribute()
     {
         return $this->published_at ? $this->published_at->format('M d, Y') : ($this->created_at ? $this->created_at->format('M d, Y') : null);
@@ -182,6 +194,13 @@ class Post extends Model
             }
         });
 
+        static::created(function ($post) {
+            // Invalidate search index cache when post is created
+            if ($post->isPublished()) {
+                App::make(SearchIndexService::class)->invalidateSearchCaches();
+            }
+        });
+
         static::updating(function ($post) {
             if ($post->isDirty('title') && empty($post->slug)) {
                 $post->slug = Str::slug($post->title);
@@ -190,6 +209,29 @@ class Post extends Model
             if ($post->isDirty('content')) {
                 $post->reading_time = static::calculateReadingTime($post->content);
             }
+        });
+
+        static::updated(function ($post) {
+            // Invalidate search index cache when post is updated
+            // Check if any search-relevant fields changed
+            $searchRelevantFields = ['title', 'excerpt', 'content', 'status', 'published_at', 'category_id'];
+            $hasSearchRelevantChanges = false;
+
+            foreach ($searchRelevantFields as $field) {
+                if ($post->isDirty($field)) {
+                    $hasSearchRelevantChanges = true;
+                    break;
+                }
+            }
+
+            if ($hasSearchRelevantChanges) {
+                App::make(SearchIndexService::class)->invalidateSearchCaches();
+            }
+        });
+
+        static::deleted(function ($post) {
+            // Invalidate search index cache when post is deleted
+            App::make(SearchIndexService::class)->invalidateSearchCaches();
         });
     }
 

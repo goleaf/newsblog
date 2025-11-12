@@ -81,26 +81,26 @@
   - Implement context extraction around matches
   - _Requirements: 11.1, 11.2, 11.3, 11.4, 11.5_
 
-- [ ] 5. Phonetic matching implementation
+- [x] 5. Phonetic matching implementation
   - Add phonetic matching support using Metaphone
   - Implement configuration toggle for phonetic search
   - Add phonetic scoring with lower weight than exact/fuzzy
   - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5_
 
 - [ ] 6. Caching implementation
-  - [ ] 6.1 Implement search result caching
+  - [x] 6.1 Implement search result caching
     - Add cache check in FuzzySearchService
     - Implement cache key generation from query and filters
     - Set 10-minute TTL for results
     - _Requirements: 10.1, 10.2, 10.3_
   
-  - [ ] 6.2 Implement search index caching
+  - [x] 6.2 Implement search index caching
     - Add cache layer in SearchIndexService
     - Implement 24-hour TTL for indexes
     - Add cache invalidation on content updates
     - _Requirements: 10.1, 10.2, 10.3_
   
-  - [ ] 6.3 Implement suggestion caching
+  - [x] 6.3 Implement suggestion caching
     - Cache suggestions with 1-hour TTL
     - Use query prefix as cache key
     - _Requirements: 10.1, 10.2_

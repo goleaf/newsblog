@@ -8,10 +8,15 @@ use App\Models\Comment;
 use App\Models\Newsletter;
 use App\Models\Post;
 use App\Models\User;
+use App\Services\SearchAnalyticsService;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
+    public function __construct(
+        protected SearchAnalyticsService $searchAnalyticsService
+    ) {}
+
     public function index()
     {
         $stats = [
@@ -59,13 +64,30 @@ class DashboardController extends Controller
             ->take(8)
             ->get();
 
+        // Search statistics
+        $searchStats = [
+            'total_searches_today' => \App\Models\SearchLog::whereDate('created_at', today())->count(),
+            'total_searches_week' => \App\Models\SearchLog::where('created_at', '>=', now()->subWeek())->count(),
+            'total_searches_month' => \App\Models\SearchLog::where('created_at', '>=', now()->subMonth())->count(),
+            'no_result_searches' => \App\Models\SearchLog::where('result_count', 0)->where('created_at', '>=', now()->subWeek())->count(),
+        ];
+
+        $topSearchQueries = $this->searchAnalyticsService->getTopQueries(5, 'week');
+        $recentSearches = \App\Models\SearchLog::with('user')
+            ->latest()
+            ->take(5)
+            ->get();
+
         return view('admin.dashboard', compact(
             'stats',
             'recentPosts',
             'popularPosts',
             'recentComments',
             'postsChart',
-            'categoriesStats'
+            'categoriesStats',
+            'searchStats',
+            'topSearchQueries',
+            'recentSearches'
         ));
     }
 }

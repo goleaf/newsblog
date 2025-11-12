@@ -2,25 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreCommentRequest;
 use App\Models\Comment;
 use App\Services\SpamDetectionService;
-use Illuminate\Http\Request;
 
 class CommentController extends Controller
 {
     public function __construct(private SpamDetectionService $spamDetectionService) {}
 
-    public function store(Request $request)
+    public function store(StoreCommentRequest $request)
     {
-        $validated = $request->validate([
-            'post_id' => ['required', 'exists:posts,id'],
-            'author_name' => ['required', 'string', 'max:255'],
-            'author_email' => ['required', 'email', 'max:255'],
-            'content' => ['required', 'string', 'max:5000'],
-            'parent_id' => ['nullable', 'exists:comments,id'],
-            'honeypot' => ['nullable'], // Honeypot field for bot detection
-            'page_load_time' => ['nullable', 'numeric'], // Time when page was loaded
-        ]);
+        $validated = $request->validated();
 
         // Calculate time on page
         $timeOnPage = null;

@@ -3,23 +3,45 @@
     "name": "laravel/laravel",
     "type": "project",
     "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "keywords": [
+        "laravel",
+        "framework"
+    ],
     "license": "MIT",
+    "repositories": [
+        {
+            "type": "path",
+            "url": "./vendor/laravel/nova"
+        },
+        {
+            "type": "path",
+            "url": "./nova-components/CacheManager"
+        },
+        {
+            "type": "path",
+            "url": "./nova-components/MaintenanceMode"
+        }
+    ],
     "require": {
         "php": "^8.2",
         "ezyang/htmlpurifier": "^4.19",
         "intervention/image-laravel": "^1.5",
         "knuckleswtf/scribe": "^5.5",
         "laravel/framework": "^12.0",
+        "laravel/nova": "^5.7.6",
         "laravel/sanctum": "^4.2",
         "laravel/tinker": "^2.10.1",
-        "loilo/fuse": "^7.1"
+        "loilo/fuse": "^7.1",
+        "partitech/php-mistral": "^0.0.22",
+        "app/cache-manager": "@dev",
+        "app/maintenance-mode": "@dev"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.16",
         "fakerphp/faker": "^1.23",
         "laravel/boost": "^1.8",
         "laravel/breeze": "^2.3",
+        "laravel/nova-devtool": "^1.8",
         "laravel/pail": "^1.2.2",
         "laravel/pint": "^1.24",
         "laravel/sail": "^1.41",

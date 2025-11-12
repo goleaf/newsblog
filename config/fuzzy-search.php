@@ -44,9 +44,11 @@ return [
     |--------------------------------------------------------------------------
     |
     | Enable phonetic matching using Metaphone algorithm.
+    | Phonetic matching has lower weight than exact/fuzzy matches.
     |
     */
-    'phonetic_enabled' => env('FUZZY_SEARCH_PHONETIC', false),
+    'phonetic_enabled' => env('FUZZY_SEARCH_PHONETIC', true),
+    'phonetic_weight' => env('FUZZY_SEARCH_PHONETIC_WEIGHT', 0.3),
 
     /*
     |--------------------------------------------------------------------------
@@ -76,6 +78,7 @@ return [
         'enabled' => env('FUZZY_SEARCH_CACHE', true),
         'ttl' => env('FUZZY_SEARCH_CACHE_TTL', 600), // 10 minutes
         'index_ttl' => env('FUZZY_SEARCH_INDEX_TTL', 86400), // 24 hours
+        'suggestion_ttl' => env('FUZZY_SEARCH_SUGGESTION_TTL', 3600), // 1 hour
         'prefix' => 'fuzzy_search',
     ],
 

@@ -27,6 +27,10 @@ class FuzzySearchService
 
     protected string $cachePrefix;
 
+    protected bool $phoneticEnabled;
+
+    protected float $phoneticWeight;
+
     protected SearchAnalyticsService $analyticsService;
 
     public function __construct(SearchIndexService $indexService, SearchAnalyticsService $analyticsService)
@@ -38,6 +42,8 @@ class FuzzySearchService
         $this->cacheEnabled = config('fuzzy-search.cache.enabled', true);
         $this->cacheTtl = config('fuzzy-search.cache.ttl', 600);
         $this->cachePrefix = config('fuzzy-search.cache.prefix', 'fuzzy_search');
+        $this->phoneticEnabled = config('fuzzy-search.phonetic_enabled', false);
+        $this->phoneticWeight = config('fuzzy-search.phonetic_weight', 0.3);
     }
 
     /**
@@ -54,22 +60,54 @@ class FuzzySearchService
             return collect();
         }
 
-        $startTime = microtime(true);
-
         try {
             $this->validateQuery($query);
 
             $threshold = $threshold ?? $this->threshold;
             $limit = $limit ?? 15;
 
+            // Check cache for identical queries (Requirement 10.1)
+            $options = [
+                'threshold' => $threshold,
+                'limit' => $limit,
+                'filters' => $filters,
+            ];
+            $cacheKey = $this->getCacheKey('posts', $query, $options);
+
+            if ($this->cacheEnabled && Cache::has($cacheKey)) {
+                Log::debug('Search result cache hit', ['query' => $query]);
+
+                return Cache::get($cacheKey);
+            }
+
+            $startTime = microtime(true);
+
             $index = $this->indexService->getIndex('posts');
             $results = $this->performSimpleFuzzySearch($query, $index, $threshold, $filters);
 
+            $executionTime = (microtime(true) - $startTime) * 1000;
+
+            // Log slow queries (>1 second)
+            if ($executionTime > 1000) {
+                $this->analyticsService->logSlowQuery($query, $executionTime, [
+                    'search_type' => 'posts',
+                    'result_count' => $results->count(),
+                ]);
+            }
+
             $results = $results->take($limit);
 
-            if ($logSearch) {
-                $executionTime = microtime(true) - $startTime;
+            // Cache results for 10 minutes (Requirement 10.3)
+            if ($this->cacheEnabled) {
+                Cache::put($cacheKey, $results, $this->cacheTtl);
+                Log::debug('Search results cached', [
+                    'query' => $query,
+                    'ttl' => $this->cacheTtl,
+                    'result_count' => $results->count(),
+                ]);
+            }
 
+            if ($logSearch) {
                 $this->analyticsService->logQuery(
                     query: $query,
                     resultCount: $results->count(),
@@ -102,11 +140,13 @@ class FuzzySearchService
         $results = collect();
         $queryLower = mb_strtolower($query);
 
-        foreach ($index as $item) {
-            if (! $this->passesFilters($item, $filters)) {
-                continue;
-            }
+        // Pre-filter candidates by status and date before fuzzy matching
+        $candidates = $this->preFilterCandidates($index, $filters);
 
+        // Limit candidate set to 1000 items for performance
+        $candidates = array_slice($candidates, 0, 1000);
+
+        foreach ($candidates as $item) {
             $titleScore = $this->calculateScore($queryLower, mb_strtolower($item['title']));
             $excerptScore = isset($item['excerpt'])
                 ? $this->calculateScore($queryLower, mb_strtolower($item['excerpt'])) * 0.5
@@ -142,9 +182,12 @@ class FuzzySearchService
                 return $this->exactSearch($query, $filters, $limit);
             }
 
+            // Check cache for identical queries (Requirement 10.1)
             $cacheKey = $this->getCacheKey('posts', $query, $options);
 
             if ($this->cacheEnabled && Cache::has($cacheKey)) {
+                Log::debug('Search result cache hit', ['query' => $query]);
+
                 return Cache::get($cacheKey);
             }
 
@@ -155,14 +198,25 @@ class FuzzySearchService
 
             $executionTime = (microtime(true) - $startTime) * 1000;
 
+            // Log slow queries (>1 second)
             if ($executionTime > 1000) {
+                $this->analyticsService->logSlowQuery($query, $executionTime, [
+                    'search_type' => 'posts',
+                    'result_count' => $results->count(),
+                ]);
                 throw new SearchTimeoutException('Search exceeded 1 second', $executionTime);
             }
 
             $results = $results->take($limit);
 
+            // Cache results for 10 minutes (Requirement 10.3)
             if ($this->cacheEnabled) {
                 Cache::put($cacheKey, $results, $this->cacheTtl);
+                Log::debug('Search results cached', [
+                    'query' => $query,
+                    'ttl' => $this->cacheTtl,
+                    'result_count' => $results->count(),
+                ]);
             }
 
             return $results;
@@ -256,6 +310,7 @@ class FuzzySearchService
 
     /**
      * Get search suggestions for autocomplete
+     * Uses query prefix as cache key with 1-hour TTL (Requirements 10.1, 10.2)
      */
     public function getSuggestions(string $query, int $limit = 5): array
     {
@@ -265,9 +320,12 @@ class FuzzySearchService
             return [];
         }
 
-        $cacheKey = "{$this->cachePrefix}:suggestions:".md5($query);
+        // Use query prefix as cache key (Requirement 10.2)
+        $cacheKey = $this->getSuggestionCacheKey($query);
 
         if ($this->cacheEnabled && Cache::has($cacheKey)) {
+            Log::debug('Suggestion cache hit', ['query' => $query]);
+
             return Cache::get($cacheKey);
         }
 
@@ -303,8 +361,15 @@ class FuzzySearchService
                 ->values()
                 ->toArray();
 
+            // Cache suggestions with 1-hour TTL (Requirement 10.2)
             if ($this->cacheEnabled) {
-                Cache::put($cacheKey, $result, 3600); // 1 hour TTL
+                $suggestionTtl = config('fuzzy-search.cache.suggestion_ttl', 3600);
+                Cache::put($cacheKey, $result, $suggestionTtl);
+                Log::debug('Suggestions cached', [
+                    'query' => $query,
+                    'ttl' => $suggestionTtl,
+                    'count' => count($result),
+                ]);
             }
 
             return $result;
@@ -382,6 +447,22 @@ class FuzzySearchService
                             }
                         }
 
+                        // Check if any field has a phonetic match
+                        $isPhonetic = false;
+                        foreach ($fields as $field) {
+                            if (isset($item[$field])) {
+                                $fieldValue = is_array($item[$field])
+                                    ? implode(' ', $item[$field])
+                                    : $item[$field];
+                                if ($this->isPhoneticMatch($queryLower, mb_strtolower($fieldValue))) {
+                                    $isPhonetic = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        $highlights['is_phonetic'] = $isPhonetic;
+
                         $results->push(SearchResult::fromPost($post, $normalizedScore, $highlights));
                     }
                 }
@@ -404,6 +485,60 @@ class FuzzySearchService
     public function isEnabled(string $context = 'posts'): bool
     {
         return config("fuzzy-search.enabled.{$context}", true);
+    }
+
+    /**
+     * Check if phonetic matching is enabled
+     */
+    public function isPhoneticEnabled(): bool
+    {
+        return $this->phoneticEnabled;
+    }
+
+    /**
+     * Check if a match is likely phonetic
+     * Returns true if the query and text sound similar but are spelled differently
+     */
+    public function isPhoneticMatch(string $query, string $text): bool
+    {
+        if (! $this->phoneticEnabled) {
+            return false;
+        }
+
+        $query = mb_strtolower(trim($query));
+        $text = mb_strtolower(trim($text));
+
+        // Not phonetic if exact match or contains
+        if ($query === $text || str_contains($text, $query)) {
+            return false;
+        }
+
+        // Check if phonetic codes match
+        $queryWords = explode(' ', $query);
+        $textWords = explode(' ', $text);
+
+        foreach ($queryWords as $queryWord) {
+            if (strlen($queryWord) < 3) {
+                continue;
+            }
+
+            $queryPhonetic = metaphone($queryWord);
+
+            foreach ($textWords as $textWord) {
+                if (strlen($textWord) < 3) {
+                    continue;
+                }
+
+                $textPhonetic = metaphone($textWord);
+
+                // If phonetic codes match, it's a phonetic match
+                if ($queryPhonetic === $textPhonetic) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -432,10 +567,18 @@ class FuzzySearchService
                 if ($post) {
                     // Generate highlights for matched portions
                     $highlightedItem = $this->highlightResultFields($item, $query, ['title', 'excerpt']);
+
+                    // Check if this is a phonetic match
+                    $isPhonetic = $this->isPhoneticMatch($queryLower, mb_strtolower($item['title']));
+                    if (! $isPhonetic && isset($item['excerpt'])) {
+                        $isPhonetic = $this->isPhoneticMatch($queryLower, mb_strtolower($item['excerpt']));
+                    }
+
                     $highlights = [
                         'title' => $highlightedItem['title_highlighted'] ?? $item['title'],
                         'excerpt' => $highlightedItem['excerpt_highlighted'] ?? $item['excerpt'] ?? '',
                         'excerpt_context' => $highlightedItem['excerpt_context'] ?? $item['excerpt'] ?? '',
+                        'is_phonetic' => $isPhonetic,
                     ];
 
                     $results->push(SearchResult::fromPost($post, $score, $highlights));
@@ -447,7 +590,15 @@ class FuzzySearchService
     }
 
     /**
-     * Calculate fuzzy match score using Levenshtein distance
+     * Public method to calculate fuzzy match score for external use (e.g., spam detection).
+     */
+    public function calculateFuzzyScore(string $query, string $text): float
+    {
+        return $this->calculateScore($query, $text);
+    }
+
+    /**
+     * Calculate fuzzy match score using Levenshtein distance and phonetic matching
      */
     protected function calculateScore(string $query, string $text): float
     {
@@ -491,7 +642,62 @@ class FuzzySearchService
             }
         }
 
+        // Apply phonetic matching if enabled and no good fuzzy match found
+        if ($this->phoneticEnabled && $maxWordScore < $this->threshold) {
+            $phoneticScore = $this->calculatePhoneticScore($query, $text);
+            // Phonetic matches are weighted lower than exact/fuzzy matches
+            $phoneticScore = $phoneticScore * $this->phoneticWeight;
+            $maxWordScore = max($maxWordScore, $phoneticScore);
+        }
+
         return $maxWordScore;
+    }
+
+    /**
+     * Calculate phonetic match score using Metaphone algorithm
+     */
+    protected function calculatePhoneticScore(string $query, string $text): float
+    {
+        $queryWords = explode(' ', $query);
+        $textWords = explode(' ', $text);
+
+        $maxPhoneticScore = 0;
+
+        foreach ($queryWords as $queryWord) {
+            // Skip very short words for phonetic matching
+            if (strlen($queryWord) < 3) {
+                continue;
+            }
+
+            $queryPhonetic = metaphone($queryWord);
+
+            foreach ($textWords as $textWord) {
+                if (strlen($textWord) < 3) {
+                    continue;
+                }
+
+                $textPhonetic = metaphone($textWord);
+
+                // Exact phonetic match
+                if ($queryPhonetic === $textPhonetic) {
+                    $maxPhoneticScore = max($maxPhoneticScore, 100.0);
+
+                    continue;
+                }
+
+                // Calculate Levenshtein distance on phonetic codes
+                if (! empty($queryPhonetic) && ! empty($textPhonetic)) {
+                    $phoneticDistance = levenshtein($queryPhonetic, $textPhonetic);
+                    $phoneticScore = max(0, 100 - ($phoneticDistance * 30));
+
+                    if ($phoneticScore > $maxPhoneticScore) {
+                        $maxPhoneticScore = $phoneticScore;
+                    }
+                }
+            }
+        }
+
+        return $maxPhoneticScore;
     }
 
     /**
@@ -520,16 +726,19 @@ class FuzzySearchService
     public function highlightMatches(string $text, string $query): string
     {
         if (empty($text) || empty($query)) {
-            return $text;
+            return e($text);
         }
 
         $highlightEnabled = config('fuzzy-search.highlighting.enabled', true);
         if (! $highlightEnabled) {
-            return $text;
+            return e($text);
         }
 
         $tag = config('fuzzy-search.highlighting.tag', 'mark');
         $class = config('fuzzy-search.highlighting.class', 'search-highlight');
+
+        // First escape the text to prevent XSS
+        $escapedText = e($text);
 
         $queryLower = mb_strtolower($query);
         $queryWords = array_filter(explode(' ', $queryLower));
@@ -539,15 +748,17 @@ class FuzzySearchService
             return preg_quote($word, '/');
         }, $queryWords);
 
-        // Build regex pattern for all query words
+        // Build regex pattern for all query words (match on escaped text)
+        // Note: After escaping, HTML entities like &lt; appear, so we need to match the escaped version
         $pattern = '/\b('.implode('|', $queryWords).')\b/iu';
 
         // Replace matches with highlighted version
+        // The matches are already escaped since we're working with escaped text
         $highlighted = preg_replace_callback($pattern, function ($matches) use ($tag, $class) {
             return "<{$tag} class=\"{$class}\">{$matches[0]}</{$tag}>";
-        }, $text);
+        }, $escapedText);
 
-        return $highlighted ?? $text;
+        return $highlighted ?? $escapedText;
     }
 
     /**
@@ -561,7 +772,7 @@ class FuzzySearchService
     public function extractContext(string $text, string $query, ?int $contextLength = null): string
     {
         if (empty($text) || empty($query)) {
-            return $text;
+            return e($text);
         }
 
         $contextLength = $contextLength ?? config('fuzzy-search.highlighting.context_length', 200);
@@ -582,9 +793,11 @@ class FuzzySearchService
             }
         }
 
-        // If no match found, return truncated text
+        // If no match found, return truncated text (HTML escaped)
         if ($position === false) {
-            return mb_substr($text, 0, $contextLength).(mb_strlen($text) > $contextLength ? '...' : '');
+            $truncated = mb_substr($text, 0, $contextLength).(mb_strlen($text) > $contextLength ? '...' : '');
+
+            return e($truncated);
         }
 
         // Calculate start and end positions for context
@@ -615,7 +828,8 @@ class FuzzySearchService
         $prefix = $start > 0 ? '...' : '';
         $suffix = $end < mb_strlen($text) ? '...' : '';
 
-        return $prefix.$context.$suffix;
+        // HTML escape the context before returning
+        return e($prefix.$context.$suffix);
     }
 
     /**
@@ -646,6 +860,39 @@ class FuzzySearchService
         }
 
         return $highlighted;
+    }
+
+    /**
+     * Pre-filter candidates by status and date before fuzzy matching
+     * This improves performance by reducing the candidate set
+     */
+    protected function preFilterCandidates(array $index, array $filters = []): array
+    {
+        $candidates = [];
+
+        foreach ($index as $item) {
+            // Filter by status - only include published posts
+            if (isset($item['status']) && $item['status'] !== 'published') {
+                continue;
+            }
+
+            // Filter by published_at - only include posts that are published
+            if (isset($item['published_at'])) {
+                $publishedAt = strtotime($item['published_at']);
+                if ($publishedAt === false || $publishedAt > time()) {
+                    continue;
+                }
+            }
+
+            // Apply additional filters
+            if (! $this->passesFilters($item, $filters)) {
+                continue;
+            }
+
+            $candidates[] = $item;
+        }
+
+        return $candidates;
     }
 
     /**
@@ -746,12 +993,54 @@ class FuzzySearchService
     }
 
     /**
-     * Get cache key for search results
+     * Get cache key for search results (Requirement 10.2)
+     * Generates unique key from query and filters
      */
     protected function getCacheKey(string $type, string $query, array $options): string
     {
         $optionsHash = md5(json_encode($options));
 
         return "{$this->cachePrefix}:results:{$type}:".md5($query).":{$optionsHash}";
+    }
+
+    /**
+     * Get cache key for suggestions (Requirement 10.2)
+     * Uses query prefix as cache key
+     */
+    protected function getSuggestionCacheKey(string $query): string
+    {
+        return "{$this->cachePrefix}:suggestions:".md5($query);
+    }
+
+    /**
+     * Clear all search result caches
+     * This is useful when content is updated and cached results should be invalidated
+     */
+    public function clearResultCache(): void
+    {
+        // Note: Without cache tags, we can't efficiently clear all result caches
+        // Individual caches will expire via TTL (10 minutes)
+        // For immediate invalidation, the SearchIndexService handles index cache clearing
+        Log::info('Search result caches will expire via TTL', [
+            'ttl' => $this->cacheTtl,
+        ]);
+    }
+
+    /**
+     * Clear suggestion cache for a specific query or all suggestions
+     */
+    public function clearSuggestionCache(?string $query = null): void
+    {
+        if ($query !== null) {
+            $cacheKey = $this->getSuggestionCacheKey($query);
+            Cache::forget($cacheKey);
+            Log::debug('Suggestion cache cleared', ['query' => $query]);
+        } else {
+            // Without cache tags, we can't efficiently clear all suggestion caches
+            // Individual caches will expire via TTL (1 hour)
+            Log::info('Suggestion caches will expire via TTL', [
+                'ttl' => config('fuzzy-search.cache.suggestion_ttl', 3600),
+            ]);
+        }
     }
 }

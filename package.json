@@ -4,7 +4,11 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "dev": "vite"
+        "dev": "vite",
+        "build-cache-manager": "cd nova-components/CacheManager && npm run dev",
+        "build-cache-manager-prod": "cd nova-components/CacheManager && npm run prod",
+        "build-maintenance-mode": "cd nova-components/MaintenanceMode && npm run dev",
+        "build-maintenance-mode-prod": "cd nova-components/MaintenanceMode && npm run prod"
     },
     "devDependencies": {
         "@tailwindcss/forms": "^0.5.2",

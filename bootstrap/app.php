@@ -22,6 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'security.headers' => \App\Http\Middleware\SecurityHeaders::class,
         ]);
 
+        $middleware->prepend(\App\Http\Middleware\MaintenanceModeBypass::class);
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
 
         // Configure rate limiting for API
@@ -29,7 +30,11 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // Configure custom rate limiters
         RateLimiter::for('comments', function (Request $request) {
-            return Limit::perMinute(3)->by($request->ip());
+            return Limit::perMinute(5)->by($request->ip());
+        });
+
+        RateLimiter::for('search', function (Request $request) {
+            return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });
     })
     ->withSchedule(function (Schedule $schedule): void {
@@ -51,6 +56,27 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // Check for broken links weekly
         $schedule->job(new \App\Jobs\CheckBrokenLinks)->weekly();
+
+        // Nova performance monitoring every 5 minutes
+        $schedule->command('nova:monitor-performance --period=hour')
+            ->everyFiveMinutes()
+            ->withoutOverlapping()
+            ->runInBackground();
+
+        // Check Nova errors every minute
+        if (file_exists(base_path('scripts/check-nova-errors.sh'))) {
+            $schedule->exec('bash '.base_path('scripts/check-nova-errors.sh'))
+                ->everyMinute()
+                ->withoutOverlapping()
+                ->runInBackground();
+        }
+
+        // Generate daily Nova performance report
+        if (file_exists(base_path('scripts/generate-daily-report.sh'))) {
+            $schedule->exec('bash '.base_path('scripts/generate-daily-report.sh'))
+                ->dailyAt('23:59')
+                ->withoutOverlapping();
+        }
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

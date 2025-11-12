@@ -37,7 +37,7 @@ This implementation plan covers the remaining features needed to complete the Te
   - Add honeypot field validation
   - _Requirements: 31.1, 31.2, 31.3, 31.4_
 
-- [ ] 5. Integrate Spam Detection with Comment System
+- [x] 5. Integrate Spam Detection with Comment System
   - Update `CommentController` to use `SpamDetectionService`
   - Add honeypot field to comment forms
   - Implement time-on-page tracking in comment forms
