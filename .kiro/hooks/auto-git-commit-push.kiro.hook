@@ -1,0 +1,26 @@
+{
+  "enabled": true,
+  "name": "Auto Git Commit & Push",
+  "description": "Automatically stages, commits, and pushes all code changes to git when task completion is detected, generating detailed commit messages that describe all modifications",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "**/*.php",
+      "**/*.js",
+      "**/*.vue",
+      "**/*.blade.php",
+      "**/*.css",
+      "**/*.json",
+      "**/*.md",
+      "**/*.yaml",
+      "**/*.yml",
+      "composer.lock",
+      "package-lock.json"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A task has been completed and files have been modified. Please:\n\n1. Review all changed files using git status\n2. Generate a comprehensive git commit message that includes:\n   - A clear, concise summary line (50 chars or less)\n   - Detailed bullet points describing each significant change\n   - Files affected and what was modified in each\n   - Any new features, bug fixes, or refactoring performed\n   - Breaking changes if any\n3. Stage all changes with `git add .`\n4. Commit with the detailed message using `git commit -m \"message\"`\n5. Push to the remote repository with `git push`\n\nMake sure the commit message is informative and follows conventional commit format where appropriate (feat:, fix:, refactor:, docs:, etc.)"
+  }
+}

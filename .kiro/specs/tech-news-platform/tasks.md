@@ -29,35 +29,22 @@ This implementation plan covers the remaining features needed to complete the Te
   - Add EXIF metadata stripping functionality
   - _Requirements: 4.3, 18.1, 18.2, 18.3_
 
-- [ ] 4. Implement Spam Detection Service
+- [-] 4. Implement Spam Detection Service
   - Create `SpamDetectionService` class
   - Implement link count checking (max 3 links)
   - Add submission speed validation (minimum 3 seconds)
   - Implement blacklisted keyword checking
   - Add honeypot field validation
   - Configure IP-based rate limiting for comments
-  - _Requirements: 5.2, 31.1, 31.2, 31.3, 31.4, 31.5_
-
-- [ ] 5. Implement Search Service
   - Create `SearchService` with full-text search capabilities
   - Implement multi-field search (title, content, excerpt)
   - Add relevance-based sorting (exact title matches first)
   - Implement search result highlighting
   - Add pagination support (15 results per page)
-  - _Requirements: 8.1, 8.2, 8.3, 8.5_
-
----
-
-## Phase 2: Advanced Features
-
-- [-] 6. Implement Related Posts Algorithm
   - Create `RelatedPostsService` class
   - Implement weighted scoring: 40% category, 40% tags, 20% date proximity
   - Add caching for related posts (1 hour TTL)
   - Display maximum 4 related posts per post
-  - _Requirements: 22.1, 22.2, 22.3, 22.4, 22.5_
-
-- [ ] 7. Implement Post Revision System
   - Create `PostRevisionService` class
   - Implement automatic revision creation on post update
   - Add revision limit enforcement (max 25 revisions)
@@ -65,6 +52,9 @@ This implementation plan covers the remaining features needed to complete the Te
   - Create diff comparison between revisions
   - Add revision history view in admin panel
   - _Requirements: 36.1, 36.2, 36.3, 36.4, 36.5_
+  - _Requirements: 5.2, 31.1, 31.2, 31.3, 31.4, 31.5_
+  - _Requirements: 22.1, 22.2, 22.3, 22.4, 22.5_
+  - _Requirements: 8.1, 8.2, 8.3, 8.5_
 
 - [ ] 8. Implement Post Series Management
   - Create `Series` model and migration

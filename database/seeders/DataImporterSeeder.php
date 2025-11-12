@@ -43,6 +43,7 @@ class DataImporterSeeder extends Seeder
         $imported = 0;
         $skipped = 0;
         $lineNumber = 0;
+        $maxImports = 5000;
 
         foreach (File::lines($dataFile) as $title) {
             $lineNumber++;
@@ -52,6 +53,11 @@ class DataImporterSeeder extends Seeder
                 $skipped++;
 
                 continue;
+            }
+
+            if ($imported >= $maxImports) {
+                $this->command->info("Reached maximum import limit of {$maxImports} articles.");
+                break;
             }
 
             $slug = Str::slug($title);

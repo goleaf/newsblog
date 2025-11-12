@@ -1,0 +1,20 @@
+{
+  "enabled": true,
+  "name": "Documentation Auto-Organizer",
+  "description": "Automatically moves markdown files from root to docs/ folder with organized structure (admin/, frontend/, functionality/ subfolders), keeps all documentation up-to-date, and updates changelog.md and readme.md in root after every file save with comprehensive project information",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "*.md",
+      "**/*.php",
+      "**/*.js",
+      "**/*.vue",
+      "**/*.blade.php"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Review all markdown files in the root directory. Move any documentation files to docs/ folder with this structure:\n- docs/admin/ - for admin panel documentation\n- docs/frontend/ - for frontend/user-facing documentation  \n- docs/functionality/ - for feature and functionality documentation\n\nEnsure all documentation in docs/ is current and reflects the latest project state. Then update both changelog.md and readme.md in the root directory with:\n- Detailed information about all recent changes\n- Complete feature list and project overview\n- Use world-class documentation formatting standards (clear sections, proper markdown, tables where appropriate, badges, etc.)\n- Include version information, installation steps, usage examples, and contribution guidelines\n\nMake the documentation comprehensive, professional, and easy to navigate."
+  }
+}
