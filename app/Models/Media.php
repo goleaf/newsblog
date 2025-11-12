@@ -18,7 +18,15 @@ class Media extends Model
         'alt_text',
         'title',
         'caption',
+        'metadata',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'metadata' => 'array',
+        ];
+    }
 
     public function user()
     {
@@ -41,6 +49,50 @@ class Media extends Model
         }
 
         return round($bytes, 2).' '.$units[$i];
+    }
+
+    /**
+     * Get URL for a specific image variant
+     */
+    public function getVariantUrl(string $variant = 'original', bool $webp = false): string
+    {
+        if ($variant === 'original' || $this->file_type !== 'image') {
+            return $this->url;
+        }
+
+        $pathInfo = pathinfo($this->file_path);
+        $baseFilename = $pathInfo['filename'];
+        $directory = $pathInfo['dirname'];
+
+        $extension = $webp ? 'webp' : 'jpg';
+        $variantFilename = "{$baseFilename}_{$variant}.{$extension}";
+        $variantPath = "{$directory}/{$variantFilename}";
+
+        return asset('storage/'.$variantPath);
+    }
+
+    /**
+     * Get thumbnail URL
+     */
+    public function getThumbnailUrlAttribute(): string
+    {
+        return $this->getVariantUrl('thumbnail');
+    }
+
+    /**
+     * Get medium size URL
+     */
+    public function getMediumUrlAttribute(): string
+    {
+        return $this->getVariantUrl('medium');
+    }
+
+    /**
+     * Get large size URL
+     */
+    public function getLargeUrlAttribute(): string
+    {
+        return $this->getVariantUrl('large');
     }
 
     public function scopeImages($query)

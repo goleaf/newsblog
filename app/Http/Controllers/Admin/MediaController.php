@@ -4,11 +4,16 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Media;
+use App\Services\ImageProcessingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class MediaController extends Controller
 {
+    public function __construct(
+        private ImageProcessingService $imageProcessingService
+    ) {}
+
     public function index(Request $request)
     {
         $query = Media::with('user');
@@ -34,23 +39,37 @@ class MediaController extends Controller
         ]);
 
         $file = $request->file('file');
-        $path = $file->store('media', 'public');
 
-        Media::create([
-            'user_id' => auth()->id(),
-            'file_name' => $file->getClientOriginalName(),
-            'file_path' => $path,
-            'file_type' => str_starts_with($file->getMimeType(), 'image/') ? 'image' : 'document',
-            'file_size' => $file->getSize(),
-            'mime_type' => $file->getMimeType(),
-        ]);
+        // Check if file is an image
+        if ($this->imageProcessingService->isImage($file)) {
+            // Process image with variants, compression, and WebP generation
+            $media = $this->imageProcessingService->processUpload($file, auth()->id());
+        } else {
+            // Handle non-image files (documents)
+            $path = $file->store('media', 'public');
+
+            $media = Media::create([
+                'user_id' => auth()->id(),
+                'file_name' => $file->getClientOriginalName(),
+                'file_path' => $path,
+                'file_type' => 'document',
+                'file_size' => $file->getSize(),
+                'mime_type' => $file->getMimeType(),
+            ]);
+        }
 
         return redirect()->back()->with('success', 'File uploaded successfully.');
     }
 
     public function destroy(Media $media)
     {
-        Storage::disk('public')->delete($media->file_path);
+        // Use service to delete media and all variants
+        if ($media->file_type === 'image') {
+            $this->imageProcessingService->deleteMedia($media);
+        } else {
+            Storage::disk('public')->delete($media->file_path);
+        }
+
         $media->delete();
 
         return redirect()->back()->with('success', 'Media deleted successfully.');

@@ -29,6 +29,8 @@ class PublishScheduledPostsCommand extends Command
     {
         $posts = Post::where('status', 'scheduled')
             ->where('scheduled_at', '<=', now())
+            ->with('user:id,email,name')
+            ->select('id', 'user_id', 'title', 'slug', 'status', 'scheduled_at', 'published_at')
             ->get();
 
         if ($posts->isEmpty()) {

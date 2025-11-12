@@ -6,3 +6,4 @@ The admin API console MUST display per-endpoint usage, rate-limit violations, to
 #### Scenario: Investigate rate limit spike
 - **WHEN** a client exceeds the rate limit on `/api/v1/posts`
 - **THEN** the dashboard highlights the endpoint with violation counts, shows the offending API key/IP, enables the admin to throttle further or block it, and logs any rule changes with timestamp and actor.
+

@@ -25,3 +25,4 @@ Prompts 19-40 expand TechNewsHub beyond publishing basics into governance, autom
 - Should advanced search default to Scout database driver or require Meilisearch? (Spec will allow either path.)
 - Preferred provider for social auto-posting (native APIs vs. third-party)?
 - How to balance optional vs. mandatory GDPR tooling when no user accounts exist? (Spec will target admin/editor roles only.)
+
