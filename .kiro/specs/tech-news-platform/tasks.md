@@ -29,22 +29,40 @@ This implementation plan covers the remaining features needed to complete the Te
   - Add EXIF metadata stripping functionality
   - _Requirements: 4.3, 18.1, 18.2, 18.3_
 
-- [-] 4. Implement Spam Detection Service
+- [x] 4. Implement Spam Detection Service
   - Create `SpamDetectionService` class
   - Implement link count checking (max 3 links)
   - Add submission speed validation (minimum 3 seconds)
   - Implement blacklisted keyword checking
   - Add honeypot field validation
-  - Configure IP-based rate limiting for comments
+  - _Requirements: 31.1, 31.2, 31.3, 31.4_
+
+- [ ] 5. Integrate Spam Detection with Comment System
+  - Update `CommentController` to use `SpamDetectionService`
+  - Add honeypot field to comment forms
+  - Implement time-on-page tracking in comment forms
+  - Configure IP-based rate limiting for comments (5 per minute)
+  - Add spam status to comments table if not present
+  - _Requirements: 31.1, 31.2, 31.3, 31.4, 31.5_
+
+- [ ] 6. Implement Search Service
   - Create `SearchService` with full-text search capabilities
   - Implement multi-field search (title, content, excerpt)
   - Add relevance-based sorting (exact title matches first)
   - Implement search result highlighting
   - Add pagination support (15 results per page)
+  - Create search controller and routes
+  - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.5_
+
+- [ ] 7. Implement Related Posts Service
   - Create `RelatedPostsService` class
   - Implement weighted scoring: 40% category, 40% tags, 20% date proximity
   - Add caching for related posts (1 hour TTL)
   - Display maximum 4 related posts per post
+  - Add related posts section to post view
+  - _Requirements: 22.1, 22.2, 22.3, 22.4, 22.5_
+
+- [ ] 8. Implement Post Revision System
   - Create `PostRevisionService` class
   - Implement automatic revision creation on post update
   - Add revision limit enforcement (max 25 revisions)
@@ -52,11 +70,12 @@ This implementation plan covers the remaining features needed to complete the Te
   - Create diff comparison between revisions
   - Add revision history view in admin panel
   - _Requirements: 36.1, 36.2, 36.3, 36.4, 36.5_
-  - _Requirements: 5.2, 31.1, 31.2, 31.3, 31.4, 31.5_
-  - _Requirements: 22.1, 22.2, 22.3, 22.4, 22.5_
-  - _Requirements: 8.1, 8.2, 8.3, 8.5_
 
-- [ ] 8. Implement Post Series Management
+---
+
+## Phase 2: Content Organization and Discovery
+
+- [ ] 9. Implement Post Series Management
   - Create `Series` model and migration
   - Create `post_series` pivot table with order column
   - Implement series CRUD operations in admin panel
@@ -64,14 +83,15 @@ This implementation plan covers the remaining features needed to complete the Te
   - Add series display component with progress indicator
   - _Requirements: 37.1, 37.2, 37.3, 37.4, 37.5_
 
-- [ ] 9. Implement Bookmark System
+- [ ] 10. Implement Bookmark System
   - Create `BookmarkController` with toggle and index methods
   - Implement AJAX bookmark toggle endpoint
   - Add bookmark icon state management (filled/outline)
   - Create user reading list view
+  - Add bookmark count to post statistics
   - _Requirements: 38.1, 38.2, 38.3, 38.4, 38.5_
 
-- [ ] 10. Implement Advanced Search with Filters
+- [ ] 11. Implement Advanced Search with Filters
   - Create `AdvancedSearchService` class
   - Implement date range filtering
   - Add author dropdown filter
@@ -86,15 +106,15 @@ This implementation plan covers the remaining features needed to complete the Te
 
 ## Phase 3: Analytics and Monitoring
 
-- [ ] 11. Implement View Tracking System
+- [ ] 12. Implement View Tracking System
   - Create `PostViewController` for view tracking
   - Implement session-based duplicate prevention
   - Store view metadata (IP, user agent, referer)
   - Add view count increment logic
-  - Create analytics dashboard with charts
-  - _Requirements: 15.1, 15.2, 15.3, 15.5_
+  - Integrate view tracking into post show route
+  - _Requirements: 15.1, 15.2_
 
-- [ ] 12. Implement Dashboard Metrics
+- [ ] 13. Enhance Dashboard with Analytics
   - Create `DashboardService` for metrics calculation
   - Implement 30-day post comparison statistics
   - Add view count aggregation (today, week, month)
@@ -102,9 +122,9 @@ This implementation plan covers the remaining features needed to complete the Te
   - Implement top 10 posts by views
   - Add posts published chart (Chart.js)
   - Implement metrics caching (10 minutes TTL)
-  - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5_
+  - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5, 15.3, 15.4, 15.5_
 
-- [ ] 13. Implement Performance Monitoring
+- [ ] 14. Implement Performance Monitoring Dashboard
   - Create `PerformanceMetricsService` class
   - Implement page load time tracking
   - Add slow query detection and logging (>100ms)
@@ -117,34 +137,37 @@ This implementation plan covers the remaining features needed to complete the Te
 
 ## Phase 4: SEO and Content Discovery
 
-- [ ] 14. Implement SEO Meta Tag System
+- [ ] 15. Implement SEO Meta Tag System
   - Add meta tag generation method to Post model
   - Implement Open Graph tags for social sharing
   - Add Twitter Card meta tags
   - Create Schema.org Article structured data
   - Implement meta description validation (max 160 chars)
+  - Update post views to include meta tags
   - _Requirements: 9.1, 9.3, 9.4, 20.4, 20.5_
 
-- [ ] 15. Implement Sitemap Generation
+- [ ] 16. Implement Sitemap Generation
   - Create `SitemapService` class
   - Implement XML sitemap generation for posts, categories, pages, tags
   - Add automatic regeneration on content publish/update
   - Implement sitemap splitting for large sites (>50,000 URLs)
   - Add lastmod, changefreq, and priority elements
   - Serve sitemap at /sitemap.xml with proper content-type
+  - Create sitemap generation command
   - _Requirements: 9.2, 44.1, 44.2, 44.3, 44.4, 44.5_
 
-- [ ] 16. Implement Breadcrumb Navigation
+- [ ] 17. Implement Breadcrumb Navigation
   - Create `BreadcrumbService` class
   - Implement hierarchical breadcrumb generation
   - Add Schema.org BreadcrumbList structured data
   - Implement mobile-responsive breadcrumb truncation
   - Make breadcrumb segments clickable
+  - Add breadcrumbs to all relevant views
   - _Requirements: 25.1, 25.2, 25.3, 25.4, 25.5_
 
-- [-] 17. Implement Broken Link Checker
-  - Enhance `CheckBrokenLinks` job with full functionality
+- [ ] 18. Enhance Broken Link Checker
   - Create `BrokenLink` model and migration
+  - Enhance `CheckBrokenLinks` job with database storage
   - Implement weekly link scanning schedule
   - Add HTTP status code checking (404, timeouts)
   - Create broken links report in admin panel
@@ -155,76 +178,83 @@ This implementation plan covers the remaining features needed to complete the Te
 
 ## Phase 5: User Experience Enhancements
 
-- [ ] 18. Implement Comment Reply and Nesting
+- [ ] 19. Implement Comment Reply and Nesting
   - Add inline reply form component with Alpine.js
   - Implement nested comment display with indentation
   - Add depth validation (max 3 levels)
   - Create reply notification system
   - Implement cancel reply functionality
-  - _Requirements: 5.4, 23.1, 23.2, 23.3, 23.4, 23.5_
+  - Update comment views with nested display
+  - _Requirements: 23.1, 23.2, 23.3, 23.4, 23.5_
 
-- [ ] 19. Implement Reading Progress Indicator
+- [ ] 20. Implement Reading Progress Indicator
   - Create Alpine.js reading progress component
   - Implement scroll-based progress calculation
   - Add fixed position progress bar at top
   - Implement smooth animation (100ms transitions)
   - Calculate progress based on article content height
+  - Add to post show view
   - _Requirements: 21.1, 21.2, 21.3, 21.4, 21.5_
 
-- [ ] 20. Implement Social Media Sharing
+- [ ] 21. Implement Social Share Buttons
   - Create share buttons component (Facebook, Twitter, Copy Link)
   - Implement Web Share API with fallback
   - Add clipboard copy functionality with confirmation
   - Ensure Open Graph and Twitter Card tags are present
+  - Add share buttons to post views
   - _Requirements: 20.1, 20.2, 20.3_
 
-- [ ] 21. Implement Dark Mode Support
+- [ ] 22. Implement Dark Mode Support
   - Add dark mode toggle with Alpine.js
   - Implement localStorage persistence
   - Add CSS variables for light/dark themes
   - Configure Tailwind dark mode (class strategy)
   - Ensure WCAG AA contrast ratios in both modes
   - Prevent flash of unstyled content on page load
+  - Apply dark mode to all views
   - _Requirements: 19.1, 19.2, 19.3, 19.4, 19.5_
 
-- [ ] 22. Implement Post Filtering and Sorting
+- [ ] 23. Implement Post Filtering and Sorting
   - Create Alpine.js filter component
   - Implement AJAX-based filtering without page reload
   - Add sort options (Latest, Popular, Oldest)
   - Implement date filters (Today, This Week, This Month)
   - Add URL parameter persistence for shareability
+  - Add to category and tag pages
   - _Requirements: 26.1, 26.2, 26.3, 26.4, 26.5_
 
-- [ ] 23. Implement Infinite Scroll
+- [ ] 24. Implement Infinite Scroll
   - Create Alpine.js infinite scroll component
   - Implement Intersection Observer for scroll detection
   - Add loading spinner during fetch
   - Implement URL update with pushState
   - Display "End of content" message when complete
+  - Add to post listing pages
   - _Requirements: 27.1, 27.2, 27.3, 27.4, 27.5_
 
 ---
 
 ## Phase 6: Email and Notifications
 
-- [-] 24. Implement Email Notification System
-  - Create notification Mailable classes (CommentApproved, CommentReply, Welcome, Newsletter)
+- [ ] 25. Implement Email Notification System
+  - Create notification Mailable classes (CommentApproved, CommentReply, Welcome)
   - Implement queued notification jobs
   - Add comment approval notification to post author
   - Implement reply notification to parent commenter
   - Add welcome email on user registration
-  - Create newsletter confirmation email
+  - Integrate with comment and user registration flows
   - _Requirements: 24.1, 24.2, 24.3, 24.4, 24.5_
 
-- [ ] 25. Implement Newsletter Management
+- [ ] 26. Enhance Newsletter System
   - Enhance Newsletter model with verification tokens
   - Implement double opt-in subscription flow
   - Add verification email with 7-day expiration
   - Create unsubscribe functionality with tokens
   - Implement CSV export for verified subscribers
+  - Create newsletter confirmation email
   - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5_
 
-- [-] 26. Implement In-App Notification System
+- [ ] 27. Implement In-App Notification System
   - Create `Notification` model and migration
   - Create `NotificationService` class
   - Implement notification creation for key events
@@ -238,7 +268,7 @@ This implementation plan covers the remaining features needed to complete the Te
 
 ## Phase 7: Admin Panel Features
 
-- [ ] 27. Implement Content Calendar
+- [ ] 28. Implement Content Calendar
   - Create `ContentCalendarController`
   - Implement monthly calendar grid view
   - Add drag-and-drop date rescheduling
@@ -247,33 +277,36 @@ This implementation plan covers the remaining features needed to complete the Te
   - Implement month navigation and date picker
   - _Requirements: 40.1, 40.2, 40.3, 40.4, 40.5_
 
-- [ ] 28. Implement Settings Management System
+- [ ] 29. Enhance Settings Management
   - Enhance `Setting` model with get/set static methods
   - Implement settings caching (24 hours TTL)
   - Create settings groups (General, SEO, Social, Email, Comments, Media, Reading, Appearance)
   - Add "Send Test Email" functionality
   - Implement cache clearing on settings update
-  - _Requirements: 28.1, 28.2, 28.3, 28.4, 28.5_
+  - Update settings controller and views
+  - _Requirements: 28.1, 28.2, 28.3, 28.4_
 
-- [ ] 29. Implement Menu Builder System
+- [ ] 30. Implement Menu Builder System
   - Create `Menu` and `MenuItem` models with migrations
   - Implement menu CRUD operations
   - Add drag-and-drop menu ordering with SortableJS
   - Support menu item types (Custom Link, Page, Category, Tag)
   - Implement nested menu support
   - Add CSS class and target attribute configuration
+  - Create menu builder interface
   - _Requirements: 29.1, 29.2, 29.3, 29.4, 29.5_
 
-- [ ] 30. Implement Widget Management System
+- [ ] 31. Implement Widget Management System
   - Create `WidgetArea` and `Widget` models with migrations
   - Create `WidgetService` for rendering
   - Implement built-in widgets (Recent Posts, Popular Posts, Categories, Tags Cloud, Newsletter, Search, Custom HTML)
   - Add drag-and-drop widget positioning
   - Implement widget configuration with JSON storage
   - Add widget enable/disable functionality
+  - Create widget management interface
   - _Requirements: 30.1, 30.2, 30.3, 30.4, 30.5_
 
-- [ ] 31. Implement Image Alt Text Validation
+- [ ] 32. Implement Image Alt Text Validation
   - Create `AltTextValidator` class
   - Add pre-save validation for missing alt text
   - Display warning messages to authors
@@ -286,7 +319,7 @@ This implementation plan covers the remaining features needed to complete the Te
 
 ## Phase 8: Security and Compliance
 
-- [ ] 32. Implement Rate Limiting
+- [ ] 33. Implement Rate Limiting
   - Configure rate limiters in bootstrap/app.php
   - Implement login rate limiting (5 attempts per minute)
   - Add comment submission rate limiting (3 per minute)
@@ -295,16 +328,17 @@ This implementation plan covers the remaining features needed to complete the Te
   - Add rate limit violation logging
   - _Requirements: 13.3, 45.1, 45.2, 45.3, 45.4, 45.5_
 
-- [ ] 33. Implement Security Headers Middleware
+- [ ] 34. Implement Security Headers Middleware
   - Create `SecurityHeaders` middleware
   - Add X-Frame-Options header
   - Implement X-Content-Type-Options header
   - Add X-XSS-Protection header
   - Configure Content-Security-Policy header
   - Add Referrer-Policy header
+  - Register middleware in bootstrap/app.php
   - _Requirements: 13.4_
 
-- [ ] 34. Implement Two-Factor Authentication
+- [ ] 35. Implement Two-Factor Authentication
   - Add 2FA fields to users table migration
   - Create `TwoFactorAuthService` class
   - Implement QR code generation for Google Authenticator
@@ -312,9 +346,10 @@ This implementation plan covers the remaining features needed to complete the Te
   - Generate and store backup codes
   - Implement "Remember this device" functionality (30 days)
   - Add account lockout after 5 failed 2FA attempts
+  - Create 2FA setup and challenge views
   - _Requirements: 34.1, 34.2, 34.3, 34.4, 34.5_
 
-- [ ] 35. Implement GDPR Compliance Features
+- [ ] 36. Implement GDPR Compliance Features
   - Create `GdprService` class
   - Implement cookie consent banner with Alpine.js
   - Add user data export functionality (JSON format)
@@ -327,7 +362,7 @@ This implementation plan covers the remaining features needed to complete the Te
 
 ## Phase 9: Backup and Maintenance
 
-- [ ] 36. Implement Database Backup System
+- [ ] 37. Implement Database Backup System
   - Create `BackupDatabaseCommand` artisan command
   - Implement SQLite file copy backup
   - Add cloud storage upload support
@@ -336,40 +371,43 @@ This implementation plan covers the remaining features needed to complete the Te
   - Create `RestoreDatabaseCommand` for restoration
   - _Requirements: 33.1, 33.2, 33.3, 33.4, 33.5_
 
-- [ ] 37. Enhance Maintenance Mode
+- [ ] 38. Enhance Maintenance Mode
   - Enhance `MaintenanceController` with full functionality
   - Implement secret token generation for bypass
   - Add IP address whitelisting
   - Create custom 503 maintenance page
   - Implement HTTP 503 status with Retry-After header
+  - Update maintenance views and routes
   - _Requirements: 46.1, 46.2, 46.3, 46.4, 46.5_
 
 ---
 
 ## Phase 10: Content Management
 
-- [ ] 38. Implement Content Import/Export
+- [ ] 39. Implement Content Import/Export
   - Create `ContentImportService` class
   - Implement WordPress XML import
   - Add Markdown file import with YAML frontmatter
   - Create `ContentExportService` class
   - Implement JSON export with all content
   - Add ZIP export with media files
+  - Create import/export admin interface
   - _Requirements: 35.1, 35.2, 35.3, 35.4, 35.5_
 
-- [ ] 39. Implement Static Pages Management
+- [ ] 40. Enhance Static Pages Management
   - Enhance Page model with template support
   - Create page templates (Default, Full Width, Contact, About)
   - Implement contact form handling
   - Add drag-and-drop page ordering
   - Support hierarchical page relationships
+  - Update page views with template support
   - _Requirements: 16.1, 16.2, 16.3, 16.4, 16.5_
 
 ---
 
 ## Phase 11: Internationalization
 
-- [ ] 40. Implement Multi-language Support
+- [ ] 41. Implement Multi-language Support
   - Create `PostTranslation` model and migration
   - Create `SetLocale` middleware
   - Configure available locales in config
@@ -383,7 +421,7 @@ This implementation plan covers the remaining features needed to complete the Te
 
 ## Phase 12: Progressive Web App
 
-- [ ] 41. Implement PWA Features
+- [ ] 42. Implement PWA Features
   - Create web manifest file (manifest.json)
   - Generate PWA icons (192x192, 512x512)
   - Create service worker (sw.js) for offline support
@@ -397,7 +435,7 @@ This implementation plan covers the remaining features needed to complete the Te
 
 ## Phase 13: API Enhancements
 
-- [ ] 42. Enhance API Documentation
+- [ ] 43. Enhance API Documentation
   - Configure Laravel Scribe for API documentation
   - Generate interactive API docs at /docs
   - Add request/response examples
@@ -405,19 +443,20 @@ This implementation plan covers the remaining features needed to complete the Te
   - Include authentication requirements
   - _Requirements: 11.5_
 
-- [ ] 43. Implement API Resources
+- [ ] 44. Implement API Resources
   - Enhance `PostResource` with conditional fields
   - Create `CategoryResource` for API responses
   - Create `TagResource` for API responses
   - Create `UserResource` for API responses
   - Implement consistent error response format
+  - Update API controllers to use resources
   - _Requirements: 11.1, 11.4_
 
 ---
 
 ## Phase 14: Performance Optimization
 
-- [ ] 44. Implement Caching Strategy
+- [ ] 45. Implement Caching Strategy
   - Add query result caching for expensive operations
   - Implement view caching for homepage and category pages
   - Add model caching for frequently accessed data
@@ -425,32 +464,33 @@ This implementation plan covers the remaining features needed to complete the Te
   - Implement cache invalidation on content updates
   - _Requirements: 12.1, 12.2, 12.3_
 
-- [ ] 45. Implement Asset Optimization
+- [ ] 46. Implement Asset Optimization
   - Configure Vite for production builds
   - Implement image lazy loading with loading="lazy"
   - Add critical CSS inlining
   - Configure cache headers for static assets (1 year)
-  - Optimize images on upload
+  - Optimize images on upload (already done in ImageProcessingService)
+  - Update views with lazy loading attributes
   - _Requirements: 12.3, 12.4, 12.5_
 
 ---
 
-## Phase 15: Testing
+## Phase 15: Testing and Quality Assurance
 
-- [ ] 46. Write Unit Tests for Services
-  - [ ] 46.1 Write tests for PostService
-  - [ ] 46.2 Write tests for ImageProcessingService
-  - [ ]* 46.3 Write tests for SpamDetectionService
-  - [ ] 46.4 Write tests for SearchService
-  - [ ] 46.5 Write tests for RelatedPostsService
+- [ ] 47. Write Tests for New Services
+  - [ ]* 47.1 Write tests for SearchService
+  - [ ]* 47.2 Write tests for RelatedPostsService
+  - [ ]* 47.3 Write tests for PostRevisionService
+  - [ ]* 47.4 Write tests for SitemapService
+  - [ ]* 47.5 Write tests for BreadcrumbService
   - _Requirements: All service-related requirements_
 
-- [ ] 47. Write Feature Tests for Key Flows
-  - [ ] 47.1 Write tests for post creation and publishing
-  - [ ]* 47.2 Write tests for comment submission and moderation
-  - [ ]* 47.3 Write tests for user authentication and authorization
-  - [ ]* 47.4 Write tests for API endpoints
-  - [ ]* 47.5 Write tests for admin panel operations
+- [ ] 48. Write Feature Tests for New Flows
+  - [ ]* 48.1 Write tests for bookmark functionality
+  - [ ]* 48.2 Write tests for advanced search with filters
+  - [ ]* 48.3 Write tests for post series management
+  - [ ]* 48.4 Write tests for notification system
+  - [ ]* 48.5 Write tests for 2FA authentication
   - _Requirements: All feature requirements_
 
 ---
@@ -465,3 +505,4 @@ This implementation plan covers the remaining features needed to complete the Te
 - All frontend components should use Alpine.js and Tailwind CSS
 - All background jobs should implement `ShouldQueue` interface
 - All API endpoints should use API Resources for consistent responses
+- Existing tests for PostService, ImageProcessingService, and SpamDetectionService are already complete

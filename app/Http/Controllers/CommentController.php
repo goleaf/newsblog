@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Comment;
+use App\Services\SpamDetectionService;
 use Illuminate\Http\Request;
 
 class CommentController extends Controller
 {
+    public function __construct(private SpamDetectionService $spamDetectionService) {}
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -15,19 +18,23 @@ class CommentController extends Controller
             'author_email' => ['required', 'email', 'max:255'],
             'content' => ['required', 'string', 'max:5000'],
             'parent_id' => ['nullable', 'exists:comments,id'],
+            'honeypot' => ['nullable'], // Honeypot field for bot detection
+            'page_load_time' => ['nullable', 'numeric'], // Time when page was loaded
         ]);
 
-        // Basic spam protection: check for common spam patterns
-        $spamKeywords = ['viagra', 'casino', 'loan', 'click here'];
-        $contentLower = strtolower($validated['content']);
-
-        $isSpam = false;
-        foreach ($spamKeywords as $keyword) {
-            if (str_contains($contentLower, $keyword)) {
-                $isSpam = true;
-                break;
-            }
+        // Calculate time on page
+        $timeOnPage = null;
+        if (isset($validated['page_load_time'])) {
+            $timeOnPage = time() - $validated['page_load_time'];
         }
+
+        // Check for spam using SpamDetectionService
+        $context = [
+            'time_on_page' => $timeOnPage,
+            'honeypot' => $validated['honeypot'] ?? null,
+        ];
+
+        $isSpam = $this->spamDetectionService->isSpam($validated['content'], $context);
 
         $comment = Comment::create([
             'post_id' => $validated['post_id'],

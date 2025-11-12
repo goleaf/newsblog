@@ -1,9 +1,12 @@
 <?php
 
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -20,6 +23,14 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
+
+        // Configure rate limiting for API
+        $middleware->throttleApi('60,1'); // 60 requests per minute for API
+
+        // Configure custom rate limiters
+        RateLimiter::for('comments', function (Request $request) {
+            return Limit::perMinute(3)->by($request->ip());
+        });
     })
     ->withSchedule(function (Schedule $schedule): void {
         // Publish scheduled posts every minute

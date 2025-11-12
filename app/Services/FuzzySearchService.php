@@ -369,7 +369,19 @@ class FuzzySearchService
                 if ($normalizedScore >= $this->threshold) {
                     $post = Post::with(['user', 'category', 'tags'])->find($item['id']);
                     if ($post) {
-                        $highlights = $this->findHighlights($query, $item['title']);
+                        // Generate highlights for all searched fields
+                        $highlightedItem = $this->highlightResultFields($item, $query, $fields);
+                        $highlights = [];
+
+                        foreach ($fields as $field) {
+                            if (isset($highlightedItem["{$field}_highlighted"])) {
+                                $highlights[$field] = $highlightedItem["{$field}_highlighted"];
+                            }
+                            if (isset($highlightedItem["{$field}_context"])) {
+                                $highlights["{$field}_context"] = $highlightedItem["{$field}_context"];
+                            }
+                        }
+
                         $results->push(SearchResult::fromPost($post, $normalizedScore, $highlights));
                     }
                 }
@@ -418,7 +430,14 @@ class FuzzySearchService
             if ($score >= $threshold) {
                 $post = Post::with(['user', 'category', 'tags'])->find($item['id']);
                 if ($post) {
-                    $highlights = $this->findHighlights($query, $item['title']);
+                    // Generate highlights for matched portions
+                    $highlightedItem = $this->highlightResultFields($item, $query, ['title', 'excerpt']);
+                    $highlights = [
+                        'title' => $highlightedItem['title_highlighted'] ?? $item['title'],
+                        'excerpt' => $highlightedItem['excerpt_highlighted'] ?? $item['excerpt'] ?? '',
+                        'excerpt_context' => $highlightedItem['excerpt_context'] ?? $item['excerpt'] ?? '',
+                    ];
+
                     $results->push(SearchResult::fromPost($post, $score, $highlights));
                 }
             }
@@ -489,6 +508,144 @@ class FuzzySearchService
         }
 
         return $highlights;
+    }
+
+    /**
+     * Highlight matched terms in text
+     *
+     * @param  string  $text  The text to highlight
+     * @param  string  $query  The search query
+     * @return string Text with highlighted matches
+     */
+    public function highlightMatches(string $text, string $query): string
+    {
+        if (empty($text) || empty($query)) {
+            return $text;
+        }
+
+        $highlightEnabled = config('fuzzy-search.highlighting.enabled', true);
+        if (! $highlightEnabled) {
+            return $text;
+        }
+
+        $tag = config('fuzzy-search.highlighting.tag', 'mark');
+        $class = config('fuzzy-search.highlighting.class', 'search-highlight');
+
+        $queryLower = mb_strtolower($query);
+        $queryWords = array_filter(explode(' ', $queryLower));
+
+        // Escape special regex characters in query words
+        $queryWords = array_map(function ($word) {
+            return preg_quote($word, '/');
+        }, $queryWords);
+
+        // Build regex pattern for all query words
+        $pattern = '/\b('.implode('|', $queryWords).')\b/iu';
+
+        // Replace matches with highlighted version
+        $highlighted = preg_replace_callback($pattern, function ($matches) use ($tag, $class) {
+            return "<{$tag} class=\"{$class}\">{$matches[0]}</{$tag}>";
+        }, $text);
+
+        return $highlighted ?? $text;
+    }
+
+    /**
+     * Extract context around matched terms
+     *
+     * @param  string  $text  The full text
+     * @param  string  $query  The search query
+     * @param  int|null  $contextLength  Maximum context length (null uses config)
+     * @return string Extracted context with highlights
+     */
+    public function extractContext(string $text, string $query, ?int $contextLength = null): string
+    {
+        if (empty($text) || empty($query)) {
+            return $text;
+        }
+
+        $contextLength = $contextLength ?? config('fuzzy-search.highlighting.context_length', 200);
+        $queryLower = mb_strtolower($query);
+        $textLower = mb_strtolower($text);
+
+        // Find the position of the first match
+        $position = mb_strpos($textLower, $queryLower);
+
+        if ($position === false) {
+            // Try to find any word from the query
+            $queryWords = array_filter(explode(' ', $queryLower));
+            foreach ($queryWords as $word) {
+                $position = mb_strpos($textLower, $word);
+                if ($position !== false) {
+                    break;
+                }
+            }
+        }
+
+        // If no match found, return truncated text
+        if ($position === false) {
+            return mb_substr($text, 0, $contextLength).(mb_strlen($text) > $contextLength ? '...' : '');
+        }
+
+        // Calculate start and end positions for context
+        $halfContext = (int) ($contextLength / 2);
+        $start = max(0, $position - $halfContext);
+        $end = min(mb_strlen($text), $position + mb_strlen($query) + $halfContext);
+
+        // Adjust start to word boundary
+        if ($start > 0) {
+            $spacePos = mb_strpos($text, ' ', $start);
+            if ($spacePos !== false && $spacePos < $position) {
+                $start = $spacePos + 1;
+            }
+        }
+
+        // Adjust end to word boundary
+        if ($end < mb_strlen($text)) {
+            $spacePos = mb_strrpos(mb_substr($text, 0, $end), ' ');
+            if ($spacePos !== false) {
+                $end = $spacePos;
+            }
+        }
+
+        // Extract context
+        $context = mb_substr($text, $start, $end - $start);
+
+        // Add ellipsis if needed
+        $prefix = $start > 0 ? '...' : '';
+        $suffix = $end < mb_strlen($text) ? '...' : '';
+
+        return $prefix.$context.$suffix;
+    }
+
+    /**
+     * Highlight matches in multiple fields of a search result
+     *
+     * @param  array  $item  The search result item
+     * @param  string  $query  The search query
+     * @param  array  $fields  Fields to highlight
+     * @return array Item with highlighted fields
+     */
+    public function highlightResultFields(array $item, string $query, array $fields = ['title', 'excerpt']): array
+    {
+        $highlighted = $item;
+
+        foreach ($fields as $field) {
+            if (isset($item[$field]) && is_string($item[$field])) {
+                $highlighted["{$field}_highlighted"] = $this->highlightMatches($item[$field], $query);
+
+                // For excerpt, also extract context
+                if ($field === 'excerpt' || $field === 'content') {
+                    $highlighted["{$field}_context"] = $this->extractContext($item[$field], $query);
+                    $highlighted["{$field}_highlighted"] = $this->highlightMatches(
+                        $highlighted["{$field}_context"],
+                        $query
+                    );
+                }
+            }
+        }
+
+        return $highlighted;
     }
 
     /**

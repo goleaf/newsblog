@@ -275,4 +275,138 @@ class FuzzySearchServiceTest extends TestCase
         $this->assertEquals('recent', $dayLogs->first()->query);
         $this->assertCount(2, $weekLogs);
     }
+
+    public function test_highlight_matches_wraps_query_in_mark_tags(): void
+    {
+        $text = 'Laravel is a great PHP framework';
+        $query = 'Laravel';
+
+        $highlighted = $this->searchService->highlightMatches($text, $query);
+
+        $this->assertStringContainsString('<mark class="search-highlight">Laravel</mark>', $highlighted);
+        $this->assertStringContainsString('is a great PHP framework', $highlighted);
+    }
+
+    public function test_highlight_matches_handles_multiple_words(): void
+    {
+        $text = 'Laravel is a great PHP framework for web development';
+        $query = 'Laravel PHP';
+
+        $highlighted = $this->searchService->highlightMatches($text, $query);
+
+        $this->assertStringContainsString('<mark class="search-highlight">Laravel</mark>', $highlighted);
+        $this->assertStringContainsString('<mark class="search-highlight">PHP</mark>', $highlighted);
+    }
+
+    public function test_highlight_matches_is_case_insensitive(): void
+    {
+        $text = 'Laravel is a great PHP framework';
+        $query = 'laravel php';
+
+        $highlighted = $this->searchService->highlightMatches($text, $query);
+
+        $this->assertStringContainsString('<mark class="search-highlight">Laravel</mark>', $highlighted);
+        $this->assertStringContainsString('<mark class="search-highlight">PHP</mark>', $highlighted);
+    }
+
+    public function test_highlight_matches_handles_empty_query(): void
+    {
+        $text = 'Laravel is a great PHP framework';
+        $query = '';
+
+        $highlighted = $this->searchService->highlightMatches($text, $query);
+
+        $this->assertEquals($text, $highlighted);
+    }
+
+    public function test_extract_context_returns_text_around_match(): void
+    {
+        $text = 'This is a very long text about Laravel framework and how it helps developers build amazing web applications with ease and efficiency.';
+        $query = 'Laravel';
+
+        $context = $this->searchService->extractContext($text, $query, 50);
+
+        $this->assertStringContainsString('Laravel', $context);
+        $this->assertLessThanOrEqual(60, strlen($context)); // Allow some buffer for word boundaries
+    }
+
+    public function test_extract_context_adds_ellipsis_when_truncated(): void
+    {
+        $text = 'This is a very long text about Laravel framework and how it helps developers build amazing web applications with ease and efficiency.';
+        $query = 'Laravel';
+
+        $context = $this->searchService->extractContext($text, $query, 50);
+
+        $this->assertStringContainsString('...', $context);
+    }
+
+    public function test_extract_context_handles_match_at_beginning(): void
+    {
+        $text = 'Laravel is a great PHP framework for web development';
+        $query = 'Laravel';
+
+        $context = $this->searchService->extractContext($text, $query, 30);
+
+        $this->assertStringStartsWith('Laravel', $context);
+        $this->assertStringNotContainsString('...Laravel', $context);
+    }
+
+    public function test_extract_context_handles_no_match(): void
+    {
+        $text = 'This is a text without the search term';
+        $query = 'Laravel';
+
+        $context = $this->searchService->extractContext($text, $query, 20);
+
+        $this->assertLessThanOrEqual(23, strlen($context)); // 20 + "..."
+    }
+
+    public function test_highlight_result_fields_adds_highlighted_versions(): void
+    {
+        $item = [
+            'id' => 1,
+            'title' => 'Laravel Testing Guide',
+            'excerpt' => 'Learn how to test Laravel applications',
+        ];
+        $query = 'Laravel';
+
+        $highlighted = $this->searchService->highlightResultFields($item, $query);
+
+        $this->assertArrayHasKey('title_highlighted', $highlighted);
+        $this->assertArrayHasKey('excerpt_highlighted', $highlighted);
+        $this->assertStringContainsString('<mark class="search-highlight">Laravel</mark>', $highlighted['title_highlighted']);
+    }
+
+    public function test_highlight_result_fields_extracts_context_for_excerpt(): void
+    {
+        $item = [
+            'id' => 1,
+            'title' => 'Testing Guide',
+            'excerpt' => 'This is a very long excerpt about Laravel framework and how it helps developers build amazing web applications with ease and efficiency. Laravel provides elegant syntax and powerful tools for modern web development. It includes features like routing, authentication, caching, and much more to help you build robust applications quickly.',
+        ];
+        $query = 'Laravel';
+
+        $highlighted = $this->searchService->highlightResultFields($item, $query);
+
+        $this->assertArrayHasKey('excerpt_context', $highlighted);
+        $this->assertStringContainsString('Laravel', $highlighted['excerpt_context']);
+        $this->assertLessThan(strlen($item['excerpt']), strlen($highlighted['excerpt_context']));
+    }
+
+    public function test_search_results_include_highlights(): void
+    {
+        $post = Post::factory()->create([
+            'title' => 'Laravel Testing Guide',
+            'excerpt' => 'Learn how to test Laravel applications',
+            'status' => 'published',
+            'published_at' => now(),
+        ]);
+
+        $results = $this->searchService->searchPosts('Laravel');
+
+        $this->assertNotEmpty($results);
+        $result = $results->first();
+        $this->assertNotEmpty($result->highlights);
+        $this->assertArrayHasKey('title', $result->highlights);
+    }
 }

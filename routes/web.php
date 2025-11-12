@@ -23,7 +23,9 @@ Route::get('/post/{slug}', [PublicPostController::class, 'show'])->name('post.sh
 Route::get('/category/{slug}', [PublicPostController::class, 'category'])->name('category.show');
 Route::get('/tag/{slug}', [PublicPostController::class, 'tag'])->name('tag.show');
 Route::get('/search', [PublicPostController::class, 'search'])->name('search');
-Route::post('/comments', [CommentController::class, 'store'])->name('comments.store');
+Route::post('/comments', [CommentController::class, 'store'])
+    ->middleware('throttle:comments')
+    ->name('comments.store');
 
 Route::get('/dashboard', function () {
     return view('dashboard');

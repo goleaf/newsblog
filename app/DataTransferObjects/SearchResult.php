@@ -40,7 +40,7 @@ class SearchResult
             type: 'post',
             title: $post->title,
             excerpt: $post->excerpt,
-            url: route('posts.show', $post->slug),
+            url: route('post.show', $post->slug),
             relevanceScore: $score,
             highlights: $highlights,
             metadata: [
@@ -59,7 +59,7 @@ class SearchResult
             type: 'tag',
             title: $tag->name,
             excerpt: null,
-            url: route('tags.show', $tag->slug),
+            url: route('tag.show', $tag->slug),
             relevanceScore: $score,
             highlights: $highlights,
             metadata: [
@@ -76,7 +76,7 @@ class SearchResult
             type: 'category',
             title: $category->name,
             excerpt: $category->description,
-            url: route('categories.show', $category->slug),
+            url: route('category.show', $category->slug),
             relevanceScore: $score,
             highlights: $highlights,
             metadata: [
