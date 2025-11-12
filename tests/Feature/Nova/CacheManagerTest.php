@@ -138,15 +138,15 @@ class CacheManagerTest extends TestCase
 
         $response->assertStatus(200);
 
-        $timestamp = Cache::get('cache_manager:last_cleared:application');
+        $timestamp = Cache::store('file')->get('cache_manager:last_cleared:application');
         $this->assertNotNull($timestamp);
         $this->assertIsString($timestamp);
     }
 
     public function test_admin_can_get_timestamps(): void
     {
-        Cache::put('cache_manager:last_cleared:application', now()->toIso8601String(), 3600);
-        Cache::put('cache_manager:last_cleared:config', now()->toIso8601String(), 3600);
+        Cache::store('file')->put('cache_manager:last_cleared:application', now()->toIso8601String(), 3600);
+        Cache::store('file')->put('cache_manager:last_cleared:config', now()->toIso8601String(), 3600);
 
         $response = $this->actingAs($this->admin)
             ->getJson('/nova-vendor/cache-manager/timestamps');
@@ -206,7 +206,7 @@ class CacheManagerTest extends TestCase
 
         $types = ['application', 'config', 'route', 'view', 'event', 'optimize'];
         foreach ($types as $type) {
-            $timestamp = Cache::get("cache_manager:last_cleared:{$type}");
+            $timestamp = Cache::store('file')->get("cache_manager:last_cleared:{$type}");
             $this->assertNotNull($timestamp, "Timestamp for {$type} should be stored");
         }
     }

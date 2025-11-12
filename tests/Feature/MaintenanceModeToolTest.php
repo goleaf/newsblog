@@ -16,6 +16,9 @@ class MaintenanceModeToolTest extends TestCase
         parent::setUp();
         $this->admin = User::factory()->create(['role' => 'admin']);
         $this->file = storage_path('framework/down');
+
+        // Disable maintenance mode middleware for tests
+        $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance::class);
     }
 
     protected function tearDown(): void

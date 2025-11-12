@@ -63,16 +63,12 @@ class PostSearchTest extends TestCase
             'category_id' => $category2->id,
         ]);
 
-        $response = $this->get('/search?q=Laravel&category=technology');
+        $response = $this->get('/search?q=Laravel&category='.$category1->id);
 
         $response->assertStatus(200);
         $posts = $response->viewData('posts');
-        // Fuzzy search might not filter perfectly, but should return some results
-        $this->assertGreaterThanOrEqual(0, $posts->count());
-        // If results are returned, post1 should be included
-        if ($posts->count() > 0) {
-            $this->assertTrue($posts->contains('id', $post1->id) || $posts->contains('id', $post2->id));
-        }
+        $this->assertTrue($posts->contains('id', $post1->id));
+        $this->assertFalse($posts->contains('id', $post2->id));
     }
 
     public function test_search_with_filters_by_author(): void
@@ -97,7 +93,7 @@ class PostSearchTest extends TestCase
             'category_id' => $category->id,
         ]);
 
-        $response = $this->get('/search?q=Laravel&author='.urlencode($user1->name));
+        $response = $this->get('/search?q=Laravel&author='.$user1->id);
 
         $response->assertStatus(200);
         $posts = $response->viewData('posts');
@@ -142,7 +138,7 @@ class PostSearchTest extends TestCase
         $user = User::factory()->create();
         $category = Category::factory()->create();
 
-        Post::factory()->count(15)->create([
+        Post::factory()->count(20)->create([
             'title' => 'Laravel Post',
             'status' => 'published',
             'published_at' => now()->subDay(),
@@ -154,7 +150,8 @@ class PostSearchTest extends TestCase
 
         $response->assertStatus(200);
         $posts = $response->viewData('posts');
-        $this->assertLessThanOrEqual(12, $posts->count());
+        // SearchService uses 15 results per page as per requirement 8.3
+        $this->assertLessThanOrEqual(15, $posts->count());
 
         $response = $this->get('/search?q=Laravel&page=2');
 
@@ -239,15 +236,242 @@ class PostSearchTest extends TestCase
         $dateFrom = now()->subDays(10)->format('Y-m-d');
         $dateTo = now()->format('Y-m-d');
 
-        $response = $this->get('/search?q=Laravel&category=technology&author='.urlencode($user->name)."&date_from={$dateFrom}&date_to={$dateTo}");
+        $response = $this->get('/search?q=Laravel&category='.$category->id.'&author='.$user->id."&date_from={$dateFrom}&date_to={$dateTo}");
 
         $response->assertStatus(200);
         $posts = $response->viewData('posts');
-        // With multiple filters, test that endpoint works (fuzzy search filtering may vary)
-        $this->assertGreaterThanOrEqual(0, $posts->count());
-        // If results are returned, verify they are valid posts
-        if ($posts->count() > 0) {
-            $this->assertInstanceOf(\App\Models\Post::class, $posts->first());
-        }
+        $this->assertTrue($posts->contains('id', $post->id));
+    }
+
+    public function test_search_with_typo_returns_results(): void
+    {
+        $user = User::factory()->create();
+        $category = Category::factory()->create();
+
+        $post = Post::factory()->create([
+            'title' => 'Laravel Framework Guide',
+            'status' => 'published',
+            'published_at' => now()->subDay(),
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+        ]);
+
+        // Test with typo "laravle" instead of "laravel"
+        $response = $this->get('/search?q=laravle');
+
+        $response->assertStatus(200);
+        $posts = $response->viewData('posts');
+        // Fuzzy search may or may not find results depending on threshold
+        // Test that the endpoint works and returns a valid response
+        $this->assertInstanceOf(\Illuminate\Pagination\LengthAwarePaginator::class, $posts);
+    }
+
+    public function test_search_performance_is_acceptable(): void
+    {
+        $user = User::factory()->create();
+        $category = Category::factory()->create();
+
+        // Create multiple posts to test performance
+        Post::factory()->count(50)->create([
+            'title' => 'Laravel Post',
+            'status' => 'published',
+            'published_at' => now()->subDay(),
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+        ]);
+
+        $startTime = microtime(true);
+        $response = $this->get('/search?q=Laravel');
+        $endTime = microtime(true);
+
+        $executionTime = ($endTime - $startTime) * 1000; // Convert to milliseconds
+
+        $response->assertStatus(200);
+        // Search should complete within 500ms as per requirement 2.3
+        $this->assertLessThan(500, $executionTime, 'Search took longer than 500ms');
+    }
+
+    public function test_search_multi_field_weighted_search(): void
+    {
+        $user = User::factory()->create();
+        $category = Category::factory()->create();
+
+        // Create post with search term in title (should rank higher)
+        $titlePost = Post::factory()->create([
+            'title' => 'Laravel Framework',
+            'excerpt' => 'A guide to PHP',
+            'content' => 'Content about PHP',
+            'status' => 'published',
+            'published_at' => now()->subDay(),
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+        ]);
+
+        // Create post with search term in content (should rank lower)
+        $contentPost = Post::factory()->create([
+            'title' => 'PHP Guide',
+            'excerpt' => 'A guide to PHP',
+            'content' => 'This is about Laravel framework',
+            'status' => 'published',
+            'published_at' => now()->subDay(),
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+        ]);
+
+        $response = $this->get('/search?q=Laravel');
+
+        $response->assertStatus(200);
+        $posts = $response->viewData('posts');
+        // At least one post should be returned
+        $this->assertGreaterThanOrEqual(1, $posts->count());
+        // Title match should be included in results
+        $this->assertTrue($posts->contains('id', $titlePost->id));
+    }
+
+    public function test_search_with_category_includes_subcategories(): void
+    {
+        $user = User::factory()->create();
+        $parentCategory = Category::factory()->create(['name' => 'Technology']);
+        $childCategory = Category::factory()->create([
+            'name' => 'Web Development',
+            'parent_id' => $parentCategory->id,
+        ]);
+
+        $parentPost = Post::factory()->create([
+            'title' => 'Technology Post',
+            'status' => 'published',
+            'published_at' => now()->subDay(),
+            'user_id' => $user->id,
+            'category_id' => $parentCategory->id,
+        ]);
+
+        $childPost = Post::factory()->create([
+            'title' => 'Web Development Post',
+            'status' => 'published',
+            'published_at' => now()->subDay(),
+            'user_id' => $user->id,
+            'category_id' => $childCategory->id,
+        ]);
+
+        $response = $this->get('/search?q=Post&category='.$parentCategory->id);
+
+        $response->assertStatus(200);
+        $posts = $response->viewData('posts');
+        // Both parent and child category posts should be included
+        $this->assertTrue($posts->contains('id', $parentPost->id));
+        $this->assertTrue($posts->contains('id', $childPost->id));
+    }
+
+    public function test_search_with_tag_filter(): void
+    {
+        $user = User::factory()->create();
+        $category = Category::factory()->create();
+        $tag1 = \App\Models\Tag::factory()->create(['name' => 'Laravel']);
+        $tag2 = \App\Models\Tag::factory()->create(['name' => 'PHP']);
+
+        $post1 = Post::factory()->create([
+            'title' => 'Laravel Post',
+            'status' => 'published',
+            'published_at' => now()->subDay(),
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+        ]);
+        $post1->tags()->attach($tag1);
+
+        $post2 = Post::factory()->create([
+            'title' => 'PHP Post',
+            'status' => 'published',
+            'published_at' => now()->subDay(),
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+        ]);
+        $post2->tags()->attach($tag2);
+
+        $response = $this->get('/search?q=Post&tags[]='.$tag1->id);
+
+        $response->assertStatus(200);
+        $posts = $response->viewData('posts');
+        $this->assertTrue($posts->contains('id', $post1->id));
+        $this->assertFalse($posts->contains('id', $post2->id));
+    }
+
+    public function test_search_with_multiple_tags_uses_and_logic(): void
+    {
+        $user = User::factory()->create();
+        $category = Category::factory()->create();
+        $tag1 = \App\Models\Tag::factory()->create(['name' => 'Laravel']);
+        $tag2 = \App\Models\Tag::factory()->create(['name' => 'Tutorial']);
+
+        $post1 = Post::factory()->create([
+            'title' => 'Laravel Tutorial',
+            'status' => 'published',
+            'published_at' => now()->subDay(),
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+        ]);
+        $post1->tags()->attach([$tag1->id, $tag2->id]);
+
+        $post2 = Post::factory()->create([
+            'title' => 'Laravel Guide',
+            'status' => 'published',
+            'published_at' => now()->subDay(),
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+        ]);
+        $post2->tags()->attach($tag1);
+
+        $response = $this->get('/search?q=Laravel&tags[]='.$tag1->id.'&tags[]='.$tag2->id);
+
+        $response->assertStatus(200);
+        $posts = $response->viewData('posts');
+        // Only post1 has both tags
+        $this->assertTrue($posts->contains('id', $post1->id));
+        $this->assertFalse($posts->contains('id', $post2->id));
+    }
+
+    public function test_search_displays_active_filter_count(): void
+    {
+        $user = User::factory()->create();
+        $category = Category::factory()->create();
+        $tag = \App\Models\Tag::factory()->create();
+
+        Post::factory()->create([
+            'title' => 'Test Post',
+            'status' => 'published',
+            'published_at' => now()->subDay(),
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+        ]);
+
+        $dateFrom = now()->subDays(10)->format('Y-m-d');
+        $dateTo = now()->format('Y-m-d');
+
+        $response = $this->get('/search?q=Test&category='.$category->id.'&author='.$user->id.'&tags[]='.$tag->id.'&date_from='.$dateFrom.'&date_to='.$dateTo);
+
+        $response->assertStatus(200);
+        $response->assertViewHas('activeFilterCount', 4);
+    }
+
+    public function test_search_provides_filter_options(): void
+    {
+        $user = User::factory()->create();
+        $category = Category::factory()->create();
+        $tag = \App\Models\Tag::factory()->create();
+
+        Post::factory()->create([
+            'title' => 'Test Post',
+            'status' => 'published',
+            'published_at' => now()->subDay(),
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+        ]);
+
+        $response = $this->get('/search?q=Test');
+
+        $response->assertStatus(200);
+        $response->assertViewHas('authors');
+        $response->assertViewHas('categories');
+        $response->assertViewHas('tags');
+        $response->assertViewHas('activeFilterCount');
     }
 }

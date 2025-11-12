@@ -20,7 +20,7 @@ class PostServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->postService = new PostService;
+        $this->postService = app(PostService::class);
     }
 
     public function test_generates_unique_slug_from_title(): void
@@ -538,6 +538,128 @@ class PostServiceTest extends TestCase
         // Post2 should be more related due to text similarity
         $relatedIds = $relatedPosts->pluck('id')->toArray();
         $this->assertNotContains($post1->id, $relatedIds);
+    }
+
+    public function test_related_posts_combines_fuzzy_matching_with_category_and_tags(): void
+    {
+        $user = User::factory()->create();
+        $category1 = Category::factory()->create(['name' => 'Web Development']);
+        $category2 = Category::factory()->create(['name' => 'Mobile Development']);
+        $tag1 = Tag::factory()->create(['name' => 'Laravel']);
+        $tag2 = Tag::factory()->create(['name' => 'PHP']);
+
+        // Base post with category and tags
+        $basePost = Post::factory()->create([
+            'user_id' => $user->id,
+            'category_id' => $category1->id,
+            'title' => 'Laravel Best Practices Guide',
+            'excerpt' => 'Learn Laravel best practices and patterns',
+            'status' => 'published',
+            'published_at' => now(),
+        ]);
+        $basePost->tags()->attach([$tag1->id, $tag2->id]);
+
+        // Post with same category and tags + similar title (should score highest)
+        $post1 = Post::factory()->create([
+            'user_id' => $user->id,
+            'category_id' => $category1->id,
+            'title' => 'Laravel Best Practices Tutorial',
+            'excerpt' => 'Advanced Laravel best practices',
+            'status' => 'published',
+            'published_at' => now(),
+        ]);
+        $post1->tags()->attach([$tag1->id, $tag2->id]);
+
+        // Post with same category but different title and no tags
+        $post2 = Post::factory()->create([
+            'user_id' => $user->id,
+            'category_id' => $category1->id,
+            'title' => 'JavaScript Fundamentals',
+            'excerpt' => 'Learn JavaScript basics',
+            'status' => 'published',
+            'published_at' => now(),
+        ]);
+
+        // Post with different category but similar title
+        $post3 = Post::factory()->create([
+            'user_id' => $user->id,
+            'category_id' => $category2->id,
+            'title' => 'Laravel Best Practices for Mobile',
+            'excerpt' => 'Laravel patterns for mobile apps',
+            'status' => 'published',
+            'published_at' => now(),
+        ]);
+
+        $relatedPosts = $this->postService->getRelatedPosts($basePost, 4);
+
+        $this->assertGreaterThanOrEqual(2, $relatedPosts->count());
+        $relatedIds = $relatedPosts->pluck('id')->toArray();
+
+        // Post1 should be first (same category + tags + similar title)
+        $this->assertEquals($post1->id, $relatedIds[0]);
+
+        // Base post should not be in results
+        $this->assertNotContains($basePost->id, $relatedIds);
+    }
+
+    public function test_related_posts_falls_back_to_category_when_no_fuzzy_matches(): void
+    {
+        $user = User::factory()->create();
+        $category1 = Category::factory()->create(['name' => 'Quantum Physics']);
+        $category2 = Category::factory()->create(['name' => 'Culinary Arts']);
+
+        $basePost = Post::factory()->create([
+            'user_id' => $user->id,
+            'category_id' => $category1->id,
+            'title' => 'Quantum Entanglement Phenomena QWERTY',
+            'excerpt' => 'Exploring quantum mechanics principles',
+            'status' => 'published',
+            'published_at' => now(),
+        ]);
+
+        // Posts in same category with completely different content
+        $post1 = Post::factory()->create([
+            'user_id' => $user->id,
+            'category_id' => $category1->id,
+            'title' => 'Higgs Boson Discovery Analysis',
+            'excerpt' => 'Particle physics breakthrough examination',
+            'status' => 'published',
+            'published_at' => now()->subDay(),
+        ]);
+
+        $post2 = Post::factory()->create([
+            'user_id' => $user->id,
+            'category_id' => $category1->id,
+            'title' => 'String Theory Mathematical Framework',
+            'excerpt' => 'Advanced theoretical physics concepts',
+            'status' => 'published',
+            'published_at' => now()->subDays(2),
+        ]);
+
+        // Post in different category with completely different content
+        $post3 = Post::factory()->create([
+            'user_id' => $user->id,
+            'category_id' => $category2->id,
+            'title' => 'French Pastry Baking Techniques',
+            'excerpt' => 'Mastering croissant preparation methods',
+            'status' => 'published',
+            'published_at' => now(),
+        ]);
+
+        $relatedPosts = $this->postService->getRelatedPosts($basePost, 4);
+
+        // Should fall back to category-based algorithm (Requirement 13.5)
+        $this->assertGreaterThanOrEqual(1, $relatedPosts->count());
+        $relatedIds = $relatedPosts->pluck('id')->toArray();
+
+        // Should include posts from same category
+        $this->assertTrue(
+            in_array($post1->id, $relatedIds) || in_array($post2->id, $relatedIds),
+            'Should fall back to category-based algorithm when no fuzzy matches'
+        );
+
+        // Should not include posts from different category
+        $this->assertNotContains($post3->id, $relatedIds);
     }
 
     public function test_related_posts_are_cached(): void

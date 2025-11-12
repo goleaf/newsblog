@@ -28,8 +28,10 @@ class PostViewFactory extends Factory
     {
         return [
             'post_id' => \App\Models\Post::factory(),
+            'session_id' => fake()->uuid(),
             'ip_address' => fake()->ipv4(),
             'user_agent' => fake()->userAgent(),
+            'referer' => fake()->optional()->url(),
             'viewed_at' => fake()->dateTimeBetween('-30 days', 'now'),
         ];
     }

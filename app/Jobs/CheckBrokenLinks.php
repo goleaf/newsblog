@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\BrokenLink;
 use App\Models\Post;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -18,7 +19,7 @@ class CheckBrokenLinks implements ShouldQueue
     public function handle(): void
     {
         $posts = Post::published()->get();
-        $brokenLinks = [];
+        $checkedLinks = [];
 
         foreach ($posts as $post) {
             // Extract links from content
@@ -26,36 +27,91 @@ class CheckBrokenLinks implements ShouldQueue
 
             if (! empty($matches[1])) {
                 foreach ($matches[1] as $url) {
-                    // Skip internal links and mailto links
+                    // Skip internal links, mailto links, and anchors
                     if (str_starts_with($url, '/') || str_starts_with($url, 'mailto:') || str_starts_with($url, '#')) {
                         continue;
                     }
 
-                    try {
-                        $response = Http::timeout(5)->head($url);
-
-                        if ($response->failed()) {
-                            $brokenLinks[] = [
-                                'post_id' => $post->id,
-                                'post_title' => $post->title,
-                                'url' => $url,
-                                'status' => $response->status(),
-                            ];
-                        }
-                    } catch (\Exception $e) {
-                        $brokenLinks[] = [
-                            'post_id' => $post->id,
-                            'post_title' => $post->title,
-                            'url' => $url,
-                            'error' => $e->getMessage(),
-                        ];
+                    // Skip if we already checked this URL for this post
+                    $linkKey = $post->id.':'.$url;
+                    if (in_array($linkKey, $checkedLinks)) {
+                        continue;
                     }
+                    $checkedLinks[] = $linkKey;
+
+                    $this->checkLink($post, $url);
                 }
             }
         }
 
-        if (! empty($brokenLinks)) {
-            Log::warning('Broken links detected', ['broken_links' => $brokenLinks]);
+        // Remove broken links that are now fixed
+        $this->removeFixedLinks();
+
+        Log::info('Broken link check completed', [
+            'posts_checked' => $posts->count(),
+            'broken_links_found' => BrokenLink::pending()->count(),
+        ]);
+    }
+
+    private function checkLink(Post $post, string $url): void
+    {
+        try {
+            $response = Http::timeout(10)->head($url);
+
+            if ($response->failed()) {
+                // Link is broken, create or update record
+                BrokenLink::updateOrCreate(
+                    [
+                        'post_id' => $post->id,
+                        'url' => $url,
+                    ],
+                    [
+                        'status_code' => $response->status(),
+                        'error_message' => null,
+                        'last_checked_at' => now(),
+                        'status' => 'pending',
+                    ]
+                );
+            } else {
+                // Link is working, remove from broken links if it exists
+                BrokenLink::where('post_id', $post->id)
+                    ->where('url', $url)
+                    ->where('status', 'pending')
+                    ->delete();
+            }
+        } catch (\Exception $e) {
+            // Connection timeout or other error
+            BrokenLink::updateOrCreate(
+                [
+                    'post_id' => $post->id,
+                    'url' => $url,
+                ],
+                [
+                    'status_code' => null,
+                    'error_message' => $e->getMessage(),
+                    'last_checked_at' => now(),
+                    'status' => 'pending',
+                ]
+            );
+        }
+    }
+
+    private function removeFixedLinks(): void
+    {
+        // Get all pending broken links
+        $brokenLinks = BrokenLink::pending()->get();
+
+        foreach ($brokenLinks as $brokenLink) {
+            try {
+                $response = Http::timeout(10)->head($brokenLink->url);
+
+                if ($response->successful()) {
+                    // Link is now working, remove it
+                    $brokenLink->delete();
+                }
+            } catch (\Exception $e) {
+                // Still broken, keep it
+            }
         }
     }
 }

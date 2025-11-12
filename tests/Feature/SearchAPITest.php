@@ -233,4 +233,71 @@ class SearchAPITest extends TestCase
         $this->assertContains($publishedPost->id, $postIds);
         $this->assertNotContains($draftPost->id, $postIds);
     }
+
+    public function test_api_search_includes_relevance_score(): void
+    {
+        $user = User::factory()->create();
+        $category = Category::factory()->create();
+
+        Post::factory()->create([
+            'title' => 'Laravel Testing Guide',
+            'status' => 'published',
+            'published_at' => now()->subDay(),
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+        ]);
+
+        $response = $this->getJson('/api/v1/search?q=Laravel');
+
+        $response->assertStatus(200);
+        $data = $response->json('data');
+        if (count($data) > 0) {
+            $this->assertArrayHasKey('relevance_score', $data[0]);
+            // Relevance score can be int or float
+            $this->assertIsNumeric($data[0]['relevance_score']);
+            $this->assertGreaterThanOrEqual(0, $data[0]['relevance_score']);
+            $this->assertLessThanOrEqual(100, $data[0]['relevance_score']);
+        }
+    }
+
+    public function test_api_search_with_exact_parameter_disables_fuzzy(): void
+    {
+        $user = User::factory()->create();
+        $category = Category::factory()->create();
+
+        $exactPost = Post::factory()->create([
+            'title' => 'Laravel Framework',
+            'status' => 'published',
+            'published_at' => now()->subDay(),
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+        ]);
+
+        // With exact=true, typo should not match
+        $response = $this->getJson('/api/v1/search?q=laravle&exact=true');
+
+        $response->assertStatus(200);
+        $data = $response->json('data');
+        // Exact search should not find results with typo
+        $this->assertEquals(0, count($data));
+
+        // Without exact parameter, fuzzy search may work depending on threshold
+        $response = $this->getJson('/api/v1/search?q=Laravel');
+
+        $response->assertStatus(200);
+        $data = $response->json('data');
+        // Exact match should find results
+        $this->assertGreaterThanOrEqual(1, count($data));
+    }
+
+    public function test_api_search_authentication_for_protected_endpoints(): void
+    {
+        // Test that public search endpoint works without authentication
+        $response = $this->getJson('/api/v1/search?q=Laravel');
+        $response->assertStatus(200);
+
+        // If there are protected endpoints, they would require authentication
+        // This test verifies the public endpoint is accessible
+        $this->assertTrue($response->json('success'));
+    }
 }

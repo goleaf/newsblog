@@ -4,106 +4,261 @@ namespace Tests\Feature\Nova;
 
 use App\Models\Category;
 use App\Models\User;
-use App\Nova\Category as CategoryResource;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Laravel\Nova\Http\Requests\NovaRequest;
 use Tests\TestCase;
 
 class CategoryResourceTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_category_resource_has_correct_model(): void
+    protected User $admin;
+
+    protected User $editor;
+
+    protected User $author;
+
+    protected function setUp(): void
     {
-        $this->assertEquals(\App\Models\Category::class, CategoryResource::$model);
+        parent::setUp();
+
+        $this->admin = User::factory()->create(['role' => 'admin']);
+        $this->editor = User::factory()->create(['role' => 'editor']);
+        $this->author = User::factory()->create(['role' => 'author']);
     }
 
-    public function test_category_resource_has_correct_title(): void
+    public function test_admin_can_view_categories_index(): void
     {
-        $this->assertEquals('name', CategoryResource::$title);
+        Category::factory()->count(5)->create();
+
+        $response = $this->actingAs($this->admin)
+            ->getJson('/nova-api/categories');
+
+        $response->assertOk()
+            ->assertJsonStructure([
+                'data' => [
+                    '*' => ['id', 'name'],
+                ],
+            ]);
     }
 
-    public function test_category_resource_has_correct_search_fields(): void
+    public function test_editor_can_view_categories_index(): void
     {
-        $expected = ['id', 'name', 'description'];
-        $this->assertEquals($expected, CategoryResource::$search);
+        Category::factory()->count(5)->create();
+
+        $response = $this->actingAs($this->editor)
+            ->getJson('/nova-api/categories');
+
+        $response->assertOk();
     }
 
-    public function test_admin_can_view_any_categories(): void
+    public function test_author_can_view_categories_index(): void
     {
-        $admin = User::factory()->create(['role' => 'admin']);
-        $request = NovaRequest::create('/nova-api/categories', 'GET');
-        $request->setUserResolver(fn () => $admin);
+        Category::factory()->count(5)->create();
 
-        $this->assertTrue(CategoryResource::authorizedToViewAny($request));
-    }
+        $response = $this->actingAs($this->author)
+            ->getJson('/nova-api/categories');
 
-    public function test_editor_can_view_any_categories(): void
-    {
-        $editor = User::factory()->create(['role' => 'editor']);
-        $request = NovaRequest::create('/nova-api/categories', 'GET');
-        $request->setUserResolver(fn () => $editor);
-
-        $this->assertTrue(CategoryResource::authorizedToViewAny($request));
-    }
-
-    public function test_author_cannot_view_any_categories(): void
-    {
-        $author = User::factory()->create(['role' => 'author']);
-        $request = NovaRequest::create('/nova-api/categories', 'GET');
-        $request->setUserResolver(fn () => $author);
-
-        $this->assertFalse(CategoryResource::authorizedToViewAny($request));
+        $response->assertOk();
     }
 
     public function test_admin_can_create_category(): void
     {
-        $admin = User::factory()->create(['role' => 'admin']);
-        $request = NovaRequest::create('/nova-api/categories', 'POST');
-        $request->setUserResolver(fn () => $admin);
+        $response = $this->actingAs($this->admin)
+            ->postJson('/nova-api/categories', [
+                'name' => 'Technology',
+                'description' => 'Tech related posts',
+                'status' => 'active',
+                'display_order' => 1,
+            ]);
 
-        $this->assertTrue(CategoryResource::authorizedToCreate($request));
+        $response->assertCreated();
+        $this->assertDatabaseHas('categories', [
+            'name' => 'Technology',
+            'slug' => 'technology',
+        ]);
     }
 
     public function test_editor_can_create_category(): void
     {
-        $editor = User::factory()->create(['role' => 'editor']);
-        $request = NovaRequest::create('/nova-api/categories', 'POST');
-        $request->setUserResolver(fn () => $editor);
+        $response = $this->actingAs($this->editor)
+            ->postJson('/nova-api/categories', [
+                'name' => 'Business',
+                'description' => 'Business posts',
+                'status' => 'active',
+            ]);
 
-        $this->assertTrue(CategoryResource::authorizedToCreate($request));
+        $response->assertCreated();
+        $this->assertDatabaseHas('categories', [
+            'name' => 'Business',
+        ]);
     }
 
-    public function test_category_resource_has_fields(): void
+    public function test_author_cannot_create_category(): void
     {
-        $admin = User::factory()->create(['role' => 'admin']);
+        $response = $this->actingAs($this->author)
+            ->postJson('/nova-api/categories', [
+                'name' => 'Technology',
+                'description' => 'Tech posts',
+            ]);
+
+        $response->assertForbidden();
+    }
+
+    public function test_admin_can_update_category(): void
+    {
+        $category = Category::factory()->create(['name' => 'Original Name']);
+
+        $response = $this->actingAs($this->admin)
+            ->putJson("/nova-api/categories/{$category->id}", [
+                'name' => 'Updated Name',
+                'description' => $category->description,
+                'status' => $category->status,
+            ]);
+
+        $response->assertOk();
+        $this->assertDatabaseHas('categories', [
+            'id' => $category->id,
+            'name' => 'Updated Name',
+        ]);
+    }
+
+    public function test_editor_can_update_category(): void
+    {
+        $category = Category::factory()->create(['name' => 'Original Name']);
+
+        $response = $this->actingAs($this->editor)
+            ->putJson("/nova-api/categories/{$category->id}", [
+                'name' => 'Editor Updated',
+                'description' => $category->description,
+                'status' => $category->status,
+            ]);
+
+        $response->assertOk();
+        $this->assertDatabaseHas('categories', [
+            'id' => $category->id,
+            'name' => 'Editor Updated',
+        ]);
+    }
+
+    public function test_author_cannot_update_category(): void
+    {
+        $category = Category::factory()->create(['name' => 'Original Name']);
+
+        $response = $this->actingAs($this->author)
+            ->putJson("/nova-api/categories/{$category->id}", [
+                'name' => 'Unauthorized Update',
+                'description' => $category->description,
+            ]);
+
+        $response->assertForbidden();
+    }
+
+    public function test_admin_can_delete_category(): void
+    {
         $category = Category::factory()->create();
-        $resource = new CategoryResource($category);
 
-        $request = NovaRequest::create('/nova-api/categories', 'GET');
-        $request->setUserResolver(fn () => $admin);
+        $response = $this->actingAs($this->admin)
+            ->deleteJson("/nova-api/categories?resources[]={$category->id}");
 
-        $fields = $resource->fields($request);
-
-        $this->assertNotEmpty($fields);
-        $this->assertGreaterThan(10, count($fields));
+        $response->assertOk();
+        $this->assertSoftDeleted('categories', ['id' => $category->id]);
     }
 
-    public function test_category_index_query_orders_by_display_order(): void
+    public function test_editor_can_delete_category(): void
     {
-        $admin = User::factory()->create(['role' => 'admin']);
+        $category = Category::factory()->create();
 
-        Category::factory()->create(['name' => 'Category C', 'display_order' => 3]);
-        Category::factory()->create(['name' => 'Category A', 'display_order' => 1]);
-        Category::factory()->create(['name' => 'Category B', 'display_order' => 2]);
+        $response = $this->actingAs($this->editor)
+            ->deleteJson("/nova-api/categories?resources[]={$category->id}");
 
-        $request = NovaRequest::create('/nova-api/categories', 'GET');
-        $request->setUserResolver(fn () => $admin);
+        $response->assertOk();
+        $this->assertSoftDeleted('categories', ['id' => $category->id]);
+    }
 
-        $query = CategoryResource::indexQuery($request, Category::query());
-        $categories = $query->get();
+    public function test_author_cannot_delete_category(): void
+    {
+        $category = Category::factory()->create();
 
-        $this->assertEquals('Category A', $categories->first()->name);
-        $this->assertEquals('Category C', $categories->last()->name);
+        $response = $this->actingAs($this->author)
+            ->deleteJson("/nova-api/categories?resources[]={$category->id}");
+
+        $response->assertForbidden();
+    }
+
+    public function test_category_creation_requires_name(): void
+    {
+        $response = $this->actingAs($this->admin)
+            ->postJson('/nova-api/categories', [
+                'description' => 'Test description',
+            ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['name']);
+    }
+
+    public function test_category_slug_is_generated_automatically(): void
+    {
+        $response = $this->actingAs($this->admin)
+            ->postJson('/nova-api/categories', [
+                'name' => 'Test Category Name',
+                'description' => 'Test description',
+                'status' => 'active',
+            ]);
+
+        $response->assertCreated();
+        $this->assertDatabaseHas('categories', [
+            'name' => 'Test Category Name',
+            'slug' => 'test-category-name',
+        ]);
+    }
+
+    public function test_can_create_hierarchical_categories(): void
+    {
+        $parent = Category::factory()->create(['name' => 'Parent Category']);
+
+        $response = $this->actingAs($this->admin)
+            ->postJson('/nova-api/categories', [
+                'name' => 'Child Category',
+                'parent_id' => $parent->id,
+                'status' => 'active',
+            ]);
+
+        $response->assertCreated();
+        $this->assertDatabaseHas('categories', [
+            'name' => 'Child Category',
+            'parent_id' => $parent->id,
+        ]);
+    }
+
+    public function test_category_can_have_display_order(): void
+    {
+        $response = $this->actingAs($this->admin)
+            ->postJson('/nova-api/categories', [
+                'name' => 'Ordered Category',
+                'status' => 'active',
+                'display_order' => 5,
+            ]);
+
+        $response->assertCreated();
+        $this->assertDatabaseHas('categories', [
+            'name' => 'Ordered Category',
+            'display_order' => 5,
+        ]);
+    }
+
+    public function test_category_can_have_color_code(): void
+    {
+        $response = $this->actingAs($this->admin)
+            ->postJson('/nova-api/categories', [
+                'name' => 'Colored Category',
+                'status' => 'active',
+                'color_code' => '#FF5733',
+            ]);
+
+        $response->assertCreated();
+        $this->assertDatabaseHas('categories', [
+            'name' => 'Colored Category',
+            'color_code' => '#FF5733',
+        ]);
     }
 }

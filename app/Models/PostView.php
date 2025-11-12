@@ -13,8 +13,10 @@ class PostView extends Model
 
     protected $fillable = [
         'post_id',
+        'session_id',
         'ip_address',
         'user_agent',
+        'referer',
         'viewed_at',
     ];
 

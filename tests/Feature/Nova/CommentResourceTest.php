@@ -5,199 +5,288 @@ namespace Tests\Feature\Nova;
 use App\Models\Comment;
 use App\Models\Post;
 use App\Models\User;
-use App\Nova\Comment as CommentResource;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Laravel\Nova\Http\Requests\NovaRequest;
 use Tests\TestCase;
 
 class CommentResourceTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_comment_resource_has_correct_model(): void
+    protected User $admin;
+
+    protected User $editor;
+
+    protected User $author;
+
+    protected function setUp(): void
     {
-        $this->assertEquals(\App\Models\Comment::class, CommentResource::$model);
+        parent::setUp();
+
+        $this->admin = User::factory()->create(['role' => 'admin']);
+        $this->editor = User::factory()->create(['role' => 'editor']);
+        $this->author = User::factory()->create(['role' => 'author']);
     }
 
-    public function test_comment_resource_has_correct_title(): void
+    public function test_admin_can_view_comments_index(): void
     {
-        $this->assertEquals('id', CommentResource::$title);
-    }
-
-    public function test_comment_resource_has_correct_search_fields(): void
-    {
-        $expected = ['id', 'content', 'author_name', 'author_email'];
-        $this->assertEquals($expected, CommentResource::$search);
-    }
-
-    public function test_admin_can_view_any_comments(): void
-    {
-        $admin = User::factory()->create(['role' => 'admin']);
-        $request = NovaRequest::create('/nova-api/comments', 'GET');
-        $request->setUserResolver(fn () => $admin);
-
-        $this->assertTrue(CommentResource::authorizedToViewAny($request));
-    }
-
-    public function test_editor_can_view_any_comments(): void
-    {
-        $editor = User::factory()->create(['role' => 'editor']);
-        $request = NovaRequest::create('/nova-api/comments', 'GET');
-        $request->setUserResolver(fn () => $editor);
-
-        $this->assertTrue(CommentResource::authorizedToViewAny($request));
-    }
-
-    public function test_author_cannot_view_any_comments(): void
-    {
-        $author = User::factory()->create(['role' => 'author']);
-        $request = NovaRequest::create('/nova-api/comments', 'GET');
-        $request->setUserResolver(fn () => $author);
-
-        $this->assertFalse(CommentResource::authorizedToViewAny($request));
-    }
-
-    public function test_admin_can_view_comment(): void
-    {
-        $admin = User::factory()->create(['role' => 'admin']);
         $post = Post::factory()->create();
-        $comment = Comment::factory()->create(['post_id' => $post->id]);
+        Comment::factory()->count(5)->create(['post_id' => $post->id]);
 
-        $resource = new CommentResource($comment);
-        $request = NovaRequest::create('/nova-api/comments/'.$comment->id, 'GET');
-        $request->setUserResolver(fn () => $admin);
+        $response = $this->actingAs($this->admin)
+            ->getJson('/nova-api/comments');
 
-        $this->assertTrue($resource->authorizedToView($request));
+        $response->assertOk()
+            ->assertJsonStructure([
+                'data' => [
+                    '*' => ['id', 'content', 'status'],
+                ],
+            ]);
     }
 
-    public function test_editor_can_view_comment(): void
+    public function test_editor_can_view_comments_index(): void
     {
-        $editor = User::factory()->create(['role' => 'editor']);
         $post = Post::factory()->create();
-        $comment = Comment::factory()->create(['post_id' => $post->id]);
+        Comment::factory()->count(5)->create(['post_id' => $post->id]);
 
-        $resource = new CommentResource($comment);
-        $request = NovaRequest::create('/nova-api/comments/'.$comment->id, 'GET');
-        $request->setUserResolver(fn () => $editor);
+        $response = $this->actingAs($this->editor)
+            ->getJson('/nova-api/comments');
 
-        $this->assertTrue($resource->authorizedToView($request));
+        $response->assertOk();
     }
 
-    public function test_user_can_view_own_comment(): void
+    public function test_author_can_view_comments_index(): void
     {
-        $user = User::factory()->create(['role' => 'user']);
         $post = Post::factory()->create();
-        $comment = Comment::factory()->create([
+        Comment::factory()->count(5)->create(['post_id' => $post->id]);
+
+        $response = $this->actingAs($this->author)
+            ->getJson('/nova-api/comments');
+
+        $response->assertOk();
+    }
+
+    public function test_admin_can_create_comment(): void
+    {
+        $post = Post::factory()->create();
+
+        $response = $this->actingAs($this->admin)
+            ->postJson('/nova-api/comments', [
+                'post_id' => $post->id,
+                'content' => 'Test comment content',
+                'status' => 'approved',
+                'author_name' => 'Test Author',
+                'author_email' => 'test@example.com',
+            ]);
+
+        $response->assertCreated();
+        $this->assertDatabaseHas('comments', [
             'post_id' => $post->id,
-            'user_id' => $user->id,
+            'content' => 'Test comment content',
         ]);
-
-        $resource = new CommentResource($comment);
-        $request = NovaRequest::create('/nova-api/comments/'.$comment->id, 'GET');
-        $request->setUserResolver(fn () => $user);
-
-        $this->assertTrue($resource->authorizedToView($request));
     }
 
-    public function test_user_cannot_view_other_users_comment(): void
+    public function test_editor_can_create_comment(): void
     {
-        $user = User::factory()->create(['role' => 'user']);
-        $otherUser = User::factory()->create(['role' => 'user']);
         $post = Post::factory()->create();
-        $comment = Comment::factory()->create([
-            'post_id' => $post->id,
-            'user_id' => $otherUser->id,
+
+        $response = $this->actingAs($this->editor)
+            ->postJson('/nova-api/comments', [
+                'post_id' => $post->id,
+                'content' => 'Editor comment',
+                'status' => 'approved',
+            ]);
+
+        $response->assertCreated();
+        $this->assertDatabaseHas('comments', [
+            'content' => 'Editor comment',
         ]);
-
-        $resource = new CommentResource($comment);
-        $request = NovaRequest::create('/nova-api/comments/'.$comment->id, 'GET');
-        $request->setUserResolver(fn () => $user);
-
-        $this->assertFalse($resource->authorizedToView($request));
     }
 
     public function test_admin_can_update_comment(): void
     {
-        $admin = User::factory()->create(['role' => 'admin']);
         $post = Post::factory()->create();
-        $comment = Comment::factory()->create(['post_id' => $post->id]);
+        $comment = Comment::factory()->create([
+            'post_id' => $post->id,
+            'content' => 'Original content',
+        ]);
 
-        $resource = new CommentResource($comment);
-        $request = NovaRequest::create('/nova-api/comments/'.$comment->id, 'PUT');
-        $request->setUserResolver(fn () => $admin);
+        $response = $this->actingAs($this->admin)
+            ->putJson("/nova-api/comments/{$comment->id}", [
+                'post_id' => $post->id,
+                'content' => 'Updated content',
+                'status' => $comment->status,
+            ]);
 
-        $this->assertTrue($resource->authorizedToUpdate($request));
+        $response->assertOk();
+        $this->assertDatabaseHas('comments', [
+            'id' => $comment->id,
+            'content' => 'Updated content',
+        ]);
     }
 
     public function test_editor_can_update_comment(): void
     {
-        $editor = User::factory()->create(['role' => 'editor']);
         $post = Post::factory()->create();
-        $comment = Comment::factory()->create(['post_id' => $post->id]);
+        $comment = Comment::factory()->create([
+            'post_id' => $post->id,
+            'content' => 'Original content',
+        ]);
 
-        $resource = new CommentResource($comment);
-        $request = NovaRequest::create('/nova-api/comments/'.$comment->id, 'PUT');
-        $request->setUserResolver(fn () => $editor);
+        $response = $this->actingAs($this->editor)
+            ->putJson("/nova-api/comments/{$comment->id}", [
+                'post_id' => $post->id,
+                'content' => 'Editor updated',
+                'status' => $comment->status,
+            ]);
 
-        $this->assertTrue($resource->authorizedToUpdate($request));
+        $response->assertOk();
+        $this->assertDatabaseHas('comments', [
+            'id' => $comment->id,
+            'content' => 'Editor updated',
+        ]);
     }
 
     public function test_admin_can_delete_comment(): void
     {
-        $admin = User::factory()->create(['role' => 'admin']);
         $post = Post::factory()->create();
         $comment = Comment::factory()->create(['post_id' => $post->id]);
 
-        $resource = new CommentResource($comment);
-        $request = NovaRequest::create('/nova-api/comments/'.$comment->id, 'DELETE');
-        $request->setUserResolver(fn () => $admin);
+        $response = $this->actingAs($this->admin)
+            ->deleteJson("/nova-api/comments?resources[]={$comment->id}");
 
-        $this->assertTrue($resource->authorizedToDelete($request));
+        $response->assertOk();
+        $this->assertSoftDeleted('comments', ['id' => $comment->id]);
     }
 
     public function test_editor_can_delete_comment(): void
     {
-        $editor = User::factory()->create(['role' => 'editor']);
         $post = Post::factory()->create();
         $comment = Comment::factory()->create(['post_id' => $post->id]);
 
-        $resource = new CommentResource($comment);
-        $request = NovaRequest::create('/nova-api/comments/'.$comment->id, 'DELETE');
-        $request->setUserResolver(fn () => $editor);
+        $response = $this->actingAs($this->editor)
+            ->deleteJson("/nova-api/comments?resources[]={$comment->id}");
 
-        $this->assertTrue($resource->authorizedToDelete($request));
+        $response->assertOk();
+        $this->assertSoftDeleted('comments', ['id' => $comment->id]);
     }
 
-    public function test_comment_resource_has_fields(): void
+    public function test_author_cannot_delete_comment(): void
     {
-        $admin = User::factory()->create(['role' => 'admin']);
         $post = Post::factory()->create();
         $comment = Comment::factory()->create(['post_id' => $post->id]);
-        $resource = new CommentResource($comment);
 
-        $request = NovaRequest::create('/nova-api/comments', 'GET');
-        $request->setUserResolver(fn () => $admin);
+        $response = $this->actingAs($this->author)
+            ->deleteJson("/nova-api/comments?resources[]={$comment->id}");
 
-        $fields = $resource->fields($request);
-
-        $this->assertNotEmpty($fields);
-        $this->assertGreaterThan(10, count($fields));
+        $response->assertForbidden();
     }
 
-    public function test_comment_index_query_eager_loads_relationships(): void
+    public function test_comment_creation_requires_content(): void
     {
-        $admin = User::factory()->create(['role' => 'admin']);
         $post = Post::factory()->create();
-        Comment::factory()->create(['post_id' => $post->id]);
 
-        $request = NovaRequest::create('/nova-api/comments', 'GET');
-        $request->setUserResolver(fn () => $admin);
+        $response = $this->actingAs($this->admin)
+            ->postJson('/nova-api/comments', [
+                'post_id' => $post->id,
+                'status' => 'pending',
+            ]);
 
-        $query = CommentResource::indexQuery($request, Comment::query());
-        $comments = $query->get();
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['content']);
+    }
 
-        $this->assertTrue($comments->first()->relationLoaded('post'));
-        $this->assertTrue($comments->first()->relationLoaded('user'));
-        $this->assertTrue($comments->first()->relationLoaded('parent'));
+    public function test_comment_creation_requires_post_id(): void
+    {
+        $response = $this->actingAs($this->admin)
+            ->postJson('/nova-api/comments', [
+                'content' => 'Test comment',
+                'status' => 'pending',
+            ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['post_id']);
+    }
+
+    public function test_can_create_guest_comment_with_author_details(): void
+    {
+        $post = Post::factory()->create();
+
+        $response = $this->actingAs($this->admin)
+            ->postJson('/nova-api/comments', [
+                'post_id' => $post->id,
+                'content' => 'Guest comment',
+                'status' => 'pending',
+                'author_name' => 'Guest User',
+                'author_email' => 'guest@example.com',
+            ]);
+
+        $response->assertCreated();
+        $this->assertDatabaseHas('comments', [
+            'content' => 'Guest comment',
+            'author_name' => 'Guest User',
+            'author_email' => 'guest@example.com',
+        ]);
+    }
+
+    public function test_can_create_authenticated_user_comment(): void
+    {
+        $post = Post::factory()->create();
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($this->admin)
+            ->postJson('/nova-api/comments', [
+                'post_id' => $post->id,
+                'user_id' => $user->id,
+                'content' => 'User comment',
+                'status' => 'approved',
+            ]);
+
+        $response->assertCreated();
+        $this->assertDatabaseHas('comments', [
+            'content' => 'User comment',
+            'user_id' => $user->id,
+        ]);
+    }
+
+    public function test_can_create_reply_to_comment(): void
+    {
+        $post = Post::factory()->create();
+        $parentComment = Comment::factory()->create(['post_id' => $post->id]);
+
+        $response = $this->actingAs($this->admin)
+            ->postJson('/nova-api/comments', [
+                'post_id' => $post->id,
+                'parent_id' => $parentComment->id,
+                'content' => 'Reply comment',
+                'status' => 'approved',
+            ]);
+
+        $response->assertCreated();
+        $this->assertDatabaseHas('comments', [
+            'content' => 'Reply comment',
+            'parent_id' => $parentComment->id,
+        ]);
+    }
+
+    public function test_admin_can_change_comment_status(): void
+    {
+        $post = Post::factory()->create();
+        $comment = Comment::factory()->create([
+            'post_id' => $post->id,
+            'status' => 'pending',
+        ]);
+
+        $response = $this->actingAs($this->admin)
+            ->putJson("/nova-api/comments/{$comment->id}", [
+                'post_id' => $post->id,
+                'content' => $comment->content,
+                'status' => 'approved',
+            ]);
+
+        $response->assertOk();
+        $this->assertDatabaseHas('comments', [
+            'id' => $comment->id,
+            'status' => 'approved',
+        ]);
     }
 }

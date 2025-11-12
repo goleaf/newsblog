@@ -26,11 +26,55 @@ class NewsletterFactory extends Factory
      */
     public function definition(): array
     {
+        $status = fake()->randomElement(['pending', 'subscribed', 'unsubscribed']);
+        $verifiedAt = $status === 'subscribed' ? fake()->dateTimeBetween('-1 year', 'now') : null;
+
         return [
             'email' => fake()->unique()->safeEmail(),
-            'status' => fake()->randomElement(['subscribed', 'unsubscribed']),
-            'verified_at' => fake()->optional(0.8)->dateTimeBetween('-1 year', 'now'),
+            'status' => $status,
+            'verified_at' => $verifiedAt,
             'token' => \Illuminate\Support\Str::random(32),
+            'verification_token' => $status === 'pending' ? Newsletter::generateVerificationToken() : null,
+            'verification_token_expires_at' => $status === 'pending' ? now()->addDays(7) : null,
+            'unsubscribe_token' => Newsletter::generateUnsubscribeToken(),
+            'unsubscribed_at' => $status === 'unsubscribed' ? fake()->dateTimeBetween('-1 year', 'now') : null,
         ];
+    }
+
+    /**
+     * Indicate that the newsletter subscription is verified.
+     */
+    public function verified(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => 'subscribed',
+            'verified_at' => now(),
+            'verification_token' => null,
+            'verification_token_expires_at' => null,
+        ]);
+    }
+
+    /**
+     * Indicate that the newsletter subscription is pending verification.
+     */
+    public function pending(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => 'pending',
+            'verified_at' => null,
+            'verification_token' => Newsletter::generateVerificationToken(),
+            'verification_token_expires_at' => now()->addDays(7),
+        ]);
+    }
+
+    /**
+     * Indicate that the newsletter subscription is unsubscribed.
+     */
+    public function unsubscribed(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => 'unsubscribed',
+            'unsubscribed_at' => now(),
+        ]);
     }
 }

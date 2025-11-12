@@ -2,6 +2,7 @@
 
 namespace App\Nova\Actions;
 
+use App\Jobs\SendCommentApprovedNotification;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Collection;
@@ -32,6 +33,10 @@ class ApproveComments extends Action
                 $comment->update([
                     'status' => 'approved',
                 ]);
+
+                // Queue notification to post author (Requirement 24.1)
+                dispatch(new SendCommentApprovedNotification($comment));
+
                 $approvedCount++;
             }
         }

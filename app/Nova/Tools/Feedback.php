@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Laravel\Nova\Menu\MenuSection;
 use Laravel\Nova\Tool;
 
-class FeedbackTool extends Tool
+class Feedback extends Tool
 {
     /**
      * Build the menu that renders the navigation links for the tool.

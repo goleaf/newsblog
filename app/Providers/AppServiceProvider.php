@@ -27,10 +27,12 @@ use App\Policies\PostPolicy;
 use App\Policies\SettingPolicy;
 use App\Policies\TagPolicy;
 use App\Policies\UserPolicy;
+use App\Services\BreadcrumbService;
 use App\Services\FuzzySearchService;
 use App\Services\SearchAnalyticsService;
 use App\Services\SearchIndexService;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -80,5 +82,27 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Setting::class, SettingPolicy::class);
         Gate::policy(ActivityLog::class, ActivityLogPolicy::class);
         Gate::policy(Feedback::class, FeedbackPolicy::class);
+
+        // Track slow queries for performance monitoring
+        if (config('app.debug')) {
+            \Illuminate\Support\Facades\DB::listen(function ($query) {
+                $performanceMetrics = app(\App\Services\PerformanceMetricsService::class);
+                $performanceMetrics->logSlowQuery(
+                    $query->sql,
+                    $query->time,
+                    $query->bindings
+                );
+            });
+        }
+
+        // Share breadcrumbs with all views
+        View::composer('*', function ($view) {
+            $breadcrumbService = app(BreadcrumbService::class);
+            $breadcrumbs = $breadcrumbService->generate(request());
+            $structuredData = $breadcrumbService->generateStructuredData($breadcrumbs);
+
+            $view->with('breadcrumbs', $breadcrumbs);
+            $view->with('breadcrumbStructuredData', $structuredData);
+        });
     }
 }

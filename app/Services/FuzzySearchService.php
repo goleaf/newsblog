@@ -76,8 +76,14 @@ class FuzzySearchService
 
             if ($this->cacheEnabled && Cache::has($cacheKey)) {
                 Log::debug('Search result cache hit', ['query' => $query]);
+                $this->analyticsService->logCacheHit('posts', $query);
 
                 return Cache::get($cacheKey);
+            }
+
+            // Log cache miss
+            if ($this->cacheEnabled) {
+                $this->analyticsService->logCacheMiss('posts', $query);
             }
 
             $startTime = microtime(true);
@@ -187,8 +193,14 @@ class FuzzySearchService
 
             if ($this->cacheEnabled && Cache::has($cacheKey)) {
                 Log::debug('Search result cache hit', ['query' => $query]);
+                $this->analyticsService->logCacheHit('posts', $query);
 
                 return Cache::get($cacheKey);
+            }
+
+            // Log cache miss
+            if ($this->cacheEnabled) {
+                $this->analyticsService->logCacheMiss('posts', $query);
             }
 
             $startTime = microtime(true);
@@ -325,8 +337,14 @@ class FuzzySearchService
 
         if ($this->cacheEnabled && Cache::has($cacheKey)) {
             Log::debug('Suggestion cache hit', ['query' => $query]);
+            $this->analyticsService->logCacheHit('suggestions', $query);
 
             return Cache::get($cacheKey);
+        }
+
+        // Log cache miss
+        if ($this->cacheEnabled) {
+            $this->analyticsService->logCacheMiss('suggestions', $query);
         }
 
         try {
@@ -904,7 +922,7 @@ class FuzzySearchService
             return false;
         }
 
-        if (isset($filters['author']) && $item['author'] !== $filters['author']) {
+        if (isset($filters['author']) && ($item['author_id'] ?? null) != $filters['author']) {
             return false;
         }
 
@@ -964,9 +982,7 @@ class FuzzySearchService
         }
 
         if (isset($filters['author'])) {
-            $queryBuilder->whereHas('user', function ($q) use ($filters) {
-                $q->where('name', $filters['author']);
-            });
+            $queryBuilder->where('user_id', $filters['author']);
         }
 
         if (isset($filters['date_from'])) {

@@ -20,6 +20,10 @@
         {
             "type": "path",
             "url": "./nova-components/MaintenanceMode"
+        },
+        {
+            "type": "path",
+            "url": "./nova-components/SystemHealth"
         }
     ],
     "require": {
@@ -34,7 +38,8 @@
         "loilo/fuse": "^7.1",
         "partitech/php-mistral": "^0.0.22",
         "app/cache-manager": "@dev",
-        "app/maintenance-mode": "@dev"
+        "app/maintenance-mode": "@dev",
+        "app/system-health": "@dev"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.16",

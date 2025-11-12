@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" x-data="{ darkMode: localStorage.getItem('darkMode') === 'true' || (localStorage.getItem('darkMode') === null && window.matchMedia('(prefers-color-scheme: dark)').matches) }" x-init="$watch('darkMode', val => localStorage.setItem('darkMode', val))" :class="{ 'dark': darkMode }">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,10 +7,24 @@
 
     <title>@yield('title', config('app.name', 'TechNewsHub'))</title>
     <meta name="description" content="@yield('description', config('app.description', 'TechNewsHub - Your source for technology news'))">
+    
+    @stack('meta-tags')
+    @stack('structured-data')
+
+    <!-- Prevent flash of unstyled content -->
+    <script>
+        (function() {
+            const darkMode = localStorage.getItem('darkMode') === 'true' || 
+                           (localStorage.getItem('darkMode') === null && window.matchMedia('(prefers-color-scheme: dark)').matches);
+            if (darkMode) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-gray-50 dark:bg-gray-900">
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200">
     <!-- Navigation -->
     <nav class="bg-white dark:bg-gray-800 shadow">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -32,18 +46,19 @@
                         @endforeach
                     </div>
                 </div>
-                <div class="flex items-center">
+                <div class="flex items-center gap-4">
                     <form method="GET" action="{{ route('search') }}" class="flex relative w-full max-w-md">
                         <input 
                             type="text" 
                             name="q" 
                             value="{{ request('q') }}"
                             placeholder="Search..." 
-                            class="flex-1 rounded-l-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white px-4 py-2"
+                            class="flex-1 rounded-l-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 px-4 py-2"
                             autocomplete="off"
                         >
-                        <button type="submit" class="rounded-r-md bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700">Search</button>
+                        <button type="submit" class="rounded-r-md bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600">Search</button>
                     </form>
+                    <x-dark-mode-toggle />
                 </div>
             </div>
         </div>
@@ -51,6 +66,9 @@
 
     <!-- Main Content -->
     <main>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <x-breadcrumbs :breadcrumbs="$breadcrumbs ?? []" :structuredData="$breadcrumbStructuredData ?? null" />
+        </div>
         @yield('content')
     </main>
 

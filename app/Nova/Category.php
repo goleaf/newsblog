@@ -14,7 +14,6 @@ use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Textarea;
 use Laravel\Nova\Http\Requests\NovaRequest;
-use Laravel\Nova\Panel;
 
 class Category extends Resource
 {
@@ -30,7 +29,7 @@ class Category extends Resource
      *
      * @var array<int, int>
      */
-    public static $perPageOptions = [25, 50, 100];
+    public static $perPageOptions = [50, 100, 150];
 
     /**
      * The single value that should be used to represent the resource when being displayed.
@@ -160,7 +159,7 @@ class Category extends Resource
                 ->rules('required', 'integer', 'min:0')
                 ->help('Order in which categories are displayed (lower numbers first)'),
 
-            Panel::make('SEO', [
+            \Laravel\Nova\Panel::make('SEO', [
                 Text::make('Meta Title', 'meta_title')
                     ->nullable()
                     ->rules('max:255')

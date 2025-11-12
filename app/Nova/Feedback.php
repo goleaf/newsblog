@@ -2,6 +2,7 @@
 
 namespace App\Nova;
 
+use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\ID;
@@ -39,7 +40,7 @@ class Feedback extends Resource
     /**
      * Determine if the current user can view any resources.
      */
-    public static function authorizedToViewAny(NovaRequest $request): bool
+    public static function authorizedToViewAny(Request $request): bool
     {
         return $request->user()->can('viewAny', static::$model);
     }
@@ -47,7 +48,7 @@ class Feedback extends Resource
     /**
      * Determine if the current user can view the given resource.
      */
-    public function authorizedToView(NovaRequest $request): bool
+    public function authorizedToView(Request $request): bool
     {
         return $request->user()->can('view', $this->resource);
     }
@@ -55,7 +56,7 @@ class Feedback extends Resource
     /**
      * Determine if the current user can create resources.
      */
-    public static function authorizedToCreate(NovaRequest $request): bool
+    public static function authorizedToCreate(Request $request): bool
     {
         return true; // All Nova users can submit feedback
     }
@@ -63,7 +64,7 @@ class Feedback extends Resource
     /**
      * Determine if the current user can update the given resource.
      */
-    public function authorizedToUpdate(NovaRequest $request): bool
+    public function authorizedToUpdate(Request $request): bool
     {
         return $request->user()->can('update', $this->resource);
     }
@@ -71,7 +72,7 @@ class Feedback extends Resource
     /**
      * Determine if the current user can delete the given resource.
      */
-    public function authorizedToDelete(NovaRequest $request): bool
+    public function authorizedToDelete(Request $request): bool
     {
         return $request->user()->can('delete', $this->resource);
     }

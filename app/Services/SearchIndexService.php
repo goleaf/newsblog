@@ -237,6 +237,7 @@ class SearchIndexService
             'content' => strip_tags($post->content),
             'slug' => $post->slug,
             'author' => $post->user?->name,
+            'author_id' => $post->user_id,
             'category' => $post->category?->name,
             'tags' => $post->tags->pluck('name')->toArray(),
             'published_at' => $post->published_at?->toISOString(),

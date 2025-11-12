@@ -14,8 +14,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/clear/{type}', [CacheController::class, 'clear'])
-    ->where('type', 'application|config|route|view|event|optimize');
+Route::post('/clear/{type}', [CacheController::class, 'clear']);
 
 Route::post('/clear-all', [CacheController::class, 'clearAll']);
 

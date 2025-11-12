@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCommentRequest;
+use App\Jobs\SendCommentReplyNotification;
 use App\Models\Comment;
 use App\Services\SpamDetectionService;
 
@@ -43,6 +44,15 @@ class CommentController extends Controller
             return redirect()->back()->with('error', 'Your comment has been flagged as spam.');
         }
 
-        return redirect()->back()->with('success', 'Your comment has been submitted and is pending approval.');
+        // If this is a reply and not spam, queue notification to parent commenter (Requirement 23.4)
+        if ($comment->parent_id && ! $isSpam) {
+            dispatch(new SendCommentReplyNotification($comment));
+        }
+
+        $message = $comment->parent_id
+            ? 'Your reply has been submitted and is pending approval.'
+            : 'Your comment has been submitted and is pending approval.';
+
+        return redirect()->back()->with('success', $message);
     }
 }

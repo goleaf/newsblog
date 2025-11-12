@@ -17,7 +17,6 @@ use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Image;
 use Laravel\Nova\Fields\Number;
-use Laravel\Nova\Fields\Panel;
 use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Textarea;
@@ -224,17 +223,17 @@ class Post extends Resource
                 ->sortable()
                 ->default(0),
 
-            Panel::make('SEO', [
+            \Laravel\Nova\Panel::make('SEO', [
                 Text::make('Meta Title', 'meta_title')
                     ->nullable()
-                    ->rules('max:255')
-                    ->help('SEO meta title for search engines'),
+                    ->rules('max:70')
+                    ->help('SEO meta title for search engines (max 70 characters for optimal display)'),
 
                 Textarea::make('Meta Description', 'meta_description')
                     ->nullable()
                     ->rows(2)
-                    ->rules('max:500')
-                    ->help('SEO meta description for search engines'),
+                    ->rules('max:160')
+                    ->help('SEO meta description for search engines (max 160 characters)'),
 
                 Text::make('Meta Keywords', 'meta_keywords')
                     ->nullable()

@@ -38,6 +38,26 @@
                             {{ __('Profile') }}
                         </x-dropdown-link>
 
+                        <x-dropdown-link :href="route('bookmarks.index')">
+                            {{ __('Reading List') }}
+                        </x-dropdown-link>
+
+                        @if(Auth::user()->isAdmin() || Auth::user()->isEditor())
+                            <div class="border-t border-gray-200 dark:border-gray-600"></div>
+                            
+                            <x-dropdown-link :href="route('admin.performance')">
+                                {{ __('Performance') }}
+                            </x-dropdown-link>
+
+                            <x-dropdown-link :href="route('admin.search')">
+                                {{ __('Search Analytics') }}
+                            </x-dropdown-link>
+
+                            <x-dropdown-link :href="route('admin.series.index')">
+                                {{ __('Series Management') }}
+                            </x-dropdown-link>
+                        @endif
+
                         <!-- Authentication -->
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
@@ -83,6 +103,26 @@
                 <x-responsive-nav-link :href="route('profile.edit')">
                     {{ __('Profile') }}
                 </x-responsive-nav-link>
+
+                <x-responsive-nav-link :href="route('bookmarks.index')">
+                    {{ __('Reading List') }}
+                </x-responsive-nav-link>
+
+                @if(Auth::user()->isAdmin() || Auth::user()->isEditor())
+                    <div class="border-t border-gray-200 dark:border-gray-600 my-2"></div>
+                    
+                    <x-responsive-nav-link :href="route('admin.performance')">
+                        {{ __('Performance') }}
+                    </x-responsive-nav-link>
+
+                    <x-responsive-nav-link :href="route('admin.search')">
+                        {{ __('Search Analytics') }}
+                    </x-responsive-nav-link>
+
+                    <x-responsive-nav-link :href="route('admin.series.index')">
+                        {{ __('Series Management') }}
+                    </x-responsive-nav-link>
+                @endif
 
                 <!-- Authentication -->
                 <form method="POST" action="{{ route('logout') }}">

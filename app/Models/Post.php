@@ -72,6 +72,15 @@ class Post extends Model
         return $this->hasMany(Bookmark::class);
     }
 
+    public function isBookmarkedBy($userId): bool
+    {
+        if (! $userId) {
+            return false;
+        }
+
+        return $this->bookmarks()->where('user_id', $userId)->exists();
+    }
+
     public function reactions()
     {
         return $this->hasMany(Reaction::class);
@@ -80,6 +89,19 @@ class Post extends Model
     public function revisions()
     {
         return $this->hasMany(PostRevision::class)->orderBy('created_at', 'desc');
+    }
+
+    public function series()
+    {
+        return $this->belongsToMany(Series::class, 'post_series')
+            ->withPivot('order')
+            ->withTimestamps()
+            ->orderBy('post_series.order');
+    }
+
+    public function brokenLinks()
+    {
+        return $this->hasMany(BrokenLink::class);
     }
 
     public function scopePublished($query)
@@ -198,6 +220,14 @@ class Post extends Model
             // Invalidate search index cache when post is created
             if ($post->isPublished()) {
                 App::make(SearchIndexService::class)->invalidateSearchCaches();
+
+                // Invalidate related posts cache for posts in the same category
+                if ($post->category_id) {
+                    App::make(\App\Services\RelatedPostsService::class)->invalidateCacheByCategory($post->category_id);
+                }
+
+                // Regenerate sitemap
+                App::make(\App\Services\SitemapService::class)->regenerateIfNeeded();
             }
         });
 
@@ -226,12 +256,44 @@ class Post extends Model
 
             if ($hasSearchRelevantChanges) {
                 App::make(SearchIndexService::class)->invalidateSearchCaches();
+
+                // Invalidate related posts cache for this post and related posts
+                App::make(\App\Services\RelatedPostsService::class)->invalidateCache($post);
+
+                // If category changed, invalidate cache for both old and new categories
+                if ($post->isDirty('category_id')) {
+                    $oldCategoryId = $post->getOriginal('category_id');
+                    if ($oldCategoryId) {
+                        App::make(\App\Services\RelatedPostsService::class)->invalidateCacheByCategory($oldCategoryId);
+                    }
+                    if ($post->category_id) {
+                        App::make(\App\Services\RelatedPostsService::class)->invalidateCacheByCategory($post->category_id);
+                    }
+                } elseif ($post->category_id) {
+                    // If title or excerpt changed, invalidate category cache
+                    if ($post->isDirty('title') || $post->isDirty('excerpt')) {
+                        App::make(\App\Services\RelatedPostsService::class)->invalidateCacheByCategory($post->category_id);
+                    }
+                }
+
+                // Regenerate sitemap if post status or publication changed
+                if ($post->isDirty(['status', 'published_at', 'slug'])) {
+                    App::make(\App\Services\SitemapService::class)->regenerateIfNeeded();
+                }
             }
         });
 
         static::deleted(function ($post) {
             // Invalidate search index cache when post is deleted
             App::make(SearchIndexService::class)->invalidateSearchCaches();
+
+            // Invalidate related posts cache for posts in the same category
+            if ($post->category_id) {
+                App::make(\App\Services\RelatedPostsService::class)->invalidateCacheByCategory($post->category_id);
+            }
+
+            // Regenerate sitemap
+            App::make(\App\Services\SitemapService::class)->regenerateIfNeeded();
         });
     }
 
@@ -240,5 +302,111 @@ class Post extends Model
         $wordCount = str_word_count(strip_tags($content));
 
         return (int) ceil($wordCount / 200);
+    }
+
+    public function getBookmarksCountAttribute(): int
+    {
+        return $this->bookmarks()->count();
+    }
+
+    /**
+     * Get SEO meta tags for the post
+     */
+    public function getMetaTags(): array
+    {
+        $url = route('post.show', $this->slug);
+        $imageUrl = $this->featured_image_url ?? asset('images/default-og-image.jpg');
+
+        return [
+            // Basic meta tags
+            'title' => $this->meta_title ?: $this->title,
+            'description' => $this->getMetaDescription(),
+            'keywords' => $this->meta_keywords,
+
+            // Open Graph tags
+            'og:title' => $this->meta_title ?: $this->title,
+            'og:description' => $this->getMetaDescription(),
+            'og:image' => $imageUrl,
+            'og:url' => $url,
+            'og:type' => 'article',
+            'og:site_name' => config('app.name', 'TechNewsHub'),
+
+            // Open Graph article tags
+            'article:published_time' => $this->published_at?->toIso8601String(),
+            'article:modified_time' => $this->updated_at->toIso8601String(),
+            'article:author' => $this->user->name,
+            'article:section' => $this->category->name,
+            'article:tag' => $this->tags->pluck('name')->toArray(),
+
+            // Twitter Card tags
+            'twitter:card' => 'summary_large_image',
+            'twitter:title' => $this->meta_title ?: $this->title,
+            'twitter:description' => $this->getMetaDescription(),
+            'twitter:image' => $imageUrl,
+            'twitter:url' => $url,
+        ];
+    }
+
+    /**
+     * Get meta description with validation (max 160 chars)
+     */
+    public function getMetaDescription(): string
+    {
+        $description = $this->meta_description ?: Str::limit(strip_tags($this->excerpt ?: $this->content), 160, '');
+
+        // Ensure it doesn't exceed 160 characters
+        return Str::limit($description, 160, '');
+    }
+
+    /**
+     * Get Schema.org Article structured data
+     */
+    public function getStructuredData(): array
+    {
+        $data = [
+            '@context' => 'https://schema.org',
+            '@type' => 'Article',
+            'headline' => $this->title,
+            'description' => $this->getMetaDescription(),
+            'image' => $this->featured_image_url ?? asset('images/default-og-image.jpg'),
+            'datePublished' => $this->published_at?->toIso8601String(),
+            'dateModified' => $this->updated_at->toIso8601String(),
+            'author' => [
+                '@type' => 'Person',
+                'name' => $this->user->name,
+            ],
+            'publisher' => [
+                '@type' => 'Organization',
+                'name' => config('app.name', 'TechNewsHub'),
+                'logo' => [
+                    '@type' => 'ImageObject',
+                    'url' => asset('images/logo.png'),
+                ],
+            ],
+            'mainEntityOfPage' => [
+                '@type' => 'WebPage',
+                '@id' => route('post.show', $this->slug),
+            ],
+        ];
+
+        // Add article section (category)
+        if ($this->category) {
+            $data['articleSection'] = $this->category->name;
+        }
+
+        // Add keywords
+        if ($this->tags->count() > 0) {
+            $data['keywords'] = $this->tags->pluck('name')->implode(', ');
+        }
+
+        // Add word count
+        $data['wordCount'] = str_word_count(strip_tags($this->content));
+
+        // Add reading time
+        if ($this->reading_time) {
+            $data['timeRequired'] = 'PT'.$this->reading_time.'M';
+        }
+
+        return $data;
     }
 }

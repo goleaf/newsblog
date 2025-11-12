@@ -45,8 +45,8 @@ class SearchRequest extends FormRequest
             ],
             'category' => [
                 'nullable',
-                'string',
-                'exists:categories,slug',
+                'integer',
+                'exists:categories,id',
             ],
             'author' => [
                 'nullable',
@@ -62,6 +62,14 @@ class SearchRequest extends FormRequest
                 'nullable',
                 'date',
                 'after_or_equal:date_from',
+            ],
+            'tags' => [
+                'nullable',
+                'array',
+            ],
+            'tags.*' => [
+                'integer',
+                'exists:tags,id',
             ],
         ];
     }
@@ -88,6 +96,8 @@ class SearchRequest extends FormRequest
             'date_from.before_or_equal' => 'The date from must be before or equal to date to.',
             'date_to.date' => 'The date to must be a valid date.',
             'date_to.after_or_equal' => 'The date to must be after or equal to date from.',
+            'tags.array' => 'The tags must be an array.',
+            'tags.*.exists' => 'One or more selected tags do not exist.',
         ];
     }
 

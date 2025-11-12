@@ -4,32 +4,46 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Newsletter;
-use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\View\View;
 
 class NewsletterController extends Controller
 {
-    public function index(Request $request)
+    public function index(): View
     {
-        $query = Newsletter::query();
+        $newsletters = Newsletter::latest()->paginate(50);
 
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
+        $stats = [
+            'total' => Newsletter::count(),
+            'verified' => Newsletter::verified()->count(),
+            'pending' => Newsletter::whereNull('verified_at')->where('status', 'pending')->count(),
+            'unsubscribed' => Newsletter::unsubscribed()->count(),
+        ];
 
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where('email', 'like', "%{$search}%");
-        }
-
-        $subscribers = $query->latest()->paginate(20);
-
-        return view('admin.newsletters.index', compact('subscribers'));
+        return view('admin.newsletters.index', compact('newsletters', 'stats'));
     }
 
-    public function destroy(Newsletter $newsletter)
+    public function export(): Response
     {
-        $newsletter->delete();
+        $subscribers = Newsletter::verified()
+            ->where('status', 'subscribed')
+            ->orderBy('verified_at', 'desc')
+            ->get();
 
-        return redirect()->back()->with('success', 'Subscriber removed.');
+        $csv = "Email,Verified At,Subscribed At\n";
+
+        foreach ($subscribers as $subscriber) {
+            $csv .= sprintf(
+                "%s,%s,%s\n",
+                $subscriber->email,
+                $subscriber->verified_at?->format('Y-m-d H:i:s') ?? '',
+                $subscriber->created_at->format('Y-m-d H:i:s')
+            );
+        }
+
+        return response($csv, 200, [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="newsletter-subscribers-'.now()->format('Y-m-d').'.csv"',
+        ]);
     }
 }

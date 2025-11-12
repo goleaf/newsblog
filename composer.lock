@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b7a14233ca1f5c1fd12bc8d6ad4b35cb",
+    "content-hash": "7489add85e23947d804f7eddfc788bfc",
     "packages": [
         {
             "name": "app/cache-manager",
@@ -80,6 +80,47 @@
                 "MIT"
             ],
             "description": "A Laravel Nova tool.",
+            "keywords": [
+                "laravel",
+                "nova"
+            ],
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "app/system-health",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "./nova-components/SystemHealth",
+                "reference": "6306b41683a524f562315213aaef91b37f53a2a1"
+            },
+            "require": {
+                "illuminate/support": "^10.0|^11.0|^12.0",
+                "php": "^8.1"
+            },
+            "require-dev": {
+                "laravel/nova": "^5.0",
+                "laravel/nova-devtool": "^1.7"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "App\\SystemHealth\\ToolServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "App\\SystemHealth\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "A Laravel Nova tool for monitoring system health.",
             "keywords": [
                 "laravel",
                 "nova"
@@ -11322,7 +11363,8 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "app/cache-manager": 20,
-        "app/maintenance-mode": 20
+        "app/maintenance-mode": 20,
+        "app/system-health": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,

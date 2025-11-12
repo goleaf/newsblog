@@ -2,233 +2,172 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\DataTransferObjects\SearchResult;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\SearchRequest;
 use App\Models\Comment;
 use App\Models\Post;
+use App\Models\SearchLog;
 use App\Models\User;
 use App\Services\FuzzySearchService;
 use App\Services\SearchAnalyticsService;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
+use Illuminate\View\View;
 
 class SearchController extends Controller
 {
     public function __construct(
         protected FuzzySearchService $fuzzySearchService,
-        protected SearchAnalyticsService $analyticsService
+        protected SearchAnalyticsService $searchAnalyticsService
     ) {}
 
     /**
-     * Admin search across multiple types (posts, users, comments)
+     * Display admin search results
      */
-    public function index(SearchRequest $request)
+    public function index(SearchRequest $request): View
     {
-        $query = $request->validated()['q'];
-        $type = $request->validated()['type'] ?? 'all';
-        $limit = $request->validated()['limit'] ?? 20;
+        $validated = $request->validated();
+        $query = $validated['q'] ?? '';
+        $type = $validated['type'] ?? 'posts';
 
-        $results = collect();
-
-        try {
-            if ($type === 'all' || $type === 'posts') {
-                $posts = $this->searchPosts($query, $limit);
-                $results = $results->merge($posts);
-            }
-
-            if ($type === 'all' || $type === 'users') {
-                $users = $this->searchUsers($query, $limit);
-                $results = $results->merge($users);
-            }
-
-            if ($type === 'all' || $type === 'comments') {
-                $comments = $this->searchComments($query, $limit);
-                $results = $results->merge($comments);
-            }
-
-            // Sort by relevance score
-            $results = $results->sortByDesc('relevanceScore')->values();
-
-            // Limit total results
-            $results = $results->take($limit);
-
-            if ($request->wantsJson()) {
-                return response()->json([
-                    'success' => true,
-                    'data' => $results->map(fn ($result) => $result->toArray()),
-                    'meta' => [
-                        'query' => $query,
-                        'type' => $type,
-                        'count' => $results->count(),
-                    ],
-                ]);
-            }
-
+        if (empty($query)) {
             return view('admin.search.index', [
-                'results' => $results,
-                'query' => $query,
+                'results' => collect([]),
+                'query' => '',
                 'type' => $type,
             ]);
-        } catch (\Exception $e) {
-            Log::error('Admin search error', [
-                'query' => $query,
-                'type' => $type,
-                'error' => $e->getMessage(),
-            ]);
-
-            if ($request->wantsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Search failed. Please try again.',
-                    'data' => [],
-                ], 500);
-            }
-
-            return back()->with('error', 'Search failed. Please try again.');
         }
+
+        $results = match ($type) {
+            'posts' => $this->searchPosts($query),
+            'users' => $this->searchUsers($query),
+            'comments' => $this->searchComments($query),
+            default => collect([]),
+        };
+
+        return view('admin.search.index', compact('results', 'query', 'type'));
     }
 
     /**
-     * Search posts
+     * Search posts (including drafts and scheduled)
      */
-    protected function searchPosts(string $query, int $limit): Collection
+    protected function searchPosts(string $query): Collection
     {
-        if ($this->fuzzySearchService->isEnabled('posts')) {
-            try {
-                return $this->fuzzySearchService->searchPosts($query, [
-                    'limit' => $limit,
-                ]);
-            } catch (\Exception $e) {
-                Log::warning('Fuzzy post search failed, using basic search', [
-                    'query' => $query,
-                    'error' => $e->getMessage(),
-                ]);
-            }
-        }
+        // Admin search uses basic database search for now
+        // Fuzzy search returns SearchResult DTOs which don't work well with admin views
+        return $this->basicPostSearch($query);
+    }
 
-        // Fallback to basic search
-        $posts = Post::query()
+    /**
+     * Basic post search fallback
+     */
+    protected function basicPostSearch(string $query): Collection
+    {
+        return Post::with(['user', 'category'])
             ->where(function ($q) use ($query) {
                 $q->where('title', 'like', "%{$query}%")
+                    ->orWhere('slug', 'like', "%{$query}%")
                     ->orWhere('content', 'like', "%{$query}%")
-                    ->orWhere('excerpt', 'like', "%{$query}%");
+                    ->orWhereHas('user', function ($userQuery) use ($query) {
+                        $userQuery->where('name', 'like', "%{$query}%");
+                    });
             })
-            ->with(['user', 'category', 'tags'])
             ->latest()
-            ->limit($limit)
+            ->limit(50)
             ->get();
-
-        return $posts->map(function ($post) {
-            return SearchResult::fromPost($post, 50.0, []);
-        });
     }
 
     /**
      * Search users
      */
-    protected function searchUsers(string $query, int $limit): Collection
+    protected function searchUsers(string $query): Collection
     {
-        $users = User::query()
-            ->where(function ($q) use ($query) {
-                $q->where('name', 'like', "%{$query}%")
-                    ->orWhere('email', 'like', "%{$query}%")
-                    ->orWhere('bio', 'like', "%{$query}%");
-            })
-            ->limit($limit)
+        return User::where(function ($q) use ($query) {
+            $q->where('name', 'like', "%{$query}%")
+                ->orWhere('email', 'like', "%{$query}%");
+        })
+            ->latest()
+            ->limit(50)
             ->get();
-
-        return $users->map(function ($user) use ($query) {
-            // Calculate simple relevance score
-            $score = 50.0;
-            if (stripos($user->name, $query) !== false) {
-                $score = 80.0;
-            } elseif (stripos($user->email, $query) !== false) {
-                $score = 70.0;
-            }
-
-            return new SearchResult(
-                id: $user->id,
-                type: 'user',
-                title: $user->name,
-                excerpt: $user->bio,
-                url: route('admin.users.index', ['search' => $query]),
-                relevanceScore: $score,
-                highlights: [],
-                metadata: [
-                    'email' => $user->email,
-                    'role' => $user->role,
-                ]
-            );
-        });
     }
 
     /**
      * Search comments
      */
-    protected function searchComments(string $query, int $limit): Collection
+    protected function searchComments(string $query): Collection
     {
-        $comments = Comment::query()
+        return Comment::with(['user', 'post'])
             ->where(function ($q) use ($query) {
                 $q->where('content', 'like', "%{$query}%")
-                    ->orWhere('author_name', 'like', "%{$query}%")
-                    ->orWhere('author_email', 'like', "%{$query}%");
+                    ->orWhereHas('user', function ($userQuery) use ($query) {
+                        $userQuery->where('name', 'like', "%{$query}%");
+                    })
+                    ->orWhereHas('post', function ($postQuery) use ($query) {
+                        $postQuery->where('title', 'like', "%{$query}%");
+                    });
             })
-            ->with(['post', 'user'])
             ->latest()
-            ->limit($limit)
+            ->limit(50)
             ->get();
-
-        return $comments->map(function ($comment) use ($query) {
-            // Calculate simple relevance score
-            $score = 50.0;
-            if (stripos($comment->content, $query) !== false) {
-                $score = 75.0;
-            }
-
-            $excerpt = mb_substr(strip_tags($comment->content), 0, 200);
-
-            return new SearchResult(
-                id: $comment->id,
-                type: 'comment',
-                title: $comment->author_name ?? ($comment->user?->name ?? 'Anonymous'),
-                excerpt: $excerpt,
-                url: $comment->post ? route('post.show', $comment->post->slug).'#comment-'.$comment->id : '#',
-                relevanceScore: $score,
-                highlights: [],
-                metadata: [
-                    'post_id' => $comment->post_id,
-                    'post_title' => $comment->post?->title,
-                    'status' => $comment->status,
-                    'created_at' => $comment->created_at?->toISOString(),
-                ]
-            );
-        });
     }
 
     /**
      * Display search analytics dashboard
      */
-    public function analytics()
+    public function analytics(): View
     {
-        $period = request()->get('period', 'month');
+        // Get performance metrics for last 24 hours
+        $metrics = $this->searchAnalyticsService->getPerformanceMetrics('day');
 
-        $topQueries = $this->analyticsService->getTopQueries(20, $period);
-        $noResultQueries = $this->analyticsService->getNoResultQueries(50);
-        $performanceMetrics = $this->analyticsService->getPerformanceMetrics($period);
+        // Get top queries for last 30 days
+        $topQueries = $this->searchAnalyticsService->getTopQueries(20, 'month');
 
-        // Get recent searches
-        $recentSearches = \App\Models\SearchLog::with('user')
-            ->latest()
-            ->take(20)
-            ->get();
+        // Get queries with no results
+        $noResultQueries = $this->searchAnalyticsService->getNoResultQueries(20);
+
+        // Get chart data for last 7 days
+        $chartData = $this->getSearchTrendData();
 
         return view('admin.search.analytics', compact(
+            'metrics',
             'topQueries',
             'noResultQueries',
-            'performanceMetrics',
-            'recentSearches',
-            'period'
+            'chartData'
         ));
+    }
+
+    /**
+     * Get search trend data for chart
+     */
+    protected function getSearchTrendData(): array
+    {
+        $days = collect(range(6, 0))->map(function ($daysAgo) {
+            return now()->subDays($daysAgo)->startOfDay();
+        });
+
+        $searches = SearchLog::query()
+            ->where('created_at', '>=', now()->subDays(7))
+            ->select(
+                DB::raw('DATE(created_at) as date'),
+                DB::raw('COUNT(*) as total'),
+                DB::raw('SUM(CASE WHEN result_count = 0 THEN 1 ELSE 0 END) as no_results')
+            )
+            ->groupBy('date')
+            ->get()
+            ->keyBy('date');
+
+        return [
+            'labels' => $days->map(fn ($date) => $date->format('M j'))->toArray(),
+            'searches' => $days->map(function ($date) use ($searches) {
+                $key = $date->format('Y-m-d');
+
+                return $searches->get($key)?->total ?? 0;
+            })->toArray(),
+            'no_results' => $days->map(function ($date) use ($searches) {
+                $key = $date->format('Y-m-d');
+
+                return $searches->get($key)?->no_results ?? 0;
+            })->toArray(),
+        ];
     }
 }

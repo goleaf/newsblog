@@ -30,6 +30,11 @@ class FuzzySearchServiceTest extends TestCase
         $this->mockIndexService = Mockery::mock(SearchIndexService::class);
         $this->mockAnalyticsService = Mockery::mock(SearchAnalyticsService::class);
 
+        // Allow cache hit/miss logging calls (performance monitoring)
+        $this->mockAnalyticsService->shouldReceive('logCacheHit')->andReturnNull();
+        $this->mockAnalyticsService->shouldReceive('logCacheMiss')->andReturnNull();
+        $this->mockAnalyticsService->shouldReceive('logSlowQuery')->andReturnNull();
+
         $this->searchService = new FuzzySearchService(
             $this->mockIndexService,
             $this->mockAnalyticsService

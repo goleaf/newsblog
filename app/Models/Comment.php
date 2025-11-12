@@ -77,4 +77,39 @@ class Comment extends Model
     {
         $this->update(['status' => 'spam']);
     }
+
+    /**
+     * Check if the comment can receive replies (max 3 levels of nesting)
+     * Level 1 (depth 0) can reply -> creates Level 2 (depth 1)
+     * Level 2 (depth 1) can reply -> creates Level 3 (depth 2)
+     * Level 3 (depth 2) cannot reply (would create depth 3, which exceeds limit)
+     */
+    public function canReply(): bool
+    {
+        return $this->depth() < 2;
+    }
+
+    /**
+     * Calculate the depth of this comment in the nesting hierarchy
+     */
+    public function depth(): int
+    {
+        $depth = 0;
+        $comment = $this;
+
+        while ($comment->parent) {
+            $depth++;
+            $comment = $comment->parent;
+        }
+
+        return $depth;
+    }
+
+    /**
+     * Get all replies recursively
+     */
+    public function allReplies()
+    {
+        return $this->hasMany(Comment::class, 'parent_id');
+    }
 }

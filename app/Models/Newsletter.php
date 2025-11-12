@@ -14,10 +14,16 @@ class Newsletter extends Model
         'status',
         'verified_at',
         'token',
+        'verification_token',
+        'verification_token_expires_at',
+        'unsubscribe_token',
+        'unsubscribed_at',
     ];
 
     protected $casts = [
         'verified_at' => 'datetime',
+        'verification_token_expires_at' => 'datetime',
+        'unsubscribed_at' => 'datetime',
     ];
 
     public function scopeSubscribed($query)
@@ -35,16 +41,38 @@ class Newsletter extends Model
         return $query->whereNotNull('verified_at');
     }
 
-    public function verify()
+    public function verify(): void
     {
         $this->update([
             'status' => 'subscribed',
             'verified_at' => now(),
+            'verification_token' => null,
+            'verification_token_expires_at' => null,
         ]);
     }
 
-    public function unsubscribe()
+    public function unsubscribe(): void
     {
-        $this->update(['status' => 'unsubscribed']);
+        $this->update([
+            'status' => 'unsubscribed',
+            'unsubscribed_at' => now(),
+        ]);
+    }
+
+    public function isVerificationTokenValid(): bool
+    {
+        return $this->verification_token !== null
+            && $this->verification_token_expires_at !== null
+            && $this->verification_token_expires_at->isFuture();
+    }
+
+    public static function generateVerificationToken(): string
+    {
+        return bin2hex(random_bytes(32));
+    }
+
+    public static function generateUnsubscribeToken(): string
+    {
+        return bin2hex(random_bytes(32));
     }
 }

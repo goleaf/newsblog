@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SearchRequest;
 use App\Models\Category;
 use App\Models\Post;
-use App\Models\PostView;
 use App\Models\Tag;
 use App\Services\FuzzySearchService;
 use App\Services\PostService;
+use App\Services\RelatedPostsService;
 use App\Services\SearchAnalyticsService;
+use App\Services\SearchService;
+use App\Services\SeriesNavigationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -18,66 +21,156 @@ class PostController extends Controller
     public function __construct(
         protected FuzzySearchService $fuzzySearchService,
         protected SearchAnalyticsService $analyticsService,
-        protected PostService $postService
+        protected PostService $postService,
+        protected RelatedPostsService $relatedPostsService,
+        protected SearchService $searchService,
+        protected SeriesNavigationService $seriesNavigationService,
+        protected PostViewController $postViewController
     ) {}
 
-    public function show($slug)
+    public function show($slug, Request $request)
     {
         $post = Cache::remember("post.{$slug}", 3600, function () use ($slug) {
             return Post::where('slug', $slug)
                 ->published()
-                ->with(['user', 'category', 'tags', 'reactions', 'comments' => function ($query) {
-                    $query->where('status', 'approved')->orderBy('created_at', 'desc');
-                }])
+                ->with(['user', 'category', 'tags', 'reactions'])
                 ->firstOrFail();
         });
 
-        // Track view (don't cache this)
-        PostView::create([
-            'post_id' => $post->id,
-            'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent(),
-            'viewed_at' => now(),
-        ]);
+        // Load top-level comments with nested replies up to 3 levels (Requirements 23.1-23.5)
+        // Level 1 (depth 0) -> Level 2 (depth 1) -> Level 3 (depth 2)
+        // Load parent chain for depth calculation
+        $post->load(['comments' => function ($query) {
+            $query->where('status', 'approved')
+                ->whereNull('parent_id')
+                ->with(['replies' => function ($q) {
+                    $q->where('status', 'approved')
+                        ->with(['parent', 'replies' => function ($q2) {
+                            $q2->where('status', 'approved')
+                                ->with(['parent.parent'])
+                                ->orderBy('created_at', 'asc');
+                        }])
+                        ->orderBy('created_at', 'asc');
+                }])
+                ->orderBy('created_at', 'desc');
+        }]);
 
-        $post->incrementViewCount();
+        // Track view with session-based duplicate prevention (Requirements 15.1, 15.2)
+        $this->postViewController->trackView($post, $request);
 
-        $relatedPosts = $this->postService->getRelatedPosts($post, 4);
+        // Get related posts using the RelatedPostsService (Requirements 22.1-22.5)
+        $relatedPosts = $this->relatedPostsService->getRelatedPosts($post, 4);
 
-        return view('posts.show', compact('post', 'relatedPosts'));
+        // Get series navigation data (Requirements 37.3-37.5)
+        $seriesData = $this->seriesNavigationService->getPostSeriesWithNavigation($post);
+
+        return view('posts.show', compact('post', 'relatedPosts', 'seriesData'));
     }
 
-    public function category($slug)
+    public function category($slug, Request $request)
     {
         $category = Cache::remember("category.{$slug}", 3600, function () use ($slug) {
             return Category::where('slug', $slug)->active()->firstOrFail();
         });
 
-        $posts = Post::published()
+        // Build query with filters and sorting (Requirements 26.1-26.5)
+        $query = Post::published()
             ->where('category_id', $category->id)
-            ->latest()
-            ->paginate(12);
+            ->with(['user', 'category']);
+
+        // Apply sorting (Requirement 26.2, 26.3)
+        $sort = $request->get('sort', 'latest');
+        match ($sort) {
+            'popular' => $query->orderBy('view_count', 'desc'),
+            'oldest' => $query->orderBy('published_at', 'asc'),
+            default => $query->orderBy('published_at', 'desc'),
+        };
+
+        // Apply date filters (Requirement 26.4)
+        $dateFilter = $request->get('date_filter');
+        if ($dateFilter) {
+            match ($dateFilter) {
+                'today' => $query->whereDate('published_at', today()),
+                'week' => $query->where('published_at', '>=', now()->subWeek()),
+                'month' => $query->where('published_at', '>=', now()->subMonth()),
+                default => null,
+            };
+        }
+
+        $posts = $query->paginate(12)->withQueryString();
+
+        // Return JSON for AJAX requests (Requirements 26.1, 27.1-27.5)
+        if ($request->wantsJson() || $request->ajax()) {
+            $html = '';
+            foreach ($posts as $post) {
+                $html .= view('partials.post-card', compact('post'))->render();
+            }
+
+            return response()->json([
+                'html' => $html,
+                'currentPage' => $posts->currentPage(),
+                'lastPage' => $posts->lastPage(),
+                'hasMorePages' => $posts->hasMorePages(),
+            ]);
+        }
 
         return view('categories.show', compact('category', 'posts'));
     }
 
-    public function tag($slug)
+    public function tag($slug, Request $request)
     {
         $tag = Cache::remember("tag.{$slug}", 3600, function () use ($slug) {
             return Tag::where('slug', $slug)->firstOrFail();
         });
 
-        $posts = $tag->posts()->published()->latest()->paginate(12);
+        // Build query with filters and sorting (Requirements 26.1-26.5)
+        $query = $tag->posts()
+            ->published()
+            ->with(['user', 'category']);
+
+        // Apply sorting (Requirement 26.2, 26.3)
+        $sort = $request->get('sort', 'latest');
+        match ($sort) {
+            'popular' => $query->orderBy('view_count', 'desc'),
+            'oldest' => $query->orderBy('published_at', 'asc'),
+            default => $query->orderBy('published_at', 'desc'),
+        };
+
+        // Apply date filters (Requirement 26.4)
+        $dateFilter = $request->get('date_filter');
+        if ($dateFilter) {
+            match ($dateFilter) {
+                'today' => $query->whereDate('published_at', today()),
+                'week' => $query->where('published_at', '>=', now()->subWeek()),
+                'month' => $query->where('published_at', '>=', now()->subMonth()),
+                default => null,
+            };
+        }
+
+        $posts = $query->paginate(12)->withQueryString();
+
+        // Return JSON for AJAX requests (Requirements 26.1, 27.1-27.5)
+        if ($request->wantsJson() || $request->ajax()) {
+            $html = '';
+            foreach ($posts as $post) {
+                $html .= view('partials.post-card', compact('post'))->render();
+            }
+
+            return response()->json([
+                'html' => $html,
+                'currentPage' => $posts->currentPage(),
+                'lastPage' => $posts->lastPage(),
+                'hasMorePages' => $posts->hasMorePages(),
+            ]);
+        }
 
         return view('tags.show', compact('tag', 'posts'));
     }
 
-    public function search(Request $request)
+    public function search(SearchRequest $request)
     {
-        $query = $request->get('q', '');
-
-        // Sanitize query input
-        $query = trim(strip_tags($query));
+        $validated = $request->validated();
+        $query = $validated['q'] ?? '';
 
         if (empty($query)) {
             $emptyPaginator = new \Illuminate\Pagination\LengthAwarePaginator(
@@ -93,20 +186,13 @@ class PostController extends Controller
 
         $startTime = microtime(true);
 
-        // Build filters from request
-        $filters = [];
-        if ($request->filled('category')) {
-            $filters['category'] = $request->category;
-        }
-        if ($request->filled('author')) {
-            $filters['author'] = $request->author;
-        }
-        if ($request->filled('date_from')) {
-            $filters['date_from'] = $request->date_from;
-        }
-        if ($request->filled('date_to')) {
-            $filters['date_to'] = $request->date_to;
-        }
+        // Build filters from validated request
+        $filters = array_filter([
+            'category' => $validated['category'] ?? null,
+            'author' => $validated['author'] ?? null,
+            'date_from' => $validated['date_from'] ?? null,
+            'date_to' => $validated['date_to'] ?? null,
+        ]);
 
         $fuzzyEnabled = $this->fuzzySearchService->isEnabled('posts');
         $avgRelevanceScore = null;
@@ -193,48 +279,11 @@ class PostController extends Controller
     }
 
     /**
-     * Fallback to basic database search
+     * Fallback to basic database search using SearchService
      */
     protected function fallbackSearch(string $query, array $filters = [])
     {
-        $queryBuilder = Post::published()
-            ->with(['user', 'category', 'tags'])
-            ->where(function ($q) use ($query) {
-                $q->where('title', 'like', "%{$query}%")
-                    ->orWhere('content', 'like', "%{$query}%")
-                    ->orWhere('excerpt', 'like', "%{$query}%");
-            });
-
-        if (isset($filters['category'])) {
-            $queryBuilder->whereHas('category', function ($q) use ($filters) {
-                $q->where('slug', $filters['category']);
-            });
-        }
-
-        if (isset($filters['author'])) {
-            $queryBuilder->whereHas('user', function ($q) use ($filters) {
-                $q->where('name', $filters['author']);
-            });
-        }
-
-        if (isset($filters['date_from'])) {
-            $queryBuilder->where('published_at', '>=', $filters['date_from']);
-        }
-
-        if (isset($filters['date_to'])) {
-            $queryBuilder->where('published_at', '<=', $filters['date_to']);
-        }
-
-        $posts = $queryBuilder->latest()->paginate(12);
-
-        // Add highlighting to fallback results
-        $posts->getCollection()->transform(function ($post) use ($query) {
-            $post->highlighted_title = $this->fuzzySearchService->highlightMatches($post->title, $query);
-            $post->highlighted_excerpt = $this->fuzzySearchService->highlightMatches($post->excerpt ?? '', $query);
-
-            return $post;
-        });
-
-        return $posts;
+        // Use SearchService for basic full-text search with relevance-based sorting
+        return $this->searchService->search($query, $filters, 12);
     }
 }

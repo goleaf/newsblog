@@ -41,10 +41,27 @@ class Tag extends Model
             }
         });
 
+        static::created(function ($tag) {
+            // Regenerate sitemap when tag is created
+            \Illuminate\Support\Facades\App::make(\App\Services\SitemapService::class)->regenerateIfNeeded();
+        });
+
         static::updating(function ($tag) {
             if ($tag->isDirty('name') && empty($tag->slug)) {
                 $tag->slug = Str::slug($tag->name);
             }
+        });
+
+        static::updated(function ($tag) {
+            // Regenerate sitemap if slug changed
+            if ($tag->isDirty('slug')) {
+                \Illuminate\Support\Facades\App::make(\App\Services\SitemapService::class)->regenerateIfNeeded();
+            }
+        });
+
+        static::deleted(function ($tag) {
+            // Regenerate sitemap when tag is deleted
+            \Illuminate\Support\Facades\App::make(\App\Services\SitemapService::class)->regenerateIfNeeded();
         });
     }
 }

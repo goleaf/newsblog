@@ -11,7 +11,9 @@ class SearchRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()?->isAdmin() ?? false;
+        $user = $this->user();
+
+        return $user && ($user->isAdmin() || $user->isEditor());
     }
 
     /**
@@ -22,7 +24,7 @@ class SearchRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'q' => ['required', 'string', 'max:200', 'regex:/^[\p{L}\p{N}\s\-_]+$/u'],
+            'q' => ['nullable', 'string', 'max:200', 'regex:/^[\p{L}\p{N}\s\-_]+$/u'],
             'type' => ['nullable', 'string', 'in:posts,users,comments,all'],
             'limit' => ['nullable', 'integer', 'min:1', 'max:100'],
         ];

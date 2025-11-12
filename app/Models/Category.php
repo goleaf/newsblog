@@ -87,17 +87,30 @@ class Category extends Model
             }
         });
 
+        static::created(function ($category) {
+            // Regenerate sitemap when category is created
+            App::make(\App\Services\SitemapService::class)->regenerateIfNeeded();
+        });
+
         static::updated(function ($category) {
             // Invalidate search index cache when category is updated
             // Check if search-relevant fields changed
             if ($category->isDirty(['name', 'description'])) {
                 App::make(SearchIndexService::class)->invalidateSearchCaches();
             }
+
+            // Regenerate sitemap if slug or status changed
+            if ($category->isDirty(['slug', 'status'])) {
+                App::make(\App\Services\SitemapService::class)->regenerateIfNeeded();
+            }
         });
 
         static::deleted(function ($category) {
             // Invalidate search index cache when category is deleted
             App::make(SearchIndexService::class)->invalidateSearchCaches();
+
+            // Regenerate sitemap
+            App::make(\App\Services\SitemapService::class)->regenerateIfNeeded();
         });
     }
 }

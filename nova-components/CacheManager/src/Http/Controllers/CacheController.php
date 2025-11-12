@@ -106,7 +106,7 @@ class CacheController
         $timestamps = [];
 
         foreach ($types as $type) {
-            $timestamp = Cache::get("cache_manager:last_cleared:{$type}");
+            $timestamp = Cache::store('file')->get("cache_manager:last_cleared:{$type}");
             $timestamps[$type] = $timestamp ?: null;
         }
 
@@ -137,7 +137,7 @@ class CacheController
      */
     protected function storeTimestamp(string $type): void
     {
-        Cache::put(
+        Cache::store('file')->put(
             "cache_manager:last_cleared:{$type}",
             now()->toIso8601String(),
             now()->addYear()
