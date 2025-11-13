@@ -112,6 +112,24 @@ Welcome to the TechNewsHub documentation! This comprehensive index helps you fin
   - Priority tasks
   - Development guidelines
 
+- **[Design Analysis Report](project/design-analysis-report.md)** - Design document analysis
+  - Design quality assessment
+  - Error analysis and fixes
+  - Technical validation
+  - Recommendations
+
+- **[Test Coverage Summary](project/test-coverage-summary.md)** - Test suite overview
+  - Test statistics (220+ tests)
+  - Coverage by category
+  - Passing/failing tests
+  - Recommendations for improvement
+
+- **[Documentation Reorganization Summary](project/documentation-reorganization-summary.md)** - Documentation restructuring report
+  - File movements and organization
+  - Before/after comparison
+  - Quality improvements
+  - Metrics and statistics
+
 ### 🔧 Technical Documentation
 
 #### Functionality & Features
@@ -158,6 +176,15 @@ Welcome to the TechNewsHub documentation! This comprehensive index helps you fin
 - **[Fuzzy Search Deployment Checklist](functionality/fuzzy-search-deployment-checklist.md)** - Pre-deployment checklist
 - **[Fuzzy Search Deployment Summary](functionality/fuzzy-search-deployment-summary.md)** - Deployment overview
 - **[Fuzzy Search Load Testing](functionality/fuzzy-search-load-testing.md)** - Performance testing
+
+#### Bulk News Importer
+- **[Bulk News Importer](functionality/bulk-news-importer.md)** - Complete import guide
+  - Installation and setup
+  - CSV file format requirements
+  - Command usage and options
+  - Performance benchmarks
+  - Error handling and troubleshooting
+  - Advanced usage and customization
 
 ### 📖 API Documentation
 - **Interactive API Docs** - Available at `/docs` endpoint when running the application
@@ -314,6 +341,7 @@ Located in `.kiro/specs/`:
 | **Comments** | [Nova Comments Guide](admin/nova-user-guide.md#comments) | [Spam Detection](../README.md#spam-detection-system) |
 | **Media** | [Nova Media Guide](admin/nova-user-guide.md#media) | [Image Processing](../README.md#image-processing-system) |
 | **Search** | [Fuzzy Search Guide](functionality/fuzzy-search-deployment.md) | [Search Analytics](../README.md#search--discovery) |
+| **Bulk Import** | [Bulk News Importer](functionality/bulk-news-importer.md) | [CSV Format](functionality/bulk-news-importer.md#csv-file-format) |
 | **Analytics** | [Nova Dashboard](admin/nova-user-guide.md#dashboard) | [Performance Guide](functionality/performance-optimization.md) |
 | **API** | [API Documentation](../README.md#-api-documentation) | Interactive docs at `/docs` |
 | **Performance** | [Performance Guide](functionality/performance-optimization.md) | [Database Schema](functionality/database-schema.md) |
@@ -413,8 +441,8 @@ Can't find what you're looking for?
 | Testing Guide | ✅ Complete | 85% | 2,500+ |
 | Deployment Guide | ✅ Complete | 80% | 2,000+ |
 | Troubleshooting | ✅ Complete | 100% | 3,500+ |
-| Project Docs | ✅ Complete | 100% | 2,000+ |
-| **Total** | **✅ Complete** | **96%** | **52,000+** |
+| Project Docs | ✅ Complete | 100% | 7,000+ |
+| **Total** | **✅ Complete** | **97%** | **57,000+** |
 
 ---
 
@@ -454,8 +482,8 @@ Can't find what you're looking for?
 ## 📈 Project Statistics
 
 ### Documentation Metrics
-- **Total Documents**: 32+ comprehensive guides
-- **Total Words**: 52,000+ words
+- **Total Documents**: 35+ comprehensive guides
+- **Total Words**: 57,000+ words
 - **Code Examples**: 200+ tested snippets
 - **Screenshots**: 50+ illustrative images
 - **Last Major Update**: November 13, 2025
@@ -464,14 +492,14 @@ Can't find what you're looking for?
 ### Project Metrics
 - **Code Lines**: 23,000+ (excluding vendor)
 - **Models**: 18 Eloquent models
-- **Services**: 20+ dedicated service classes
+- **Services**: 21+ dedicated service classes
 - **Controllers**: 25+ controllers
 - **Nova Resources**: 13 complete (100%)
 - **Tests**: 220+ test cases
 - **Test Coverage**: 87% on core, 100% on Nova
 - **Database Tables**: 20 with 25+ indexes
 - **Migrations**: 40+ database migrations
-- **Documentation**: 32+ guides (52,000+ words)
+- **Documentation**: 35+ guides (57,000+ words)
 
 ---
 

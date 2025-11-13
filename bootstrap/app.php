@@ -19,10 +19,17 @@ return Application::configure(basePath: dirname(__DIR__))
             'security.headers' => \App\Http\Middleware\SecurityHeaders::class,
         ]);
 
+        $middleware->remove(\Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance::class);
         $middleware->prepend(\App\Http\Middleware\MaintenanceModeBypass::class);
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
         $middleware->append(\App\Http\Middleware\TrackPerformance::class);
         $middleware->append(\App\Http\Middleware\SetCacheHeaders::class);
+
+        $middleware->replaceInGroup(
+            'web',
+            \Illuminate\Cookie\Middleware\EncryptCookies::class,
+            \App\Http\Middleware\EncryptCookies::class
+        );
 
         // Configure rate limiting for API
         $middleware->throttleApi('60,1'); // 60 requests per minute for API

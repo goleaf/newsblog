@@ -79,22 +79,58 @@ class AppFilesTest extends TestCase
             return [];
         }
 
+        $tokens = token_get_all($contents);
         $namespace = '';
-
-        if (preg_match('/^namespace\s+([^;{]+);/m', $contents, $namespaceMatch) === 1) {
-            $namespace = trim($namespaceMatch[1]);
-        }
-
-        if (preg_match_all('/\b(class|interface|trait|enum)\s+([A-Za-z_\x80-\xff][A-Za-z0-9_\x80-\xff]*)/m', $contents, $matches, PREG_SET_ORDER) === 0) {
-            return [];
-        }
-
         $definitions = [];
+        $tokenCount = count($tokens);
+        $captureNamespace = false;
 
-        foreach ($matches as $match) {
+        for ($index = 0; $index < $tokenCount; $index++) {
+            $token = $tokens[$index];
+
+            if (is_array($token) && $token[0] === T_NAMESPACE) {
+                $namespace = '';
+                $captureNamespace = true;
+
+                continue;
+            }
+
+            if ($captureNamespace) {
+                if (is_array($token) && in_array($token[0], self::namespaceTokenTypes(), true)) {
+                    $namespace .= $token[1];
+                } elseif ($token === ';' || $token === '{') {
+                    $captureNamespace = false;
+                    $namespace = trim($namespace);
+                }
+
+                continue;
+            }
+
+            if (! is_array($token)) {
+                continue;
+            }
+
+            $tokenId = $token[0];
+
+            if (! in_array($tokenId, self::classLikeTokenTypes(), true)) {
+                continue;
+            }
+
+            $previousToken = self::previousSignificantToken($tokens, $index);
+
+            if (self::isStaticResolutionToken($previousToken) || self::isAnonymousClassToken($previousToken)) {
+                continue;
+            }
+
+            $nameToken = self::nextSignificantToken($tokens, $index);
+
+            if (! is_array($nameToken) || $nameToken[0] !== T_STRING) {
+                continue;
+            }
+
             $definitions[] = [
-                'type' => strtolower($match[1]),
-                'fqcn' => ltrim(($namespace !== '' ? $namespace.'\\' : '').$match[2], '\\'),
+                'type' => self::classLikeTypeFromToken($tokenId),
+                'fqcn' => ltrim(($namespace !== '' ? $namespace.'\\' : '').$nameToken[1], '\\'),
             ];
         }
 
@@ -104,5 +140,149 @@ class AppFilesTest extends TestCase
     private static function appDirectory(): string
     {
         return dirname(__DIR__, 2).DIRECTORY_SEPARATOR.'app';
+    }
+
+    /**
+     * @param  array<int, array{0:int, 1:string, 2:int}|string>  $tokens
+     * @return array{0:int, 1:string, 2:int}|string|null
+     */
+    private static function previousSignificantToken(array $tokens, int $startIndex): array|string|null
+    {
+        for ($index = $startIndex - 1; $index >= 0; $index--) {
+            $token = $tokens[$index];
+
+            if (is_array($token) && in_array($token[0], self::ignorableTokenTypes(), true)) {
+                continue;
+            }
+
+            if (! is_array($token) && trim((string) $token) === '') {
+                continue;
+            }
+
+            return $token;
+        }
+
+        return null;
+    }
+
+    /**
+     * @param  array<int, array{0:int, 1:string, 2:int}|string>  $tokens
+     * @return array{0:int, 1:string, 2:int}|null
+     */
+    private static function nextSignificantToken(array $tokens, int $startIndex): ?array
+    {
+        $tokenCount = count($tokens);
+
+        for ($index = $startIndex + 1; $index < $tokenCount; $index++) {
+            $token = $tokens[$index];
+
+            if (is_array($token) && in_array($token[0], self::ignorableTokenTypes(), true)) {
+                continue;
+            }
+
+            if (! is_array($token)) {
+                if ($token === '{' || $token === '(') {
+                    return null;
+                }
+
+                if (trim((string) $token) === '') {
+                    continue;
+                }
+
+                return null;
+            }
+
+            return $token;
+        }
+
+        return null;
+    }
+
+    /**
+     * @param  array{0:int, 1:string, 2:int}|string|null  $token
+     */
+    private static function isStaticResolutionToken(array|string|null $token): bool
+    {
+        if ($token === null) {
+            return false;
+        }
+
+        if (is_array($token)) {
+            return $token[0] === T_DOUBLE_COLON;
+        }
+
+        return $token === '::';
+    }
+
+    /**
+     * @param  array{0:int, 1:string, 2:int}|string|null  $token
+     */
+    private static function isAnonymousClassToken(array|string|null $token): bool
+    {
+        if ($token === null) {
+            return false;
+        }
+
+        if (is_array($token)) {
+            return $token[0] === T_NEW;
+        }
+
+        return false;
+    }
+
+    /**
+     * @return array<int, int>
+     */
+    private static function namespaceTokenTypes(): array
+    {
+        $tokens = [T_STRING, T_NS_SEPARATOR];
+
+        if (defined('T_NAME_QUALIFIED')) {
+            $tokens[] = constant('T_NAME_QUALIFIED');
+        }
+
+        if (defined('T_NAME_FULLY_QUALIFIED')) {
+            $tokens[] = constant('T_NAME_FULLY_QUALIFIED');
+        }
+
+        return $tokens;
+    }
+
+    /**
+     * @return array<int, int>
+     */
+    private static function classLikeTokenTypes(): array
+    {
+        $tokens = [T_CLASS, T_INTERFACE, T_TRAIT];
+
+        if (defined('T_ENUM')) {
+            $tokens[] = T_ENUM;
+        }
+
+        return $tokens;
+    }
+
+    /**
+     * @return array<int, int>
+     */
+    private static function ignorableTokenTypes(): array
+    {
+        $tokens = [T_WHITESPACE, T_COMMENT, T_DOC_COMMENT];
+
+        if (defined('T_ATTRIBUTE')) {
+            $tokens[] = T_ATTRIBUTE;
+        }
+
+        return $tokens;
+    }
+
+    private static function classLikeTypeFromToken(int $tokenId): string
+    {
+        return match (true) {
+            $tokenId === T_INTERFACE => 'interface',
+            $tokenId === T_TRAIT => 'trait',
+            defined('T_ENUM') && $tokenId === T_ENUM => 'enum',
+            default => 'class',
+        };
     }
 }

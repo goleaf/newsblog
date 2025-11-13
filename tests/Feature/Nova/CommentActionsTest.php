@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Nova;
 
+use App\Enums\CommentStatus as CommentStatusEnum;
 use App\Models\Comment;
 use App\Models\Post;
 use App\Models\User;
@@ -33,8 +34,8 @@ class CommentActionsTest extends TestCase
         $comment1->refresh();
         $comment2->refresh();
 
-        $this->assertEquals('approved', $comment1->status);
-        $this->assertEquals('approved', $comment2->status);
+        $this->assertEquals(CommentStatusEnum::Approved, $comment1->status);
+        $this->assertEquals(CommentStatusEnum::Approved, $comment2->status);
     }
 
     public function test_approve_comments_action_skips_already_approved_comments(): void
@@ -51,7 +52,7 @@ class CommentActionsTest extends TestCase
 
         $comment->refresh();
 
-        $this->assertEquals('approved', $comment->status);
+        $this->assertEquals(CommentStatusEnum::Approved, $comment->status);
     }
 
     public function test_approve_comments_action_only_visible_to_admin_and_editor(): void
@@ -96,8 +97,8 @@ class CommentActionsTest extends TestCase
         $comment1->refresh();
         $comment2->refresh();
 
-        $this->assertEquals('spam', $comment1->status);
-        $this->assertEquals('spam', $comment2->status);
+        $this->assertEquals(CommentStatusEnum::Spam, $comment1->status);
+        $this->assertEquals(CommentStatusEnum::Spam, $comment2->status);
     }
 
     public function test_reject_comments_action_skips_already_spam_comments(): void
@@ -114,7 +115,7 @@ class CommentActionsTest extends TestCase
 
         $comment->refresh();
 
-        $this->assertEquals('spam', $comment->status);
+        $this->assertEquals(CommentStatusEnum::Spam, $comment->status);
     }
 
     public function test_reject_comments_action_only_visible_to_admin_and_editor(): void

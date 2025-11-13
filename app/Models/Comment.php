@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\CommentStatus as CommentStatusEnum;
 use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -23,6 +24,18 @@ class Comment extends Model
         'user_agent',
     ];
 
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'status' => CommentStatusEnum::class,
+        ];
+    }
+
     public function post()
     {
         return $this->belongsTo(Post::class);
@@ -40,17 +53,17 @@ class Comment extends Model
 
     public function replies()
     {
-        return $this->hasMany(Comment::class, 'parent_id')->where('status', 'approved');
+        return $this->hasMany(Comment::class, 'parent_id')->where('status', CommentStatusEnum::Approved);
     }
 
     public function scopeApproved($query)
     {
-        return $query->where('status', 'approved');
+        return $query->where('status', CommentStatusEnum::Approved);
     }
 
     public function scopePending($query)
     {
-        return $query->where('status', 'pending');
+        return $query->where('status', CommentStatusEnum::Pending);
     }
 
     public function scopeRecent($query)
@@ -63,19 +76,19 @@ class Comment extends Model
         return $query->where('post_id', $postId);
     }
 
-    public function isApproved()
+    public function isApproved(): bool
     {
-        return $this->status === 'approved';
+        return $this->status === CommentStatusEnum::Approved;
     }
 
-    public function markAsApproved()
+    public function markAsApproved(): void
     {
-        $this->update(['status' => 'approved']);
+        $this->update(['status' => CommentStatusEnum::Approved]);
     }
 
-    public function markAsSpam()
+    public function markAsSpam(): void
     {
-        $this->update(['status' => 'spam']);
+        $this->update(['status' => CommentStatusEnum::Spam]);
     }
 
     /**

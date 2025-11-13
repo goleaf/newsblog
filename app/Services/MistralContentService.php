@@ -3,85 +3,65 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Log;
-use Partitech\PhpMistral\Messages;
 use Partitech\PhpMistral\MistralClient;
-use Partitech\PhpMistral\MistralClientException;
+use Partitech\PhpMistral\Resources\ChatResource;
 
 class MistralContentService
 {
     protected MistralClient $client;
 
-    protected string $model;
-
-    protected int $timeout;
-
     protected int $maxRetries;
 
     protected int $retryDelay;
 
+    /**
+     * Initialize the Mistral AI client with configuration.
+     */
     public function __construct()
     {
         $apiKey = config('mistral.api_key');
-        $url = config('mistral.url');
-        $this->timeout = (int) config('mistral.timeout', 30);
-        $this->model = config('mistral.model', 'mistral-medium');
-        $this->maxRetries = (int) config('mistral.max_retries', 3);
-        $this->retryDelay = (int) config('mistral.retry_delay', 1000);
 
         if (empty($apiKey)) {
-            throw new \InvalidArgumentException('Mistral API key is not configured. Please set MISTRAL_API_KEY in your .env file.');
+            throw new \RuntimeException('Mistral API key is not configured. Please set MISTRAL_API_KEY in your .env file.');
         }
 
-        $this->client = new MistralClient($apiKey, $url, $this->timeout);
+        $this->client = new MistralClient($apiKey);
+        $this->maxRetries = config('mistral.max_retries', 3);
+        $this->retryDelay = config('mistral.retry_delay', 1000);
     }
 
     /**
-     * Generate content for a post based on title and optional category.
-     *
-     * @param  string  $title  Post title
-     * @param  string|null  $category  Optional category name
-     * @return string Generated markdown content
-     *
-     * @throws \RuntimeException If content generation fails
+     * Generate article content based on title and optional category.
      */
     public function generateContent(string $title, ?string $category = null): string
     {
+        $prompt = $this->buildPrompt($title, $category);
+
         try {
-            $prompt = $this->buildPrompt($title, $category);
-
-            Log::channel('mistral')->info('Generating content', [
-                'title' => $title,
-                'category' => $category,
-            ]);
-
-            $content = $this->callMistralApi($prompt);
+            $content = $this->retryWithBackoff(function () use ($prompt) {
+                return $this->callMistralApi($prompt);
+            }, $this->maxRetries);
 
             if (! $this->validateMarkdown($content)) {
-                Log::channel('mistral')->warning('Generated content failed validation', [
+                Log::channel('mistral')->warning('Generated content failed markdown validation', [
                     'title' => $title,
-                    'content_length' => strlen($content),
+                    'category' => $category,
                 ]);
 
-                throw new \RuntimeException('Generated content failed markdown validation.');
+                throw new \RuntimeException('Generated content is not valid markdown');
             }
 
             Log::channel('mistral')->info('Content generated successfully', [
                 'title' => $title,
+                'category' => $category,
                 'content_length' => strlen($content),
             ]);
 
             return $content;
-        } catch (MistralClientException $e) {
-            Log::channel('mistral')->error('Mistral API error', [
-                'title' => $title,
-                'error' => $e->getMessage(),
-                'code' => $e->getCode(),
-            ]);
-
-            throw new \RuntimeException('Failed to generate content: '.$e->getMessage(), 0, $e);
         } catch (\Exception $e) {
-            Log::channel('mistral')->error('Content generation failed', [
+            Log::channel('mistral')->error('Failed to generate content', [
                 'title' => $title,
+                'category' => $category,
                 'error' => $e->getMessage(),
             ]);
 
@@ -90,71 +70,85 @@ class MistralContentService
     }
 
     /**
-     * Build a prompt for content generation based on title and category.
-     *
-     * @param  string  $title  Post title
-     * @param  string|null  $category  Optional category name
-     * @return string Formatted prompt
+     * Build a prompt for content generation based on post data.
      */
-    protected function buildPrompt(string $title, ?string $category = null): string
+    protected function buildPrompt(string $title, ?string $category): string
     {
-        $prompt = "Write a comprehensive, well-structured article about: {$title}\n\n";
+        $prompt = "Write a comprehensive technical article about: {$title}\n\n";
 
-        if ($category !== null) {
-            $prompt .= "Category: {$category}\n\n";
+        if ($category) {
+            $prompt .= "This article is in the {$category} category.\n\n";
         }
 
         $prompt .= "Requirements:\n";
         $prompt .= "- Write in markdown format\n";
         $prompt .= "- Include a clear introduction\n";
-        $prompt .= "- Use proper headings (## for main sections)\n";
-        $prompt .= "- Include multiple sections with detailed content\n";
-        $prompt .= "- End with a conclusion\n";
-        $prompt .= "- Make the content informative and engaging\n";
-        $prompt .= "- Aim for approximately 800-1200 words\n";
+        $prompt .= "- Organize content with appropriate headings (##)\n";
+        $prompt .= "- Provide technical details and examples where relevant\n";
+        $prompt .= "- Include a conclusion\n";
+        $prompt .= "- Aim for 500-800 words\n";
+        $prompt .= "- Use a professional, informative tone\n";
+        $prompt .= "- Focus on practical information for developers\n\n";
+        $prompt .= 'Generate only the article content in markdown format, without any preamble or meta-commentary.';
 
         return $prompt;
     }
 
     /**
-     * Call the Mistral API with retry logic.
-     *
-     * @param  string  $prompt  The prompt to send
-     * @return string Generated content
-     *
-     * @throws MistralClientException If API call fails after retries
+     * Call the Mistral AI API with the given prompt.
      */
     protected function callMistralApi(string $prompt): string
     {
-        return $this->retryWithBackoff(function () use ($prompt) {
-            $messages = new Messages;
-            $messages->addUserMessage($prompt);
+        $model = config('mistral.model', 'mistral-medium');
+        $timeout = config('mistral.timeout', 30);
 
-            $params = [
-                'model' => $this->model,
-                'temperature' => 0.7,
-                'max_tokens' => null,
-            ];
+        $chat = new ChatResource($this->client);
 
-            $response = $this->client->chat($messages, $params);
-            $content = $response->getMessage();
+        $response = $chat->create([
+            'model' => $model,
+            'messages' => [
+                [
+                    'role' => 'user',
+                    'content' => $prompt,
+                ],
+            ],
+            'temperature' => 0.7,
+            'max_tokens' => 2000,
+        ]);
 
-            if (empty($content)) {
-                throw new \RuntimeException('Empty response from Mistral API');
-            }
+        if (empty($response['choices'][0]['message']['content'])) {
+            throw new \RuntimeException('Empty response from Mistral AI API');
+        }
 
-            return $content;
-        }, $this->maxRetries);
+        return trim($response['choices'][0]['message']['content']);
     }
 
     /**
-     * Retry a callable operation with exponential backoff.
-     *
-     * @param  callable  $callback  Operation to retry
-     * @param  int  $maxRetries  Maximum number of retry attempts
-     * @return mixed Result of the callback
-     *
-     * @throws \Exception If all retries are exhausted
+     * Validate that the content is in markdown format.
+     */
+    protected function validateMarkdown(string $content): bool
+    {
+        if (empty($content)) {
+            return false;
+        }
+
+        // Check for basic markdown structure
+        // Should have at least some text content
+        if (strlen($content) < 100) {
+            return false;
+        }
+
+        // Should contain at least one heading or paragraph structure
+        $hasMarkdownElements = preg_match('/^#{1,6}\s+.+$/m', $content) || // Headings
+                              preg_match('/\n\n/', $content) || // Paragraph breaks
+                              preg_match('/^\*\s+.+$/m', $content) || // Unordered lists
+                              preg_match('/^\d+\.\s+.+$/m', $content); // Ordered lists
+
+        return $hasMarkdownElements;
+    }
+
+    /**
+     * Retry a callback with exponential backoff on failure.
      */
     protected function retryWithBackoff(callable $callback, int $maxRetries): mixed
     {
@@ -165,19 +159,15 @@ class MistralContentService
             try {
                 return $callback();
             } catch (\Exception $e) {
-                $attempt++;
                 $lastException = $e;
+                $attempt++;
 
                 if ($attempt >= $maxRetries) {
-                    Log::channel('mistral')->error('Max retry attempts reached', [
-                        'attempts' => $attempt,
-                        'error' => $e->getMessage(),
-                    ]);
-
                     break;
                 }
 
-                $delay = $this->retryDelay * (2 ** ($attempt - 1));
+                // Calculate exponential backoff delay in milliseconds
+                $delay = $this->retryDelay * pow(2, $attempt - 1);
 
                 Log::channel('mistral')->warning('API call failed, retrying', [
                     'attempt' => $attempt,
@@ -186,47 +176,11 @@ class MistralContentService
                     'error' => $e->getMessage(),
                 ]);
 
+                // Convert milliseconds to microseconds for usleep
                 usleep($delay * 1000);
             }
         }
 
-        throw $lastException ?? new \RuntimeException('Retry logic failed without exception');
-    }
-
-    /**
-     * Validate that content is valid markdown format.
-     *
-     * @param  string  $content  Content to validate
-     * @return bool True if valid, false otherwise
-     */
-    protected function validateMarkdown(string $content): bool
-    {
-        if (empty(trim($content))) {
-            Log::channel('mistral')->warning('Content validation failed: empty content');
-
-            return false;
-        }
-
-        if (strlen($content) < 100) {
-            Log::channel('mistral')->warning('Content validation failed: content too short', [
-                'length' => strlen($content),
-            ]);
-
-            return false;
-        }
-
-        $hasHeaders = preg_match('/^#{1,6}\s+.+$/m', $content) === 1;
-        $hasParagraphs = preg_match('/\n\n/', $content) === 1 || strlen($content) > 200;
-
-        if (! $hasHeaders && ! $hasParagraphs) {
-            Log::channel('mistral')->warning('Content validation failed: missing structure', [
-                'has_headers' => $hasHeaders,
-                'has_paragraphs' => $hasParagraphs,
-            ]);
-
-            return false;
-        }
-
-        return true;
+        throw $lastException;
     }
 }

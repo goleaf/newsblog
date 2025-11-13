@@ -166,7 +166,7 @@ class CacheService
     /**
      * Invalidate cache by pattern (for cache drivers that support it)
      */
-    protected function invalidateByPattern(string $pattern): void
+    public function invalidateByPattern(string $pattern): void
     {
         // For file/redis cache drivers, we can use flush with tags
         // For simplicity, we'll use a basic approach

@@ -94,4 +94,17 @@ return [
         'escape' => '\\',
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Post-Import Operations
+    |--------------------------------------------------------------------------
+    |
+    | Configure operations to perform after import completes.
+    |
+    */
+
+    'post_import' => [
+        'rebuild_search_index' => env('IMPORT_REBUILD_SEARCH_INDEX', false),
+    ],
+
 ];

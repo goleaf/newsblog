@@ -55,6 +55,134 @@ class AppClassesCoverageTest extends TestCase
     }
 
     /**
+     * @dataProvider appClassProvider
+     */
+    public function test_app_classes_can_be_instantiated(string $type, string $fqcn): void
+    {
+        if ($type !== 'class') {
+            $this->addToAssertionCount(1);
+
+            return;
+        }
+
+        $reflection = new \ReflectionClass($fqcn);
+
+        if ($reflection->isAbstract()) {
+            $this->addToAssertionCount(1);
+
+            return;
+        }
+
+        $instance = $this->instantiateClass($reflection);
+
+        $this->assertInstanceOf($fqcn, $instance);
+    }
+
+    private function instantiateClass(\ReflectionClass $reflection): object
+    {
+        $this->prepareForInstantiation($reflection->getName());
+
+        try {
+            return $this->app->make($reflection->getName());
+        } catch (\Throwable $th) {
+            $arguments = $this->buildConstructorArguments($reflection);
+
+            return $reflection->newInstanceArgs($arguments);
+        }
+    }
+
+    private function prepareForInstantiation(string $fqcn): void
+    {
+        if ($fqcn === \App\Services\MistralContentService::class) {
+            config([
+                'mistral.api_key' => 'test-mistral-key',
+                'mistral.url' => 'https://example.test',
+            ]);
+        }
+    }
+
+    /**
+     * @return array<int, mixed>
+     */
+    private function buildConstructorArguments(\ReflectionClass $reflection): array
+    {
+        $constructor = $reflection->getConstructor();
+
+        if (! $constructor) {
+            return [];
+        }
+
+        $arguments = [];
+
+        foreach ($constructor->getParameters() as $parameter) {
+            $arguments[] = $this->resolveParameterValue($parameter);
+        }
+
+        return $arguments;
+    }
+
+    private function resolveParameterValue(\ReflectionParameter $parameter): mixed
+    {
+        $type = $parameter->getType();
+
+        if ($parameter->isVariadic()) {
+            return [];
+        }
+
+        if ($type instanceof \ReflectionNamedType && ! $type->isBuiltin()) {
+            $name = $type->getName();
+
+            if ($name === \Closure::class) {
+                return fn () => null;
+            }
+
+            return $this->app->make($name);
+        }
+
+        if ($type instanceof \ReflectionUnionType) {
+            $namedTypes = array_filter(
+                $type->getTypes(),
+                fn ($inner) => $inner instanceof \ReflectionNamedType
+            );
+
+            foreach ($namedTypes as $inner) {
+                if (! $inner->isBuiltin()) {
+                    return $this->app->make($inner->getName());
+                }
+            }
+
+            $type = $namedTypes[0] ?? null;
+        }
+
+        if ($parameter->isDefaultValueAvailable()) {
+            return $parameter->getDefaultValue();
+        }
+
+        if (! $type instanceof \ReflectionNamedType) {
+            return null;
+        }
+
+        if ($type->isBuiltin()) {
+            return match ($type->getName()) {
+                'int' => 0,
+                'float' => 0.0,
+                'string' => 'test',
+                'bool' => false,
+                'array', 'iterable' => [],
+                'callable' => fn () => null,
+                'object' => new \stdClass,
+                default => null,
+            };
+        }
+
+        if ($parameter->allowsNull()) {
+            return null;
+        }
+
+        return null;
+    }
+
+    /**
      * @return array<int, array{type: string, fqcn: string}>
      */
     private static function parsePhpFileForDefinitions(string $path): array

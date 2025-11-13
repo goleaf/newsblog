@@ -6,6 +6,8 @@ use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Mail;
+use Mockery;
 use Tests\TestCase;
 
 class SettingsManagementTest extends TestCase
@@ -147,5 +149,64 @@ class SettingsManagementTest extends TestCase
 
         $this->assertEquals('helper_value', setting('helper_test'));
         $this->assertEquals('default', setting('non_existent', 'default'));
+    }
+
+    public function test_admin_can_send_test_email(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $email = 'notify@example.com';
+
+        Mail::shouldReceive('raw')
+            ->once()
+            ->andReturnUsing(function (string $text, \Closure $callback) use ($email) {
+                $this->assertStringContainsString('This is a test email from TechNewsHub', $text);
+
+                $message = Mockery::mock(\Illuminate\Mail\Message::class);
+                $message->shouldReceive('to')->once()->with($email)->andReturnSelf();
+                $message->shouldReceive('subject')->once()->with(Mockery::type('string'))->andReturnSelf();
+
+                $callback($message);
+
+                return null;
+            });
+
+        $response = $this->actingAs($admin)->post(route('admin.settings.test-email'), [
+            'email' => $email,
+        ]);
+
+        $response->assertRedirect(route('admin.settings.index'));
+        $response->assertSessionHas('success', 'Test email sent successfully to '.$email);
+    }
+
+    public function test_admin_receives_error_when_test_email_fails(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        Mail::shouldReceive('raw')
+            ->once()
+            ->andThrow(new \Exception('SMTP connection failed'));
+
+        $response = $this->actingAs($admin)->post(route('admin.settings.test-email'), [
+            'email' => 'broken@example.com',
+        ]);
+
+        $response->assertRedirect(route('admin.settings.index'));
+        $response->assertSessionHas('error');
+    }
+
+    public function test_admin_can_clear_settings_cache(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        Setting::set('site_name', 'Testing Site', 'general');
+        Setting::get('site_name');
+
+        $this->assertTrue(Cache::has('setting_site_name'));
+
+        $response = $this->actingAs($admin)->post(route('admin.settings.clear-cache'));
+
+        $response->assertRedirect(route('admin.settings.index'));
+        $response->assertSessionHas('success');
+        $this->assertFalse(Cache::has('setting_site_name'));
     }
 }

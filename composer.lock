@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7489add85e23947d804f7eddfc788bfc",
+    "content-hash": "a65fd2b409fdbb34b9dc13560cfa3b74",
     "packages": [
         {
             "name": "app/cache-manager",

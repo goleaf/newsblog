@@ -2,6 +2,7 @@
 
 namespace App\Nova\Filters;
 
+use App\Enums\CommentStatus as CommentStatusEnum;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Laravel\Nova\Filters\Filter;
 use Laravel\Nova\Http\Requests\NovaRequest;
@@ -30,10 +31,6 @@ class CommentStatus extends Filter
      */
     public function options(NovaRequest $request): array
     {
-        return [
-            'Pending' => 'pending',
-            'Approved' => 'approved',
-            'Spam' => 'spam',
-        ];
+        return CommentStatusEnum::options();
     }
 }

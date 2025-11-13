@@ -57,7 +57,7 @@ class MaintenanceModeTest extends TestCase
         $response = $this->get('/');
 
         $response->assertStatus(503);
-        $response->assertSee('We\'ll be back soon!');
+        $response->assertSee('We\'ll be back soon!', false);
     }
 
     public function test_maintenance_mode_includes_retry_after_header(): void
@@ -96,14 +96,14 @@ class MaintenanceModeTest extends TestCase
         $response = $this->get('/my-secret-token');
 
         $response->assertRedirect('/');
-        $response->assertCookie('laravel_maintenance', 'my-secret-token');
+        $response->assertPlainCookie('laravel_maintenance', 'my-secret-token');
     }
 
     public function test_secret_token_in_cookie_bypasses_maintenance_mode(): void
     {
         $this->enableMaintenanceMode(['secret' => 'my-secret-token']);
 
-        $response = $this->withCookie('laravel_maintenance', 'my-secret-token')->get('/');
+        $response = $this->withUnencryptedCookie('laravel_maintenance', 'my-secret-token')->get('/');
 
         $response->assertStatus(200);
     }
@@ -207,5 +207,48 @@ class MaintenanceModeTest extends TestCase
 
         $response->assertStatus(503);
         $response->assertSee('Custom maintenance message for testing');
+    }
+
+    public function test_admin_can_view_maintenance_dashboard(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $status = $this->enableMaintenanceMode([
+            'message' => 'Planned upgrade',
+            'retry' => 120,
+            'allowed' => ['10.0.0.5'],
+        ]);
+
+        $response = $this->actingAs($admin)->get('/admin/maintenance');
+
+        $response->assertStatus(200)
+            ->assertViewIs('admin.maintenance.index');
+
+        $this->assertTrue($response->viewData('enabled'));
+        $this->assertSame($status['message'], $response->viewData('message'));
+        $this->assertSame($status['allowed'], $response->viewData('allowed_ips'));
+        $this->assertSame($status['retry'], $response->viewData('retry_after'));
+    }
+
+    public function test_status_endpoint_reports_current_state(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $this->enableMaintenanceMode([
+            'message' => 'Upgrading',
+            'retry' => 90,
+            'allowed' => ['192.168.0.1'],
+        ]);
+
+        $response = $this->actingAs($admin)->getJson('/admin/maintenance/status');
+
+        $response->assertOk()
+            ->assertJson([
+                'success' => true,
+                'data' => [
+                    'enabled' => true,
+                    'message' => 'Upgrading',
+                    'allowed_ips' => ['192.168.0.1'],
+                    'retry_after' => 90,
+                ],
+            ]);
     }
 }
