@@ -169,9 +169,8 @@ class Media extends Resource
                 ->help('MIME type of the file'),
 
             Text::make('Alt Text', 'alt_text')
-                ->nullable()
-                ->rules('max:255')
-                ->help('Alternative text for accessibility'),
+                ->rules('required_if:file_type,image', 'max:255')
+                ->help('Alternative text for accessibility (required for images)'),
 
             Text::make('Title', 'title')
                 ->nullable()
@@ -217,7 +216,9 @@ class Media extends Resource
      */
     public function filters(NovaRequest $request): array
     {
-        return [];
+        return [
+            new Filters\MediaType,
+        ];
     }
 
     /**

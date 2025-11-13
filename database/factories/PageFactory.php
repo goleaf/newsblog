@@ -35,7 +35,7 @@ class PageFactory extends Factory
             'meta_title' => $title,
             'meta_description' => fake()->sentence(10),
             'status' => fake()->randomElement(['draft', 'published']),
-            'template' => fake()->randomElement(['default', 'full-width', 'sidebar']),
+            'template' => fake()->randomElement(['default', 'full-width', 'contact', 'about']),
             'display_order' => fake()->numberBetween(0, 100),
         ];
     }

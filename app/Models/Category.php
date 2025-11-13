@@ -90,6 +90,9 @@ class Category extends Model
         static::created(function ($category) {
             // Regenerate sitemap when category is created
             App::make(\App\Services\SitemapService::class)->regenerateIfNeeded();
+
+            // Invalidate view caches (Requirement 12.3)
+            App::make(\App\Services\CacheService::class)->invalidateHomepage();
         });
 
         static::updated(function ($category) {
@@ -103,6 +106,11 @@ class Category extends Model
             if ($category->isDirty(['slug', 'status'])) {
                 App::make(\App\Services\SitemapService::class)->regenerateIfNeeded();
             }
+
+            // Invalidate view caches (Requirement 12.3)
+            $cacheService = App::make(\App\Services\CacheService::class);
+            $cacheService->invalidateHomepage();
+            $cacheService->invalidateCategory($category->id);
         });
 
         static::deleted(function ($category) {
@@ -111,6 +119,11 @@ class Category extends Model
 
             // Regenerate sitemap
             App::make(\App\Services\SitemapService::class)->regenerateIfNeeded();
+
+            // Invalidate view caches (Requirement 12.3)
+            $cacheService = App::make(\App\Services\CacheService::class);
+            $cacheService->invalidateHomepage();
+            $cacheService->invalidateCategory($category->id);
         });
     }
 }

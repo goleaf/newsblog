@@ -62,7 +62,12 @@
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <article class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden" id="article-content">
         @if($post->featured_image)
-            <img src="{{ $post->featured_image_url }}" alt="{{ $post->image_alt_text ?? $post->title }}" class="w-full h-96 object-cover">
+            <x-optimized-image 
+                :src="$post->featured_image_url" 
+                :alt="$post->image_alt_text ?? $post->title" 
+                class="w-full h-96 object-cover"
+                eager="true"
+            />
         @endif
         <div class="p-8">
             <div class="flex items-center justify-between mb-4">
@@ -154,7 +159,11 @@
                 @foreach($relatedPosts as $relatedPost)
                     <article class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
                         @if($relatedPost->featured_image)
-                            <img src="{{ $relatedPost->featured_image_url }}" alt="{{ $relatedPost->title }}" class="w-full h-48 object-cover">
+                            <x-optimized-image 
+                                :src="$relatedPost->featured_image_url" 
+                                :alt="$relatedPost->image_alt_text ?? $relatedPost->title" 
+                                class="w-full h-48 object-cover"
+                            />
                         @endif
                         <div class="p-4">
                             <span class="text-xs font-medium text-indigo-600 dark:text-indigo-400">{{ $relatedPost->category->name }}</span>

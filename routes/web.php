@@ -63,6 +63,11 @@ Route::get('/dashboard', function () {
     return view('dashboard', compact('searchStats', 'metrics'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+// GDPR routes
+Route::get('/privacy-policy', [\App\Http\Controllers\GdprController::class, 'privacyPolicy'])->name('gdpr.privacy-policy');
+Route::post('/gdpr/accept-consent', [\App\Http\Controllers\GdprController::class, 'acceptConsent'])->name('gdpr.accept-consent');
+Route::post('/gdpr/decline-consent', [\App\Http\Controllers\GdprController::class, 'declineConsent'])->name('gdpr.decline-consent');
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -71,7 +76,19 @@ Route::middleware('auth')->group(function () {
     // Bookmarks
     Route::get('/bookmarks', [\App\Http\Controllers\BookmarkController::class, 'index'])->name('bookmarks.index');
     Route::post('/posts/{post}/bookmark', [\App\Http\Controllers\BookmarkController::class, 'toggle'])->name('bookmarks.toggle');
+
+    // GDPR authenticated routes
+    Route::get('/gdpr/export-data', [\App\Http\Controllers\GdprController::class, 'exportData'])->name('gdpr.export-data');
+    Route::get('/gdpr/delete-account', [\App\Http\Controllers\GdprController::class, 'showDeleteAccount'])->name('gdpr.show-delete-account');
+    Route::delete('/gdpr/delete-account', [\App\Http\Controllers\GdprController::class, 'deleteAccount'])->name('gdpr.delete-account');
+    Route::post('/gdpr/withdraw-consent', [\App\Http\Controllers\GdprController::class, 'withdrawConsent'])->name('gdpr.withdraw-consent');
 });
+
+// Page routes
+Route::get('/page/{slug}', [\App\Http\Controllers\PageController::class, 'show'])->name('page.show');
+Route::post('/page/contact', [\App\Http\Controllers\PageController::class, 'submitContact'])
+    ->middleware('throttle:comments')
+    ->name('page.contact.submit');
 
 // Admin routes
 Route::middleware(['auth', 'role:admin,editor'])->prefix('admin')->name('admin.')->group(function () {
@@ -106,6 +123,43 @@ Route::middleware(['auth', 'role:admin,editor'])->prefix('admin')->name('admin.'
     // Newsletter routes
     Route::get('/newsletters', [\App\Http\Controllers\Admin\NewsletterController::class, 'index'])->name('newsletters.index');
     Route::get('/newsletters/export', [\App\Http\Controllers\Admin\NewsletterController::class, 'export'])->name('newsletters.export');
+
+    // Content Calendar routes
+    Route::get('/calendar', [\App\Http\Controllers\Admin\ContentCalendarController::class, 'index'])->name('calendar.index');
+    Route::get('/calendar/posts', [\App\Http\Controllers\Admin\ContentCalendarController::class, 'getPostsForDate'])->name('calendar.posts');
+    Route::post('/calendar/posts/{post}/update-date', [\App\Http\Controllers\Admin\ContentCalendarController::class, 'updatePostDate'])->name('calendar.posts.update-date');
+
+    // Widget Management routes
+    Route::get('/widgets', [\App\Http\Controllers\Admin\WidgetController::class, 'index'])->name('widgets.index');
+    Route::post('/widgets', [\App\Http\Controllers\Admin\WidgetController::class, 'store'])->name('widgets.store');
+    Route::put('/widgets/{widget}', [\App\Http\Controllers\Admin\WidgetController::class, 'update'])->name('widgets.update');
+    Route::delete('/widgets/{widget}', [\App\Http\Controllers\Admin\WidgetController::class, 'destroy'])->name('widgets.destroy');
+    Route::post('/widgets/reorder', [\App\Http\Controllers\Admin\WidgetController::class, 'reorder'])->name('widgets.reorder');
+    Route::post('/widgets/{widget}/toggle', [\App\Http\Controllers\Admin\WidgetController::class, 'toggle'])->name('widgets.toggle');
+
+    // Alt Text Validation routes
+    Route::get('/alt-text/report', [\App\Http\Controllers\Admin\AltTextController::class, 'report'])->name('alt-text.report');
+    Route::get('/alt-text/bulk-edit', [\App\Http\Controllers\Admin\AltTextController::class, 'bulkEdit'])->name('alt-text.bulk-edit');
+    Route::post('/alt-text/bulk-update', [\App\Http\Controllers\Admin\AltTextController::class, 'bulkUpdate'])->name('alt-text.bulk-update');
+    Route::get('/posts/{post}/validate-alt-text', [\App\Http\Controllers\Admin\AltTextController::class, 'validatePost'])->name('posts.validate-alt-text');
+
+    // Page Management routes
+    Route::resource('pages', \App\Http\Controllers\Admin\PageController::class);
+    Route::post('/pages/update-order', [\App\Http\Controllers\Admin\PageController::class, 'updateOrder'])->name('pages.update-order');
+
+    // Settings Management routes
+    Route::get('/settings', [\App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('settings.index');
+    Route::put('/settings', [\App\Http\Controllers\Admin\SettingsController::class, 'update'])->name('settings.update');
+    Route::post('/settings/test-email', [\App\Http\Controllers\Admin\SettingsController::class, 'sendTestEmail'])->name('settings.test-email');
+    Route::post('/settings/clear-cache', [\App\Http\Controllers\Admin\SettingsController::class, 'clearCache'])->name('settings.clear-cache');
+
+    // Maintenance Mode routes
+    Route::get('/maintenance', [\App\Http\Controllers\Admin\MaintenanceController::class, 'index'])->name('maintenance.index');
+    Route::post('/maintenance/enable', [\App\Http\Controllers\Admin\MaintenanceController::class, 'enable'])->name('maintenance.enable');
+    Route::post('/maintenance/disable', [\App\Http\Controllers\Admin\MaintenanceController::class, 'disable'])->name('maintenance.disable');
+    Route::post('/maintenance/update', [\App\Http\Controllers\Admin\MaintenanceController::class, 'update'])->name('maintenance.update');
+    Route::get('/maintenance/status', [\App\Http\Controllers\Admin\MaintenanceController::class, 'status'])->name('maintenance.status');
+    Route::post('/maintenance/regenerate-secret', [\App\Http\Controllers\Admin\MaintenanceController::class, 'regenerateSecret'])->name('maintenance.regenerate-secret');
 });
 
 require __DIR__.'/auth.php';

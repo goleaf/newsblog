@@ -228,6 +228,12 @@ class Post extends Model
 
                 // Regenerate sitemap
                 App::make(\App\Services\SitemapService::class)->regenerateIfNeeded();
+
+                // Invalidate view caches (Requirement 12.3)
+                App::make(\App\Services\CacheService::class)->invalidateHomepage();
+                if ($post->category_id) {
+                    App::make(\App\Services\CacheService::class)->invalidateCategory($post->category_id);
+                }
             }
         });
 
@@ -260,19 +266,28 @@ class Post extends Model
                 // Invalidate related posts cache for this post and related posts
                 App::make(\App\Services\RelatedPostsService::class)->invalidateCache($post);
 
+                // Invalidate view caches (Requirement 12.3)
+                $cacheService = App::make(\App\Services\CacheService::class);
+                $cacheService->invalidateHomepage();
+                $cacheService->invalidatePost($post->id);
+                $cacheService->invalidatePost($post->slug);
+
                 // If category changed, invalidate cache for both old and new categories
                 if ($post->isDirty('category_id')) {
                     $oldCategoryId = $post->getOriginal('category_id');
                     if ($oldCategoryId) {
                         App::make(\App\Services\RelatedPostsService::class)->invalidateCacheByCategory($oldCategoryId);
+                        $cacheService->invalidateCategory($oldCategoryId);
                     }
                     if ($post->category_id) {
                         App::make(\App\Services\RelatedPostsService::class)->invalidateCacheByCategory($post->category_id);
+                        $cacheService->invalidateCategory($post->category_id);
                     }
                 } elseif ($post->category_id) {
                     // If title or excerpt changed, invalidate category cache
                     if ($post->isDirty('title') || $post->isDirty('excerpt')) {
                         App::make(\App\Services\RelatedPostsService::class)->invalidateCacheByCategory($post->category_id);
+                        $cacheService->invalidateCategory($post->category_id);
                     }
                 }
 
@@ -294,6 +309,15 @@ class Post extends Model
 
             // Regenerate sitemap
             App::make(\App\Services\SitemapService::class)->regenerateIfNeeded();
+
+            // Invalidate view caches (Requirement 12.3)
+            $cacheService = App::make(\App\Services\CacheService::class);
+            $cacheService->invalidateHomepage();
+            $cacheService->invalidatePost($post->id);
+            $cacheService->invalidatePost($post->slug);
+            if ($post->category_id) {
+                $cacheService->invalidateCategory($post->category_id);
+            }
         });
     }
 

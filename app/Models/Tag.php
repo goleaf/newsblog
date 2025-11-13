@@ -57,11 +57,17 @@ class Tag extends Model
             if ($tag->isDirty('slug')) {
                 \Illuminate\Support\Facades\App::make(\App\Services\SitemapService::class)->regenerateIfNeeded();
             }
+
+            // Invalidate view caches (Requirement 12.3)
+            \Illuminate\Support\Facades\App::make(\App\Services\CacheService::class)->invalidateTag($tag->id);
         });
 
         static::deleted(function ($tag) {
             // Regenerate sitemap when tag is deleted
             \Illuminate\Support\Facades\App::make(\App\Services\SitemapService::class)->regenerateIfNeeded();
+
+            // Invalidate view caches (Requirement 12.3)
+            \Illuminate\Support\Facades\App::make(\App\Services\CacheService::class)->invalidateTag($tag->id);
         });
     }
 }

@@ -3,12 +3,11 @@
 <article data-post-item class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden hover:shadow-lg transition-shadow duration-300">
     @if($post->featured_image)
         <a href="{{ route('post.show', $post->slug) }}">
-            <img 
-                src="{{ $post->featured_image_url }}" 
-                alt="{{ $post->title }}" 
+            <x-optimized-image 
+                :src="$post->featured_image_url" 
+                :alt="$post->image_alt_text ?? $post->title" 
                 class="w-full h-48 object-cover"
-                loading="lazy"
-            >
+            />
         </a>
     @endif
     

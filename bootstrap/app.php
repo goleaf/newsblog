@@ -1,12 +1,10 @@
 <?php
 
-use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\RateLimiter;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -24,18 +22,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->prepend(\App\Http\Middleware\MaintenanceModeBypass::class);
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
         $middleware->append(\App\Http\Middleware\TrackPerformance::class);
+        $middleware->append(\App\Http\Middleware\SetCacheHeaders::class);
 
         // Configure rate limiting for API
         $middleware->throttleApi('60,1'); // 60 requests per minute for API
-
-        // Configure custom rate limiters
-        RateLimiter::for('comments', function (Request $request) {
-            return Limit::perMinute(5)->by($request->ip());
-        });
-
-        RateLimiter::for('search', function (Request $request) {
-            return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
-        });
     })
     ->withSchedule(function (Schedule $schedule): void {
         // Publish scheduled posts every minute
@@ -79,5 +69,56 @@ return Application::configure(basePath: dirname(__DIR__))
         }
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->render(function (\Illuminate\Http\Exceptions\ThrottleRequestsException $e, Request $request) {
+            $retryAfter = $e->getHeaders()['Retry-After'] ?? 60;
+
+            // Log rate limit violation
+            \Illuminate\Support\Facades\Log::warning('Rate limit exceeded', [
+                'ip' => $request->ip(),
+                'path' => $request->path(),
+                'method' => $request->method(),
+                'user_agent' => $request->userAgent(),
+                'retry_after' => $retryAfter,
+            ]);
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Too many requests. Please try again later.',
+                    'retry_after' => $retryAfter,
+                ], 429, [
+                    'Retry-After' => $retryAfter,
+                    'X-RateLimit-Limit' => $e->getHeaders()['X-RateLimit-Limit'] ?? null,
+                    'X-RateLimit-Remaining' => 0,
+                ]);
+            }
+
+            return response()->view('errors.429', [
+                'retry_after' => $retryAfter,
+            ], 429, [
+                'Retry-After' => $retryAfter,
+            ]);
+        });
+
+        // Handle maintenance mode (503) exceptions
+        $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\HttpException $e, Request $request) {
+            if ($e->getStatusCode() === 503) {
+                $retryAfter = $e->getHeaders()['Retry-After'] ?? 60;
+
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'message' => $e->getMessage() ?: 'Service Unavailable',
+                        'retry_after' => $retryAfter,
+                    ], 503, [
+                        'Retry-After' => $retryAfter,
+                    ]);
+                }
+
+                return response()->view('errors.503', [
+                    'exception' => $e,
+                    'retryAfter' => $retryAfter,
+                ], 503, [
+                    'Retry-After' => $retryAfter,
+                ]);
+            }
+        });
     })->create();

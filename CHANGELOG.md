@@ -7,6 +7,78 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+#### Content Calendar Feature (November 13, 2025) ✅ COMPLETE
+- **Content Calendar Controller** - Monthly calendar view for content planning
+  - Monthly grid view with color-coded post status (Published: Green, Scheduled: Blue, Draft: Gray)
+  - Drag-and-drop date rescheduling for posts
+  - Month navigation with date picker
+  - Sidebar with detailed post information for selected dates
+  - AJAX endpoint for fetching posts by date
+  - Automatic date field updates (published_at or scheduled_at based on status)
+- **Routes & Authorization** - Admin and editor access only
+- **Tests** - Comprehensive test coverage for calendar functionality
+  - Access control tests (admin, editor, author, guest)
+  - Calendar display tests
+  - Date filtering tests
+  - Drag-and-drop update tests
+  - Month navigation tests
+
+#### Widget Management System (November 13, 2025) 🚧 IN PROGRESS
+- **Widget Models & Migrations** ✅ COMPLETE
+  - WidgetArea model with name, slug, description
+  - Widget model with polymorphic configuration storage
+  - Support for multiple widget types (Recent Posts, Popular Posts, Categories, Tags Cloud, Newsletter, Search, Custom HTML)
+- **Widget Service** ✅ COMPLETE
+  - Rendering engine for all widget types
+  - Configuration management with JSON storage
+  - Widget positioning and ordering
+- **Admin Interface** ✅ COMPLETE
+  - Widget management controller with CRUD operations
+  - Drag-and-drop widget positioning
+  - Enable/disable functionality
+  - Widget configuration forms
+- **Routes & Authorization** ✅ COMPLETE
+  - Admin and editor access only
+  - RESTful routes for widget management
+
+#### Performance Optimization (November 13, 2025) ✅ COMPLETE
+- **Asset Optimization** ✅ COMPLETE
+  - Vite configuration for production builds
+  - Image lazy loading with loading="lazy" attribute
+  - Critical CSS generation command
+  - Cache headers middleware for static assets (1 year)
+  - Optimized image component with WebP support
+  - Performance configuration file
+- **Caching Strategy** ✅ COMPLETE
+  - Query result caching for expensive operations
+  - View caching for homepage and category pages
+  - Model caching for frequently accessed data
+  - Cache invalidation on content updates
+  - Cache service with TTL management
+  - Clear application cache command
+
+#### Documentation Reorganization (November 13, 2025) ✅ COMPLETE
+- **Structured Documentation** - Reorganized all documentation into logical folders
+  - `docs/admin/` - Admin panel and Nova documentation (13 files)
+  - `docs/frontend/` - Frontend development guides (3 files)
+  - `docs/functionality/` - Feature and functionality docs (11 files)
+  - `docs/project/` - Project management docs (2 files)
+- **Moved Files** - Relocated documentation from root to appropriate folders
+  - Moved DOCUMENTATION_SUMMARY.md to docs/project/
+  - Moved tasks.md and todo.md to docs/project/development-tasks.md
+  - Added caching-strategy.md and asset-optimization.md to docs/functionality/
+- **Enhanced Navigation** - Updated INDEX.md with comprehensive navigation
+  - Multiple navigation methods (by role, topic, feature, task)
+  - Quick reference tables
+  - Documentation statistics and coverage
+  - 50,000+ words total documentation
+- **Updated Core Docs** - Enhanced README.md and CHANGELOG.md
+  - Complete feature list and project overview
+  - Detailed version history
+  - World-class documentation formatting
+
 ### In Progress
 
 #### Fuzzy Search Integration (v0.3.0) - 45% Complete

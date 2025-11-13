@@ -42,6 +42,16 @@
                             {{ __('Reading List') }}
                         </x-dropdown-link>
 
+                        <div class="border-t border-gray-200 dark:border-gray-600"></div>
+
+                        <x-dropdown-link :href="route('gdpr.export-data')">
+                            {{ __('Download My Data') }}
+                        </x-dropdown-link>
+
+                        <x-dropdown-link :href="route('gdpr.show-delete-account')">
+                            {{ __('Delete Account') }}
+                        </x-dropdown-link>
+
                         @if(Auth::user()->isAdmin() || Auth::user()->isEditor())
                             <div class="border-t border-gray-200 dark:border-gray-600"></div>
                             
@@ -106,6 +116,16 @@
 
                 <x-responsive-nav-link :href="route('bookmarks.index')">
                     {{ __('Reading List') }}
+                </x-responsive-nav-link>
+
+                <div class="border-t border-gray-200 dark:border-gray-600 my-2"></div>
+
+                <x-responsive-nav-link :href="route('gdpr.export-data')">
+                    {{ __('Download My Data') }}
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link :href="route('gdpr.show-delete-account')">
+                    {{ __('Delete Account') }}
                 </x-responsive-nav-link>
 
                 @if(Auth::user()->isAdmin() || Auth::user()->isEditor())

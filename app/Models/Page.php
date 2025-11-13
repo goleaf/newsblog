@@ -19,6 +19,7 @@ class Page extends Model
         'status',
         'template',
         'display_order',
+        'parent_id',
     ];
 
     public function getUrlAttribute()
@@ -34,6 +35,31 @@ class Page extends Model
     public function scopeOrdered($query)
     {
         return $query->orderBy('display_order')->orderBy('title');
+    }
+
+    public function parent()
+    {
+        return $this->belongsTo(Page::class, 'parent_id');
+    }
+
+    public function children()
+    {
+        return $this->hasMany(Page::class, 'parent_id')->ordered();
+    }
+
+    public function getAvailableTemplates(): array
+    {
+        return [
+            'default' => 'Default',
+            'full-width' => 'Full Width',
+            'contact' => 'Contact',
+            'about' => 'About',
+        ];
+    }
+
+    public function isContactTemplate(): bool
+    {
+        return $this->template === 'contact';
     }
 
     protected static function boot()

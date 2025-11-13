@@ -22,7 +22,15 @@
         })();
     </script>
 
+    <!-- Critical CSS (inlined for faster initial render) -->
+    <x-critical-css />
+
+    <!-- Preload critical assets -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    
+    <!-- Preconnect to external domains for faster resource loading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200">
     <!-- Navigation -->
@@ -93,6 +101,7 @@
                     <ul class="mt-4 space-y-4">
                         <li><a href="{{ route('home') }}" class="text-base text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">Home</a></li>
                         <li><a href="{{ route('search') }}" class="text-base text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">Search</a></li>
+                        <li><a href="{{ route('gdpr.privacy-policy') }}" class="text-base text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">Privacy Policy</a></li>
                     </ul>
                 </div>
                 <div>
@@ -110,5 +119,8 @@
             </div>
         </div>
     </footer>
+
+    <!-- Cookie Consent Banner -->
+    <x-cookie-consent />
 </body>
 </html>

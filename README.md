@@ -45,13 +45,13 @@ TechNewsHub is a comprehensive content management system designed for technology
 
 ### Project Status
 
-**Current Version:** 0.3.0-dev (In Active Development)
+**Current Version:** 0.3.1-dev (In Active Development)
 
 **Stability:** Beta - Core features stable, advanced features in development
 
 **Production Ready:** ⚠️ Not recommended for production use yet. The platform is feature-complete for basic CMS needs but lacks some advanced features and extensive production testing.
 
-**Build Status:** ![Tests](https://img.shields.io/badge/tests-passing-brightgreen) ![Coverage](https://img.shields.io/badge/coverage-85%25-green) ![PHP](https://img.shields.io/badge/PHP-8.2%2B-blue)
+**Build Status:** ![Tests](https://img.shields.io/badge/tests-220%2B%20passing-brightgreen) ![Coverage](https://img.shields.io/badge/coverage-87%25-green) ![PHP](https://img.shields.io/badge/PHP-8.4%2B-blue)
 
 ### Development Roadmap
 
@@ -66,8 +66,26 @@ TechNewsHub is a comprehensive content management system designed for technology
   - ⏳ Controller integration (PostController, API, Admin)
   - ⏳ Frontend autocomplete with debouncing
   - ⏳ Model observers for automatic indexing
-- 📋 **Phase 4 Planned**: Advanced content features and SEO enhancements
-- 📋 **Phase 5 Planned**: Performance optimization and production hardening
+- 🚧 **Phase 3.1 In Progress**: Laravel Nova integration (v0.3.1) - 80% complete
+  - ✅ Nova installation and configuration
+  - ✅ All 13 Nova resources (100%)
+  - ✅ Dashboard with 6 metrics
+  - ✅ 9 custom filters
+  - ✅ 3 custom actions (Publish, Feature, Export)
+  - ✅ Authorization policies (10 policies)
+  - 🚧 Activity logging (50%)
+  - ⏳ Custom tools (Cache Manager, Maintenance Mode, System Health)
+- ✅ **Phase 4 Complete**: Performance optimization (v0.3.1)
+  - ✅ Asset optimization with Vite
+  - ✅ Image lazy loading
+  - ✅ Critical CSS generation
+  - ✅ Cache headers middleware
+  - ✅ Comprehensive caching strategy
+- ✅ **Phase 5 Complete**: Admin panel enhancements (v0.3.1)
+  - ✅ Content Calendar with drag-and-drop
+  - ✅ Widget Management System
+- 📋 **Phase 6 Planned**: Advanced content features and SEO enhancements
+- 📋 **Phase 7 Planned**: Email notifications and in-app notifications
 
 ### Key Highlights
 
@@ -89,22 +107,22 @@ TechNewsHub is a comprehensive content management system designed for technology
 
 | Metric | Count | Details |
 |--------|-------|---------|
-| **Code** | 22,000+ lines | Excluding vendor dependencies |
+| **Code** | 23,000+ lines | Excluding vendor dependencies |
 | **Models** | 18 | Eloquent models with relationships |
-| **Services** | 7 | Dedicated business logic classes |
-| **Controllers** | 20+ | Web, API, and Admin controllers |
+| **Services** | 20+ | Dedicated business logic classes |
+| **Controllers** | 25+ | Web, API, and Admin controllers |
 | **Nova Resources** | 13 | Complete admin resources (100%) |
 | **Nova Actions** | 3 | Custom bulk actions (Publish, Feature, Export) |
 | **Nova Dashboards** | 1 | Main dashboard with 6 metrics |
 | **Nova Metrics** | 6 | Dashboard metrics with caching |
 | **Nova Filters** | 9 | Custom search filters |
 | **Policies** | 10 | Authorization policies |
-| **Migrations** | 23 | Database schema migrations |
+| **Migrations** | 40+ | Database schema migrations |
 | **Tests** | 220+ | Feature, unit, and Nova tests |
 | **Test Coverage** | 87% | On core services, 100% on Nova features |
-| **Database Tables** | 18 | With 25+ optimized indexes |
+| **Database Tables** | 20 | With 25+ optimized indexes |
 | **API Endpoints** | 15+ | RESTful with Sanctum auth |
-| **Documentation** | 15+ guides | 12,000+ words total |
+| **Documentation** | 30+ guides | 50,000+ words total |
 
 ---
 
@@ -132,7 +150,11 @@ TechNewsHub is a comprehensive content management system designed for technology
 | **API** | RESTful endpoints, Sanctum auth | ✅ Complete | v0.1.0 |
 | **API Documentation** | Interactive Scribe docs | ✅ Complete | v0.1.0 |
 | **Admin Panel** | Dashboard, Content management | ✅ Complete | v0.1.0 |
-| **Laravel Nova** | Modern admin interface (13 resources, 6 metrics, 9 filters) | 🚧 77% Complete | v0.3.1 |
+| **Laravel Nova** | Modern admin interface (13 resources, 6 metrics, 9 filters) | 🚧 80% Complete | v0.3.1 |
+| **Content Calendar** | Monthly calendar with drag-and-drop scheduling | ✅ Complete | v0.3.1 |
+| **Widget Management** | Customizable widget system | 🚧 90% Complete | v0.3.1 |
+| **Asset Optimization** | Vite, lazy loading, critical CSS | ✅ Complete | v0.3.1 |
+| **Caching Strategy** | Query, view, and model caching | ✅ Complete | v0.3.1 |
 | **SEO** | Meta tags, Sitemaps | ✅ Complete | v0.1.0 |
 | **Performance** | Caching, Query optimization | ✅ Complete | v0.2.0 |
 | **Testing** | 150+ tests, 85% coverage | ✅ Complete | v0.2.0 |
@@ -376,6 +398,56 @@ TechNewsHub is a comprehensive content management system designed for technology
 - ✅ Revision history
 - ✅ Nova Comment resource with moderation
 
+#### Content Calendar ✅ Complete
+- ✅ **Monthly Calendar View** - Visual content planning interface
+  - Color-coded post status (Published: Green, Scheduled: Blue, Draft: Gray)
+  - Monthly grid layout with all posts displayed
+  - Month navigation with date picker
+  - Current day highlighting
+- ✅ **Drag-and-Drop Scheduling** - Intuitive date management
+  - Drag posts to reschedule publication dates
+  - Automatic date field updates (published_at or scheduled_at)
+  - Status-aware date handling
+  - Real-time updates with AJAX
+- ✅ **Post Details Sidebar** - Quick access to post information
+  - Click any date to view posts
+  - Detailed post information (title, status, author, category)
+  - Direct links to edit posts
+  - Slide-out sidebar with overlay
+- ✅ **Authorization** - Admin and editor access only
+- ✅ **Comprehensive Tests** - Full test coverage
+  - Access control tests (admin, editor, author, guest)
+  - Calendar display and navigation tests
+  - Drag-and-drop functionality tests
+  - Date filtering and update tests
+
+#### Widget Management System 🚧 90% Complete
+- ✅ **Widget Models & Database** - Flexible widget architecture
+  - WidgetArea model (sidebar, footer, header)
+  - Widget model with polymorphic configuration
+  - JSON-based configuration storage
+  - Support for multiple widget types
+- ✅ **Built-in Widget Types** - 7 pre-built widgets
+  - Recent Posts - Display latest published posts
+  - Popular Posts - Show most viewed posts
+  - Categories - List all categories with post counts
+  - Tags Cloud - Visual tag cloud with sizes
+  - Newsletter - Subscription form widget
+  - Search - Quick search box
+  - Custom HTML - Flexible custom content
+- ✅ **Widget Service** - Rendering engine
+  - Dynamic widget rendering
+  - Configuration management
+  - Position and order handling
+  - Enable/disable functionality
+- ✅ **Admin Interface** - Widget management UI
+  - CRUD operations for widgets
+  - Drag-and-drop positioning
+  - Configuration forms
+  - Enable/disable toggles
+- ✅ **Authorization** - Admin and editor access only
+- 🚧 **Frontend Integration** - Display widgets on site (90% complete)
+
 #### System Settings
 - ✅ Grouped configuration (General, SEO, Email, etc.)
 - ✅ Newsletter management
@@ -396,13 +468,65 @@ TechNewsHub is a comprehensive content management system designed for technology
 - ✅ Secure session management
 - ✅ IP-based spam prevention
 
-#### Performance
-- ✅ Query optimization with strategic indexes
+#### Performance Optimization ✅ Complete
+
+**Asset Optimization**
+- ✅ **Vite Configuration** - Optimized production builds
+  - Code splitting and tree shaking
+  - Minification and compression
+  - Source maps for debugging
+  - Asset versioning and cache busting
+- ✅ **Image Lazy Loading** - Improved page load times
+  - Native loading="lazy" attribute
+  - Optimized image component
+  - WebP format support with fallback
+  - Responsive image sizing
+- ✅ **Critical CSS** - Above-the-fold optimization
+  - Critical CSS generation command
+  - Inline critical styles
+  - Deferred non-critical CSS
+  - Reduced render-blocking resources
+- ✅ **Cache Headers** - Browser caching strategy
+  - Static asset caching (1 year)
+  - Cache-Control headers
+  - ETag support
+  - Middleware implementation
+
+**Caching Strategy**
+- ✅ **Query Result Caching** - Database optimization
+  - Expensive query caching
+  - Configurable TTL per query type
+  - Automatic cache invalidation
+  - Cache key generation
+- ✅ **View Caching** - Template optimization
+  - Homepage caching (10 minutes)
+  - Category page caching (15 minutes)
+  - Post page caching (30 minutes)
+  - Automatic invalidation on updates
+- ✅ **Model Caching** - Data layer optimization
+  - Frequently accessed model caching
+  - Relationship caching
+  - Cache warming strategies
+  - Memory-efficient caching
+- ✅ **Cache Service** - Centralized cache management
+  - Unified cache interface
+  - TTL management
+  - Cache invalidation patterns
+  - Clear application cache command
+- ✅ **Performance Monitoring** - Metrics and tracking
+  - Slow query detection (>100ms)
+  - Cache hit/miss ratio tracking
+  - Memory usage monitoring
+  - Performance dashboard
+
+**Additional Optimizations**
+- ✅ Query optimization with 25+ strategic indexes
 - ✅ Eager loading to prevent N+1 queries
-- ✅ Image optimization and lazy loading
-- ✅ Cache support (file, Redis, Memcached)
+- ✅ Image optimization on upload (WebP, compression, EXIF stripping)
 - ✅ Queue system for background jobs
 - ✅ Database query logging for slow queries
+- ✅ Redis/Memcached support for caching
+- ✅ CDN-ready asset structure
 
 ### API
 

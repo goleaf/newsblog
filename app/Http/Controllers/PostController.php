@@ -25,7 +25,8 @@ class PostController extends Controller
         protected RelatedPostsService $relatedPostsService,
         protected SearchService $searchService,
         protected SeriesNavigationService $seriesNavigationService,
-        protected PostViewController $postViewController
+        protected PostViewController $postViewController,
+        protected \App\Services\CacheService $cacheService
     ) {}
 
     public function show($slug, Request $request)
@@ -69,14 +70,19 @@ class PostController extends Controller
 
     public function category($slug, Request $request)
     {
-        $category = Cache::remember("category.{$slug}", 3600, function () use ($slug) {
-            return Category::where('slug', $slug)->active()->firstOrFail();
+        // Cache category model (Requirement 12.3)
+        $category = $this->cacheService->cacheModel('category', $slug, \App\Services\CacheService::TTL_LONG, function () use ($slug) {
+            return Category::where('slug', $slug)
+                ->active()
+                ->select(['id', 'name', 'slug', 'description', 'parent_id', 'meta_title', 'meta_description'])
+                ->firstOrFail();
         });
 
         // Build query with filters and sorting (Requirements 26.1-26.5)
         $query = Post::published()
             ->where('category_id', $category->id)
-            ->with(['user', 'category']);
+            ->with(['user:id,name', 'category:id,name,slug'])
+            ->select(['id', 'title', 'slug', 'excerpt', 'featured_image', 'published_at', 'reading_time', 'view_count', 'user_id', 'category_id']);
 
         // Apply sorting (Requirement 26.2, 26.3)
         $sort = $request->get('sort', 'latest');
@@ -97,7 +103,22 @@ class PostController extends Controller
             };
         }
 
-        $posts = $query->paginate(12)->withQueryString();
+        // Cache query results for category pages (Requirement 12.1, 12.2)
+        $page = $request->get('page', 1);
+        $filters = [
+            'sort' => $sort,
+            'date_filter' => $dateFilter,
+            'page' => $page,
+        ];
+
+        // Only cache first page without filters for better hit rate
+        if ($page == 1 && empty($dateFilter) && $sort === 'latest') {
+            $posts = $this->cacheService->cacheCategoryPage($category->id, $filters, function () use ($query) {
+                return $query->paginate(12)->withQueryString();
+            });
+        } else {
+            $posts = $query->paginate(12)->withQueryString();
+        }
 
         // Return JSON for AJAX requests (Requirements 26.1, 27.1-27.5)
         if ($request->wantsJson() || $request->ajax()) {
@@ -119,35 +140,54 @@ class PostController extends Controller
 
     public function tag($slug, Request $request)
     {
-        $tag = Cache::remember("tag.{$slug}", 3600, function () use ($slug) {
-            return Tag::where('slug', $slug)->firstOrFail();
+        // Cache tag model (Requirement 12.3)
+        $tag = $this->cacheService->cacheModel('tag', $slug, \App\Services\CacheService::TTL_LONG, function () use ($slug) {
+            return Tag::where('slug', $slug)
+                ->select(['id', 'name', 'slug'])
+                ->firstOrFail();
         });
 
         // Build query with filters and sorting (Requirements 26.1-26.5)
         $query = $tag->posts()
             ->published()
-            ->with(['user', 'category']);
+            ->with(['user:id,name', 'category:id,name,slug'])
+            ->select(['posts.id', 'posts.title', 'posts.slug', 'posts.excerpt', 'posts.featured_image', 'posts.published_at', 'posts.reading_time', 'posts.view_count', 'posts.user_id', 'posts.category_id']);
 
         // Apply sorting (Requirement 26.2, 26.3)
         $sort = $request->get('sort', 'latest');
         match ($sort) {
-            'popular' => $query->orderBy('view_count', 'desc'),
-            'oldest' => $query->orderBy('published_at', 'asc'),
-            default => $query->orderBy('published_at', 'desc'),
+            'popular' => $query->orderBy('posts.view_count', 'desc'),
+            'oldest' => $query->orderBy('posts.published_at', 'asc'),
+            default => $query->orderBy('posts.published_at', 'desc'),
         };
 
         // Apply date filters (Requirement 26.4)
         $dateFilter = $request->get('date_filter');
         if ($dateFilter) {
             match ($dateFilter) {
-                'today' => $query->whereDate('published_at', today()),
-                'week' => $query->where('published_at', '>=', now()->subWeek()),
-                'month' => $query->where('published_at', '>=', now()->subMonth()),
+                'today' => $query->whereDate('posts.published_at', today()),
+                'week' => $query->where('posts.published_at', '>=', now()->subWeek()),
+                'month' => $query->where('posts.published_at', '>=', now()->subMonth()),
                 default => null,
             };
         }
 
-        $posts = $query->paginate(12)->withQueryString();
+        // Cache query results for tag pages (Requirement 12.1, 12.2)
+        $page = $request->get('page', 1);
+        $filters = [
+            'sort' => $sort,
+            'date_filter' => $dateFilter,
+            'page' => $page,
+        ];
+
+        // Only cache first page without filters for better hit rate
+        if ($page == 1 && empty($dateFilter) && $sort === 'latest') {
+            $posts = $this->cacheService->cacheTagPage($tag->id, $filters, function () use ($query) {
+                return $query->paginate(12)->withQueryString();
+            });
+        } else {
+            $posts = $query->paginate(12)->withQueryString();
+        }
 
         // Return JSON for AJAX requests (Requirements 26.1, 27.1-27.5)
         if ($request->wantsJson() || $request->ajax()) {

@@ -38,5 +38,8 @@
                 {{ $slot }}
             </div>
         </div>
+
+        <!-- Cookie Consent Banner -->
+        <x-cookie-consent />
     </body>
 </html>

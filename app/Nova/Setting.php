@@ -128,13 +128,8 @@ class Setting extends Resource
 
             Select::make('Group')
                 ->sortable()
-                ->options([
-                    'general' => 'General',
-                    'email' => 'Email',
-                    'social' => 'Social',
-                    'SEO' => 'SEO',
-                ])
-                ->rules('required', 'in:general,email,social,SEO')
+                ->options(\App\Models\Setting::GROUPS)
+                ->rules('required', 'in:'.implode(',', array_keys(\App\Models\Setting::GROUPS)))
                 ->default('general')
                 ->displayUsingLabels()
                 ->help('Setting category group'),

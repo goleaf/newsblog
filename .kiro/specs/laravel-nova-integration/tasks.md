@@ -186,7 +186,7 @@
   - Register all filters in Post resource
   - _Requirements: 8.3_
 
-- [ ] 19. Create filters for other resources
+- [x] 19. Create filters for other resources
   - Create `app/Nova/Filters/CommentStatus.php` filter for pending/approved/spam
   - Create `app/Nova/Filters/UserRole.php` filter for admin/editor/author/user
   - Create `app/Nova/Filters/CategoryStatus.php` filter for active/inactive

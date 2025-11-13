@@ -12,7 +12,12 @@
                     @php $mainPost = $featuredPosts->first(); @endphp
                     <article class="relative h-96 rounded-lg overflow-hidden">
                         @if($mainPost->featured_image)
-                            <img src="{{ $mainPost->featured_image_url }}" alt="{{ $mainPost->title }}" class="w-full h-full object-cover">
+                            <x-optimized-image 
+                                :src="$mainPost->featured_image_url" 
+                                :alt="$mainPost->image_alt_text ?? $mainPost->title" 
+                                class="w-full h-full object-cover"
+                                eager="true"
+                            />
                         @endif
                         <div class="absolute inset-0 bg-gradient-to-t from-black/75 to-transparent"></div>
                         <div class="absolute bottom-0 left-0 right-0 p-6 text-white">
@@ -35,7 +40,11 @@
                     @foreach($featuredPosts->skip(1)->take(2) as $post)
                         <article class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
                             @if($post->featured_image)
-                                <img src="{{ $post->featured_image_url }}" alt="{{ $post->title }}" class="w-full h-48 object-cover">
+                                <x-optimized-image 
+                                    :src="$post->featured_image_url" 
+                                    :alt="$post->image_alt_text ?? $post->title" 
+                                    class="w-full h-48 object-cover"
+                                />
                             @endif
                             <div class="p-4">
                                 <span class="text-xs font-medium text-indigo-600 dark:text-indigo-400">{{ $post->category->name }}</span>
@@ -64,7 +73,11 @@
                 @foreach($trendingPosts as $post)
                     <article class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
                         @if($post->featured_image)
-                            <img src="{{ $post->featured_image_url }}" alt="{{ $post->title }}" class="w-full h-48 object-cover">
+                            <x-optimized-image 
+                                :src="$post->featured_image_url" 
+                                :alt="$post->image_alt_text ?? $post->title" 
+                                class="w-full h-48 object-cover"
+                            />
                         @endif
                         <div class="p-4">
                             <span class="text-xs font-medium text-indigo-600 dark:text-indigo-400">{{ $post->category->name }}</span>
@@ -94,7 +107,11 @@
                         <div class="md:flex">
                             @if($post->featured_image)
                                 <div class="md:flex-shrink-0">
-                                    <img src="{{ $post->featured_image_url }}" alt="{{ $post->title }}" class="h-48 w-full md:w-48 object-cover">
+                                    <x-optimized-image 
+                                        :src="$post->featured_image_url" 
+                                        :alt="$post->image_alt_text ?? $post->title" 
+                                        class="h-48 w-full md:w-48 object-cover"
+                                    />
                                 </div>
                             @endif
                             <div class="p-6 flex-1">

@@ -127,8 +127,8 @@ class CommentSubmissionTest extends TestCase
     {
         $post = Post::factory()->create(['status' => 'published']);
 
-        // Submit 5 comments (should succeed)
-        for ($i = 0; $i < 5; $i++) {
+        // Submit 3 comments (should succeed)
+        for ($i = 0; $i < 3; $i++) {
             $response = $this->post(route('comments.store'), [
                 'post_id' => $post->id,
                 'author_name' => 'John Doe',
@@ -141,12 +141,12 @@ class CommentSubmissionTest extends TestCase
             $response->assertRedirect();
         }
 
-        // 6th comment should be rate limited
+        // 4th comment should be rate limited
         $response = $this->post(route('comments.store'), [
             'post_id' => $post->id,
             'author_name' => 'John Doe',
             'author_email' => 'john@example.com',
-            'content' => 'Sixth comment',
+            'content' => 'Fourth comment',
             'page_load_time' => time() - 10,
             'honeypot' => '',
         ]);
