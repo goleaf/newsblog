@@ -66,6 +66,14 @@ class ActivityLogResourceTest extends TestCase
         $this->assertFalse(ActivityLogResource::authorizedToViewAny($request));
     }
 
+    public function test_guest_cannot_view_any_activity_logs(): void
+    {
+        $request = NovaRequest::create('/nova-api/activity-logs', 'GET');
+        $request->setUserResolver(fn () => null);
+
+        $this->assertFalse(ActivityLogResource::authorizedToViewAny($request));
+    }
+
     public function test_admin_can_view_activity_log(): void
     {
         $admin = User::factory()->create(['role' => 'admin']);
@@ -98,6 +106,17 @@ class ActivityLogResourceTest extends TestCase
 
         $request = NovaRequest::create('/nova-api/activity-logs/1', 'GET');
         $request->setUserResolver(fn () => $author);
+
+        $this->assertFalse($resource->authorizedToView($request));
+    }
+
+    public function test_guest_cannot_view_activity_log(): void
+    {
+        $activityLog = ActivityLog::factory()->create();
+        $resource = new ActivityLogResource($activityLog);
+
+        $request = NovaRequest::create('/nova-api/activity-logs/1', 'GET');
+        $request->setUserResolver(fn () => null);
 
         $this->assertFalse($resource->authorizedToView($request));
     }

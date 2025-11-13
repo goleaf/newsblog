@@ -57,7 +57,13 @@ class ActivityLog extends Resource
      */
     public static function authorizedToViewAny(Request $request): bool
     {
-        return $request->user()->can('viewAny', static::$model);
+        $user = $request->user();
+
+        if (! $user) {
+            return false;
+        }
+
+        return $user->can('viewAny', static::$model);
     }
 
     /**
@@ -65,7 +71,13 @@ class ActivityLog extends Resource
      */
     public function authorizedToView(Request $request): bool
     {
-        return $request->user()->can('view', $this->resource);
+        $user = $request->user();
+
+        if (! $user) {
+            return false;
+        }
+
+        return $user->can('view', $this->resource);
     }
 
     /**

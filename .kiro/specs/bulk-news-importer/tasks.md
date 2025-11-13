@@ -1,6 +1,6 @@
 # Implementation Plan
 
-- [ ] 1. Create configuration and database preparation
+- [-] 1. Create configuration and database preparation
   - Create `config/import.php` configuration file with chunk size, queue threshold, content/image generation settings
   - Verify database indexes exist on posts, tags, categories, and pivot tables for optimal performance
   - Create import log channel in `config/logging.php`
