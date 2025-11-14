@@ -70,7 +70,13 @@ class Category extends Resource
      */
     public static function authorizedToViewAny(Request $request): bool
     {
-        return $request->user()->can('viewAny', static::$model);
+        $user = $request->user();
+
+        if (! $user) {
+            return false;
+        }
+
+        return $user->can('viewAny', static::$model);
     }
 
     /**
@@ -78,7 +84,13 @@ class Category extends Resource
      */
     public function authorizedToView(Request $request): bool
     {
-        return $request->user()->can('view', $this->resource);
+        $user = $request->user();
+
+        if (! $user) {
+            return false;
+        }
+
+        return $user->can('view', $this->resource);
     }
 
     /**
@@ -86,7 +98,13 @@ class Category extends Resource
      */
     public static function authorizedToCreate(Request $request): bool
     {
-        return $request->user()->can('create', static::$model);
+        $user = $request->user();
+
+        if (! $user) {
+            return false;
+        }
+
+        return $user->can('create', static::$model);
     }
 
     /**
@@ -94,7 +112,13 @@ class Category extends Resource
      */
     public function authorizedToUpdate(Request $request): bool
     {
-        return $request->user()->can('update', $this->resource);
+        $user = $request->user();
+
+        if (! $user) {
+            return false;
+        }
+
+        return $user->can('update', $this->resource);
     }
 
     /**
@@ -102,7 +126,27 @@ class Category extends Resource
      */
     public function authorizedToDelete(Request $request): bool
     {
-        return $request->user()->can('delete', $this->resource);
+        $user = $request->user();
+
+        if (! $user) {
+            return false;
+        }
+
+        return $user->can('delete', $this->resource);
+    }
+
+    /**
+     * Determine if the current user can delete any resources (bulk delete).
+     */
+    public static function authorizedToDeleteAny(Request $request): bool
+    {
+        $user = $request->user();
+
+        if (! $user) {
+            return false;
+        }
+
+        return $user->can('delete', static::$model);
     }
 
     /**
@@ -132,7 +176,14 @@ class Category extends Resource
             BelongsTo::make('Parent Category', 'parent', Category::class)
                 ->nullable()
                 ->searchable()
-                ->help('Select a parent category to create a subcategory'),
+                ->help('Select a parent category to create a subcategory')
+                ->fillUsing(function (NovaRequest $request, $model, $attribute, $requestAttribute) {
+                    $value = $request->input($requestAttribute) ?? $request->input('parent_id');
+
+                    if ($value) {
+                        $model->parent()->associate($value);
+                    }
+                }),
 
             Text::make('Icon')
                 ->nullable()
@@ -156,7 +207,7 @@ class Category extends Resource
             Number::make('Display Order', 'display_order')
                 ->default(0)
                 ->sortable()
-                ->rules('required', 'integer', 'min:0')
+                ->rules('integer', 'min:0')
                 ->help('Order in which categories are displayed (lower numbers first)'),
 
             \Laravel\Nova\Panel::make('SEO', [

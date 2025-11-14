@@ -5,8 +5,12 @@ namespace App\Console\Commands;
 use App\Jobs\ProcessBulkImportJob;
 use App\Services\BulkImportService;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Artisan as ArtisanFacade;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class ImportNewsArticles extends Command
 {
@@ -18,11 +22,13 @@ class ImportNewsArticles extends Command
     protected $signature = 'news:import
                             {file : Path to CSV file or directory containing CSV files}
                             {--chunk-size=1000 : Number of rows to process per chunk}
+                            {--limit= : Limit total rows processed}
                             {--skip-content : Skip content generation}
                             {--skip-images : Skip image assignment}
                             {--user-id= : User ID to assign as post author}
                             {--status=published : Post status (draft, published, scheduled)}
-                            {--queue : Process import in background queue}';
+                            {--queue : Process import in background queue}
+                            {--fresh : Drop all tables and re-run migrations before import}';
 
     /**
      * The console command description.
@@ -50,6 +56,18 @@ class ImportNewsArticles extends Command
             return self::FAILURE;
         }
 
+        // Optionally reset database to a clean state
+        if ($this->option('fresh')) {
+            $this->info('Resetting database (migrate:fresh)...');
+            ArtisanFacade::call('migrate:fresh', ['--no-interaction' => true]);
+            $this->line(ArtisanFacade::output());
+            $this->newLine();
+
+            // Ensure the target user exists after resetting schema
+            $targetUserId = $this->option('user-id') ? (int) $this->option('user-id') : (int) config('import.default_user_id', 1);
+            $this->ensureUserExists($targetUserId);
+        }
+
         // Check if path is a directory
         if (File::isDirectory($filePath)) {
             return $this->processDirectory($filePath, $importService);
@@ -67,6 +85,13 @@ class ImportNewsArticles extends Command
         $chunkSize = $this->option('chunk-size');
         if (! is_numeric($chunkSize) || $chunkSize < 1) {
             $this->error('Chunk size must be a positive integer');
+
+            return false;
+        }
+
+        $limit = $this->option('limit');
+        if ($limit !== null && (! is_numeric($limit) || $limit < 1)) {
+            $this->error('Limit must be a positive integer');
 
             return false;
         }
@@ -141,6 +166,7 @@ class ImportNewsArticles extends Command
         // Build options array
         $options = [
             'chunk_size' => (int) $this->option('chunk-size'),
+            'limit' => $this->option('limit') ? (int) $this->option('limit') : null,
             'skip_content' => $this->option('skip-content'),
             'skip_images' => $this->option('skip-images'),
             'user_id' => $this->option('user-id') ? (int) $this->option('user-id') : null,
@@ -274,5 +300,32 @@ class ImportNewsArticles extends Command
         $bytes /= (1 << (10 * $pow));
 
         return round($bytes, 2).' '.$units[$pow];
+    }
+
+    /**
+     * Ensure a user exists for the provided user ID (used after --fresh).
+     */
+    protected function ensureUserExists(int $userId): void
+    {
+        try {
+            $exists = DB::table('users')->where('id', $userId)->exists();
+            if (! $exists) {
+                $email = 'import_user_'.$userId.'@example.com';
+                $name = 'Import User '.$userId;
+
+                DB::table('users')->insert([
+                    'id' => $userId,
+                    'name' => $name,
+                    'email' => $email,
+                    'password' => Hash::make(Str::random(24)),
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+                $this->info("Created user #{$userId} for import.");
+            }
+        } catch (\Throwable $e) {
+            $this->warn('Unable to ensure import user exists: '.$e->getMessage());
+        }
     }
 }

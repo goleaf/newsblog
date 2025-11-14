@@ -63,7 +63,7 @@ class WidgetService
             ->take($count)
             ->get();
 
-        return View::make('widgets.recent-posts', [
+        return View::make('components.widgets.recent-posts', [
             'widget' => $widget,
             'posts' => $posts,
         ])->render();
@@ -77,7 +77,7 @@ class WidgetService
             ->take($count)
             ->get();
 
-        return View::make('widgets.popular-posts', [
+        return View::make('components.widgets.popular-posts', [
             'widget' => $widget,
             'posts' => $posts,
         ])->render();
@@ -90,7 +90,7 @@ class WidgetService
             ->orderBy('name')
             ->get();
 
-        return View::make('widgets.categories', [
+        return View::make('components.widgets.categories-list', [
             'widget' => $widget,
             'categories' => $categories,
             'showCount' => $showCount,
@@ -105,7 +105,7 @@ class WidgetService
             ->take($limit)
             ->get();
 
-        return View::make('widgets.tags-cloud', [
+        return View::make('components.widgets.tags-cloud', [
             'widget' => $widget,
             'tags' => $tags,
         ])->render();
@@ -113,7 +113,7 @@ class WidgetService
 
     protected function renderNewsletter(Widget $widget): string
     {
-        return View::make('widgets.newsletter', [
+        return View::make('components.widgets.newsletter-form', [
             'widget' => $widget,
         ])->render();
     }
@@ -129,7 +129,7 @@ class WidgetService
     {
         $content = $widget->settings['content'] ?? '';
 
-        return View::make('widgets.custom-html', [
+        return View::make('components.widgets.custom-html', [
             'widget' => $widget,
             'content' => $content,
         ])->render();

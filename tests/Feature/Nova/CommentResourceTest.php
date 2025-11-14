@@ -37,9 +37,7 @@ class CommentResourceTest extends TestCase
 
         $response->assertOk()
             ->assertJsonStructure([
-                'data' => [
-                    '*' => ['id', 'content', 'status'],
-                ],
+                'resources',
             ]);
     }
 

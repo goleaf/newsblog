@@ -41,6 +41,7 @@ class SearchController extends Controller
             'date_from' => $validated['date_from'] ?? null,
             'date_to' => $validated['date_to'] ?? null,
             'tags' => $validated['tags'] ?? null,
+            'sort' => $request->input('sort', 'newest'),
         ]);
 
         // Get filter options for the view
@@ -77,6 +78,30 @@ class SearchController extends Controller
 
         // Use advanced search service for filtering
         $posts = $this->advancedSearchService->search($query, $filters, 15);
+
+        // Get spelling suggestion if no results found (Requirements 2.4, 2.5)
+        if (! empty($query) && $posts->total() === 0 && $fuzzyEnabled) {
+            $spellingSuggestion = $this->fuzzySearchService->getSpellingSuggestion($query);
+        }
+
+        // Enhance results with fuzzy search highlighting and context extraction
+        if (! empty($query) && $fuzzyEnabled && $posts->total() > 0) {
+            $posts->getCollection()->transform(function ($post) use ($query) {
+                // Use FuzzySearchService for better highlighting
+                $post->highlighted_title = $this->fuzzySearchService->highlightMatches($post->title, $query);
+
+                // Extract context snippet with highlighting
+                if (! empty($post->excerpt)) {
+                    $post->excerpt_context = $this->fuzzySearchService->extractContext($post->excerpt, $query, 200);
+                    $post->highlighted_excerpt = $this->fuzzySearchService->highlightMatches($post->excerpt_context, $query);
+                } elseif (! empty($post->content)) {
+                    $post->excerpt_context = $this->fuzzySearchService->extractContext(strip_tags($post->content), $query, 200);
+                    $post->highlighted_excerpt = $this->fuzzySearchService->highlightMatches($post->excerpt_context, $query);
+                }
+
+                return $post;
+            });
+        }
 
         // Async query logging
         $executionTime = (microtime(true) - $startTime) * 1000;
@@ -132,18 +157,21 @@ class SearchController extends Controller
 
     /**
      * Get search suggestions for autocomplete.
+     * Implements Requirements 2.1, 2.2 (autocomplete with debounced search)
      *
      * @return \Illuminate\Http\JsonResponse
      */
     public function suggestions(Request $request)
     {
         $query = $request->input('q', '');
+        $minLength = config('fuzzy-search.limits.suggestion_min_length', 3);
 
-        if (strlen($query) < 2) {
+        if (strlen($query) < $minLength) {
             return response()->json([]);
         }
 
-        $suggestions = $this->searchService->getSuggestions($query, 5);
+        // Use FuzzySearchService for better suggestions with typo tolerance
+        $suggestions = $this->fuzzySearchService->getSuggestions($query, 5);
 
         return response()->json($suggestions);
     }

@@ -1059,4 +1059,58 @@ class FuzzySearchService
             ]);
         }
     }
+
+    /**
+     * Get spelling suggestion for a query with no results
+     * Implements Requirements 2.4, 2.5 (Did you mean suggestions)
+     *
+     * @param  string  $query  The original query
+     * @return string|null Suggested alternative query or null
+     */
+    public function getSpellingSuggestion(string $query): ?string
+    {
+        if (empty($query) || strlen($query) < 3) {
+            return null;
+        }
+
+        try {
+            $index = $this->indexService->getIndex('posts');
+            $queryLower = mb_strtolower($query);
+            $bestMatch = null;
+            $bestScore = 0;
+
+            // Look for similar titles in the index
+            foreach ($index as $item) {
+                $title = mb_strtolower($item['title']);
+
+                // Skip if exact match or contains
+                if ($title === $queryLower || str_contains($title, $queryLower)) {
+                    continue;
+                }
+
+                // Calculate similarity score
+                $score = $this->calculateScore($queryLower, $title);
+
+                // If score is good but not perfect, it might be a typo
+                if ($score > $bestScore && $score >= 50 && $score < 95) {
+                    $bestScore = $score;
+                    $bestMatch = $item['title'];
+                }
+            }
+
+            // Return suggestion if we found a good match
+            if ($bestMatch && $bestScore >= 60) {
+                return $bestMatch;
+            }
+
+            return null;
+        } catch (\Exception $e) {
+            Log::error('Spelling suggestion error', [
+                'query' => $query,
+                'error' => $e->getMessage(),
+            ]);
+
+            return null;
+        }
+    }
 }

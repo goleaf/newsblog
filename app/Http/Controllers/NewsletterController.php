@@ -12,10 +12,11 @@ use Illuminate\View\View;
 
 class NewsletterController extends Controller
 {
-    public function subscribe(Request $request): RedirectResponse
+    public function subscribe(Request $request)
     {
         $request->validate([
             'email' => 'required|email|max:255',
+            'gdpr_consent' => 'required|accepted',
         ]);
 
         // Check if email already exists
@@ -23,10 +24,22 @@ class NewsletterController extends Controller
 
         if ($existing) {
             if ($existing->status === 'subscribed' && $existing->verified_at) {
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'This email is already subscribed to our newsletter.',
+                    ]);
+                }
                 return back()->with('info', 'This email is already subscribed to our newsletter.');
             }
 
             if ($existing->status === 'unsubscribed') {
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'This email has previously unsubscribed. Please contact us to resubscribe.',
+                    ]);
+                }
                 return back()->with('info', 'This email has previously unsubscribed. Please contact us to resubscribe.');
             }
 
@@ -39,6 +52,12 @@ class NewsletterController extends Controller
 
                 Mail::to($existing->email)->send(new NewsletterVerificationMail($existing));
 
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Verification email resent. Please check your inbox.',
+                    ]);
+                }
                 return back()->with('success', 'Verification email resent. Please check your inbox.');
             }
         }
@@ -55,6 +74,12 @@ class NewsletterController extends Controller
         // Send verification email
         Mail::to($newsletter->email)->send(new NewsletterVerificationMail($newsletter));
 
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Please check your email to verify your subscription.',
+            ]);
+        }
         return back()->with('success', 'Please check your email to verify your subscription.');
     }
 

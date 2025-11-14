@@ -161,6 +161,57 @@ class ImportNewsArticlesCommandTest extends TestCase
         $this->assertNotNull($post->published_at);
     }
 
+    public function test_handles_limit_option(): void
+    {
+        $filePath = database_path('data/test_small.csv');
+
+        $limit = 5;
+
+        $this->artisan('news:import', [
+            'file' => $filePath,
+            '--limit' => $limit,
+            '--skip-content' => true,
+            '--skip-images' => true,
+            '--user-id' => $this->user->id,
+        ])->assertExitCode(0);
+
+        $this->assertEquals($limit, \App\Models\Post::count());
+    }
+
+    public function test_validates_invalid_limit(): void
+    {
+        $filePath = database_path('data/test_small.csv');
+
+        $this->artisan('news:import', [
+            'file' => $filePath,
+            '--limit' => -1,
+        ])
+            ->expectsOutput('Limit must be a positive integer')
+            ->assertExitCode(1);
+    }
+
+    public function test_fresh_option_resets_database_before_import(): void
+    {
+        // Create an existing post that should be cleared
+        \App\Models\Post::factory()->create();
+
+        $this->assertGreaterThan(0, \App\Models\Post::count());
+
+        $filePath = database_path('data/test_small.csv');
+
+        $this->artisan('news:import', [
+            'file' => $filePath,
+            '--fresh' => true,
+            '--limit' => 3,
+            '--skip-content' => true,
+            '--skip-images' => true,
+            '--user-id' => $this->user->id,
+        ])->assertExitCode(0);
+
+        // Should only have the newly imported posts (3), previous data cleared
+        $this->assertEquals(3, \App\Models\Post::count());
+    }
+
     public function test_handles_user_id_option(): void
     {
         $specificUser = User::factory()->create();

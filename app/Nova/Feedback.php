@@ -42,7 +42,13 @@ class Feedback extends Resource
      */
     public static function authorizedToViewAny(Request $request): bool
     {
-        return $request->user()->can('viewAny', static::$model);
+        $user = $request->user();
+
+        if (! $user) {
+            return false;
+        }
+
+        return $user->can('viewAny', static::$model);
     }
 
     /**
@@ -50,7 +56,13 @@ class Feedback extends Resource
      */
     public function authorizedToView(Request $request): bool
     {
-        return $request->user()->can('view', $this->resource);
+        $user = $request->user();
+
+        if (! $user) {
+            return false;
+        }
+
+        return $user->can('view', $this->resource);
     }
 
     /**
@@ -66,7 +78,13 @@ class Feedback extends Resource
      */
     public function authorizedToUpdate(Request $request): bool
     {
-        return $request->user()->can('update', $this->resource);
+        $user = $request->user();
+
+        if (! $user) {
+            return false;
+        }
+
+        return $user->can('update', $this->resource);
     }
 
     /**
@@ -74,7 +92,13 @@ class Feedback extends Resource
      */
     public function authorizedToDelete(Request $request): bool
     {
-        return $request->user()->can('delete', $this->resource);
+        $user = $request->user();
+
+        if (! $user) {
+            return false;
+        }
+
+        return $user->can('delete', $this->resource);
     }
 
     /**
@@ -120,20 +144,20 @@ class Feedback extends Resource
                 ->default('new')
                 ->displayUsingLabels()
                 ->sortable()
-                ->canSee(fn (NovaRequest $request) => $request->user()->role === 'admin'),
+                ->canSee(fn (NovaRequest $request) => $request->user()?->role === 'admin'),
 
             Textarea::make('Admin Notes')
                 ->nullable()
                 ->alwaysShow()
-                ->canSee(fn (NovaRequest $request) => $request->user()->role === 'admin'),
+                ->canSee(fn (NovaRequest $request) => $request->user()?->role === 'admin'),
 
             BelongsTo::make('Reviewed By', 'reviewer', User::class)
                 ->nullable()
-                ->canSee(fn (NovaRequest $request) => $request->user()->role === 'admin'),
+                ->canSee(fn (NovaRequest $request) => $request->user()?->role === 'admin'),
 
             DateTime::make('Reviewed At')
                 ->nullable()
-                ->canSee(fn (NovaRequest $request) => $request->user()->role === 'admin'),
+                ->canSee(fn (NovaRequest $request) => $request->user()?->role === 'admin'),
 
             DateTime::make('Created At')
                 ->sortable()

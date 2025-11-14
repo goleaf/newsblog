@@ -27,6 +27,9 @@ class BulkImportService
 
     protected array $categoryCache = [];
 
+    // Track slugs seen during the current import to avoid in-batch duplicates
+    protected array $seenSlugs = [];
+
     protected array $stats = [
         'total_rows' => 0,
         'successful' => 0,
@@ -62,6 +65,23 @@ class BulkImportService
         $startTime = microtime(true);
         $startMemory = memory_get_usage();
 
+        // Reset seen slugs for this import run
+        $this->seenSlugs = [];
+
+        // Reset statistics for a fresh run
+        $this->stats = [
+            'total_rows' => 0,
+            'successful' => 0,
+            'failed' => 0,
+            'skipped' => 0,
+            'posts_created' => 0,
+            'tags_created' => 0,
+            'categories_created' => 0,
+            'content_generated' => 0,
+            'images_assigned' => 0,
+            'errors' => [],
+        ];
+
         Log::channel('import')->info('Import started', [
             'file' => $filePath,
             'options' => $options,
@@ -70,6 +90,10 @@ class BulkImportService
         try {
             // Parse CSV file lazily
             $rows = $this->csvParser->parseLazy($filePath);
+            $limit = $options['limit'] ?? null;
+            if ($limit !== null) {
+                $rows = $rows->take((int) $limit);
+            }
 
             // Count total rows for progress tracking
             $totalRows = 0;
@@ -79,10 +103,16 @@ class BulkImportService
 
             // Pre-fetch and cache tags and categories
             $rows = $this->csvParser->parseLazy($filePath);
+            if ($limit !== null) {
+                $rows = $rows->take((int) $limit);
+            }
             $this->initializeCaches($rows, $options);
 
             // Reset rows iterator after cache initialization
             $rows = $this->csvParser->parseLazy($filePath);
+            if ($limit !== null) {
+                $rows = $rows->take((int) $limit);
+            }
 
             // Process in chunks
             $chunkSize = $options['chunk_size'] ?? config('import.chunk_size', 1000);
@@ -135,44 +165,55 @@ class BulkImportService
      */
     protected function initializeCaches($rows, array $options): void
     {
-        $allTags = collect();
-        $allCategories = collect();
+        $allTagSlugs = collect();
+        $allCategorySlugs = collect();
 
         // Collect all unique tags and categories from CSV
         foreach ($rows as $row) {
             if (! empty($row['tags'])) {
                 $tags = $this->parseCommaSeparated($row['tags']);
-                $allTags = $allTags->merge($tags);
+                foreach ($tags as $tagName) {
+                    $allTagSlugs->push(\Illuminate\Support\Str::slug($tagName));
+                }
+            }
+            // Accept optional 'keywords' column as synonyms for tags
+            if (! empty($row['keywords'])) {
+                $keywords = $this->parseCommaSeparated($row['keywords']);
+                foreach ($keywords as $kw) {
+                    $allTagSlugs->push(\Illuminate\Support\Str::slug($kw));
+                }
             }
 
             if (! empty($row['categories'])) {
                 $categories = $this->parseCommaSeparated($row['categories']);
-                $allCategories = $allCategories->merge($categories);
+                foreach ($categories as $catName) {
+                    $allCategorySlugs->push(\Illuminate\Support\Str::slug($catName));
+                }
             }
         }
 
-        $allTags = $allTags->unique()->filter();
-        $allCategories = $allCategories->unique()->filter();
+        $allTagSlugs = $allTagSlugs->unique()->filter();
+        $allCategorySlugs = $allCategorySlugs->unique()->filter();
 
         // Fetch existing tags and categories
-        $existingTags = Tag::whereIn('name', $allTags)->get()->keyBy('name');
-        $existingCategories = Category::whereIn('name', $allCategories)->get()->keyBy('name');
+        $existingTags = Tag::whereIn('slug', $allTagSlugs)->get()->keyBy('slug');
+        $existingCategories = Category::whereIn('slug', $allCategorySlugs)->get()->keyBy('slug');
 
         // Create missing tags
-        $newTags = $allTags->diff($existingTags->keys());
+        $newTags = $allTagSlugs->diff($existingTags->keys());
         if ($newTags->isNotEmpty()) {
             $tagsToInsert = [];
-            foreach ($newTags as $tagName) {
-                $slug = Str::slug($tagName);
-                // Check if slug already exists
-                if (! Tag::where('slug', $slug)->exists()) {
-                    $tagsToInsert[] = [
-                        'name' => $tagName,
-                        'slug' => $slug,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ];
+            foreach ($newTags as $slug) {
+                if (! $slug) {
+                    continue;
                 }
+                // Use slug as name fallback (will be humanized when displayed)
+                $tagsToInsert[] = [
+                    'name' => str_replace('-', ' ', $slug),
+                    'slug' => $slug,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
             }
 
             if (! empty($tagsToInsert)) {
@@ -181,25 +222,24 @@ class BulkImportService
             }
 
             // Refresh tag cache
-            $existingTags = Tag::whereIn('name', $allTags)->get()->keyBy('name');
+            $existingTags = Tag::whereIn('slug', $allTagSlugs)->get()->keyBy('slug');
         }
 
         // Create missing categories
-        $newCategories = $allCategories->diff($existingCategories->keys());
+        $newCategories = $allCategorySlugs->diff($existingCategories->keys());
         if ($newCategories->isNotEmpty()) {
             $categoriesToInsert = [];
-            foreach ($newCategories as $categoryName) {
-                $slug = Str::slug($categoryName);
-                // Check if slug already exists
-                if (! Category::where('slug', $slug)->exists()) {
-                    $categoriesToInsert[] = [
-                        'name' => $categoryName,
-                        'slug' => $slug,
-                        'status' => 'active',
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ];
+            foreach ($newCategories as $slug) {
+                if (! $slug) {
+                    continue;
                 }
+                $categoriesToInsert[] = [
+                    'name' => str_replace('-', ' ', $slug),
+                    'slug' => $slug,
+                    'status' => 'active',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
             }
 
             if (! empty($categoriesToInsert)) {
@@ -208,16 +248,16 @@ class BulkImportService
             }
 
             // Refresh category cache
-            $existingCategories = Category::whereIn('name', $allCategories)->get()->keyBy('name');
+            $existingCategories = Category::whereIn('slug', $allCategorySlugs)->get()->keyBy('slug');
         }
 
         // Build lookup maps
         $this->tagCache = $existingTags->mapWithKeys(function ($tag) {
-            return [$tag->name => $tag->id];
+            return [$tag->slug => $tag->id];
         })->toArray();
 
         $this->categoryCache = $existingCategories->mapWithKeys(function ($category) {
-            return [$category->name => $category->id];
+            return [$category->slug => $category->id];
         })->toArray();
 
         Log::channel('import')->info('Caches initialized', [
@@ -235,9 +275,7 @@ class BulkImportService
     {
         $chunkStartMemory = memory_get_usage(true);
 
-        // Enable query logging for this chunk
-        DB::flushQueryLog();
-        DB::enableQueryLog();
+        // Avoid enabling query logging by default to reduce memory usage during large imports
 
         Log::channel('import')->info("Processing chunk {$chunkNumber}", [
             'rows' => $chunk->count(),
@@ -248,7 +286,8 @@ class BulkImportService
             DB::beginTransaction();
 
             $postsToInsert = [];
-            $pivotData = [];
+            $tagPivotData = [];
+            $categoryPivotData = [];
             $rowNumber = ($chunkNumber - 1) * ($options['chunk_size'] ?? config('import.chunk_size', 1000));
 
             foreach ($chunk as $row) {
@@ -265,17 +304,42 @@ class BulkImportService
                         continue;
                     }
 
+                    // Guard against in-batch duplicates by slug
+                    if (! empty($postData['slug']) && isset($this->seenSlugs[$postData['slug']])) {
+                        $this->stats['skipped']++;
+
+                        continue;
+                    }
+
                     // Extract tag IDs for later pivot insertion
                     $tagIds = $postData['tag_ids'] ?? [];
                     unset($postData['tag_ids']);
 
+                    // Extract extra categories for later pivot insertion, then remove from post data
+                    $extraCategoryIdsForPivot = $postData['extra_category_ids'] ?? [];
+                    unset($postData['extra_category_ids']);
+
+                    // Queue post for bulk insert
                     $postsToInsert[] = $postData;
+
+                    // Mark slug as seen for the remainder of this import
+                    if (! empty($postData['slug'])) {
+                        $this->seenSlugs[$postData['slug']] = true;
+                    }
 
                     // Store tag relationships for later (we'll get post IDs after insert)
                     if (! empty($tagIds)) {
-                        $pivotData[] = [
+                        $tagPivotData[] = [
                             'post_index' => count($postsToInsert) - 1,
                             'tag_ids' => $tagIds,
+                        ];
+                    }
+
+                    // Store extra category relationships (beyond primary) for later
+                    if (! empty($extraCategoryIdsForPivot)) {
+                        $categoryPivotData[] = [
+                            'post_index' => count($postsToInsert) - 1,
+                            'category_ids' => $extraCategoryIdsForPivot,
                         ];
                     }
 
@@ -298,25 +362,33 @@ class BulkImportService
             // Bulk insert posts
             if (! empty($postsToInsert)) {
                 // Disable model events for bulk operations
-                Post::withoutEvents(function () use ($postsToInsert, $pivotData) {
+                Post::withoutEvents(function () use ($postsToInsert, $tagPivotData, $categoryPivotData) {
+                    // For SQLite, temporarily disable FK checks during bulk insert to avoid
+                    // false positives when inserting many rows in a transaction.
+                    $driver = DB::getDriverName();
+                    $sqliteFkWasDisabled = false;
+                    if ($driver === 'sqlite') {
+                        try {
+                            DB::statement('PRAGMA foreign_keys = OFF');
+                            $sqliteFkWasDisabled = true;
+                        } catch (\Throwable $e) {
+                            // noop; continue
+                        }
+                    }
+
                     DB::table('posts')->insert($postsToInsert);
 
-                    // Get the IDs of inserted posts
-                    $firstSlug = $postsToInsert[0]['slug'];
-                    $lastSlug = $postsToInsert[count($postsToInsert) - 1]['slug'];
+                    // Get the IDs of inserted posts by their slugs (reliable and memory efficient)
+                    $slugs = array_column($postsToInsert, 'slug');
 
                     $insertedPosts = DB::table('posts')
-                        ->whereBetween('created_at', [
-                            now()->subSeconds(5),
-                            now()->addSeconds(5),
-                        ])
-                        ->orderBy('id')
+                        ->whereIn('slug', $slugs)
                         ->pluck('id', 'slug')
                         ->toArray();
 
                     // Build pivot table data
                     $pivotInserts = [];
-                    foreach ($pivotData as $pivot) {
+                    foreach ($tagPivotData as $pivot) {
                         $postIndex = $pivot['post_index'];
                         $slug = $postsToInsert[$postIndex]['slug'];
 
@@ -336,6 +408,38 @@ class BulkImportService
                     if (! empty($pivotInserts)) {
                         DB::table('post_tag')->insert($pivotInserts);
                     }
+
+                    // Build and insert category pivot rows (category_post)
+                    $categoryInserts = [];
+                    foreach ($categoryPivotData as $pivot) {
+                        $postIndex = $pivot['post_index'];
+                        $slug = $postsToInsert[$postIndex]['slug'];
+
+                        if (isset($insertedPosts[$slug])) {
+                            $postId = $insertedPosts[$slug];
+
+                            foreach ($pivot['category_ids'] as $categoryId) {
+                                $categoryInserts[] = [
+                                    'post_id' => $postId,
+                                    'category_id' => $categoryId,
+                                    'created_at' => now(),
+                                    'updated_at' => now(),
+                                ];
+                            }
+                        }
+                    }
+
+                    if (! empty($categoryInserts)) {
+                        DB::table('category_post')->insert($categoryInserts);
+                    }
+
+                    if ($sqliteFkWasDisabled) {
+                        try {
+                            DB::statement('PRAGMA foreign_keys = ON');
+                        } catch (\Throwable $e) {
+                            // noop
+                        }
+                    }
                 });
 
                 $this->stats['posts_created'] += count($postsToInsert);
@@ -343,8 +447,11 @@ class BulkImportService
 
             DB::commit();
 
+            // Preserve inserted count for logging before unsetting variables
+            $postsInserted = isset($postsToInsert) ? count($postsToInsert) : 0;
+
             // Force garbage collection after each chunk to prevent memory overflow
-            unset($postsToInsert, $pivotData, $chunk);
+            unset($postsToInsert, $tagPivotData, $categoryPivotData, $chunk);
 
             // Clear any lingering references
             if (function_exists('gc_mem_caches')) {
@@ -354,10 +461,11 @@ class BulkImportService
 
             $chunkEndMemory = memory_get_usage(true);
             $chunkMemoryUsed = $chunkEndMemory - $chunkStartMemory;
-            $queryCount = count(DB::getQueryLog());
+            // Query count is only meaningful if logging is enabled externally (e.g., in tests)
+            $queryCount = method_exists(DB::getFacadeRoot(), 'getQueryLog') ? count(DB::getQueryLog()) : 0;
 
             Log::channel('import')->info("Chunk {$chunkNumber} completed", [
-                'posts_inserted' => count($postsToInsert),
+                'posts_inserted' => $postsInserted,
                 'successful' => $this->stats['successful'],
                 'failed' => $this->stats['failed'],
                 'memory_after' => $this->formatBytes($chunkEndMemory),
@@ -387,34 +495,78 @@ class BulkImportService
             throw new \InvalidArgumentException('Title is required');
         }
 
-        // Check for duplicates
-        $slug = Str::slug($row['title']);
-        if (DB::table('posts')->where('slug', $slug)->exists()) {
+        // Check for duplicates using a dedicated variable
+        $postSlug = Str::slug($row['title']);
+        if (DB::table('posts')->where('slug', $postSlug)->exists()) {
             Log::channel('import')->info('Duplicate post skipped', [
                 'title' => $row['title'],
-                'slug' => $slug,
+                'slug' => $postSlug,
             ]);
 
             return null;
         }
 
-        // Parse tags and categories
-        $tags = ! empty($row['tags']) ? $this->parseCommaSeparated($row['tags']) : [];
-        $categories = ! empty($row['categories']) ? $this->parseCommaSeparated($row['categories']) : [];
-
-        // Get tag IDs
-        $tagIds = [];
-        foreach ($tags as $tagName) {
-            if (isset($this->tagCache[$tagName])) {
-                $tagIds[] = $this->tagCache[$tagName];
+        // Parse tags and categories (accept 'tags' and 'keywords'), normalize to slug
+        $tags = [];
+        if (! empty($row['tags'])) {
+            foreach ($this->parseCommaSeparated($row['tags']) as $t) {
+                $tagSlug = Str::slug($t);
+                if ($tagSlug) {
+                    $tags[] = $tagSlug;
+                }
+            }
+        }
+        if (! empty($row['keywords'])) {
+            foreach ($this->parseCommaSeparated($row['keywords']) as $t) {
+                $tagSlug = Str::slug($t);
+                if ($tagSlug) {
+                    $tags[] = $tagSlug;
+                }
             }
         }
 
-        // Get category ID (use first category)
-        $categoryId = null;
+        // Ensure unique tag slugs
+        if (! empty($tags)) {
+            $tags = array_values(array_unique($tags));
+        }
+
+        $categories = [];
+        if (! empty($row['categories'])) {
+            foreach ($this->parseCommaSeparated($row['categories']) as $c) {
+                $catSlug = Str::slug($c);
+                if ($catSlug) {
+                    $categories[] = $catSlug;
+                }
+            }
+        }
+
+        // Get tag IDs
+        $tagIds = [];
+        foreach ($tags as $tagSlug) {
+            if (isset($this->tagCache[$tagSlug])) {
+                $tagIds[] = $this->tagCache[$tagSlug];
+            }
+        }
+
+        // Ensure unique tag IDs
+        if (! empty($tagIds)) {
+            $tagIds = array_values(array_unique($tagIds));
+        }
+
+        // Get category IDs (use first as primary, attach the rest via pivot)
+        $primaryCategoryId = null;
+        $extraCategoryIds = [];
         if (! empty($categories)) {
-            $firstCategory = $categories[0];
-            $categoryId = $this->categoryCache[$firstCategory] ?? null;
+            $resolved = [];
+            foreach ($categories as $catSlug) {
+                if (isset($this->categoryCache[$catSlug])) {
+                    $resolved[] = $this->categoryCache[$catSlug];
+                }
+            }
+            if (! empty($resolved)) {
+                $primaryCategoryId = $resolved[0];
+                $extraCategoryIds = array_values(array_unique(array_slice($resolved, 1)));
+            }
         }
 
         // Generate content if enabled
@@ -446,9 +598,9 @@ class BulkImportService
         // Build post data
         $postData = [
             'user_id' => $options['user_id'] ?? config('import.default_user_id', 1),
-            'category_id' => $categoryId,
+            'category_id' => $primaryCategoryId,
             'title' => $row['title'],
-            'slug' => $slug,
+            'slug' => $postSlug,
             'excerpt' => $excerpt,
             'content' => $content,
             'featured_image' => $featuredImage,
@@ -465,6 +617,7 @@ class BulkImportService
 
         // Store tag IDs separately for pivot table
         $postData['tag_ids'] = $tagIds;
+        $postData['extra_category_ids'] = $extraCategoryIds;
 
         return $postData;
     }

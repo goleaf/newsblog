@@ -1,7 +1,21 @@
-@props(['post', 'title' => 'Share this post'])
+@props(['post', 'title' => null])
 
-<div x-data="sharePost()" class="border-t border-gray-200 dark:border-gray-700 pt-6">
-    <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-4">{{ $title }}</h3>
+@php
+    $shareExcerpt = $post->excerpt
+        ? \Illuminate\Support\Str::limit($post->excerpt, 100)
+        : \Illuminate\Support\Str::limit(strip_tags($post->content), 100);
+@endphp
+
+<div 
+    x-data="sharePost({
+        url: @js(route('post.show', $post->slug)),
+        title: @js($post->title),
+        text: @js($shareExcerpt),
+        copyErrorMessage: @js(__('post.copy_link_error'))
+    })" 
+    class="border-t border-gray-200 dark:border-gray-700 pt-6"
+>
+    <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-4">{{ $title ?? __('post.share_this_post') }}</h3>
     <div class="flex items-center gap-3">
         <!-- Facebook Share -->
         <button 
@@ -71,98 +85,6 @@
         role="status"
         aria-live="polite"
     >
-        ✓ Link copied to clipboard!
+        {{ __('post.link_copied') }}
     </div>
 </div>
-
-<script>
-function sharePost() {
-    return {
-        copied: false,
-        canShare: false,
-        url: '{{ route('post.show', $post->slug) }}',
-        title: '{{ addslashes($post->title) }}',
-        text: '{{ addslashes($post->excerpt ? Str::limit($post->excerpt, 100) : Str::limit(strip_tags($post->content), 100)) }}',
-        
-        init() {
-            // Check if Web Share API is supported
-            this.canShare = navigator.share !== undefined;
-        },
-        
-        shareOnFacebook() {
-            const url = encodeURIComponent(this.url);
-            window.open(
-                `https://www.facebook.com/sharer/sharer.php?u=${url}`,
-                '_blank',
-                'width=600,height=400,noopener,noreferrer'
-            );
-        },
-        
-        shareOnTwitter() {
-            const url = encodeURIComponent(this.url);
-            const text = encodeURIComponent(this.title);
-            window.open(
-                `https://twitter.com/intent/tweet?url=${url}&text=${text}`,
-                '_blank',
-                'width=600,height=400,noopener,noreferrer'
-            );
-        },
-        
-        async copyLink() {
-            try {
-                // Try modern Clipboard API first
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    await navigator.clipboard.writeText(this.url);
-                } else {
-                    // Fallback for older browsers
-                    this.fallbackCopyToClipboard(this.url);
-                }
-                
-                this.copied = true;
-                
-                // Reset after 3 seconds
-                setTimeout(() => {
-                    this.copied = false;
-                }, 3000);
-            } catch (err) {
-                console.error('Failed to copy link:', err);
-                alert('Failed to copy link. Please copy manually: ' + this.url);
-            }
-        },
-        
-        fallbackCopyToClipboard(text) {
-            const textArea = document.createElement('textarea');
-            textArea.value = text;
-            textArea.style.position = 'fixed';
-            textArea.style.left = '-999999px';
-            textArea.style.top = '-999999px';
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
-            
-            try {
-                document.execCommand('copy');
-            } catch (err) {
-                throw new Error('Fallback copy failed');
-            }
-            
-            document.body.removeChild(textArea);
-        },
-        
-        async nativeShare() {
-            try {
-                await navigator.share({
-                    title: this.title,
-                    text: this.text,
-                    url: this.url
-                });
-            } catch (err) {
-                // User cancelled or share failed
-                if (err.name !== 'AbortError') {
-                    console.error('Share failed:', err);
-                }
-            }
-        }
-    }
-}
-</script>

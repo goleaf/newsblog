@@ -33,35 +33,9 @@ Route::post('/newsletter/subscribe', [\App\Http\Controllers\NewsletterController
 Route::get('/newsletter/verify/{token}', [\App\Http\Controllers\NewsletterController::class, 'verify'])->name('newsletter.verify');
 Route::get('/newsletter/unsubscribe/{token}', [\App\Http\Controllers\NewsletterController::class, 'unsubscribe'])->name('newsletter.unsubscribe');
 
-Route::get('/dashboard', function () {
-    $searchStats = null;
-    $metrics = null;
-
-    // Load search stats and metrics for admin/editor users
-    $user = auth()->user();
-    if ($user && ($user->isAdmin() || $user->isEditor())) {
-        $searchStats = [
-            'recent_searches' => \App\Models\SearchLog::with('user')
-                ->latest()
-                ->limit(5)
-                ->get(),
-            'popular_queries' => \App\Models\SearchLog::query()
-                ->select('query', \Illuminate\Support\Facades\DB::raw('COUNT(*) as count'))
-                ->where('created_at', '>=', now()->subDays(7))
-                ->groupBy('query')
-                ->orderByDesc('count')
-                ->limit(5)
-                ->get(),
-            'total_today' => \App\Models\SearchLog::whereDate('created_at', today())->count(),
-        ];
-
-        // Get dashboard metrics
-        $dashboardService = app(\App\Services\DashboardService::class);
-        $metrics = $dashboardService->getMetrics();
-    }
-
-    return view('dashboard', compact('searchStats', 'metrics'));
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 // GDPR routes
 Route::get('/privacy-policy', [\App\Http\Controllers\GdprController::class, 'privacyPolicy'])->name('gdpr.privacy-policy');
@@ -69,13 +43,22 @@ Route::post('/gdpr/accept-consent', [\App\Http\Controllers\GdprController::class
 Route::post('/gdpr/decline-consent', [\App\Http\Controllers\GdprController::class, 'declineConsent'])->name('gdpr.decline-consent');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::patch('/profile/email-preferences', [ProfileController::class, 'updateEmailPreferences'])->name('profile.email-preferences');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Bookmarks
     Route::get('/bookmarks', [\App\Http\Controllers\BookmarkController::class, 'index'])->name('bookmarks.index');
     Route::post('/posts/{post}/bookmark', [\App\Http\Controllers\BookmarkController::class, 'toggle'])->name('bookmarks.toggle');
+
+    // Notifications
+    Route::get('/notifications', [\App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('/notifications/unread', [\App\Http\Controllers\NotificationController::class, 'unread'])->name('notifications.unread');
+    Route::post('/notifications/{notification}/read', [\App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('/notifications/read-all', [\App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
+    Route::delete('/notifications/{notification}', [\App\Http\Controllers\NotificationController::class, 'destroy'])->name('notifications.destroy');
 
     // GDPR authenticated routes
     Route::get('/gdpr/export-data', [\App\Http\Controllers\GdprController::class, 'exportData'])->name('gdpr.export-data');

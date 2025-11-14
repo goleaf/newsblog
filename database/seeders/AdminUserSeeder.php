@@ -13,13 +13,19 @@ class AdminUserSeeder extends Seeder
      */
     public function run(): void
     {
+        $email = (string) config('seeding.admin.email', 'admin@admin.com');
+        $name = (string) config('seeding.admin.name', 'Admin User');
+        $password = (string) config('seeding.admin.password', 'password123');
+        $role = (string) config('seeding.admin.role', 'admin');
+        $status = (string) config('seeding.admin.status', 'active');
+
         User::firstOrCreate(
-            ['email' => 'admin@admin.com'],
+            ['email' => $email],
             [
-                'name' => 'Admin User',
-                'password' => Hash::make('password123'),
-                'role' => 'admin',
-                'status' => 'active',
+                'name' => $name,
+                'password' => Hash::make($password),
+                'role' => $role,
+                'status' => $status,
             ]
         );
     }

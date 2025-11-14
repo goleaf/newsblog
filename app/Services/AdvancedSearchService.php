@@ -23,7 +23,7 @@ class AdvancedSearchService
      * - Filter combination with AND logic
      *
      * @param  string  $query  The search query
-     * @param  array  $filters  Advanced filters (date_from, date_to, author, category, tags)
+     * @param  array  $filters  Advanced filters (date_from, date_to, author, category, tags, sort)
      * @param  int  $perPage  Results per page (default: 15)
      */
     public function search(string $query, array $filters = [], int $perPage = 15): LengthAwarePaginator
@@ -92,23 +92,47 @@ class AdvancedSearchService
             }
         }
 
-        // Relevance-based sorting (exact title matches first)
-        if (! empty($query)) {
-            $queryBuilder->orderByRaw('
-                CASE 
-                    WHEN title LIKE ? THEN 1
-                    WHEN title LIKE ? THEN 2
-                    WHEN excerpt LIKE ? THEN 3
-                    ELSE 4
-                END
-            ', [
-                $query, // Exact match
-                "%{$query}%", // Contains match
-                "%{$query}%", // Excerpt match
-            ]);
-        }
+        // Apply sorting (Requirement 5.2, 14.3)
+        $sort = $filters['sort'] ?? 'newest';
 
-        $queryBuilder->latest('published_at');
+        switch ($sort) {
+            case 'oldest':
+                $queryBuilder->oldest('published_at');
+                break;
+
+            case 'popular':
+                $queryBuilder->orderByDesc('view_count');
+                break;
+
+            case 'trending':
+                // Trending: high views in recent period + reactions
+                $queryBuilder->orderByRaw('(view_count * 0.7 + COALESCE((SELECT COUNT(*) FROM reactions WHERE reactions.post_id = posts.id), 0) * 0.3) DESC');
+                break;
+
+            case 'relevant':
+                // Relevance-based sorting (exact title matches first)
+                if (! empty($query)) {
+                    $queryBuilder->orderByRaw('
+                        CASE 
+                            WHEN title LIKE ? THEN 1
+                            WHEN title LIKE ? THEN 2
+                            WHEN excerpt LIKE ? THEN 3
+                            ELSE 4
+                        END
+                    ', [
+                        $query, // Exact match
+                        "%{$query}%", // Contains match
+                        "%{$query}%", // Excerpt match
+                    ]);
+                }
+                $queryBuilder->latest('published_at');
+                break;
+
+            case 'newest':
+            default:
+                $queryBuilder->latest('published_at');
+                break;
+        }
 
         return $queryBuilder;
     }

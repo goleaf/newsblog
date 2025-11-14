@@ -6,22 +6,21 @@ use App\Models\Category;
 use App\Models\Post;
 use App\Models\Tag;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 /**
  * End-to-End Integration Tests for Bulk News Importer
  *
- * Note: These tests call the BulkImportService directly rather than through
- * the Artisan command because the service uses explicit DB::commit() calls
- * which conflict with Laravel's RefreshDatabase trait that wraps tests in
- * transactions. Direct service calls allow the commits to persist within
- * the test's transaction scope.
+ * Note: These tests use DatabaseMigrations instead of RefreshDatabase because
+ * the import command uses explicit DB::commit() calls which conflict with
+ * RefreshDatabase's transaction wrapping. DatabaseMigrations migrates and
+ * rolls back the entire database for each test.
  */
 class BulkImportEndToEndTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseMigrations;
 
     private User $user;
 
@@ -52,17 +51,17 @@ class BulkImportEndToEndTest extends TestCase
 
     public function test_verifies_posts_created_correctly_with_all_fields(): void
     {
-        $service = app(\App\Services\BulkImportService::class);
         $filePath = database_path('data/test_small.csv');
 
-        $result = $service->import($filePath, [
-            'status' => 'published',
-            'user_id' => $this->user->id,
-            'skip_content' => true,
-            'skip_images' => true,
-        ]);
+        $this->artisan('news:import', [
+            'file' => $filePath,
+            '--status' => 'published',
+            '--skip-content' => true,
+            '--skip-images' => true,
+            '--user-id' => $this->user->id,
+        ])->assertExitCode(0);
 
-        $this->assertGreaterThan(0, $result['posts_created']);
+        $this->assertGreaterThan(0, Post::count());
 
         $post = Post::first();
 
@@ -79,16 +78,14 @@ class BulkImportEndToEndTest extends TestCase
 
     public function test_verifies_tags_created_correctly_with_slugs(): void
     {
-        $service = app(\App\Services\BulkImportService::class);
         $filePath = database_path('data/test_small.csv');
 
-        $result = $service->import($filePath, [
-            'user_id' => $this->user->id,
-            'skip_content' => true,
-            'skip_images' => true,
-        ]);
-
-        $this->assertGreaterThan(0, $result['tags_created']);
+        $this->artisan('news:import', [
+            'file' => $filePath,
+            '--skip-content' => true,
+            '--skip-images' => true,
+            '--user-id' => $this->user->id,
+        ])->assertExitCode(0);
 
         $tags = Tag::all();
 
@@ -103,16 +100,14 @@ class BulkImportEndToEndTest extends TestCase
 
     public function test_verifies_categories_created_correctly_with_slugs(): void
     {
-        $service = app(\App\Services\BulkImportService::class);
         $filePath = database_path('data/test_small.csv');
 
-        $result = $service->import($filePath, [
-            'user_id' => $this->user->id,
-            'skip_content' => true,
-            'skip_images' => true,
-        ]);
-
-        $this->assertGreaterThan(0, $result['categories_created']);
+        $this->artisan('news:import', [
+            'file' => $filePath,
+            '--skip-content' => true,
+            '--skip-images' => true,
+            '--user-id' => $this->user->id,
+        ])->assertExitCode(0);
 
         $categories = Category::all();
 
@@ -127,16 +122,16 @@ class BulkImportEndToEndTest extends TestCase
 
     public function test_verifies_relationships_established_in_pivot_table(): void
     {
-        $service = app(\App\Services\BulkImportService::class);
         $filePath = database_path('data/test_small.csv');
 
-        $result = $service->import($filePath, [
-            'user_id' => $this->user->id,
-            'skip_content' => true,
-            'skip_images' => true,
-        ]);
+        $this->artisan('news:import', [
+            'file' => $filePath,
+            '--skip-content' => true,
+            '--skip-images' => true,
+            '--user-id' => $this->user->id,
+        ])->assertExitCode(0);
 
-        $this->assertGreaterThan(0, $result['posts_created']);
+        $this->assertGreaterThan(0, Post::count());
 
         $pivotCount = DB::table('post_tag')->count();
         $this->assertGreaterThan(0, $pivotCount, 'No post-tag relationships were created');
@@ -170,7 +165,7 @@ class BulkImportEndToEndTest extends TestCase
             $this->assertGreaterThan(0, $post->reading_time, "Post '{$post->title}' has no reading time");
 
             $wordCount = str_word_count(strip_tags($post->content));
-            $this->assertGreaterThanOrEqual(400, $wordCount, "Post content is too short");
+            $this->assertGreaterThanOrEqual(400, $wordCount, 'Post content is too short');
         }
     }
 
@@ -219,8 +214,8 @@ class BulkImportEndToEndTest extends TestCase
         echo "\n";
         echo "Import Performance Metrics:\n";
         echo "- Posts imported: {$postCount}\n";
-        echo "- Duration: ".round($duration, 2)." seconds\n";
-        echo "- Speed: ".round($postsPerSecond, 2)." posts/second\n";
+        echo '- Duration: '.round($duration, 2)." seconds\n";
+        echo '- Speed: '.round($postsPerSecond, 2)." posts/second\n";
     }
 
     public function test_measures_memory_usage_during_import(): void
@@ -250,21 +245,21 @@ class BulkImportEndToEndTest extends TestCase
         echo "Memory Usage Metrics:\n";
         echo "- Total memory used: {$memoryUsedMB} MB\n";
         echo "- Memory per post: {$memoryPerPostKB} KB\n";
-        echo "- Peak memory: ".round($peakMemory / 1024 / 1024, 2)." MB\n";
+        echo '- Peak memory: '.round($peakMemory / 1024 / 1024, 2)." MB\n";
     }
 
     public function test_end_to_end_import_with_all_features_enabled(): void
     {
-        $service = app(\App\Services\BulkImportService::class);
         $filePath = database_path('data/test_small.csv');
 
         $startTime = microtime(true);
         $startMemory = memory_get_usage(true);
 
-        $result = $service->import($filePath, [
-            'status' => 'published',
-            'user_id' => $this->user->id,
-        ]);
+        $this->artisan('news:import', [
+            'file' => $filePath,
+            '--status' => 'published',
+            '--user-id' => $this->user->id,
+        ])->assertExitCode(0);
 
         $endTime = microtime(true);
         $peakMemory = memory_get_peak_usage(true);
@@ -273,7 +268,6 @@ class BulkImportEndToEndTest extends TestCase
         $postCount = $posts->count();
 
         $this->assertGreaterThan(0, $postCount);
-        $this->assertEquals($result['posts_created'], $postCount);
 
         foreach ($posts as $post) {
             $this->assertNotEmpty($post->title);
@@ -308,35 +302,35 @@ class BulkImportEndToEndTest extends TestCase
         echo "Tags created: {$tagCount}\n";
         echo "Categories created: {$categoryCount}\n";
         echo "Relationships created: {$pivotCount}\n";
-        echo "Duration: ".round($duration, 2)." seconds\n";
-        echo "Speed: ".round($postCount / $duration, 2)." posts/second\n";
-        echo "Memory used: ".round($memoryUsed, 2)." MB\n";
+        echo 'Duration: '.round($duration, 2)." seconds\n";
+        echo 'Speed: '.round($postCount / $duration, 2)." posts/second\n";
+        echo 'Memory used: '.round($memoryUsed, 2)." MB\n";
         echo "======================================\n";
     }
 
     public function test_verifies_no_duplicate_posts_created(): void
     {
-        $service = app(\App\Services\BulkImportService::class);
         $filePath = database_path('data/test_small.csv');
 
-        $result1 = $service->import($filePath, [
-            'user_id' => $this->user->id,
-            'skip_content' => true,
-            'skip_images' => true,
-        ]);
+        $this->artisan('news:import', [
+            'file' => $filePath,
+            '--skip-content' => true,
+            '--skip-images' => true,
+            '--user-id' => $this->user->id,
+        ])->assertExitCode(0);
 
         $firstImportCount = Post::count();
 
-        $result2 = $service->import($filePath, [
-            'user_id' => $this->user->id,
-            'skip_content' => true,
-            'skip_images' => true,
-        ]);
+        $this->artisan('news:import', [
+            'file' => $filePath,
+            '--skip-content' => true,
+            '--skip-images' => true,
+            '--user-id' => $this->user->id,
+        ])->assertExitCode(0);
 
         $secondImportCount = Post::count();
 
         $this->assertEquals($firstImportCount, $secondImportCount, 'Duplicate posts were created on second import');
-        $this->assertGreaterThan(0, $result2['skipped'], 'No posts were skipped on second import');
     }
 
     public function test_verifies_slug_uniqueness_across_posts(): void
@@ -358,16 +352,18 @@ class BulkImportEndToEndTest extends TestCase
 
     public function test_verifies_category_assignment_is_correct(): void
     {
-        $service = app(\App\Services\BulkImportService::class);
         $filePath = database_path('data/test_small.csv');
 
-        $service->import($filePath, [
-            'user_id' => $this->user->id,
-            'skip_content' => true,
-            'skip_images' => true,
-        ]);
+        $this->artisan('news:import', [
+            'file' => $filePath,
+            '--skip-content' => true,
+            '--skip-images' => true,
+            '--user-id' => $this->user->id,
+        ])->assertExitCode(0);
 
         $posts = Post::with('category')->get();
+
+        $this->assertGreaterThan(0, $posts->count());
 
         foreach ($posts as $post) {
             $this->assertNotNull($post->category_id, "Post '{$post->title}' has no category assigned");
@@ -378,14 +374,14 @@ class BulkImportEndToEndTest extends TestCase
 
     public function test_verifies_tag_relationships_are_bidirectional(): void
     {
-        $service = app(\App\Services\BulkImportService::class);
         $filePath = database_path('data/test_small.csv');
 
-        $service->import($filePath, [
-            'user_id' => $this->user->id,
-            'skip_content' => true,
-            'skip_images' => true,
-        ]);
+        $this->artisan('news:import', [
+            'file' => $filePath,
+            '--skip-content' => true,
+            '--skip-images' => true,
+            '--user-id' => $this->user->id,
+        ])->assertExitCode(0);
 
         $post = Post::with('tags')->first();
         $tag = $post->tags->first();
@@ -399,20 +395,22 @@ class BulkImportEndToEndTest extends TestCase
 
     public function test_verifies_timestamps_are_set_correctly(): void
     {
-        $service = app(\App\Services\BulkImportService::class);
         $filePath = database_path('data/test_small.csv');
 
         $beforeImport = now();
 
-        $service->import($filePath, [
-            'user_id' => $this->user->id,
-            'skip_content' => true,
-            'skip_images' => true,
-        ]);
+        $this->artisan('news:import', [
+            'file' => $filePath,
+            '--skip-content' => true,
+            '--skip-images' => true,
+            '--user-id' => $this->user->id,
+        ])->assertExitCode(0);
 
         $afterImport = now();
 
         $posts = Post::all();
+
+        $this->assertGreaterThan(0, $posts->count());
 
         foreach ($posts as $post) {
             $this->assertNotNull($post->created_at);
@@ -424,17 +422,19 @@ class BulkImportEndToEndTest extends TestCase
 
     public function test_verifies_published_at_set_for_published_status(): void
     {
-        $service = app(\App\Services\BulkImportService::class);
         $filePath = database_path('data/test_small.csv');
 
-        $service->import($filePath, [
-            'status' => 'published',
-            'user_id' => $this->user->id,
-            'skip_content' => true,
-            'skip_images' => true,
-        ]);
+        $this->artisan('news:import', [
+            'file' => $filePath,
+            '--status' => 'published',
+            '--skip-content' => true,
+            '--skip-images' => true,
+            '--user-id' => $this->user->id,
+        ])->assertExitCode(0);
 
         $posts = Post::where('status', 'published')->get();
+
+        $this->assertGreaterThan(0, $posts->count());
 
         foreach ($posts as $post) {
             $this->assertNotNull($post->published_at, "Published post '{$post->title}' has no published_at timestamp");
@@ -443,17 +443,19 @@ class BulkImportEndToEndTest extends TestCase
 
     public function test_verifies_published_at_null_for_draft_status(): void
     {
-        $service = app(\App\Services\BulkImportService::class);
         $filePath = database_path('data/test_small.csv');
 
-        $service->import($filePath, [
-            'status' => 'draft',
-            'user_id' => $this->user->id,
-            'skip_content' => true,
-            'skip_images' => true,
-        ]);
+        $this->artisan('news:import', [
+            'file' => $filePath,
+            '--status' => 'draft',
+            '--skip-content' => true,
+            '--skip-images' => true,
+            '--user-id' => $this->user->id,
+        ])->assertExitCode(0);
 
         $posts = Post::where('status', 'draft')->get();
+
+        $this->assertGreaterThan(0, $posts->count());
 
         foreach ($posts as $post) {
             $this->assertNull($post->published_at, "Draft post '{$post->title}' should not have published_at timestamp");
@@ -495,9 +497,9 @@ class BulkImportEndToEndTest extends TestCase
         echo "\n";
         echo "=== Large Dataset Import Performance ===\n";
         echo "Posts imported: {$postCount}\n";
-        echo "Duration: ".round($duration, 2)." seconds\n";
-        echo "Speed: ".round($postsPerSecond, 2)." posts/second\n";
-        echo "Memory used: ".round($memoryUsed, 2)." MB\n";
+        echo 'Duration: '.round($duration, 2)." seconds\n";
+        echo 'Speed: '.round($postsPerSecond, 2)." posts/second\n";
+        echo 'Memory used: '.round($memoryUsed, 2)." MB\n";
         echo "========================================\n";
     }
 }

@@ -1,0 +1,22 @@
+{
+    "breadcrumbs.home": "Home",
+    "post.share_this_post": "Share this post",
+    "post.copy_link_error": "Failed to copy link. Please copy manually:",
+    "post.link_copied": "\u2713 Link copied to clipboard!",
+    "post.views": ":count views",
+    "post.reactions": "Reactions",
+    "post.reaction_error": "We could not record your reaction. Please try again.",
+    "post.related_posts": "Related Posts",
+    "post.comments_count": "Comments (:count)",
+    "post.no_comments": "No comments yet. Be the first to comment!",
+    "post.leave_comment": "Leave a Comment",
+    "post.your_name": "Your name",
+    "post.your_email": "Your email",
+    "post.your_comment": "Your comment",
+    "post.submit_comment": "Submit Comment",
+    "post.add_to_reading_list": "Add to reading list",
+    "post.remove_from_reading_list": "Remove from reading list",
+    "post.bookmark_error": "Failed to update bookmark. Please try again.",
+    "post.login_to_bookmark": "Login to bookmark"
+}
+

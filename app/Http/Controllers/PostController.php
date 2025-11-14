@@ -31,16 +31,31 @@ class PostController extends Controller
 
     public function show($slug, Request $request)
     {
-        $post = Cache::remember("post.{$slug}", 3600, function () use ($slug) {
+        // Cache post for 30 minutes (Requirement 20.1, 6.8)
+        $post = Cache::remember("post.{$slug}", 1800, function () use ($slug) {
             return Post::where('slug', $slug)
                 ->published()
-                ->with(['user', 'category', 'tags', 'reactions'])
+                ->with([
+                    'user:id,name,bio,avatar_url',
+                    'category:id,name,slug,icon,color_code',
+                    'categories:id,name,slug',
+                    'tags:id,name,slug',
+                    'reactions' => function ($query) {
+                        $query->select('post_id', 'type', \DB::raw('count(*) as count'))
+                            ->groupBy('post_id', 'type');
+                    },
+                    'bookmarks' => function ($query) {
+                        $query->select('post_id', \DB::raw('count(*) as count'))
+                            ->groupBy('post_id');
+                    },
+                ])
                 ->firstOrFail();
         });
 
         // Load top-level comments with nested replies up to 3 levels (Requirements 23.1-23.5)
         // Level 1 (depth 0) -> Level 2 (depth 1) -> Level 3 (depth 2)
         // Load parent chain for depth calculation
+        // Lazy load comments to improve initial page load (Requirement 6.8)
         $post->load(['comments' => function ($query) {
             $query->where('status', 'approved')
                 ->whereNull('parent_id')
@@ -60,7 +75,7 @@ class PostController extends Controller
         $this->postViewController->trackView($post, $request);
 
         // Get related posts using the RelatedPostsService (Requirements 22.1-22.5)
-        $relatedPosts = $this->relatedPostsService->getRelatedPosts($post, 4);
+        $relatedPosts = $this->relatedPostsService->getRelatedPosts($post, 5);
 
         // Get series navigation data (Requirements 37.3-37.5)
         $seriesData = $this->seriesNavigationService->getPostSeriesWithNavigation($post);

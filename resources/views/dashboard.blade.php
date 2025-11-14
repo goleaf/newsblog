@@ -7,7 +7,65 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            @if($metrics)
+            @if(isset($stats))
+                <!-- User Dashboard -->
+                <!-- Welcome Message -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                        Welcome back, {{ auth()->user()->name }}!
+                    </h2>
+                    <p class="mt-2 text-gray-600 dark:text-gray-400">
+                        Here's an overview of your activity on TechNewsHub
+                    </p>
+                </div>
+
+                <!-- Stats Cards -->
+                <x-user.stats-cards :stats="$stats" />
+
+                <!-- Quick Links -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <a href="{{ route('bookmarks.index') }}" class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 hover:shadow-lg transition-all group">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                                    My Bookmarks
+                                </h3>
+                                <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                                    View and manage your saved articles
+                                </p>
+                            </div>
+                            <svg class="w-6 h-6 text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </div>
+                    </a>
+
+                    <a href="{{ route('profile.edit') }}" class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 hover:shadow-lg transition-all group">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                                    Edit Profile
+                                </h3>
+                                <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                                    Update your profile information
+                                </p>
+                            </div>
+                            <svg class="w-6 h-6 text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Activity Feed -->
+                <x-user.activity-feed 
+                    :recent-bookmarks="$recentBookmarks" 
+                    :recent-comments="$recentComments" 
+                    :recent-reactions="$recentReactions" 
+                />
+
+            @elseif(isset($metrics))
+                <!-- Admin Dashboard -->
                 <!-- Key Metrics Cards -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <!-- Total Posts -->

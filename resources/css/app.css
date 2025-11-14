@@ -1,3 +1,47 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    [x-cloak] {
+        display: none !important;
+    }
+    
+    /* Smooth transitions for theme changes */
+    * {
+        @apply transition-colors duration-200 ease-in-out;
+    }
+    
+    /* Disable transitions on page load to prevent flash */
+    .preload * {
+        transition: none !important;
+    }
+    
+    /* Optimize image opacity in dark mode */
+    .dark img:not(.no-dark-filter) {
+        @apply opacity-90;
+    }
+    
+    /* Ensure proper contrast for text in dark mode */
+    .dark {
+        color-scheme: dark;
+    }
+}
+
+@media print {
+    nav,
+    footer,
+    .no-print,
+    [data-reading-progress="true"] {
+        display: none !important;
+    }
+
+    article {
+        box-shadow: none !important;
+        border: none !important;
+    }
+
+    .prose {
+        max-width: 100% !important;
+    }
+}

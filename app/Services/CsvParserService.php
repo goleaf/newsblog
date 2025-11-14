@@ -10,7 +10,7 @@ class CsvParserService
     /**
      * Required CSV columns for validation.
      */
-    protected array $requiredColumns = ['title', 'tags', 'categories'];
+    protected array $requiredColumns = ['title', 'categories'];
 
     /**
      * Detected CSV headers.
@@ -62,7 +62,19 @@ class CsvParserService
 
                     // Ensure we have the same number of values as headers
                     if (count($values) === count($this->headers)) {
-                        yield array_combine($this->headers, $values);
+                        $row = array_combine($this->headers, $values);
+
+                        // Normalize synonyms so downstream code can rely on keys existing
+                        if (! array_key_exists('tags', $row) && array_key_exists('keywords', $row)) {
+                            $row['tags'] = $row['keywords'];
+                        }
+
+                        // Ensure keys exist to avoid undefined index notices
+                        $row['tags'] = $row['tags'] ?? '';
+                        $row['keywords'] = $row['keywords'] ?? '';
+                        $row['categories'] = $row['categories'] ?? '';
+
+                        yield $row;
                     }
                 }
             } finally {
@@ -120,6 +132,14 @@ class CsvParserService
             throw new InvalidArgumentException(
                 'Missing required columns: '.implode(', ', $missingColumns)
             );
+        }
+
+        // At least one of 'tags' or 'keywords' must be present
+        $hasTags = in_array('tags', $headers, true);
+        $hasKeywords = in_array('keywords', $headers, true);
+
+        if (! $hasTags && ! $hasKeywords) {
+            throw new InvalidArgumentException('Missing required columns: tags or keywords');
         }
 
         return true;

@@ -58,6 +58,6 @@ class RejectComments extends Action
      */
     public function authorizedToSee($request): bool
     {
-        return in_array($request->user()->role, ['admin', 'editor']);
+        return in_array($request->user()?->role, ['admin', 'editor'], true);
     }
 }

@@ -47,10 +47,12 @@ class Feedback extends Tool
      */
     public function render(Request $request)
     {
+        $userId = $request->user()?->id;
+
         return view('nova.feedback', [
-            'feedback' => FeedbackModel::where('user_id', $request->user()->id)
-                ->latest()
-                ->get(),
+            'feedback' => $userId
+                ? FeedbackModel::where('user_id', $userId)->latest()->get()
+                : collect(),
         ]);
     }
 
@@ -66,7 +68,7 @@ class Feedback extends Tool
         ]);
 
         FeedbackModel::create([
-            'user_id' => $request->user()->id,
+            'user_id' => $request->user()?->id,
             'type' => $validated['type'],
             'subject' => $validated['subject'],
             'message' => $validated['message'],

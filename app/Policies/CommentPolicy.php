@@ -15,7 +15,7 @@ class CommentPolicy
      */
     public function viewAny(User $user): bool
     {
-        return in_array($user->role, ['admin', 'editor']);
+        return in_array($user->role, ['admin', 'editor', 'author']);
     }
 
     /**

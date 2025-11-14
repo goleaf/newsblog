@@ -136,14 +136,14 @@
     - Make it optional via configuration
     - _Requirements: 1.4_
 
-- [-] 9. Create test data and end-to-end testing
+- [x] 9. Create test data and end-to-end testing
   - [x] 9.1 Create test CSV files
     - Create `test_small.csv` with 100 rows
     - Create `test_medium.csv` with 10,000 rows
     - Create `test_malformed.csv` with invalid data
     - _Requirements: 5.5_
 
-  - [ ] 9.2 Write end-to-end integration tests
+  - [x] 9.2 Write end-to-end integration tests
     - Test importing actual CSV file from database/data directory
     - Verify posts, tags, categories created correctly
     - Verify relationships established in pivot table

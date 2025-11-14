@@ -25,6 +25,7 @@ class User extends Authenticatable
         'avatar',
         'bio',
         'status',
+        'email_preferences',
     ];
 
     /**
@@ -47,7 +48,56 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'email_preferences' => 'array',
         ];
+    }
+
+    /**
+     * Get default email preferences.
+     */
+    public function getDefaultEmailPreferences(): array
+    {
+        return [
+            'comment_replies' => true,
+            'post_published' => true,
+            'comment_approved' => true,
+            'series_updated' => true,
+            'newsletter' => true,
+            'frequency' => 'immediate', // immediate, daily, weekly
+        ];
+    }
+
+    /**
+     * Get email preferences with defaults.
+     */
+    public function getEmailPreferences(): array
+    {
+        return array_merge(
+            $this->getDefaultEmailPreferences(),
+            $this->email_preferences ?? []
+        );
+    }
+
+    /**
+     * Update email preferences.
+     */
+    public function updateEmailPreferences(array $preferences): void
+    {
+        $this->update([
+            'email_preferences' => array_merge(
+                $this->getEmailPreferences(),
+                $preferences
+            ),
+        ]);
+    }
+
+    /**
+     * Check if user wants email notifications for a specific type.
+     */
+    public function wantsEmailNotification(string $type): bool
+    {
+        $preferences = $this->getEmailPreferences();
+        return $preferences[$type] ?? false;
     }
 
     public function posts()
@@ -73,6 +123,11 @@ class User extends Authenticatable
     public function reactions()
     {
         return $this->hasMany(Reaction::class);
+    }
+
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
     }
 
     public function scopeActive($query)

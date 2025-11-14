@@ -112,6 +112,20 @@ Welcome to the TechNewsHub documentation! This comprehensive index helps you fin
   - Priority tasks
   - Development guidelines
 
+- **[Current Tasks](project/current-tasks.md)** - Active development tasks (November 13, 2025)
+  - Layout review and audit
+  - Post detail view fixes
+  - Bootstrap to Tailwind migration
+  - PHPUnit coverage updates
+
+- **[Priority Queue](project/priority-queue.md)** - Prioritized task list (November 13, 2025)
+  - UI issue documentation
+  - Blade template refactoring
+  - Script and style organization
+  - Multilanguage support
+  - Controller validation updates
+  - Test suite expansion
+
 - **[Design Analysis Report](project/design-analysis-report.md)** - Design document analysis
   - Design quality assessment
   - Error analysis and fixes
@@ -186,6 +200,15 @@ Welcome to the TechNewsHub documentation! This comprehensive index helps you fin
   - Error handling and troubleshooting
   - Advanced usage and customization
 
+- **[Bulk Import Summary](functionality/bulk-import-summary.md)** - Successful import report
+  - Import statistics (5,000 articles in 11.52 seconds at 434 posts/second)
+  - Performance metrics and memory usage
+  - Admin access credentials
+  - Article features and metadata
+  - Categories and tags created (32 categories, 114 tags)
+  - Test data generation script usage
+  - Next steps and troubleshooting
+
 ### 📖 API Documentation
 - **Interactive API Docs** - Available at `/docs` endpoint when running the application
 - **API Resources** - Consistent JSON response formats with PostResource
@@ -195,10 +218,19 @@ Welcome to the TechNewsHub documentation! This comprehensive index helps you fin
 
 ### 📋 Specifications
 Located in `.kiro/specs/`:
-- **[Tech News Platform](.kiro/specs/tech-news-platform/)** - Core platform requirements and design
-- **[Fuzzy Search Integration](.kiro/specs/fuzzy-search-integration/)** - Search enhancement specifications
-- **[Laravel Nova Integration](.kiro/specs/laravel-nova-integration/)** - Admin panel enhancements
-- **[Mistral AI Content Generation](.kiro/specs/mistral-ai-content-generation/)** - AI content generation
+- **[Tech News Platform](../.kiro/specs/tech-news-platform/)** - Core platform requirements and design
+- **[Fuzzy Search Integration](../.kiro/specs/fuzzy-search-integration/)** - Search enhancement specifications
+- **[Laravel Nova Integration](../.kiro/specs/laravel-nova-integration/)** - Admin panel enhancements
+- **[Mistral AI Content Generation](../.kiro/specs/mistral-ai-content-generation/)** - AI content generation
+- **[Frontend News Portal Refactor](../.kiro/specs/frontend-news-portal-refactor/)** - Modern frontend transformation
+  - 20 comprehensive requirements with acceptance criteria
+  - Modern homepage with content discovery
+  - Advanced search interface with autocomplete
+  - Enhanced article reading experience
+  - User engagement features
+  - Responsive navigation and layout
+  - Performance optimization (FCP < 1.5s)
+  - Accessibility compliance (WCAG 2.1 AA)
 
 ---
 
@@ -482,11 +514,11 @@ Can't find what you're looking for?
 ## 📈 Project Statistics
 
 ### Documentation Metrics
-- **Total Documents**: 35+ comprehensive guides
+- **Total Documents**: 37+ comprehensive guides
 - **Total Words**: 57,000+ words
 - **Code Examples**: 200+ tested snippets
 - **Screenshots**: 50+ illustrative images
-- **Last Major Update**: November 13, 2025
+- **Last Major Update**: November 14, 2025
 - **Documentation Version**: 0.3.1-dev
 
 ### Project Metrics
@@ -499,11 +531,12 @@ Can't find what you're looking for?
 - **Test Coverage**: 87% on core, 100% on Nova
 - **Database Tables**: 20 with 25+ indexes
 - **Migrations**: 40+ database migrations
-- **Documentation**: 35+ guides (57,000+ words)
+- **Documentation**: 37+ guides (57,000+ words)
+- **Specifications**: 4 major specs (Tech Platform, Fuzzy Search, Nova, Frontend Refactor)
 
 ---
 
-**Last Updated**: November 13, 2025  
+**Last Updated**: November 14, 2025  
 **Documentation Version**: 0.3.1-dev  
 **Maintained By**: TechNewsHub Team
 

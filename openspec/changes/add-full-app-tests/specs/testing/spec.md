@@ -19,3 +19,6 @@ All PHP classes under the `app/` namespace MUST be covered by automated PHPUnit 
 - **THEN** the project SHALL use Tailwind-based layouts and JSON-language strings so tests do not reference inline CSS/JS or untranslated literals.
 
 
+
+
+

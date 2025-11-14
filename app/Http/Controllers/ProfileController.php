@@ -12,6 +12,41 @@ use Illuminate\View\View;
 class ProfileController extends Controller
 {
     /**
+     * Display the user's profile.
+     */
+    public function show(Request $request): View
+    {
+        $user = $request->user();
+
+        // Get user's authored posts if they are an author
+        $authoredPosts = collect();
+        if ($user->isAuthor() || $user->isEditor() || $user->isAdmin()) {
+            $authoredPosts = $user->posts()
+                ->where('status', 'published')
+                ->latest()
+                ->limit(6)
+                ->get();
+        }
+
+        // Get recent comments
+        $recentComments = $user->comments()
+            ->with('post:id,title,slug')
+            ->latest()
+            ->limit(5)
+            ->get();
+
+        // Get stats
+        $stats = [
+            'total_bookmarks' => $user->bookmarks()->count(),
+            'total_comments' => $user->comments()->count(),
+            'total_reactions' => $user->reactions()->count(),
+            'total_posts' => $user->posts()->where('status', 'published')->count(),
+        ];
+
+        return view('profile.show', compact('user', 'authoredPosts', 'recentComments', 'stats'));
+    }
+
+    /**
      * Display the user's profile form.
      */
     public function edit(Request $request): View
@@ -26,13 +61,28 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
+        $data = $request->validated();
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        // Handle avatar upload
+        if ($request->hasFile('avatar')) {
+            // Delete old avatar if it exists and is not the default
+            if ($user->avatar && \Storage::disk('public')->exists($user->avatar)) {
+                \Storage::disk('public')->delete($user->avatar);
+            }
+
+            // Store new avatar
+            $path = $request->file('avatar')->store('avatars', 'public');
+            $data['avatar'] = $path;
         }
 
-        $request->user()->save();
+        $user->fill($data);
+
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
+        }
+
+        $user->save();
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
@@ -56,5 +106,35 @@ class ProfileController extends Controller
         $request->session()->regenerateToken();
 
         return Redirect::to('/');
+    }
+
+    /**
+     * Update the user's email preferences.
+     */
+    public function updateEmailPreferences(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'preferences' => 'required|array',
+            'preferences.comment_replies' => 'nullable|boolean',
+            'preferences.post_published' => 'nullable|boolean',
+            'preferences.comment_approved' => 'nullable|boolean',
+            'preferences.series_updated' => 'nullable|boolean',
+            'preferences.newsletter' => 'nullable|boolean',
+            'preferences.frequency' => 'required|in:immediate,daily,weekly',
+        ]);
+
+        // Convert checkbox values to boolean
+        $preferences = [
+            'comment_replies' => isset($validated['preferences']['comment_replies']),
+            'post_published' => isset($validated['preferences']['post_published']),
+            'comment_approved' => isset($validated['preferences']['comment_approved']),
+            'series_updated' => isset($validated['preferences']['series_updated']),
+            'newsletter' => isset($validated['preferences']['newsletter']),
+            'frequency' => $validated['preferences']['frequency'],
+        ];
+
+        $request->user()->updateEmailPreferences($preferences);
+
+        return Redirect::route('profile.edit')->with('status', 'email-preferences-updated');
     }
 }

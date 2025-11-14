@@ -9,6 +9,65 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+#### Frontend News Portal Refactor Specification (November 14, 2025) 📋 PLANNED
+- **Requirements Document** - Comprehensive 20-requirement specification for frontend refactor
+  - Modern homepage with content discovery (hero, trending, latest articles, categories)
+  - Advanced search interface with autocomplete and filters
+  - Enhanced article reading experience with engagement features
+  - User engagement features (reactions, bookmarks, comments)
+  - Category and tag exploration with rich filtering
+  - Responsive navigation and layout (mobile-first)
+  - User dashboard and profile management
+  - Series and content collections
+  - Social features and sharing
+  - Performance and loading states
+  - Accessibility and SEO (WCAG 2.1 AA compliance)
+  - Dark mode support
+  - Newsletter and notifications
+  - Advanced filtering and sorting
+  - Mobile-first responsive design
+  - Analytics and tracking integration
+  - Error handling and fallbacks
+  - Widget system integration
+  - AI-generated content indicators
+  - Performance optimization (FCP < 1.5s on 3G)
+- **Specification Location** - `.kiro/specs/frontend-news-portal-refactor/`
+  - requirements.md - 20 detailed requirements with acceptance criteria
+  - design.md - Design specifications (to be created)
+  - tasks.md - Implementation tasks (to be created)
+- **Scope** - Transform TechNewsHub into a professional news portal
+  - Leverage all 18 models, 21+ services, and extensive API capabilities
+  - Modern, feature-rich user experience
+  - Comprehensive content discovery features
+  - Full utilization of backend capabilities (fuzzy search, reactions, bookmarks, series, trending, AI content, analytics)
+
+#### Bulk Import Data Generation Script (November 13, 2025) ✅ COMPLETE
+- **CSV Generator Script** - PHP script to generate test data for bulk import
+  - `scripts/generate_5000_articles.php` - Generates 5,000 realistic tech news articles
+  - Configurable article count (default: 5,000)
+  - Realistic tech industry titles with multiple patterns
+  - 3-6 random tags per article from 60+ tech tags
+  - 1-3 random categories per article from 15 categories
+  - Progress indicators every 500 articles
+  - File size reporting and statistics
+  - Output to `database/data/5000_articles.csv`
+- **Data Pools** - Comprehensive tech industry data
+  - 25 tech topics (AI, Blockchain, Cloud, IoT, etc.)
+  - 15 action verbs (Revolutionizes, Transforms, etc.)
+  - 15 industries (Healthcare, Finance, Education, etc.)
+  - 15 categories (Technology, Business, Innovation, etc.)
+  - 60+ tags covering all major tech domains
+- **Title Generation** - 10 realistic title patterns
+  - "How {topic} {action} {industry}"
+  - "{topic} {action} the Future of {industry}"
+  - "Breaking: {topic} Startup {action} {industry} Industry"
+  - And 7 more professional patterns
+- **Performance** - Fast generation with progress tracking
+  - Generates 5,000 articles in seconds
+  - Memory efficient with streaming CSV writes
+  - Progress updates every 500 articles
+  - Final statistics (file size, article count)
+
 #### Documentation Reorganization (November 13, 2025) ✅ COMPLETE
 - **Structured Documentation** - Reorganized all documentation into logical folders
   - `docs/admin/` - Admin panel and Nova documentation (13 files)
@@ -18,6 +77,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Moved Files** - Relocated documentation from root to appropriate folders
   - Moved DESIGN_ANALYSIS_REPORT.md to docs/project/design-analysis-report.md
   - Moved TEST_COVERAGE_SUMMARY.md to docs/project/test-coverage-summary.md
+  - Moved IMPORT_SUMMARY.txt to docs/functionality/bulk-import-summary.md
   - Removed duplicate tasks.md and todo.md (consolidated in docs/project/development-tasks.md)
 - **Enhanced Navigation** - Updated INDEX.md with comprehensive navigation
   - Multiple navigation methods (by role, topic, feature, task)

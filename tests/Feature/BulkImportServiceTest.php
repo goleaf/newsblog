@@ -436,4 +436,45 @@ class BulkImportServiceTest extends TestCase
             unlink($tempFile);
         }
     }
+
+    public function test_imports_posts_with_keywords_only(): void
+    {
+        $tempFile = tempnam(sys_get_temp_dir(), 'csv_test_');
+        file_put_contents($tempFile, "title,keywords,categories\n\"KW Only Post\",\"alpha,beta\",\"CatA,CatB\"\n");
+
+        try {
+            $this->bulkImportService->import($tempFile, [
+                'user_id' => $this->user->id,
+                'skip_content' => true,
+                'skip_images' => true,
+            ]);
+
+            $post = Post::with(['tags', 'categories'])->first();
+            $this->assertNotNull($post);
+            $this->assertEquals(2, $post->tags()->count(), 'Tags (from keywords) were not attached');
+            $this->assertEquals(1, $post->categories()->count(), 'All categories beyond primary should be attached via pivot');
+        } finally {
+            unlink($tempFile);
+        }
+    }
+
+    public function test_attaches_all_categories_via_pivot(): void
+    {
+        $tempFile = tempnam(sys_get_temp_dir(), 'csv_test_');
+        file_put_contents($tempFile, "title,tags,categories\n\"MultiCat Post\",\"t1\",\"Cat1,Cat2,Cat3\"\n");
+
+        try {
+            $this->bulkImportService->import($tempFile, [
+                'user_id' => $this->user->id,
+                'skip_content' => true,
+                'skip_images' => true,
+            ]);
+
+            $post = Post::with('categories')->first();
+            $this->assertNotNull($post);
+            $this->assertEquals(2, $post->categories()->count(), 'Expected two extra categories attached via pivot');
+        } finally {
+            unlink($tempFile);
+        }
+    }
 }

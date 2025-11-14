@@ -78,7 +78,13 @@ class Post extends Resource
      */
     public static function authorizedToViewAny(Request $request): bool
     {
-        return $request->user()->can('viewAny', static::$model);
+        $user = $request->user();
+
+        if (! $user) {
+            return false;
+        }
+
+        return $user->can('viewAny', static::$model);
     }
 
     /**
@@ -86,7 +92,13 @@ class Post extends Resource
      */
     public function authorizedToView(Request $request): bool
     {
-        return $request->user()->can('view', $this->resource);
+        $user = $request->user();
+
+        if (! $user) {
+            return false;
+        }
+
+        return $user->can('view', $this->resource);
     }
 
     /**
@@ -94,7 +106,13 @@ class Post extends Resource
      */
     public static function authorizedToCreate(Request $request): bool
     {
-        return $request->user()->can('create', static::$model);
+        $user = $request->user();
+
+        if (! $user) {
+            return false;
+        }
+
+        return $user->can('create', static::$model);
     }
 
     /**
@@ -102,7 +120,13 @@ class Post extends Resource
      */
     public function authorizedToUpdate(Request $request): bool
     {
-        return $request->user()->can('update', $this->resource);
+        $user = $request->user();
+
+        if (! $user) {
+            return false;
+        }
+
+        return $user->can('update', $this->resource);
     }
 
     /**
@@ -110,7 +134,13 @@ class Post extends Resource
      */
     public function authorizedToDelete(Request $request): bool
     {
-        return $request->user()->can('delete', $this->resource);
+        $user = $request->user();
+
+        if (! $user) {
+            return false;
+        }
+
+        return $user->can('delete', $this->resource);
     }
 
     /**
@@ -163,7 +193,7 @@ class Post extends Resource
                     return $request->isUpdateOrUpdateAttachedRequest();
                 })
                 ->default(function ($request) {
-                    return $request->user()->id;
+                    return $request->user()?->id;
                 }),
 
             BelongsTo::make('Category', 'category', Category::class)
@@ -172,8 +202,30 @@ class Post extends Resource
                 ->rules('required')
                 ->nullable(),
 
+            BelongsToMany::make('Additional Categories', 'categories', Category::class)
+                ->searchable()
+                ->hideFromIndex()
+                ->help('Select additional categories (exclude the primary category above).'),
+
             BelongsToMany::make('Tags', 'tags', Tag::class)
                 ->searchable(),
+
+            // Display a combined list of all categories on the detail view
+            Text::make('All Categories', function () {
+                $names = collect();
+
+                if ($this->category) {
+                    $names->push($this->category->name);
+                }
+
+                if (isset($this->categories)) {
+                    foreach ($this->categories as $cat) {
+                        $names->push($cat->name);
+                    }
+                }
+
+                return $names->filter()->unique()->values()->implode(', ');
+            })->onlyOnDetail(),
 
             Select::make('Status')
                 ->options([

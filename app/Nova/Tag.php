@@ -132,7 +132,13 @@ class Tag extends Resource
      */
     public static function authorizedToViewAny(Request $request): bool
     {
-        return $request->user()->can('viewAny', \App\Models\Tag::class);
+        $user = $request->user();
+
+        if (! $user) {
+            return false;
+        }
+
+        return $user->can('viewAny', \App\Models\Tag::class);
     }
 
     /**
@@ -140,7 +146,13 @@ class Tag extends Resource
      */
     public function authorizedToView(Request $request): bool
     {
-        return $request->user()->can('view', $this->resource);
+        $user = $request->user();
+
+        if (! $user) {
+            return false;
+        }
+
+        return $user->can('view', $this->resource);
     }
 
     /**
@@ -148,7 +160,13 @@ class Tag extends Resource
      */
     public static function authorizedToCreate(Request $request): bool
     {
-        return $request->user()->can('create', \App\Models\Tag::class);
+        $user = $request->user();
+
+        if (! $user) {
+            return false;
+        }
+
+        return $user->can('create', \App\Models\Tag::class);
     }
 
     /**
@@ -156,7 +174,13 @@ class Tag extends Resource
      */
     public function authorizedToUpdate(Request $request): bool
     {
-        return $request->user()->can('update', $this->resource);
+        $user = $request->user();
+
+        if (! $user) {
+            return false;
+        }
+
+        return $user->can('update', $this->resource);
     }
 
     /**
@@ -164,6 +188,12 @@ class Tag extends Resource
      */
     public function authorizedToDelete(Request $request): bool
     {
-        return $request->user()->can('delete', $this->resource);
+        $user = $request->user();
+
+        if (! $user) {
+            return false;
+        }
+
+        return $user->can('delete', $this->resource);
     }
 }

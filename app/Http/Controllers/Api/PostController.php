@@ -48,7 +48,7 @@ class PostController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Post::published()->with(['user', 'category', 'tags']);
+        $query = Post::published()->with(['user', 'category', 'categories', 'tags']);
 
         if ($request->filled('category')) {
             $query->whereHas('category', function ($q) use ($request) {
@@ -103,7 +103,7 @@ class PostController extends Controller
     {
         $post = Post::where('slug', $slug)
             ->published()
-            ->with(['user', 'category', 'tags', 'comments' => function ($query) {
+            ->with(['user', 'category', 'categories', 'tags', 'comments' => function ($query) {
                 $query->where('status', 'approved');
             }])
             ->firstOrFail();

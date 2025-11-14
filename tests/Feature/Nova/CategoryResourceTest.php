@@ -35,9 +35,7 @@ class CategoryResourceTest extends TestCase
 
         $response->assertOk()
             ->assertJsonStructure([
-                'data' => [
-                    '*' => ['id', 'name'],
-                ],
+                'resources',
             ]);
     }
 
@@ -182,7 +180,13 @@ class CategoryResourceTest extends TestCase
         $response = $this->actingAs($this->author)
             ->deleteJson("/nova-api/categories?resources[]={$category->id}");
 
-        $response->assertForbidden();
+        // Nova's bulk delete endpoint returns 200 even when no records are deleted.
+        // Verify the category was not soft deleted for unauthorized user.
+        $response->assertStatus(200);
+        $this->assertDatabaseHas('categories', [
+            'id' => $category->id,
+            'deleted_at' => null,
+        ]);
     }
 
     public function test_category_creation_requires_name(): void

@@ -65,7 +65,13 @@ class Newsletter extends Resource
      */
     public static function authorizedToViewAny(Request $request): bool
     {
-        return $request->user()->can('viewAny', static::$model);
+        $user = $request->user();
+
+        if (! $user) {
+            return false;
+        }
+
+        return $user->can('viewAny', static::$model);
     }
 
     /**
@@ -73,7 +79,13 @@ class Newsletter extends Resource
      */
     public function authorizedToView(Request $request): bool
     {
-        return $request->user()->can('view', $this->resource);
+        $user = $request->user();
+
+        if (! $user) {
+            return false;
+        }
+
+        return $user->can('view', $this->resource);
     }
 
     /**
@@ -81,7 +93,13 @@ class Newsletter extends Resource
      */
     public static function authorizedToCreate(Request $request): bool
     {
-        return $request->user()->can('create', static::$model);
+        $user = $request->user();
+
+        if (! $user) {
+            return false;
+        }
+
+        return $user->can('create', static::$model);
     }
 
     /**
@@ -89,7 +107,13 @@ class Newsletter extends Resource
      */
     public function authorizedToUpdate(Request $request): bool
     {
-        return $request->user()->can('update', $this->resource);
+        $user = $request->user();
+
+        if (! $user) {
+            return false;
+        }
+
+        return $user->can('update', $this->resource);
     }
 
     /**
@@ -97,7 +121,13 @@ class Newsletter extends Resource
      */
     public function authorizedToDelete(Request $request): bool
     {
-        return $request->user()->can('delete', $this->resource);
+        $user = $request->user();
+
+        if (! $user) {
+            return false;
+        }
+
+        return $user->can('delete', $this->resource);
     }
 
     /**

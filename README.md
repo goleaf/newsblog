@@ -84,8 +84,18 @@ TechNewsHub is a comprehensive content management system designed for technology
 - ✅ **Phase 5 Complete**: Admin panel enhancements (v0.3.1)
   - ✅ Content Calendar with drag-and-drop
   - ✅ Widget Management System
-- 📋 **Phase 6 Planned**: Advanced content features and SEO enhancements
-- 📋 **Phase 7 Planned**: Email notifications and in-app notifications
+- 📋 **Phase 6 Planned**: Frontend News Portal Refactor (v0.4.0)
+  - 📋 Modern homepage with content discovery
+  - 📋 Advanced search interface with autocomplete
+  - 📋 Enhanced article reading experience
+  - 📋 User engagement features (reactions, bookmarks, comments)
+  - 📋 Responsive navigation and layout
+  - 📋 Dark mode support
+  - 📋 Performance optimization (FCP < 1.5s)
+  - 📋 Accessibility compliance (WCAG 2.1 AA)
+  - 📋 20 comprehensive requirements with acceptance criteria
+- 📋 **Phase 7 Planned**: Advanced content features and SEO enhancements
+- 📋 **Phase 8 Planned**: Email notifications and in-app notifications
 
 ### Key Highlights
 
@@ -112,6 +122,7 @@ TechNewsHub is a comprehensive content management system designed for technology
 | **Models** | 18 | Eloquent models with relationships |
 | **Services** | 21+ | Dedicated business logic classes |
 | **Controllers** | 25+ | Web, API, and Admin controllers |
+| **Scripts** | 8+ | Utility and data generation scripts |
 | **Nova Resources** | 13 | Complete admin resources (100%) |
 | **Nova Actions** | 3 | Custom bulk actions (Publish, Feature, Export) |
 | **Nova Dashboards** | 1 | Main dashboard with 6 metrics |
@@ -124,6 +135,7 @@ TechNewsHub is a comprehensive content management system designed for technology
 | **Database Tables** | 20 | With 25+ optimized indexes |
 | **API Endpoints** | 15+ | RESTful with Sanctum auth |
 | **Documentation** | 35+ guides | 57,000+ words total |
+| **Specifications** | 4 major specs | Tech platform, fuzzy search, Nova, frontend refactor |
 
 ---
 
@@ -218,6 +230,27 @@ php artisan posts:generate-content --limit=10
 
 # Preview what would be processed
 php artisan posts:generate-content --dry-run
+```
+
+#### Bulk Import Data Generation ✅ Complete
+- ✅ **CSV Generator Script** - Generate realistic test data for bulk imports
+- ✅ **5,000 Article Generation** - Create large datasets for testing and development
+- ✅ **Realistic Tech Content** - Industry-relevant titles, tags, and categories
+- ✅ **Multiple Title Patterns** - 10 professional title formats
+- ✅ **Comprehensive Tags** - 60+ tech industry tags (AI, blockchain, cloud, etc.)
+- ✅ **Category Variety** - 15 categories covering all tech domains
+- ✅ **Fast Generation** - Generates 5,000 articles in seconds
+- ✅ **Progress Tracking** - Real-time progress updates every 500 articles
+- ✅ **Statistics Reporting** - File size and article count summary
+
+**Script Usage:**
+```bash
+# Generate 5,000 articles
+php scripts/generate_5000_articles.php
+
+# Output: database/data/5000_articles.csv (590 KB)
+# Then import with:
+php artisan news:import database/data/5000_articles.csv
 ```
 
 ### User Engagement
@@ -919,6 +952,50 @@ MISTRAL_RETRY_DELAY=1000
    - Slow query detection
    - Cache hit rates
 
+### Generating Test Data for Bulk Import
+
+**Generate CSV Files with Realistic Tech Articles:**
+
+```bash
+# Generate 5,000 articles
+php scripts/generate_5000_articles.php
+```
+
+**Output:**
+```
+Generated 500 articles...
+Generated 1000 articles...
+Generated 1500 articles...
+...
+Generated 5000 articles...
+
+Successfully generated 5000 articles!
+File saved to: /path/to/database/data/5000_articles.csv
+File size: 590.98 KB
+```
+
+**Then Import the Generated Data:**
+```bash
+# Import all 5,000 articles with AI content generation
+php artisan news:import database/data/5000_articles.csv
+
+# Import without content generation (faster)
+php artisan news:import database/data/5000_articles.csv --skip-content
+
+# Import as drafts
+php artisan news:import database/data/5000_articles.csv --status=draft
+```
+
+**Features:**
+- ✅ Generates realistic tech industry article titles
+- ✅ 3-6 relevant tags per article (AI, blockchain, cloud, etc.)
+- ✅ 1-3 categories per article (Technology, Business, Innovation, etc.)
+- ✅ 10 professional title patterns
+- ✅ 60+ tech tags covering all major domains
+- ✅ 15 categories for comprehensive coverage
+- ✅ Fast generation with progress tracking
+- ✅ Memory efficient streaming CSV writes
+
 ### Using Mistral AI Content Generation
 
 **Generate Content for Posts Without Content:**
@@ -1326,25 +1403,53 @@ technewshub/
 │   ├── api.php                    # API routes
 │   ├── console.php                # Console routes
 │   └── web.php                    # Web routes
+├── scripts/                       # Utility scripts
+│   ├── generate_5000_articles.php # Generate test data for bulk import
+│   ├── build-search-index-staging.sh
+│   ├── deploy-fuzzy-search-production.sh
+│   ├── deploy-fuzzy-search-staging.sh
+│   ├── generate-daily-report.sh
+│   ├── monitor-nova-deployment.sh
+│   ├── monitor-nova.sh
+│   └── performance-test-fuzzy-search.sh
 ├── storage/                       # Application storage
 │   ├── app/                       # Application files
 │   ├── framework/                 # Framework files
 │   └── logs/                      # Log files
 ├── tests/                         # Test files
-│   ├── Feature/                   # Feature tests (12+ files)
-│   ├── Unit/                      # Unit tests
+│   ├── Feature/                   # Feature tests (180+ files)
+│   ├── Unit/                      # Unit tests (40+ files)
 │   └── TestCase.php               # Base test case
 └── vendor/                        # Composer dependencies
 ```
 
 ### Key Directories Explained
 
-- **app/Services/**: Business logic layer with 7 service classes
+- **app/Services/**: Business logic layer with 21+ service classes
 - **app/DataTransferObjects/**: Type-safe data transfer objects
 - **app/Exceptions/FuzzySearch/**: Custom exception hierarchy for search
-- **database/migrations/**: 23 migrations defining complete schema
-- **docs/functionality/**: Comprehensive feature documentation
+- **database/migrations/**: 40+ migrations defining complete schema
+- **docs/**: Comprehensive documentation (35+ guides, 57,000+ words)
+- **scripts/**: Utility scripts for data generation, deployment, and monitoring
 - **.kiro/specs/**: Project specifications and implementation plans
+
+### Utility Scripts
+
+The `scripts/` directory contains helpful utilities:
+
+**Data Generation**
+- `generate_5000_articles.php` - Generate realistic test data for bulk imports
+
+**Deployment & Monitoring**
+- `build-search-index-staging.sh` - Build search indexes for staging
+- `deploy-fuzzy-search-production.sh` - Deploy fuzzy search to production
+- `deploy-fuzzy-search-staging.sh` - Deploy fuzzy search to staging
+- `monitor-nova-deployment.sh` - Monitor Nova deployment status
+- `monitor-nova.sh` - Monitor Nova health and performance
+
+**Performance Testing**
+- `performance-test-fuzzy-search.sh` - Load test fuzzy search functionality
+- `generate-daily-report.sh` - Generate daily performance reports
 
 ---
 
@@ -1511,6 +1616,7 @@ Project specifications are maintained in `.kiro/specs/`:
 - **[Fuzzy Search Integration](.kiro/specs/fuzzy-search-integration/)** - Search enhancement specifications with 21-phase implementation plan
 - **[Laravel Nova Integration](.kiro/specs/laravel-nova-integration/)** - Admin panel enhancement specifications
 - **[Mistral AI Content Generation](.kiro/specs/mistral-ai-content-generation/)** - AI-powered content generation
+- **[Frontend News Portal Refactor](.kiro/specs/frontend-news-portal-refactor/)** - Modern frontend transformation with 20 comprehensive requirements
 
 ### Quick Links
 
@@ -1623,13 +1729,59 @@ Project specifications are maintained in `.kiro/specs/`:
 - [x] Error handling and logging
 - [x] Documentation and usage examples
 
-### Version 0.4.0 - Content Enhancement 📋 (Planned)
-- [ ] Related posts algorithm with fuzzy matching
-- [ ] Post series management
-- [ ] Advanced content filtering
-- [ ] Content calendar view
-- [ ] Bookmark system enhancements
-- [ ] Reading progress indicator
+### Version 0.4.0 - Frontend News Portal Refactor 📋 (Planned)
+
+**Modern Homepage & Content Discovery**
+- [ ] Hero section with featured post
+- [ ] Trending section (5 posts with metrics)
+- [ ] Latest articles grid (12 posts with infinite scroll)
+- [ ] Categories showcase with icons and colors
+- [ ] Infinite scroll pagination
+
+**Advanced Search Interface**
+- [ ] Live autocomplete with 300ms response time
+- [ ] Fuzzy search with typo tolerance
+- [ ] Multi-field search with relevance scoring
+- [ ] Advanced filters (category, author, date, type)
+- [ ] "Did you mean?" suggestions
+
+**Enhanced Article Reading**
+- [ ] Immersive reading experience with progress indicator
+- [ ] Floating action bar (bookmark, share, reactions)
+- [ ] Series navigation with thumbnails
+- [ ] Related posts sidebar (5 similar articles)
+- [ ] Nested comments with 3-level threading
+
+**User Engagement**
+- [ ] 6 reaction types with animations
+- [ ] Bookmark collections management
+- [ ] Real-time comment submission
+- [ ] User dashboard with statistics
+- [ ] Profile management with avatar upload
+
+**Responsive Design & UX**
+- [ ] Mobile-first responsive layout
+- [ ] Hamburger menu with slide-in animation
+- [ ] Sticky header with auto-hide on scroll
+- [ ] Touch-optimized interactions (44x44px targets)
+- [ ] Swipe gestures for series navigation
+
+**Performance & Accessibility**
+- [ ] First Contentful Paint < 1.5s on 3G
+- [ ] WebP images with JPEG fallback
+- [ ] Lazy loading with blur-up effect
+- [ ] WCAG 2.1 AA compliance
+- [ ] Keyboard navigation with focus indicators
+
+**Additional Features**
+- [ ] Dark mode with smooth transitions
+- [ ] Social sharing (Twitter, Facebook, LinkedIn, Reddit)
+- [ ] Newsletter subscription with GDPR consent
+- [ ] Widget system integration
+- [ ] AI-generated content indicators
+- [ ] Error handling with graceful fallbacks
+
+**Total**: 20 comprehensive requirements with detailed acceptance criteria
 
 ### Version 0.5.0 - SEO & Discovery 📋 (Planned)
 - [ ] Enhanced SEO meta tag system
@@ -1895,6 +2047,12 @@ A: No, it's completely optional. The AI content generation feature is an enhance
 
 **Q: What AI models are supported?**  
 A: We support all Mistral AI models: mistral-small, mistral-medium (default), and mistral-large. Configure via `MISTRAL_MODEL` in your `.env` file.
+
+**Q: How do I generate test data for development?**  
+A: Run `php scripts/generate_5000_articles.php` to generate a CSV file with 5,000 realistic tech articles. Then import with `php artisan news:import database/data/5000_articles.csv`.
+
+**Q: Can I customize the generated test data?**  
+A: Yes! Edit `scripts/generate_5000_articles.php` to modify the article count, title patterns, tags, categories, and other data pools.
 
 **Q: How much does Mistral AI cost?**  
 A: Mistral AI offers a free tier and pay-as-you-go pricing. Visit https://console.mistral.ai for current pricing.
