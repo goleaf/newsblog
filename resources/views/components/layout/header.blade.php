@@ -11,17 +11,24 @@
         mobileMenuOpen: false
     }"
     x-init="
+        let ticking = false;
         window.addEventListener('scroll', () => {
-            const currentScroll = window.pageYOffset;
-            scrolled = currentScroll > 50;
-            
-            // Hide on scroll down, show on scroll up
-            if (currentScroll > lastScroll && currentScroll > 100) {
-                hidden = true;
-            } else {
-                hidden = false;
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    const currentScroll = window.pageYOffset;
+                    scrolled = currentScroll > 50;
+                    
+                    // Hide on scroll down, show on scroll up
+                    if (currentScroll > lastScroll && currentScroll > 100) {
+                        hidden = true;
+                    } else {
+                        hidden = false;
+                    }
+                    lastScroll = currentScroll;
+                    ticking = false;
+                });
+                ticking = true;
             }
-            lastScroll = currentScroll;
         });
     "
     :class="{
@@ -46,39 +53,32 @@
             </div>
 
             {{-- Desktop Navigation --}}
-            <nav class="hidden lg:flex items-center space-x-8" aria-label="Main navigation">
+            <nav class="hidden lg:flex items-center gap-8" aria-label="Main navigation">
                 <a 
                     href="{{ route('home') }}" 
-                    class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                    class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium"
                     aria-current="{{ request()->routeIs('home') ? 'page' : 'false' }}"
                 >
                     Home
                 </a>
                 <a 
-                    href="{{ route('categories.index') }}" 
-                    class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                    aria-current="{{ request()->routeIs('categories.*') ? 'page' : 'false' }}"
-                >
-                    Categories
-                </a>
-                <a 
                     href="{{ route('series.index') }}" 
-                    class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                    class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium"
                     aria-current="{{ request()->routeIs('series.*') ? 'page' : 'false' }}"
                 >
                     Series
                 </a>
                 <a 
-                    href="{{ route('posts.index') }}" 
-                    class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                    aria-current="{{ request()->routeIs('posts.*') ? 'page' : 'false' }}"
+                    href="{{ route('search') }}" 
+                    class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium"
+                    aria-current="{{ request()->routeIs('search') ? 'page' : 'false' }}"
                 >
-                    Articles
+                    Browse
                 </a>
             </nav>
 
             {{-- Right Side Actions --}}
-            <div class="flex items-center space-x-4">
+            <div class="flex items-center gap-4">
                 {{-- Search Icon --}}
                 <button 
                     @click="$dispatch('open-search')"

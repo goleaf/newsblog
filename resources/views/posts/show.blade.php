@@ -15,7 +15,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <!-- Main Content -->
         <div class="lg:col-span-2">
-            <article class="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 overflow-hidden" id="article-content">
+            <article class="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 overflow-hidden" id="article-content" data-post-id="{{ $post->id }}">
                 @if($post->featured_image)
                     <img 
                         src="{{ $post->featured_image_url }}" 
@@ -146,4 +146,8 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+@vite(['resources/js/engagement-tracking.js'])
+@endpush
 @endsection

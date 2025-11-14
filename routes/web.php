@@ -24,6 +24,12 @@ Route::get('/search', [SearchController::class, 'index'])
 Route::get('/search/suggestions', [SearchController::class, 'suggestions'])
     ->middleware('throttle:search')
     ->name('search.suggestions');
+Route::post('/search/track-click', [\App\Http\Controllers\SearchClickController::class, 'track'])
+    ->middleware('throttle:60,1')
+    ->name('search.track-click');
+Route::post('/engagement/track', [\App\Http\Controllers\EngagementMetricController::class, 'track'])
+    ->middleware('throttle:60,1')
+    ->name('engagement.track');
 Route::post('/comments', [CommentController::class, 'store'])
     ->middleware('throttle:comments')
     ->name('comments.store');
@@ -39,6 +45,9 @@ Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'ind
 
 // GDPR routes
 Route::get('/privacy-policy', [\App\Http\Controllers\GdprController::class, 'privacyPolicy'])->name('gdpr.privacy-policy');
+Route::get('/privacy-settings', function () {
+    return view('gdpr.privacy-settings');
+})->name('gdpr.privacy-settings');
 Route::post('/gdpr/accept-consent', [\App\Http\Controllers\GdprController::class, 'acceptConsent'])->name('gdpr.accept-consent');
 Route::post('/gdpr/decline-consent', [\App\Http\Controllers\GdprController::class, 'declineConsent'])->name('gdpr.decline-consent');
 
@@ -75,6 +84,7 @@ Route::post('/page/contact', [\App\Http\Controllers\PageController::class, 'subm
 
 // Admin routes
 Route::middleware(['auth', 'role:admin,editor'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/analytics', [\App\Http\Controllers\Admin\AnalyticsController::class, 'index'])->name('analytics');
     Route::get('/search', [AdminSearchController::class, 'index'])->name('search');
     Route::get('/search/analytics', [AdminSearchController::class, 'analytics'])->name('search.analytics');
 

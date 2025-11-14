@@ -102,8 +102,14 @@
     @if($posts->total() > 0)
         <!-- Infinite Scroll Component (Requirements 27.1-27.5) -->
         <x-infinite-scroll :posts="$posts" container-class="space-y-6">
-            @foreach($posts as $post)
-                @include('partials.search-post-card', ['post' => $post, 'fuzzyEnabled' => $fuzzyEnabled ?? false, 'query' => $query])
+            @foreach($posts as $index => $post)
+                @include('partials.search-post-card', [
+                    'post' => $post, 
+                    'fuzzyEnabled' => $fuzzyEnabled ?? false, 
+                    'query' => $query,
+                    'searchLogId' => $searchLogId ?? null,
+                    'position' => $index
+                ])
             @endforeach
         </x-infinite-scroll>
     @else
@@ -164,6 +170,7 @@
 </div>
 
 @push('scripts')
+@vite(['resources/js/search-click-tracking.js'])
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const checkbox = document.getElementById('showRelevanceScores');

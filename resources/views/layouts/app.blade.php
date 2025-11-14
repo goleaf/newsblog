@@ -45,10 +45,14 @@
         Skip to main content
     </a>
 
-    {{-- Header Slot --}}
-    <header>
-        {{ $header ?? '' }}
-    </header>
+    {{-- Header --}}
+    @if(isset($header))
+        <header>
+            {{ $header }}
+        </header>
+    @else
+        <x-layout.header />
+    @endif
 
     {{-- Main Content --}}
     <main id="main-content" tabindex="-1">
@@ -67,6 +71,9 @@
     {{-- Toast Notifications --}}
     <x-ui.toast-notification />
 
+    {{-- Search Modal --}}
+    <x-ui.search-modal />
+
     {{-- Modal Container --}}
     <div id="modal-container">
         {{-- Modals will be inserted here dynamically --}}
@@ -74,5 +81,8 @@
 
     {{-- Additional Scripts --}}
     @stack('scripts')
+    
+    {{-- Cookie Consent Banner (Requirement 16.4) --}}
+    <x-gdpr.cookie-consent />
 </body>
 </html>

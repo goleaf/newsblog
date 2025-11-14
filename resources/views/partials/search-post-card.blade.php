@@ -1,6 +1,15 @@
-@props(['post', 'fuzzyEnabled' => false, 'query' => ''])
+@props(['post', 'fuzzyEnabled' => false, 'query' => '', 'searchLogId' => null, 'position' => 0])
 
-<article data-post-item class="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden">
+<article 
+    data-post-item 
+    data-search-result
+    @if($searchLogId)
+        data-search-log-id="{{ $searchLogId }}"
+        data-post-id="{{ $post->id }}"
+        data-position="{{ $position }}"
+    @endif
+    class="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden"
+>
     <div class="md:flex">
         @if($post->featured_image)
             <div class="md:flex-shrink-0">

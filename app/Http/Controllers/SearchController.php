@@ -103,24 +103,28 @@ class SearchController extends Controller
             });
         }
 
-        // Async query logging
+        // Log query and get search_log_id for click tracking (Requirement 16.2)
         $executionTime = (microtime(true) - $startTime) * 1000;
-        if (config('fuzzy-search.analytics.log_queries', true)) {
-            $resultCount = $posts->count();
-            $analyticsService = $this->analyticsService;
-
-            dispatch(function () use ($query, $resultCount, $executionTime, $filters, $fuzzyEnabled, $analyticsService) {
-                $analyticsService->logQuery(
-                    query: $query,
-                    resultCount: $resultCount,
-                    executionTime: $executionTime,
-                    metadata: [
-                        'search_type' => 'posts',
-                        'fuzzy_enabled' => $fuzzyEnabled,
-                        'filters' => $filters,
-                    ]
-                );
-            })->afterResponse();
+        $searchLogId = null;
+        
+        if (config('fuzzy-search.analytics.log_queries', true) && ! empty($query)) {
+            $resultCount = $posts->total();
+            
+            // Create search log synchronously to get ID for click tracking
+            $searchLog = \App\Models\SearchLog::create([
+                'query' => $query,
+                'result_count' => $resultCount,
+                'execution_time' => $executionTime,
+                'search_type' => 'posts',
+                'fuzzy_enabled' => $fuzzyEnabled,
+                'threshold' => null,
+                'filters' => $filters,
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+                'user_id' => auth()->id(),
+            ]);
+            
+            $searchLogId = $searchLog->id;
         }
 
         // Return JSON for AJAX requests (Requirements 27.1-27.5)
@@ -151,7 +155,8 @@ class SearchController extends Controller
             'activeFilterCount',
             'fuzzyEnabled',
             'avgRelevanceScore',
-            'spellingSuggestion'
+            'spellingSuggestion',
+            'searchLogId'
         ));
     }
 

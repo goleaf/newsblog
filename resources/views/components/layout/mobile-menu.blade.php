@@ -54,11 +54,6 @@
                 </button>
             </div>
 
-            {{-- Search Bar --}}
-            <div class="p-4 border-b border-gray-200 dark:border-gray-700">
-                <x-discovery.search-bar :mobile="true" />
-            </div>
-
             {{-- Navigation Links --}}
             <nav class="flex-1 px-4 py-6 space-y-1" aria-label="Mobile navigation">
                 <a 
@@ -76,20 +71,6 @@
                 </a>
 
                 <a 
-                    href="{{ route('categories.index') }}" 
-                    class="flex items-center px-4 py-3 text-base font-medium rounded-lg transition-colors
-                           {{ request()->routeIs('categories.*') 
-                              ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' 
-                              : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800' }}"
-                    @click="mobileMenuOpen = false"
-                >
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                    </svg>
-                    Categories
-                </a>
-
-                <a 
                     href="{{ route('series.index') }}" 
                     class="flex items-center px-4 py-3 text-base font-medium rounded-lg transition-colors
                            {{ request()->routeIs('series.*') 
@@ -104,26 +85,32 @@
                 </a>
 
                 <a 
-                    href="{{ route('posts.index') }}" 
+                    href="{{ route('search') }}" 
                     class="flex items-center px-4 py-3 text-base font-medium rounded-lg transition-colors
-                           {{ request()->routeIs('posts.*') 
+                           {{ request()->routeIs('search') 
                               ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' 
                               : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800' }}"
                     @click="mobileMenuOpen = false"
                 >
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
-                    Articles
+                    Browse Articles
                 </a>
 
-                {{-- Category Quick Links --}}
-                <div class="pt-4 mt-4 border-t border-gray-200 dark:border-gray-700">
-                    <h3 class="px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
-                        Quick Links
-                    </h3>
-                    <x-navigation.category-menu :mobile="true" />
-                </div>
+                <a 
+                    href="{{ route('bookmarks.index') }}" 
+                    class="flex items-center px-4 py-3 text-base font-medium rounded-lg transition-colors
+                           {{ request()->routeIs('bookmarks.*') 
+                              ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' 
+                              : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800' }}"
+                    @click="mobileMenuOpen = false"
+                >
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                    </svg>
+                    My Bookmarks
+                </a>
             </nav>
 
             {{-- User Menu (Mobile) --}}
