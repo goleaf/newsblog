@@ -97,6 +97,7 @@ class User extends Authenticatable
     public function wantsEmailNotification(string $type): bool
     {
         $preferences = $this->getEmailPreferences();
+
         return $preferences[$type] ?? false;
     }
 
@@ -118,6 +119,11 @@ class User extends Authenticatable
     public function bookmarks()
     {
         return $this->hasMany(Bookmark::class);
+    }
+
+    public function bookmarkCollections()
+    {
+        return $this->hasMany(BookmarkCollection::class)->orderBy('order');
     }
 
     public function reactions()

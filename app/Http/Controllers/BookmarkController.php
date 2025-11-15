@@ -46,7 +46,12 @@ class BookmarkController extends Controller
             $q->whereIn('id', Bookmark::where('user_id', Auth::id())->pluck('post_id'));
         })->get();
 
-        return view('bookmarks.index', compact('bookmarks', 'categories'));
+        // Get user's collections
+        $collections = Auth::user()->bookmarkCollections()
+            ->withCount('bookmarks')
+            ->get();
+
+        return view('bookmarks.index', compact('bookmarks', 'categories', 'collections'));
     }
 
     public function toggle(Request $request, $postId)

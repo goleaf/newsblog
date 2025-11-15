@@ -62,6 +62,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/bookmarks', [\App\Http\Controllers\BookmarkController::class, 'index'])->name('bookmarks.index');
     Route::post('/posts/{post}/bookmark', [\App\Http\Controllers\BookmarkController::class, 'toggle'])->name('bookmarks.toggle');
 
+    // Bookmark Collections
+    Route::post('/bookmarks/collections', [\App\Http\Controllers\BookmarkCollectionController::class, 'store'])->name('bookmarks.collections.store');
+    Route::get('/bookmarks/collections/{collection}', [\App\Http\Controllers\BookmarkCollectionController::class, 'show'])->name('bookmarks.collection');
+    Route::put('/bookmarks/collections/{collection}', [\App\Http\Controllers\BookmarkCollectionController::class, 'update'])->name('bookmarks.collections.update');
+    Route::delete('/bookmarks/collections/{collection}', [\App\Http\Controllers\BookmarkCollectionController::class, 'destroy'])->name('bookmarks.collections.destroy');
+    Route::post('/bookmarks/collections/{collection}/reorder', [\App\Http\Controllers\BookmarkCollectionController::class, 'reorder'])->name('bookmarks.collections.reorder');
+    Route::post('/bookmarks/{bookmark}/move', [\App\Http\Controllers\BookmarkCollectionController::class, 'moveBookmark'])->name('bookmarks.move');
+
     // Notifications
     Route::get('/notifications', [\App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
     Route::get('/notifications/unread', [\App\Http\Controllers\NotificationController::class, 'unread'])->name('notifications.unread');
@@ -153,6 +161,10 @@ Route::middleware(['auth', 'role:admin,editor'])->prefix('admin')->name('admin.'
     Route::post('/maintenance/update', [\App\Http\Controllers\Admin\MaintenanceController::class, 'update'])->name('maintenance.update');
     Route::get('/maintenance/status', [\App\Http\Controllers\Admin\MaintenanceController::class, 'status'])->name('maintenance.status');
     Route::post('/maintenance/regenerate-secret', [\App\Http\Controllers\Admin\MaintenanceController::class, 'regenerateSecret'])->name('maintenance.regenerate-secret');
+
+    // Monitoring routes
+    Route::get('/monitoring', [\App\Http\Controllers\Admin\MonitoringController::class, 'index'])->name('monitoring.index');
+    Route::post('/monitoring/reset', [\App\Http\Controllers\Admin\MonitoringController::class, 'reset'])->name('monitoring.reset');
 });
 
 require __DIR__.'/auth.php';

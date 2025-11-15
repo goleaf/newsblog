@@ -4,11 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Jobs\TrackPostView as TrackPostViewJob;
 use App\Models\Post;
-use App\Models\PostView;
+use App\Services\MonitoringService;
 use Illuminate\Http\Request;
 
 class PostViewController extends Controller
 {
+    public function __construct(
+        private MonitoringService $monitoring
+    ) {}
+
     /**
      * Track a post view with session-based duplicate prevention.
      * Respects Do Not Track header and implements non-blocking tracking.
@@ -17,8 +21,13 @@ class PostViewController extends Controller
      */
     public function trackView(Post $post, Request $request): void
     {
-        // Respect Do Not Track header (Requirement 16.4)
-        if ($this->shouldNotTrack($request)) {
+        $startTime = microtime(true);
+
+        // Check and track DNT compliance (Requirement 16.4)
+        $dntEnabled = $this->shouldNotTrack($request);
+        $this->monitoring->trackDntCompliance($dntEnabled, 'post.show');
+
+        if ($dntEnabled) {
             return;
         }
 
@@ -30,6 +39,10 @@ class PostViewController extends Controller
             $request->userAgent(),
             $request->header('referer')
         );
+
+        // Track performance metrics
+        $duration = microtime(true) - $startTime;
+        $this->monitoring->trackViewPerformance($post->id, $duration, true);
     }
 
     /**

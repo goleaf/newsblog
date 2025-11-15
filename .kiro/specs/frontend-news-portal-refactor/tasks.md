@@ -540,7 +540,7 @@ Tasks are organized into 8 major phases:
 
 ## Phase 6: User Features
 
-- [ ] 9. Build user dashboard and profile
+- [x] 9. Build user dashboard and profile
   - Create user dashboard page
   - Implement stats cards
   - Build activity feed
@@ -586,7 +586,7 @@ Tasks are organized into 8 major phases:
   - Add empty state
   - _Requirements: 4.4, 7.5_
 
-- [ ] 9.5 Build bookmark collections feature
+- [x] 9.5 Build bookmark collections feature
   - Create components/user/bookmark-collections.blade.php
   - Add collection management (create, rename, delete)
   - Implement drag-and-drop organization

@@ -3,19 +3,29 @@
 namespace App\Http\Controllers;
 
 use App\Models\EngagementMetric;
+use App\Services\MonitoringService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class EngagementMetricController extends Controller
 {
+    public function __construct(
+        private MonitoringService $monitoring
+    ) {}
+
     /**
      * Track engagement metrics for a post.
      * Requirement: 16.3
      */
     public function track(Request $request): JsonResponse
     {
+        $startTime = microtime(true);
+
         // Respect Do Not Track header
-        if ($this->shouldNotTrack($request)) {
+        $dntEnabled = $this->shouldNotTrack($request);
+        $this->monitoring->trackDntCompliance($dntEnabled, 'engagement.track');
+
+        if ($dntEnabled) {
             return response()->json(['success' => true, 'message' => 'Tracking disabled']);
         }
 
@@ -73,6 +83,29 @@ class EngagementMetricController extends Controller
         }
 
         $metric->save();
+
+        // Track engagement metrics
+        $metricType = 'unknown';
+        if (isset($validated['scroll_depth'])) {
+            $metricType = 'scroll';
+        } elseif (isset($validated['time_on_page'])) {
+            $metricType = 'time_spent';
+        }
+
+        $this->monitoring->trackEngagementMetric(
+            $metricType,
+            $validated['post_id'],
+            auth()->id()
+        );
+
+        // Track performance
+        $duration = microtime(true) - $startTime;
+        if ($duration > 0.5) {
+            $this->monitoring->trackError('performance', 'Slow engagement tracking', [
+                'duration_ms' => round($duration * 1000, 2),
+                'post_id' => $validated['post_id'],
+            ]);
+        }
 
         return response()->json([
             'success' => true,

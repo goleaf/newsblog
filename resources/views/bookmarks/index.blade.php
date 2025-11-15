@@ -9,6 +9,17 @@
         <p class="mt-2 text-gray-600 dark:text-gray-400">Posts you've saved for later</p>
     </div>
 
+    <!-- Collections Sidebar -->
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
+        <div class="lg:col-span-1">
+            <x-user.bookmark-collections 
+                :collections="$collections" 
+                :bookmarks="$bookmarks"
+            />
+        </div>
+        
+        <div class="lg:col-span-3">
+
     @if($bookmarks->count() > 0 || request()->has('category') || request()->has('sort'))
         <!-- Filters and Sort -->
         <div class="mb-6 bg-white dark:bg-gray-800 rounded-lg shadow p-4">
@@ -168,6 +179,8 @@
             </div>
         </div>
     @endif
+        </div>
+    </div>
 </div>
 
 <script>
