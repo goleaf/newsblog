@@ -123,4 +123,23 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Social Media Links
+    |--------------------------------------------------------------------------
+    |
+    | These are the social media profile URLs for the application. They are
+    | displayed in the footer and other areas of the site. Set these in
+    | your .env file or leave them as # to hide specific social links.
+    |
+    */
+
+    'social' => [
+        'twitter' => env('SOCIAL_TWITTER', '#'),
+        'github' => env('SOCIAL_GITHUB', '#'),
+        'linkedin' => env('SOCIAL_LINKEDIN', '#'),
+        'facebook' => env('SOCIAL_FACEBOOK', '#'),
+        'youtube' => env('SOCIAL_YOUTUBE', '#'),
+    ],
+
 ];

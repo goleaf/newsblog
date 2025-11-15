@@ -59,6 +59,19 @@ class CacheService
     }
 
     /**
+     * Cache homepage view (10 minutes)
+     * Requirement 20.1, 20.5
+     */
+    public function cacheHomepageView(callable $callback): mixed
+    {
+        return $this->remember(
+            self::PREFIX_VIEW.'.'.self::PREFIX_HOME,
+            self::TTL_SHORT, // 10 minutes
+            $callback
+        );
+    }
+
+    /**
      * Cache category page data
      */
     public function cacheCategoryPage(int $categoryId, array $filters, callable $callback): mixed
@@ -67,6 +80,18 @@ class CacheService
         $key = self::PREFIX_CATEGORY.".page.{$categoryId}.{$filterKey}";
 
         return $this->remember($key, self::TTL_SHORT, $callback);
+    }
+
+    /**
+     * Cache category view (15 minutes)
+     * Requirement 20.1, 20.5
+     */
+    public function cacheCategoryView(string $slug, array $filters, callable $callback): mixed
+    {
+        $filterKey = $this->generateFilterKey($filters);
+        $key = self::PREFIX_VIEW.'.'.self::PREFIX_CATEGORY.".{$slug}.{$filterKey}";
+
+        return $this->remember($key, 900, $callback); // 15 minutes
     }
 
     /**
@@ -81,6 +106,18 @@ class CacheService
     }
 
     /**
+     * Cache tag view (15 minutes)
+     * Requirement 20.1, 20.5
+     */
+    public function cacheTagView(string $slug, array $filters, callable $callback): mixed
+    {
+        $filterKey = $this->generateFilterKey($filters);
+        $key = self::PREFIX_VIEW.'.'.self::PREFIX_TAG.".{$slug}.{$filterKey}";
+
+        return $this->remember($key, 900, $callback); // 15 minutes
+    }
+
+    /**
      * Cache expensive query results
      */
     public function cacheQuery(string $queryKey, int $ttl, callable $callback): mixed
@@ -88,6 +125,17 @@ class CacheService
         $key = self::PREFIX_QUERY.".{$queryKey}";
 
         return $this->remember($key, $ttl, $callback);
+    }
+
+    /**
+     * Cache post view (30 minutes)
+     * Requirement 20.1, 20.5
+     */
+    public function cachePostView(string $slug, callable $callback): mixed
+    {
+        $key = self::PREFIX_VIEW.'.'.self::PREFIX_POST.".{$slug}";
+
+        return $this->remember($key, self::TTL_MEDIUM, $callback); // 30 minutes
     }
 
     /**
@@ -110,6 +158,7 @@ class CacheService
         Cache::forget(self::PREFIX_HOME.'.trending');
         Cache::forget(self::PREFIX_HOME.'.recent');
         Cache::forget(self::PREFIX_HOME.'.categories');
+        Cache::forget(self::PREFIX_VIEW.'.'.self::PREFIX_HOME);
     }
 
     /**
@@ -122,6 +171,15 @@ class CacheService
 
         // Use tags if available, otherwise use pattern matching
         $this->invalidateByPattern(self::PREFIX_CATEGORY.".page.{$categoryId}.*");
+        $this->invalidateByPattern(self::PREFIX_VIEW.'.'.self::PREFIX_CATEGORY.'.*');
+    }
+
+    /**
+     * Invalidate category cache by slug
+     */
+    public function invalidateCategoryBySlug(string $slug): void
+    {
+        $this->invalidateByPattern(self::PREFIX_VIEW.'.'.self::PREFIX_CATEGORY.".{$slug}.*");
     }
 
     /**
@@ -133,6 +191,15 @@ class CacheService
 
         // Invalidate all cached pages for this tag
         $this->invalidateByPattern(self::PREFIX_TAG.".page.{$tagId}.*");
+        $this->invalidateByPattern(self::PREFIX_VIEW.'.'.self::PREFIX_TAG.'.*');
+    }
+
+    /**
+     * Invalidate tag cache by slug
+     */
+    public function invalidateTagBySlug(string $slug): void
+    {
+        $this->invalidateByPattern(self::PREFIX_VIEW.'.'.self::PREFIX_TAG.".{$slug}.*");
     }
 
     /**
@@ -142,6 +209,15 @@ class CacheService
     {
         Cache::forget(self::PREFIX_POST.".{$postId}");
         Cache::forget(self::PREFIX_MODEL.'.post.'.$postId);
+    }
+
+    /**
+     * Invalidate post cache by slug
+     */
+    public function invalidatePostBySlug(string $slug): void
+    {
+        Cache::forget(self::PREFIX_VIEW.'.'.self::PREFIX_POST.".{$slug}");
+        Cache::forget(self::PREFIX_POST.".{$slug}");
     }
 
     /**

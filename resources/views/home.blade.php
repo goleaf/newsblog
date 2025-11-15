@@ -2,6 +2,10 @@
 
 @section('title', 'Home')
 
+@push('page-scripts')
+    <x-page-scripts page="homepage" />
+@endpush
+
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" x-data="{ loading: false }" x-init="loading = false">
     <!-- Hero Section -->

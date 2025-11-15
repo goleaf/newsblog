@@ -19,6 +19,7 @@ class NewsletterTest extends TestCase
 
         $response = $this->post(route('newsletter.subscribe'), [
             'email' => 'test@example.com',
+            'gdpr_consent' => '1',
         ]);
 
         $response->assertRedirect();
@@ -39,6 +40,69 @@ class NewsletterTest extends TestCase
         });
     }
 
+    public function test_subscription_requires_gdpr_consent(): void
+    {
+        $response = $this->post(route('newsletter.subscribe'), [
+            'email' => 'test@example.com',
+        ]);
+
+        $response->assertSessionHasErrors('gdpr_consent');
+        $this->assertDatabaseMissing('newsletters', [
+            'email' => 'test@example.com',
+        ]);
+    }
+
+    public function test_subscription_validates_email_format(): void
+    {
+        $response = $this->post(route('newsletter.subscribe'), [
+            'email' => 'invalid-email',
+            'gdpr_consent' => '1',
+        ]);
+
+        $response->assertSessionHasErrors('email');
+    }
+
+    public function test_subscription_via_json_returns_json_response(): void
+    {
+        Mail::fake();
+
+        $response = $this->postJson(route('newsletter.subscribe'), [
+            'email' => 'test@example.com',
+            'gdpr_consent' => true,
+        ]);
+
+        $response->assertOk();
+        $response->assertJson([
+            'success' => true,
+            'message' => 'Please check your email to verify your subscription.',
+        ]);
+
+        $this->assertDatabaseHas('newsletters', [
+            'email' => 'test@example.com',
+            'status' => 'pending',
+        ]);
+    }
+
+    public function test_duplicate_subscription_via_json_returns_error(): void
+    {
+        Newsletter::factory()->create([
+            'email' => 'test@example.com',
+            'status' => 'subscribed',
+            'verified_at' => now(),
+        ]);
+
+        $response = $this->postJson(route('newsletter.subscribe'), [
+            'email' => 'test@example.com',
+            'gdpr_consent' => true,
+        ]);
+
+        $response->assertOk();
+        $response->assertJson([
+            'success' => false,
+            'message' => 'This email is already subscribed to our newsletter.',
+        ]);
+    }
+
     public function test_duplicate_subscription_shows_info_message(): void
     {
         $newsletter = Newsletter::factory()->create([
@@ -49,10 +113,57 @@ class NewsletterTest extends TestCase
 
         $response = $this->post(route('newsletter.subscribe'), [
             'email' => 'test@example.com',
+            'gdpr_consent' => '1',
         ]);
 
         $response->assertRedirect();
         $response->assertSessionHas('info');
+    }
+
+    public function test_unverified_subscription_resends_verification_email(): void
+    {
+        Mail::fake();
+
+        $newsletter = Newsletter::factory()->create([
+            'email' => 'test@example.com',
+            'status' => 'pending',
+            'verified_at' => null,
+            'verification_token' => Newsletter::generateVerificationToken(),
+            'verification_token_expires_at' => now()->addDays(7),
+        ]);
+
+        $oldToken = $newsletter->verification_token;
+
+        $response = $this->post(route('newsletter.subscribe'), [
+            'email' => 'test@example.com',
+            'gdpr_consent' => '1',
+        ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('success');
+
+        $newsletter->refresh();
+        $this->assertNotEquals($oldToken, $newsletter->verification_token);
+
+        Mail::assertSent(NewsletterVerificationMail::class);
+    }
+
+    public function test_unsubscribed_email_cannot_resubscribe(): void
+    {
+        Newsletter::factory()->create([
+            'email' => 'test@example.com',
+            'status' => 'unsubscribed',
+            'unsubscribed_at' => now(),
+        ]);
+
+        $response = $this->post(route('newsletter.subscribe'), [
+            'email' => 'test@example.com',
+            'gdpr_consent' => '1',
+        ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('info');
+        $this->assertStringContainsString('unsubscribed', session('info'));
     }
 
     public function test_user_can_verify_subscription(): void

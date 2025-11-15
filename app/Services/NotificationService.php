@@ -40,7 +40,7 @@ class NotificationService
             type: Notification::TYPE_COMMENT_REPLY,
             title: 'New reply to your comment',
             message: "{$reply->user->name} replied to your comment",
-            actionUrl: route('post.show', $comment->post->slug) . '#comment-' . $reply->id,
+            actionUrl: route('post.show', $comment->post->slug).'#comment-'.$reply->id,
             icon: 'chat-bubble-left-right',
             data: [
                 'comment_id' => $comment->id,
@@ -77,8 +77,8 @@ class NotificationService
             user: $user,
             type: Notification::TYPE_COMMENT_APPROVED,
             title: 'Your comment was approved',
-            message: 'Your comment on "' . $comment->post->title . '" has been approved',
-            actionUrl: route('post.show', $comment->post->slug) . '#comment-' . $comment->id,
+            message: 'Your comment on "'.$comment->post->title.'" has been approved',
+            actionUrl: route('post.show', $comment->post->slug).'#comment-'.$comment->id,
             icon: 'check-circle',
             data: [
                 'comment_id' => $comment->id,
@@ -96,7 +96,7 @@ class NotificationService
             user: $user,
             type: Notification::TYPE_SERIES_UPDATED,
             title: 'Series updated',
-            message: "New article added to \"{$series->title}\"",
+            message: "New article added to \"{$series->name}\"",
             actionUrl: route('post.show', $newPost->slug),
             icon: 'book-open',
             data: [

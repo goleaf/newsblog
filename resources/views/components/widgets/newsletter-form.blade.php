@@ -99,7 +99,7 @@
             >
             <label for="newsletter-gdpr" class="text-xs text-gray-600 dark:text-gray-400">
                 I agree to receive newsletters and accept the 
-                <a href="#" class="text-blue-600 dark:text-blue-400 hover:underline" target="_blank">
+                <a href="{{ route('gdpr.privacy-policy') }}" class="text-blue-600 dark:text-blue-400 hover:underline" target="_blank">
                     privacy policy
                 </a>
             </label>

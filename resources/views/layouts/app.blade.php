@@ -27,8 +27,8 @@
         })();
     </script>
 
-    {{-- Styles --}}
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    {{-- Optimized CSS Loading --}}
+    <x-optimized-css :page="$page ?? 'default'" />
     
     {{-- Additional Styles --}}
     @stack('styles')
@@ -63,10 +63,12 @@
         @endisset
     </main>
 
-    {{-- Footer Slot --}}
-    <footer>
-        {{ $footer ?? '' }}
-    </footer>
+    {{-- Footer --}}
+    @if(isset($footer))
+        {{ $footer }}
+    @else
+        <x-layout.footer />
+    @endif
 
     {{-- Toast Notifications --}}
     <x-ui.toast-notification />
@@ -79,6 +81,9 @@
         {{-- Modals will be inserted here dynamically --}}
     </div>
 
+    {{-- Page-Specific Scripts (Code Splitting) --}}
+    @stack('page-scripts')
+    
     {{-- Additional Scripts --}}
     @stack('scripts')
     

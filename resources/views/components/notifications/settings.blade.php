@@ -4,41 +4,40 @@
 
 <div 
     x-data="{
-        browserNotificationsEnabled: localStorage.getItem('browser_notifications_enabled') === 'true',
-        permission: 'default',
+        browserNotificationsEnabled: window.browserNotifications?.isEnabled() || false,
+        permission: window.browserNotifications?.permission || 'default',
         
         init() {
-            if ('Notification' in window) {
-                this.permission = Notification.permission;
+            if (window.browserNotifications) {
+                this.permission = window.browserNotifications.permission;
+                this.browserNotificationsEnabled = window.browserNotifications.isEnabled();
             }
         },
         
         async toggleBrowserNotifications() {
-            if (!('Notification' in window)) {
+            if (!window.browserNotifications || !window.browserNotifications.isSupported()) {
                 alert('Browser notifications are not supported in your browser');
                 return;
             }
             
             if (this.browserNotificationsEnabled) {
                 // Disable
-                localStorage.setItem('browser_notifications_enabled', 'false');
+                window.browserNotifications.disable();
                 this.browserNotificationsEnabled = false;
             } else {
                 // Enable - request permission
-                const permission = await Notification.requestPermission();
-                this.permission = permission;
-                
-                if (permission === 'granted') {
-                    localStorage.setItem('browser_notifications_enabled', 'true');
+                try {
+                    await window.browserNotifications.enable();
                     this.browserNotificationsEnabled = true;
+                    this.permission = window.browserNotifications.permission;
                     
                     // Show test notification
-                    new Notification('Notifications Enabled', {
+                    window.browserNotifications.show('Notifications Enabled', {
                         body: 'You will now receive browser notifications',
                         icon: '/favicon.ico'
                     });
-                } else {
-                    alert('Please allow notifications in your browser settings');
+                } catch (error) {
+                    alert(error.message || 'Please allow notifications in your browser settings');
                 }
             }
         }

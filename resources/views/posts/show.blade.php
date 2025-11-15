@@ -4,6 +4,10 @@
     <x-seo.meta-tags :post="$post" />
 @endpush
 
+@push('page-scripts')
+    <x-page-scripts page="article" />
+@endpush
+
 @section('content')
 <!-- Reading Progress Indicator -->
 <x-article.reading-progress article-id="article-content" />

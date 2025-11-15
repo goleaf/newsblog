@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\Models\Category;
+use App\Services\CacheService;
 use App\Services\PostService;
 use App\Services\SearchIndexService;
 
@@ -10,7 +11,8 @@ class CategoryObserver
 {
     public function __construct(
         protected SearchIndexService $searchIndexService,
-        protected PostService $postService
+        protected PostService $postService,
+        protected CacheService $cacheService
     ) {}
 
     /**
@@ -29,6 +31,11 @@ class CategoryObserver
         // Invalidate categories index cache when category is updated
         $this->searchIndexService->invalidateCategoriesCache();
 
+        // Invalidate view caches (Requirement 20.5)
+        $this->cacheService->invalidateCategory($category->id);
+        $this->cacheService->invalidateCategoryBySlug($category->slug);
+        $this->cacheService->invalidateHomepage();
+
         // Update indexes for all related posts when category name/slug/description changes
         if ($category->isDirty(['name', 'slug', 'description'])) {
             $this->updateRelatedPosts($category);
@@ -40,6 +47,11 @@ class CategoryObserver
      */
     public function deleting(Category $category): void
     {
+        // Invalidate view caches (Requirement 20.5)
+        $this->cacheService->invalidateCategory($category->id);
+        $this->cacheService->invalidateCategoryBySlug($category->slug);
+        $this->cacheService->invalidateHomepage();
+
         // Update indexes for all related posts before category is deleted
         // Use deleting instead of deleted to access relationships before deletion
         $this->updateRelatedPosts($category);

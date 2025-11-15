@@ -18,9 +18,7 @@
                 </svg>
             </li>
             <li>
-                <a href="{{ route('category.index') }}" class="hover:text-gray-700 dark:hover:text-gray-300">
-                    Categories
-                </a>
+                <span class="text-gray-400 dark:text-gray-500">Categories</span>
             </li>
             @if($category->parent)
                 <li>
@@ -78,19 +76,28 @@
 
     <!-- Subcategory Navigation (Requirement 5.4) -->
     @if($category->children->isNotEmpty())
-        <div class="mb-6">
-            <h2 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Subcategories</h2>
+        <div class="mb-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 border border-gray-200 dark:border-gray-700">
+            <h2 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                </svg>
+                Subcategories
+            </h2>
             <div class="flex flex-wrap gap-2">
                 @foreach($category->children as $child)
                     <a 
                         href="{{ route('category.show', $child->slug) }}"
-                        class="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                        class="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500 transition-all group"
                     >
                         @if($child->icon)
-                            <span>{{ $child->icon }}</span>
+                            <span class="text-lg">{{ $child->icon }}</span>
                         @endif
-                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ $child->name }}</span>
-                        <span class="text-xs text-gray-500 dark:text-gray-400">({{ $child->posts_count ?? 0 }})</span>
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white">
+                            {{ $child->name }}
+                        </span>
+                        <span class="inline-flex items-center justify-center min-w-[24px] h-6 px-2 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-200 dark:bg-gray-600 rounded-full group-hover:bg-gray-300 dark:group-hover:bg-gray-500">
+                            {{ $child->posts_count ?? 0 }}
+                        </span>
                     </a>
                 @endforeach
             </div>
@@ -119,10 +126,17 @@
         </x-infinite-scroll>
     @else
         <x-ui.empty-state 
-            icon="document"
-            title="No articles yet"
-            description="There are no published articles in this category yet. Check back soon!"
-        />
+            title="No articles found"
+            message="There are no published articles in this category{{ request('date_filter') ? ' for the selected time period' : '' }}. {{ request('date_filter') ? 'Try adjusting your filters or' : '' }} Check back soon for new content!"
+            actionText="Browse All Articles"
+            actionUrl="{{ route('home') }}"
+        >
+            <x-slot:icon>
+                <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+            </x-slot:icon>
+        </x-ui.empty-state>
     @endif
 </div>
 @endsection

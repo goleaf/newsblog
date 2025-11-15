@@ -4,7 +4,16 @@ import laravel from 'laravel-vite-plugin';
 export default defineConfig({
     plugins: [
         laravel({
-            input: ['resources/css/app.css', 'resources/js/app.js'],
+            input: [
+                'resources/css/app.css',
+                'resources/css/critical.css',
+                'resources/js/app.js',
+                // Page-specific entry points for code splitting
+                'resources/js/pages/homepage.js',
+                'resources/js/pages/article.js',
+                'resources/js/pages/dashboard.js',
+                'resources/js/pages/search.js',
+            ],
             refresh: true,
         }),
     ],
@@ -14,8 +23,58 @@ export default defineConfig({
         rollupOptions: {
             output: {
                 // Manual chunk splitting for better caching
-                manualChunks: {
-                    'vendor': ['alpinejs'],
+                manualChunks(id) {
+                    // Vendor chunk for Alpine.js and other dependencies
+                    if (id.includes('node_modules')) {
+                        if (id.includes('alpinejs')) {
+                            return 'vendor-alpine';
+                        }
+                        if (id.includes('axios')) {
+                            return 'vendor-axios';
+                        }
+                        // Other node_modules go into general vendor chunk
+                        return 'vendor';
+                    }
+                    
+                    // Separate chunks for stores (shared across pages)
+                    if (id.includes('/stores/')) {
+                        return 'stores';
+                    }
+                    
+                    // Separate chunks for components (lazy loaded)
+                    if (id.includes('/components/')) {
+                        return 'components';
+                    }
+                    
+                    // Page-specific chunks are handled by entry points
+                    // Homepage components
+                    if (id.includes('pages/homepage')) {
+                        return 'page-homepage';
+                    }
+                    
+                    // Article page components
+                    if (id.includes('pages/article')) {
+                        return 'page-article';
+                    }
+                    
+                    // Dashboard components
+                    if (id.includes('pages/dashboard')) {
+                        return 'page-dashboard';
+                    }
+                    
+                    // Search page components
+                    if (id.includes('pages/search')) {
+                        return 'page-search';
+                    }
+                },
+                // Optimize chunk file names
+                chunkFileNames: 'js/[name]-[hash].js',
+                entryFileNames: 'js/[name]-[hash].js',
+                assetFileNames: (assetInfo) => {
+                    if (assetInfo.name.endsWith('.css')) {
+                        return 'css/[name]-[hash][extname]';
+                    }
+                    return 'assets/[name]-[hash][extname]';
                 },
             },
         },
@@ -25,6 +84,8 @@ export default defineConfig({
         sourcemap: false,
         // Optimize CSS
         cssMinify: true,
+        // Target modern browsers for smaller bundles
+        target: 'es2020',
     },
     // Remove console statements and debuggers in production builds
     esbuild: {

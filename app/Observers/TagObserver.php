@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\Models\Tag;
+use App\Services\CacheService;
 use App\Services\PostService;
 use App\Services\SearchIndexService;
 
@@ -10,7 +11,8 @@ class TagObserver
 {
     public function __construct(
         protected SearchIndexService $searchIndexService,
-        protected PostService $postService
+        protected PostService $postService,
+        protected CacheService $cacheService
     ) {}
 
     /**
@@ -29,6 +31,10 @@ class TagObserver
         // Invalidate tags index cache when tag is updated
         $this->searchIndexService->invalidateTagsCache();
 
+        // Invalidate view caches (Requirement 20.5)
+        $this->cacheService->invalidateTag($tag->id);
+        $this->cacheService->invalidateTagBySlug($tag->slug);
+
         // Update indexes for all related posts when tag name/slug changes
         if ($tag->isDirty(['name', 'slug'])) {
             $this->updateRelatedPosts($tag);
@@ -40,6 +46,10 @@ class TagObserver
      */
     public function deleting(Tag $tag): void
     {
+        // Invalidate view caches (Requirement 20.5)
+        $this->cacheService->invalidateTag($tag->id);
+        $this->cacheService->invalidateTagBySlug($tag->slug);
+
         // Update indexes for all related posts before tag is deleted
         // Use deleting instead of deleted to access relationships before deletion
         $this->updateRelatedPosts($tag);

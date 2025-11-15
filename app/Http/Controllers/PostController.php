@@ -89,7 +89,15 @@ class PostController extends Controller
         $category = $this->cacheService->cacheModel('category', $slug, \App\Services\CacheService::TTL_LONG, function () use ($slug) {
             return Category::where('slug', $slug)
                 ->active()
-                ->select(['id', 'name', 'slug', 'description', 'parent_id', 'meta_title', 'meta_description'])
+                ->with(['parent:id,name,slug', 'children' => function ($query) {
+                    $query->active()
+                        ->withCount(['posts' => function ($q) {
+                            $q->published();
+                        }])
+                        ->orderBy('display_order')
+                        ->orderBy('name');
+                }])
+                ->select(['id', 'name', 'slug', 'description', 'parent_id', 'icon', 'color_code', 'meta_title', 'meta_description'])
                 ->firstOrFail();
         });
 

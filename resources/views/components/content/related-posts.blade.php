@@ -23,12 +23,15 @@
                         {{-- Thumbnail --}}
                         @if($post->featured_image_url)
                             <div class="flex-shrink-0">
-                                <img 
-                                    src="{{ $post->featured_image_url }}" 
-                                    alt="{{ $post->image_alt_text ?? $post->title }}"
+                                <x-optimized-image 
+                                    :src="$post->featured_image_url" 
+                                    :alt="$post->image_alt_text ?? $post->title"
+                                    :width="80"
+                                    :height="80"
+                                    :blur-up="false"
+                                    sizes="80px"
                                     class="w-20 h-20 rounded-lg object-cover"
-                                    loading="lazy"
-                                >
+                                />
                             </div>
                         @else
                             <div class="flex-shrink-0 w-20 h-20 rounded-lg bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-900 dark:to-purple-900 flex items-center justify-center">

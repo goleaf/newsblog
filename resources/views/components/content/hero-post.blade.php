@@ -4,9 +4,13 @@
     @if($post->featured_image)
         <x-optimized-image 
             :src="$post->featured_image_url" 
-            :alt="$post->image_alt_text ?? $post->title" 
+            :alt="$post->image_alt_text ?? $post->title"
+            :width="1600"
+            :height="900"
+            :eager="true"
+            :blur-up="false"
+            sizes="100vw"
             class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-            eager="true"
         />
     @else
         <div class="w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600"></div>

@@ -1,12 +1,18 @@
 /**
  * Browser Notifications Handler
- * Manages browser push notifications for the application
+ * 
+ * Manages browser notification permissions and displays notifications
+ * for new content when the user is not actively on the site.
  */
 
 class BrowserNotifications {
     constructor() {
-        this.permission = Notification.permission;
+        this.permission = 'default';
         this.enabled = localStorage.getItem('browser_notifications_enabled') === 'true';
+        
+        if ('Notification' in window) {
+            this.permission = Notification.permission;
+        }
     }
 
     /**
@@ -17,54 +23,46 @@ class BrowserNotifications {
     }
 
     /**
-     * Request permission for browser notifications
+     * Check if notifications are enabled
+     */
+    isEnabled() {
+        return this.enabled && this.permission === 'granted';
+    }
+
+    /**
+     * Request notification permission from the user
      */
     async requestPermission() {
         if (!this.isSupported()) {
-            console.warn('Browser notifications are not supported');
-            return false;
+            throw new Error('Browser notifications are not supported');
         }
 
-        if (this.permission === 'granted') {
+        const permission = await Notification.requestPermission();
+        this.permission = permission;
+
+        if (permission === 'granted') {
             this.enabled = true;
             localStorage.setItem('browser_notifications_enabled', 'true');
             return true;
         }
 
-        if (this.permission === 'denied') {
-            console.warn('Browser notifications permission denied');
-            return false;
-        }
-
-        try {
-            const permission = await Notification.requestPermission();
-            this.permission = permission;
-            
-            if (permission === 'granted') {
-                this.enabled = true;
-                localStorage.setItem('browser_notifications_enabled', 'true');
-                
-                // Show a test notification
-                this.show('Notifications Enabled', {
-                    body: 'You will now receive notifications from TechNewsHub',
-                    icon: '/favicon.ico',
-                });
-                
-                return true;
-            }
-            
-            return false;
-        } catch (error) {
-            console.error('Error requesting notification permission:', error);
-            return false;
-        }
+        return false;
     }
 
     /**
      * Show a browser notification
+     * 
+     * @param {string} title - Notification title
+     * @param {Object} options - Notification options
+     * @param {string} options.body - Notification body text
+     * @param {string} options.icon - Notification icon URL
+     * @param {string} options.tag - Notification tag for grouping
+     * @param {string} options.url - URL to navigate to when clicked
+     * @param {Object} options.data - Additional data to attach
      */
     show(title, options = {}) {
-        if (!this.isSupported() || !this.enabled || this.permission !== 'granted') {
+        if (!this.isEnabled()) {
+            console.log('Browser notifications are not enabled');
             return null;
         }
 
@@ -76,26 +74,69 @@ class BrowserNotifications {
             ...options
         };
 
-        try {
-            const notification = new Notification(title, defaultOptions);
-            
-            // Handle notification click
+        const notification = new Notification(title, defaultOptions);
+
+        // Handle notification click
+        if (options.url) {
             notification.onclick = (event) => {
                 event.preventDefault();
                 window.focus();
-                
-                if (options.url) {
-                    window.location.href = options.url;
-                }
-                
+                window.location.href = options.url;
                 notification.close();
             };
-            
-            return notification;
-        } catch (error) {
-            console.error('Error showing notification:', error);
-            return null;
         }
+
+        return notification;
+    }
+
+    /**
+     * Show notification for new post
+     */
+    showNewPostNotification(post) {
+        return this.show('New Article Published', {
+            body: post.title,
+            icon: post.featured_image || '/favicon.ico',
+            tag: `post-${post.id}`,
+            url: post.url,
+            data: { type: 'new_post', post_id: post.id }
+        });
+    }
+
+    /**
+     * Show notification for comment reply
+     */
+    showCommentReplyNotification(comment) {
+        return this.show('New Reply to Your Comment', {
+            body: `${comment.author} replied: ${comment.excerpt}`,
+            tag: `comment-${comment.id}`,
+            url: comment.url,
+            data: { type: 'comment_reply', comment_id: comment.id }
+        });
+    }
+
+    /**
+     * Show notification for comment approved
+     */
+    showCommentApprovedNotification(comment) {
+        return this.show('Comment Approved', {
+            body: `Your comment on "${comment.post_title}" has been approved`,
+            tag: `comment-approved-${comment.id}`,
+            url: comment.url,
+            data: { type: 'comment_approved', comment_id: comment.id }
+        });
+    }
+
+    /**
+     * Show notification for series update
+     */
+    showSeriesUpdateNotification(series, post) {
+        return this.show('Series Updated', {
+            body: `New article added to "${series.title}"`,
+            icon: post.featured_image || '/favicon.ico',
+            tag: `series-${series.id}`,
+            url: post.url,
+            data: { type: 'series_update', series_id: series.id, post_id: post.id }
+        });
     }
 
     /**
@@ -107,83 +148,27 @@ class BrowserNotifications {
     }
 
     /**
-     * Enable browser notifications
+     * Enable browser notifications (requires permission)
      */
     async enable() {
-        return await this.requestPermission();
-    }
-
-    /**
-     * Check if notifications are enabled
-     */
-    isEnabled() {
-        return this.enabled && this.permission === 'granted';
-    }
-
-    /**
-     * Poll for new notifications
-     */
-    async pollNotifications() {
-        if (!this.isEnabled()) {
-            return;
+        if (!this.isSupported()) {
+            throw new Error('Browser notifications are not supported');
         }
 
-        try {
-            const response = await fetch('/notifications/unread', {
-                headers: {
-                    'Accept': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                }
-            });
-            
-            const data = await response.json();
-            
-            if (data.success && data.notifications.length > 0) {
-                // Show only the most recent unread notification
-                const notification = data.notifications[0];
-                this.show(notification.title, {
-                    body: notification.message,
-                    url: notification.action_url,
-                    tag: `notification-${notification.id}`,
-                });
+        if (this.permission !== 'granted') {
+            const granted = await this.requestPermission();
+            if (!granted) {
+                throw new Error('Notification permission denied');
             }
-        } catch (error) {
-            console.error('Error polling notifications:', error);
-        }
-    }
-
-    /**
-     * Start polling for notifications
-     */
-    startPolling(interval = 60000) { // Default: 1 minute
-        if (!this.isEnabled()) {
-            return;
         }
 
-        // Poll immediately
-        this.pollNotifications();
-
-        // Then poll at intervals
-        this.pollingInterval = setInterval(() => {
-            this.pollNotifications();
-        }, interval);
-    }
-
-    /**
-     * Stop polling for notifications
-     */
-    stopPolling() {
-        if (this.pollingInterval) {
-            clearInterval(this.pollingInterval);
-            this.pollingInterval = null;
-        }
+        this.enabled = true;
+        localStorage.setItem('browser_notifications_enabled', 'true');
     }
 }
 
-// Export for use in other modules
+// Create global instance
+window.browserNotifications = new BrowserNotifications();
+
+// Export for module usage
 export default BrowserNotifications;
-
-// Initialize globally if not using modules
-if (typeof window !== 'undefined') {
-    window.BrowserNotifications = BrowserNotifications;
-}

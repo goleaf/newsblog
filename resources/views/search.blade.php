@@ -2,6 +2,10 @@
 
 @section('title', !empty($query) ? "Search Results for \"{$query}\"" : 'Search')
 
+@push('page-scripts')
+    <x-page-scripts page="search" />
+@endpush
+
 @push('styles')
 <style>
     .search-highlight, mark.search-highlight {

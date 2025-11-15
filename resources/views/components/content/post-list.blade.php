@@ -24,10 +24,12 @@
                 @if($showImage && $post->featured_image_url)
                     <a href="{{ route('post.show', $post->slug) }}" class="flex-shrink-0">
                         <div class="relative {{ $imageClass }} overflow-hidden">
-                            <img 
-                                src="{{ $post->featured_image_url }}"
-                                alt="{{ $post->image_alt_text ?? $post->title }}"
-                                loading="lazy"
+                            <x-optimized-image 
+                                :src="$post->featured_image_url"
+                                :alt="$post->image_alt_text ?? $post->title"
+                                :width="200"
+                                :height="200"
+                                sizes="(max-width: 640px) 96px, 160px"
                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                             />
                             
@@ -95,10 +97,13 @@
                                     class="flex items-center gap-2 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
                                 >
                                     @if($post->user->avatar_url)
-                                        <img 
-                                            src="{{ $post->user->avatar_url }}"
-                                            alt="{{ $post->user->name }}"
-                                            class="w-6 h-6 rounded-full"
+                                        <x-optimized-image 
+                                            :src="$post->user->avatar_url"
+                                            :alt="$post->user->name"
+                                            :width="24"
+                                            :height="24"
+                                            :blur-up="false"
+                                            class="w-6 h-6 rounded-full object-cover"
                                         />
                                     @else
                                         <div class="w-6 h-6 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">

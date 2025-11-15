@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\Models\Post;
+use App\Services\CacheService;
 use App\Services\PostService;
 use App\Services\SearchIndexService;
 
@@ -10,7 +11,8 @@ class PostObserver
 {
     public function __construct(
         protected SearchIndexService $searchIndexService,
-        protected PostService $postService
+        protected PostService $postService,
+        protected CacheService $cacheService
     ) {}
 
     /**
@@ -19,6 +21,12 @@ class PostObserver
     public function created(Post $post): void
     {
         $this->indexPost($post);
+
+        // Invalidate homepage and category caches (Requirement 20.5)
+        $this->cacheService->invalidateHomepage();
+        if ($post->category_id) {
+            $this->cacheService->invalidateCategory($post->category_id);
+        }
     }
 
     /**
@@ -36,15 +44,26 @@ class PostObserver
         if ($post->isDirty($relatedPostsRelevantFields)) {
             $this->postService->invalidateRelatedPostsCache($post);
 
+            // Invalidate post view cache (Requirement 20.5)
+            $this->cacheService->invalidatePostBySlug($post->slug);
+
+            // Invalidate homepage cache (Requirement 20.5)
+            $this->cacheService->invalidateHomepage();
+
             // Also invalidate cache for posts in the same category if category changed
             if ($post->isDirty('category_id')) {
                 $oldCategoryId = $post->getOriginal('category_id');
                 if ($oldCategoryId) {
                     $this->postService->invalidateRelatedPostsCacheByCategory($oldCategoryId);
+                    $this->cacheService->invalidateCategory($oldCategoryId);
                 }
                 if ($post->category_id) {
                     $this->postService->invalidateRelatedPostsCacheByCategory($post->category_id);
+                    $this->cacheService->invalidateCategory($post->category_id);
                 }
+            } elseif ($post->category_id) {
+                // Invalidate current category cache even if not changed
+                $this->cacheService->invalidateCategory($post->category_id);
             }
         }
     }
@@ -56,15 +75,23 @@ class PostObserver
     {
         $this->searchIndexService->removePost($post->id);
 
+        // Invalidate view caches (Requirement 20.5)
+        $this->cacheService->invalidatePostBySlug($post->slug);
+        $this->cacheService->invalidateHomepage();
+
         // Invalidate related posts cache for posts that might have been related to this one
         if ($post->category_id) {
             $this->postService->invalidateRelatedPostsCacheByCategory($post->category_id);
+            $this->cacheService->invalidateCategory($post->category_id);
         }
         // Load tags before accessing them (in case they're not loaded)
         $post->load('tags');
         if ($post->tags->count() > 0) {
             $tagIds = $post->tags->pluck('id')->toArray();
             $this->postService->invalidateRelatedPostsCacheByTags($tagIds);
+            foreach ($tagIds as $tagId) {
+                $this->cacheService->invalidateTag($tagId);
+            }
         }
     }
 

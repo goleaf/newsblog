@@ -70,16 +70,24 @@
     @endphp
     
     @if($relatedTags->isNotEmpty())
-        <div class="mb-6">
-            <h2 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Related Tags</h2>
+        <div class="mb-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 border border-gray-200 dark:border-gray-700">
+            <h2 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                </svg>
+                Related Tags
+            </h2>
             <div class="flex flex-wrap gap-2">
                 @foreach($relatedTags as $relatedTag)
                     <a 
                         href="{{ route('tag.show', $relatedTag->slug) }}"
-                        class="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-sm"
+                        class="inline-flex items-center gap-1.5 px-3 py-2 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 rounded-full hover:bg-indigo-100 dark:hover:bg-indigo-900/30 hover:text-indigo-800 dark:hover:text-indigo-200 transition-all text-sm font-medium group"
                     >
-                        #{{ $relatedTag->name }}
-                        <span class="text-xs text-gray-500 dark:text-gray-400">({{ $relatedTag->posts_count }})</span>
+                        <span class="text-indigo-500 dark:text-indigo-400">#</span>
+                        <span>{{ $relatedTag->name }}</span>
+                        <span class="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-xs font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-900/40 rounded-full group-hover:bg-indigo-200 dark:group-hover:bg-indigo-900/60">
+                            {{ $relatedTag->posts_count }}
+                        </span>
                     </a>
                 @endforeach
             </div>
@@ -108,10 +116,17 @@
         </x-infinite-scroll>
     @else
         <x-ui.empty-state 
-            icon="tag"
-            title="No articles yet"
-            description="There are no published articles with this tag yet. Check back soon!"
-        />
+            title="No articles found"
+            message="There are no published articles with this tag{{ request('date_filter') ? ' for the selected time period' : '' }}. {{ request('date_filter') ? 'Try adjusting your filters or' : '' }} Explore other tags to discover more content!"
+            actionText="Browse All Articles"
+            actionUrl="{{ route('home') }}"
+        >
+            <x-slot:icon>
+                <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                </svg>
+            </x-slot:icon>
+        </x-ui.empty-state>
     @endif
 </div>
 @endsection
