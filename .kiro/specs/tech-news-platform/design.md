@@ -2,3138 +2,1739 @@
 
 ## Overview
 
-TechNewsHub is a comprehensive news and blog platform built on Laravel 12 with SQLite, designed to provide a modern content management experience for technology-focused publications. The system architecture follows Laravel's MVC pattern with a clear separation between public-facing frontend, administrative backend, and RESTful API layers.
+TechNewsHub is a modern, full-featured news and blog platform built with Laravel 12, leveraging the framework's latest features and best practices. The system architecture follows a layered approach with clear separation of concerns, utilizing Laravel's MVC pattern, service layer for business logic, and repository pattern for data access where complexity warrants it.
 
-### Core Technology Stack
-
-- **Backend Framework**: Laravel 12 (PHP 8.4)
-- **Database**: SQLite
-- **Frontend**: Blade templates with Alpine.js and Tailwind CSS v3
-- **Authentication**: Laravel Breeze with Sanctum for API tokens
-- **Asset Bundling**: Vite
-- **Testing**: PHPUnit v11
-
-### Design Principles
-
-1. **Security First**: All user inputs sanitized, CSRF protection, XSS prevention, rate limiting
-2. **Performance Optimized**: Eager loading, query optimization, caching strategies, lazy loading
-3. **Mobile-First Responsive**: Tailwind CSS with mobile-first approach
-4. **Accessibility Compliant**: WCAG AA standards, semantic HTML, proper ARIA labels
-5. **SEO Optimized**: Structured data, meta tags, sitemaps, Open Graph support
-6. **Scalable Architecture**: Repository pattern, service layer, job queues
+The platform is designed to handle high traffic loads through aggressive caching strategies, database query optimization, and lazy loading of assets. The frontend uses a mobile-first responsive design built with Tailwind CSS v3 and Alpine.js for interactive components, with progressive enhancement for advanced features.
 
 ## Architecture
 
-### High-Level System Architecture
+### High-Level Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                     Frontend Layer                          │
-│  (Blade Templates + Alpine.js + Tailwind CSS)              │
+│                      Frontend Layer                          │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐     │
+│  │ Blade Views  │  │  Alpine.js   │  │ Tailwind CSS │     │
+│  └──────────────┘  └──────────────┘  └──────────────┘     │
 └─────────────────────────────────────────────────────────────┘
                             │
 ┌─────────────────────────────────────────────────────────────┐
-│                   Application Layer                         │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐    │
-│  │ Controllers  │  │  Middleware  │  │  Policies    │    │
-│  └──────────────┘  └──────────────┘  └──────────────┘    │
+│                    Application Layer                         │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐     │
+│  │ Controllers  │  │   Services   │  │  Resources   │     │
+│  └──────────────┘  └──────────────┘  └──────────────┘     │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐     │
+│  │   Policies   │  │  Observers   │  │    Jobs      │     │
+│  └──────────────┘  └──────────────┘  └──────────────┘     │
 └─────────────────────────────────────────────────────────────┘
                             │
 ┌─────────────────────────────────────────────────────────────┐
-│                    Business Logic Layer                     │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐    │
-│  │  Services    │  │    Jobs      │  │   Events     │    │
-│  └──────────────┘  └──────────────┘  └──────────────┘    │
+│                      Domain Layer                            │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐     │
+│  │    Models    │  │  Factories   │  │   Seeders    │     │
+│  └──────────────┘  └──────────────┘  └──────────────┘     │
 └─────────────────────────────────────────────────────────────┘
                             │
 ┌─────────────────────────────────────────────────────────────┐
-│                      Data Layer                             │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐    │
-│  │   Models     │  │  Migrations  │  │   Seeders    │    │
-│  └──────────────┘  └──────────────┘  └──────────────┘    │
+│                   Infrastructure Layer                       │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐     │
+│  │   SQLite DB  │  │  File System │  │    Cache     │     │
+│  └──────────────┘  └──────────────┘  └──────────────┘     │
 └─────────────────────────────────────────────────────────────┘
-                            │
-                     ┌──────────────┐
-                     │   SQLite DB  │
-                     └──────────────┘
 ```
 
-### Application Structure
+### Technology Stack
 
-Following Laravel 12's streamlined structure:
+- **Backend Framework**: Laravel 12
+- **Database**: SQLite (with migration path to PostgreSQL/MySQL for production)
+- **Frontend**: Blade Templates + Alpine.js v3
+- **CSS Framework**: Tailwind CSS v3
+- **Asset Bundling**: Vite
+- **Caching**: File-based cache (Redis-ready)
+- **Queue**: Database queue driver (Redis-ready)
+- **Search**: Full-text search with SQLite FTS5
+- **Admin Panel**: Laravel Nova 4
 
-```
-app/
-├── Console/Commands/          # Artisan commands (auto-registered)
-├── Http/
-│   ├── Controllers/
-│   │   ├── Admin/            # Admin panel controllers
-│   │   ├── Api/              # API controllers
-│   │   └── Auth/             # Authentication controllers
-│   ├── Middleware/           # Custom middleware
-│   ├── Requests/             # Form request validation
-│   └── Resources/            # API resources
-├── Models/                   # Eloquent models
-├── Policies/                 # Authorization policies
-├── Services/                 # Business logic services
-├── Jobs/                     # Queued jobs
-└── Traits/                   # Reusable traits
-
-bootstrap/
-├── app.php                   # Application bootstrap (middleware, routing)
-└── providers.php             # Service providers
-
-routes/
-├── web.php                   # Web routes
-├── api.php                   # API routes
-└── console.php               # Console routes
-```
 
 ## Components and Interfaces
 
-### 1. Authentication & Authorization System
+### Core Models
 
-**Design Decision**: Use Laravel Breeze for authentication scaffolding with role-based access control.
+#### User Model
+```php
+class User extends Authenticatable
+{
+    // Attributes
+    - id: int
+    - name: string
+    - email: string (unique)
+    - password: string (hashed)
+    - role: enum (admin, editor, author, user)
+    - status: enum (active, suspended, inactive)
+    - avatar: string (nullable)
+    - bio: text (nullable)
+    - two_factor_secret: string (nullable, encrypted)
+    - two_factor_recovery_codes: text (nullable, encrypted)
+    - last_login_at: timestamp (nullable)
+    - email_verified_at: timestamp (nullable)
+    - remember_token: string (nullable)
+    - timestamps
+    
+    // Relationships
+    - posts(): hasMany(Post)
+    - comments(): hasMany(Comment)
+    - bookmarks(): hasMany(Bookmark)
+    - notifications(): hasMany(Notification)
+    - activityLogs(): hasMany(ActivityLog)
+    
+    // Methods
+    + isAdmin(): bool
+    + isEditor(): bool
+    + isAuthor(): bool
+    + canPublish(): bool
+    + hasTwoFactorEnabled(): bool
+}
+```
 
-**Components**:
-- `RoleMiddleware`: Checks user roles (Admin, Editor, Author)
-- `AdminMiddleware`: Restricts access to admin panel
-- `PostPolicy`: Authorizes post operations based on ownership and role
-
-**User Roles & Permissions**:
-
-| Role   | Permissions |
-|--------|-------------|
-| Admin  | Full access to all features, user management, settings |
-| Editor | Create/edit/publish all posts, manage comments, categories, tags |
-| Author | Create/edit own posts (draft only), view own analytics |
-
-**Session Management**:
-- Session timeout: 120 minutes of inactivity
-- Laravel's session middleware handles expiration
-- Redirect to login page on session expiration
-
-**Two-Factor Authentication**:
-- Use `laravel/fortify` or custom implementation with Google Authenticator
-- Store 2FA secrets encrypted in users table
-- Generate 10 backup codes (hashed) for account recovery
-- "Remember device" cookie valid for 30 days
-- Account lockout after 5 failed 2FA attempts (15 minutes)
-
-### 2. Post Management System
-
-**Design Decision**: Rich content editor using TinyMCE or Trix with custom image handling.
-
-**Post Model Structure**:
+#### Post Model
 ```php
 class Post extends Model
 {
-    protected $fillable = [
-        'title', 'slug', 'excerpt', 'content', 'featured_image',
-        'status', 'published_at', 'scheduled_at', 'reading_time',
-        'view_count', 'user_id', 'category_id', 'meta_title',
-        'meta_description', 'meta_keywords'
-    ];
-    
-    protected $casts = [
-        'published_at' => 'datetime',
-        'scheduled_at' => 'datetime',
-    ];
+    // Attributes
+    - id: int
+    - user_id: int (foreign key)
+    - series_id: int (nullable, foreign key)
+    - series_order: int (nullable)
+    - title: string
+    - slug: string (unique)
+    - excerpt: text (nullable)
+    - content: longText
+    - featured_image: string (nullable)
+    - status: enum (draft, scheduled, published, archived)
+    - published_at: timestamp (nullable)
+    - scheduled_at: timestamp (nullable)
+    - reading_time: int (minutes)
+    - view_count: int (default 0)
+    - is_featured: boolean (default false)
+    - is_breaking: boolean (default false)
+    - is_sponsored: boolean (default false)
+    - is_editors_pick: boolean (default false)
+    - meta_title: string (nullable)
+    - meta_description: text (nullable)
+    - meta_keywords: text (nullable)
+    - timestamps
+    - soft_deletes
     
     // Relationships
-    public function author(): BelongsTo;
-    public function category(): BelongsTo;
-    public function tags(): BelongsToMany;
-    public function comments(): HasMany;
-    public function revisions(): HasMany;
-    public function views(): HasMany;
+    - author(): belongsTo(User)
+    - categories(): belongsToMany(Category)
+    - tags(): belongsToMany(Tag)
+    - comments(): hasMany(Comment)
+    - revisions(): hasMany(PostRevision)
+    - views(): hasMany(PostView)
+    - bookmarks(): hasMany(Bookmark)
+    - series(): belongsTo(Series)
+    
+    // Scopes
+    + scopePublished($query)
+    + scopeFeatured($query)
+    + scopeBreaking($query)
+    + scopeScheduled($query)
+    + scopePopular($query)
+    + scopeEditorsPicksOnly($query)
+    + scopeSponsored($query)
+    
+    // Methods
+    + isPublished(): bool
+    + incrementViewCount(): void
+    + calculateReadingTime(): int
+    + generateSlug(): string
+    + getNextInSeries(): ?Post
+    + getPreviousInSeries(): ?Post
+    + getSeriesProgress(): array
 }
 ```
 
-**Post Statuses**:
-- `draft`: Not visible publicly, editable by author
-- `scheduled`: Queued for future publication
-- `published`: Live and visible to public
-- `archived`: Hidden but preserved
-
-**Slug Generation**:
-- Use `Str::slug()` with uniqueness check
-- Append numeric suffix if duplicate exists
-- Update slug only on first save unless manually changed
-
-**Reading Time Calculation**:
-```php
-class PostService
-{
-    public function calculateReadingTime(string $content): int
-    {
-        $wordCount = str_word_count(strip_tags($content));
-        return (int) ceil($wordCount / 200); // 200 words per minute
-    }
-}
-```
-
-**Content Scheduling**:
-- Scheduled posts checked via Laravel scheduler (every minute)
-- `PublishScheduledPostsCommand` finds posts where `scheduled_at <= now()`
-- Update status to `published`, set `published_at`, send notification email
-- Use queued job for email notifications to prevent blocking
-
-### 3. Category & Tag Organization
-
-**Design Decision**: Hierarchical categories with nested set model or adjacency list, flat tags with pivot table.
-
-**Category Model**:
+#### Category Model
 ```php
 class Category extends Model
 {
-    protected $fillable = ['name', 'slug', 'description', 'parent_id', 'order'];
+    // Attributes
+    - id: int
+    - parent_id: int (nullable, foreign key)
+    - name: string
+    - slug: string (unique)
+    - description: text (nullable)
+    - image: string (nullable)
+    - order: int (default 0)
+    - is_active: boolean (default true)
+    - meta_title: string (nullable)
+    - meta_description: text (nullable)
+    - timestamps
+    - soft_deletes
     
-    public function parent(): BelongsTo;
-    public function children(): HasMany;
-    public function posts(): HasMany;
+    // Relationships
+    - parent(): belongsTo(Category)
+    - children(): hasMany(Category)
+    - posts(): belongsToMany(Post)
     
-    // Prevent deletion if posts exist
-    protected static function booted()
-    {
-        static::deleting(function ($category) {
-            if ($category->posts()->count() > 0) {
-                throw new \Exception('Cannot delete category with posts');
-            }
-        });
-    }
+    // Methods
+    + isParent(): bool
+    + hasChildren(): bool
+    + getPostCount(): int
 }
 ```
 
-**Tag Model**:
+#### Tag Model
 ```php
 class Tag extends Model
 {
-    protected $fillable = ['name', 'slug', 'description'];
+    // Attributes
+    - id: int
+    - name: string
+    - slug: string (unique)
+    - description: text (nullable)
+    - timestamps
     
-    public function posts(): BelongsToMany;
+    // Relationships
+    - posts(): belongsToMany(Post)
+    
+    // Methods
+    + getPostCount(): int
 }
 ```
 
-**Slug Auto-generation**:
-- Model observer generates slug on create/update
-- Ensures uniqueness within model scope
-
-### 4. Media Library Management
-
-**Design Decision**: Store files in Laravel storage with database metadata tracking.
-
-**Media Model**:
-```php
-class Media extends Model
-{
-    protected $fillable = [
-        'filename', 'original_filename', 'mime_type', 'size',
-        'path', 'disk', 'user_id', 'alt_text', 'caption'
-    ];
-    
-    protected $casts = [
-        'metadata' => 'array', // Store image dimensions, variants
-    ];
-}
-```
-
-**File Upload Flow**:
-1. Validate file type and size (max 10MB for images)
-2. Generate unique filename with timestamp
-3. Store original file in `storage/app/public/media`
-4. Generate image variants (thumbnail, medium, large) using Intervention Image
-5. Create Media record with metadata
-6. Return media ID and URLs for variants
-
-**Image Processing Service**:
-```php
-class ImageProcessingService
-{
-    public function processUpload(UploadedFile $file): Media
-    {
-        // Validate
-        $this->validateFile($file);
-        
-        // Store original
-        $path = $file->store('media', 'public');
-        
-        // Generate variants
-        $variants = $this->generateVariants($path);
-        
-        // Strip EXIF
-        $this->stripExif($path);
-        
-        // Create record
-        return Media::create([...]);
-    }
-    
-    private function generateVariants(string $path): array
-    {
-        return [
-            'thumbnail' => $this->resize($path, 150, 150),
-            'medium' => $this->resize($path, 300, 300),
-            'large' => $this->resize($path, 1024, 1024),
-        ];
-    }
-}
-```
-
-**Allowed File Types**:
-- Images: JPG, PNG, GIF, WebP
-- Documents: PDF, DOC, DOCX
-
-### 5. Comment System with Moderation
-
-**Design Decision**: Nested comments with parent_id, moderation queue, spam detection.
-
-**Comment Model**:
+#### Comment Model
 ```php
 class Comment extends Model
 {
-    protected $fillable = [
-        'post_id', 'user_id', 'parent_id', 'author_name',
-        'author_email', 'content', 'status', 'ip_address',
-        'user_agent'
-    ];
+    // Attributes
+    - id: int
+    - post_id: int (foreign key)
+    - user_id: int (nullable, foreign key)
+    - parent_id: int (nullable, foreign key)
+    - author_name: string (nullable)
+    - author_email: string (nullable)
+    - content: text
+    - status: enum (pending, approved, spam, rejected)
+    - ip_address: string
+    - user_agent: text
+    - timestamps
     
-    protected $casts = [
-        'approved_at' => 'datetime',
-    ];
+    // Relationships
+    - post(): belongsTo(Post)
+    - user(): belongsTo(User)
+    - parent(): belongsTo(Comment)
+    - replies(): hasMany(Comment)
     
-    public function post(): BelongsTo;
-    public function parent(): BelongsTo;
-    public function replies(): HasMany;
+    // Scopes
+    + scopeApproved($query)
+    + scopePending($query)
+    + scopeSpam($query)
     
-    // Limit nesting depth
-    public function canReply(): bool
-    {
-        return $this->depth() < 3;
-    }
-    
-    private function depth(): int
-    {
-        $depth = 0;
-        $comment = $this;
-        while ($comment->parent) {
-            $depth++;
-            $comment = $comment->parent;
-        }
-        return $depth;
-    }
+    // Methods
+    + isApproved(): bool
+    + isSpam(): bool
+    + getNestingLevel(): int
 }
 ```
 
-**Comment Statuses**:
-- `pending`: Awaiting moderation
-- `approved`: Visible publicly
-- `spam`: Marked as spam
-- `trash`: Soft deleted
-
-**Spam Detection**:
+#### Media Model
 ```php
-class SpamDetectionService
+class Media extends Model
 {
-    public function isSpam(string $content, array $context): bool
-    {
-        // Check link count
-        if (substr_count($content, 'http') > 3) {
-            return true;
-        }
-        
-        // Check submission speed
-        if ($context['time_on_page'] < 3) {
-            return true;
-        }
-        
-        // Check blacklisted keywords
-        if ($this->containsBlacklistedWords($content)) {
-            return true;
-        }
-        
-        // Check honeypot field
-        if (!empty($context['honeypot'])) {
-            return true;
-        }
-        
-        return false;
-    }
+    // Attributes
+    - id: int
+    - user_id: int (foreign key)
+    - filename: string
+    - original_filename: string
+    - mime_type: string
+    - size: int (bytes)
+    - path: string
+    - alt_text: string (nullable)
+    - caption: text (nullable)
+    - metadata: json (nullable)
+    - timestamps
+    
+    // Relationships
+    - user(): belongsTo(User)
+    
+    // Methods
+    + getUrl(): string
+    + getThumbnailUrl(): string
+    + getMediumUrl(): string
+    + getLargeUrl(): string
+    + getWebPUrl(): string
+    + isImage(): bool
+    + hasAltText(): bool
 }
 ```
 
-**Rate Limiting**:
-- 5 comments per minute per IP address
-- Implemented using Laravel's rate limiter in middleware
-
-### 6. Newsletter Subscription Management
-
-**Design Decision**: Double opt-in with email verification, unsubscribe tokens.
-
-**Newsletter Model**:
-```php
-class Newsletter extends Model
-{
-    protected $fillable = [
-        'email', 'status', 'verification_token',
-        'verified_at', 'unsubscribed_at'
-    ];
-    
-    protected $casts = [
-        'verified_at' => 'datetime',
-        'unsubscribed_at' => 'datetime',
-    ];
-}
-```
-
-**Subscription Flow**:
-1. User submits email via form
-2. Check for existing subscription
-3. Generate unique verification token
-4. Send verification email with link
-5. User clicks link within 7 days
-6. Mark subscription as verified
-7. Send confirmation email
-
-**Unsubscribe Flow**:
-1. Generate unique unsubscribe token per subscriber
-2. Include token in all newsletter emails
-3. User clicks unsubscribe link
-4. Update status to 'unsubscribed'
-5. Display confirmation page
-
-**Export Functionality**:
-```php
-class NewsletterExportService
-{
-    public function exportVerified(): string
-    {
-        $subscribers = Newsletter::where('status', 'verified')->get();
-        
-        return \League\Csv\Writer::createFromString()
-            ->insertOne(['Email', 'Verified At'])
-            ->insertAll($subscribers->map(fn($s) => [
-                $s->email,
-                $s->verified_at->format('Y-m-d H:i:s')
-            ]))
-            ->toString();
-    }
-}
-```
-
-### 7. Administrative Dashboard
-
-**Design Decision**: Real-time metrics with caching, chart.js for visualizations.
-
-**Dashboard Metrics**:
-- Total posts with 30-day comparison
-- View counts (today, week, month)
-- Pending comments count
-- Recent activity feed
-- Top 10 posts by views
-- Posts published chart (30 days)
-
-**Caching Strategy**:
-```php
-class DashboardService
-{
-    public function getMetrics(): array
-    {
-        return Cache::remember('dashboard.metrics', 600, function () {
-            return [
-                'total_posts' => $this->getTotalPosts(),
-                'views_today' => $this->getViewsToday(),
-                'views_week' => $this->getViewsWeek(),
-                'views_month' => $this->getViewsMonth(),
-                'pending_comments' => Comment::where('status', 'pending')->count(),
-                'top_posts' => $this->getTopPosts(),
-                'posts_chart' => $this->getPostsChart(),
-            ];
-        });
-    }
-}
-```
-
-### 8. Search Functionality
-
-**Design Decision**: Full-text search using SQLite FTS5 or Laravel Scout with database driver.
-
-**Search Implementation**:
-```php
-class SearchService
-{
-    public function search(string $query, array $filters = []): Collection
-    {
-        return Post::query()
-            ->where('status', 'published')
-            ->where(function ($q) use ($query) {
-                $q->where('title', 'LIKE', "%{$query}%")
-                  ->orWhere('content', 'LIKE', "%{$query}%")
-                  ->orWhere('excerpt', 'LIKE', "%{$query}%");
-            })
-            ->when($filters['category'] ?? null, fn($q, $cat) => 
-                $q->where('category_id', $cat)
-            )
-            ->when($filters['author'] ?? null, fn($q, $author) => 
-                $q->where('user_id', $author)
-            )
-            ->orderByRaw("
-                CASE 
-                    WHEN title LIKE ? THEN 1
-                    WHEN excerpt LIKE ? THEN 2
-                    ELSE 3
-                END
-            ", ["%{$query}%", "%{$query}%"])
-            ->paginate(15);
-    }
-}
-```
-
-**Live Search Suggestions**:
-- Alpine.js component with debounced input (300ms)
-- AJAX request to `/api/search/suggestions`
-- Return top 5 matching post titles
-- Display in dropdown below search field
-
-### 9. SEO Optimization Features
-
-**Design Decision**: Automatic meta tag generation, sitemap generation, structured data.
-
-**SEO Meta Tags**:
-```php
-// In Post model or service
-public function getMetaTags(): array
-{
-    return [
-        'title' => $this->meta_title ?: $this->title,
-        'description' => $this->meta_description ?: Str::limit($this->excerpt, 160),
-        'keywords' => $this->meta_keywords,
-        'og:title' => $this->title,
-        'og:description' => $this->excerpt,
-        'og:image' => $this->featured_image_url,
-        'og:url' => route('posts.show', $this->slug),
-        'twitter:card' => 'summary_large_image',
-    ];
-}
-```
-
-**Sitemap Generation**:
-```php
-class SitemapService
-{
-    public function generate(): string
-    {
-        $sitemap = new \Spatie\Sitemap\Sitemap();
-        
-        // Add posts
-        Post::published()->each(function ($post) use ($sitemap) {
-            $sitemap->add(
-                Url::create(route('posts.show', $post->slug))
-                    ->setLastModificationDate($post->updated_at)
-                    ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
-                    ->setPriority(0.8)
-            );
-        });
-        
-        // Add categories, pages, tags...
-        
-        return $sitemap->writeToFile(public_path('sitemap.xml'));
-    }
-}
-```
-
-**Structured Data (Schema.org)**:
-```php
-// In post view
-<script type="application/ld+json">
-{
-    "@context": "https://schema.org",
-    "@type": "Article",
-    "headline": "{{ $post->title }}",
-    "image": "{{ $post->featured_image_url }}",
-    "datePublished": "{{ $post->published_at->toIso8601String() }}",
-    "dateModified": "{{ $post->updated_at->toIso8601String() }}",
-    "author": {
-        "@type": "Person",
-        "name": "{{ $post->author->name }}"
-    }
-}
-</script>
-```
-
-### 10. Responsive Frontend Design
-
-**Design Decision**: Tailwind CSS v3 with mobile-first approach, Alpine.js for interactivity.
-
-**Responsive Breakpoints**:
-- Mobile: < 640px (sm)
-- Tablet: 640px - 1024px (md, lg)
-- Desktop: > 1024px (xl, 2xl)
-
-**Mobile Navigation**:
-```html
-<nav x-data="{ open: false }">
-    <!-- Mobile menu button -->
-    <button @click="open = !open" class="md:hidden">
-        <svg>...</svg>
-    </button>
-    
-    <!-- Mobile menu -->
-    <div x-show="open" class="md:hidden">
-        <!-- Menu items -->
-    </div>
-    
-    <!-- Desktop menu -->
-    <div class="hidden md:flex">
-        <!-- Menu items -->
-    </div>
-</nav>
-```
-
-**Responsive Images**:
-```html
-<img 
-    src="{{ $media->url('medium') }}"
-    srcset="
-        {{ $media->url('thumbnail') }} 150w,
-        {{ $media->url('medium') }} 300w,
-        {{ $media->url('large') }} 1024w
-    "
-    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-    alt="{{ $media->alt_text }}"
-    loading="lazy"
->
-```
-
-### 11. API for External Integration
-
-**Design Decision**: RESTful API with Laravel Sanctum for token authentication, API resources for responses.
-
-**API Structure**:
-```
-GET    /api/posts              - List posts (paginated)
-GET    /api/posts/{id}         - Get single post
-POST   /api/posts              - Create post (authenticated)
-PUT    /api/posts/{id}         - Update post (authenticated)
-DELETE /api/posts/{id}         - Delete post (authenticated)
-GET    /api/categories         - List categories
-GET    /api/tags               - List tags
-POST   /api/posts/{id}/like    - Like post (authenticated)
-POST   /api/posts/{id}/bookmark - Bookmark post (authenticated)
-```
-
-**API Resource**:
-```php
-class PostResource extends JsonResource
-{
-    public function toArray($request): array
-    {
-        return [
-            'id' => $this->id,
-            'title' => $this->title,
-            'slug' => $this->slug,
-            'excerpt' => $this->excerpt,
-            'content' => $this->when($request->routeIs('api.posts.show'), $this->content),
-            'featured_image' => $this->featured_image_url,
-            'reading_time' => $this->reading_time,
-            'published_at' => $this->published_at,
-            'author' => [
-                'id' => $this->author->id,
-                'name' => $this->author->name,
-            ],
-            'category' => [
-                'id' => $this->category->id,
-                'name' => $this->category->name,
-                'slug' => $this->category->slug,
-            ],
-            'tags' => $this->tags->map(fn($tag) => [
-                'id' => $tag->id,
-                'name' => $tag->name,
-                'slug' => $tag->slug,
-            ]),
-        ];
-    }
-}
-```
-
-**Rate Limiting**:
-```php
-// In bootstrap/app.php
-->withMiddleware(function (Middleware $middleware) {
-    $middleware->throttleApi('60,1'); // 60 requests per minute
-})
-```
-
-**API Documentation**:
-- Use Laravel Scribe for automatic API documentation
-- Generate interactive docs at `/docs`
-- Include request/response examples
-
-### 12. Performance Optimization
-
-**Design Decision**: Multi-layer caching strategy, query optimization, asset optimization.
-
-**Caching Strategy**:
-1. **Query Result Cache**: Cache expensive queries (10-60 minutes)
-2. **View Cache**: Cache rendered views for homepage, category pages (10 minutes)
-3. **Model Cache**: Cache frequently accessed models
-4. **Settings Cache**: Cache site settings (24 hours)
-
-**Query Optimization**:
-```php
-// Eager loading to prevent N+1
-Post::with(['author', 'category', 'tags'])
-    ->published()
-    ->latest()
-    ->paginate(15);
-
-// Select only needed columns
-Post::select(['id', 'title', 'slug', 'excerpt', 'featured_image'])
-    ->published()
-    ->get();
-```
-
-**Asset Optimization**:
-- Vite for bundling and minification
-- Image lazy loading with `loading="lazy"`
-- Critical CSS inlined in head
-- Defer non-critical JavaScript
-- Cache headers: 1 year for static assets
-
-### 13. Security Measures
-
-**Design Decision**: Defense in depth with multiple security layers.
-
-**Security Headers Middleware**:
-```php
-class SecurityHeaders
-{
-    public function handle($request, Closure $next)
-    {
-        $response = $next($request);
-        
-        return $response
-            ->header('X-Frame-Options', 'SAMEORIGIN')
-            ->header('X-Content-Type-Options', 'nosniff')
-            ->header('X-XSS-Protection', '1; mode=block')
-            ->header('Referrer-Policy', 'strict-origin-when-cross-origin')
-            ->header('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';");
-    }
-}
-```
-
-**Input Sanitization**:
-```php
-class HtmlSanitizer
-{
-    public function sanitize(string $html): string
-    {
-        $config = HTMLPurifier_Config::createDefault();
-        $config->set('HTML.Allowed', 'p,b,strong,i,em,u,a[href],ul,ol,li,blockquote,code,pre,h2,h3,h4');
-        
-        $purifier = new HTMLPurifier($config);
-        return $purifier->purify($html);
-    }
-}
-```
-
-**Rate Limiting**:
-- Login: 5 attempts per minute per IP
-- Comment submission: 3 per minute per IP
-- API: 60 requests per minute
-- Implemented using Laravel's RateLimiter
-
-**File Upload Security**:
-- Validate MIME type and extension
-- Reject executable files (.php, .exe, .sh, etc.)
-- Store uploads outside web root
-- Generate random filenames
-
-### 14. Content Scheduling
-
-**Design Decision**: Laravel scheduler with command to publish scheduled posts.
-
-**Scheduler Configuration**:
-```php
-// In routes/console.php or bootstrap/app.php
-Schedule::command('posts:publish-scheduled')->everyMinute();
-```
-
-**Publish Command**:
-```php
-class PublishScheduledPostsCommand extends Command
-{
-    public function handle()
-    {
-        $posts = Post::where('status', 'scheduled')
-            ->where('scheduled_at', '<=', now())
-            ->get();
-        
-        foreach ($posts as $post) {
-            $post->update([
-                'status' => 'published',
-                'published_at' => now(),
-            ]);
-            
-            // Queue notification email
-            dispatch(new SendPostPublishedNotification($post));
-        }
-        
-        $this->info("Published {$posts->count()} scheduled posts");
-    }
-}
-```
-
-### 15. Analytics and Reporting
-
-**Design Decision**: Custom analytics with session-based duplicate prevention.
-
-**PostView Model**:
-```php
-class PostView extends Model
-{
-    protected $fillable = [
-        'post_id', 'session_id', 'ip_address',
-        'user_agent', 'referer'
-    ];
-    
-    public function post(): BelongsTo;
-}
-```
-
-**View Tracking**:
-```php
-class PostViewController
-{
-    public function trackView(Post $post, Request $request)
-    {
-        $sessionId = session()->getId();
-        
-        // Check if already viewed in this session
-        $exists = PostView::where('post_id', $post->id)
-            ->where('session_id', $sessionId)
-            ->exists();
-        
-        if (!$exists) {
-            PostView::create([
-                'post_id' => $post->id,
-                'session_id' => $sessionId,
-                'ip_address' => $request->ip(),
-                'user_agent' => $request->userAgent(),
-                'referer' => $request->header('referer'),
-            ]);
-            
-            $post->increment('view_count');
-        }
-    }
-}
-```
-
-**Analytics Dashboard**:
-- Views over time chart (Chart.js)
-- Top posts by views
-- Popular categories
-- Traffic sources
-- Geographic distribution (if IP geolocation added)
-
-### 16. Static Pages Management
-
-**Design Decision**: Flexible page system with template support.
-
-**Page Model**:
-```php
-class Page extends Model
-{
-    protected $fillable = [
-        'title', 'slug', 'content', 'template',
-        'parent_id', 'display_order', 'status',
-        'meta_title', 'meta_description'
-    ];
-    
-    public function parent(): BelongsTo;
-    public function children(): HasMany;
-}
-```
-
-**Page Templates**:
-- `default`: Standard page layout
-- `full-width`: No sidebar
-- `contact`: Includes contact form
-- `about`: Custom about page layout
-
-**Contact Form Handling**:
-```php
-class ContactMessage extends Model
-{
-    protected $fillable = [
-        'name', 'email', 'subject', 'message',
-        'status', 'ip_address'
-    ];
-}
-
-class ContactController extends Controller
-{
-    public function submit(Request $request)
-    {
-        $validated = $request->validate([
-            'name' => 'required|max:255',
-            'email' => 'required|email',
-            'subject' => 'required|max:255',
-            'message' => 'required|max:5000',
-        ]);
-        
-        ContactMessage::create([
-            ...$validated,
-            'status' => 'new',
-            'ip_address' => $request->ip(),
-        ]);
-        
-        // Send notification to admin
-        Mail::to(config('mail.admin'))->send(new ContactFormSubmitted($validated));
-        
-        return back()->with('success', 'Message sent successfully');
-    }
-}
-```
-
-### 17. User Management and Roles
-
-**Design Decision**: Role stored as enum in users table, policies for authorization.
-
-**User Model Enhancement**:
-```php
-class User extends Authenticatable
-{
-    protected $fillable = [
-        'name', 'email', 'password', 'role',
-        'avatar', 'bio', 'last_login_at'
-    ];
-    
-    protected $casts = [
-        'last_login_at' => 'datetime',
-    ];
-    
-    public function isAdmin(): bool
-    {
-        return $this->role === 'admin';
-    }
-    
-    public function isEditor(): bool
-    {
-        return in_array($this->role, ['admin', 'editor']);
-    }
-    
-    public function posts(): HasMany;
-}
-```
-
-**Role Middleware**:
-```php
-class RoleMiddleware
-{
-    public function handle($request, Closure $next, string $role)
-    {
-        if (!$request->user() || $request->user()->role !== $role) {
-            abort(403, 'Unauthorized action.');
-        }
-        
-        return $next($request);
-    }
-}
-```
-
-### 18. Image Processing and Optimization
-
-**Design Decision**: Intervention Image for processing, automatic WebP generation.
-
-**Image Processing Pipeline**:
-```php
-use Intervention\Image\Facades\Image;
-
-class ImageProcessingService
-{
-    private array $sizes = [
-        'thumbnail' => [150, 150],
-        'medium' => [300, 300],
-        'large' => [1024, 1024],
-    ];
-    
-    public function processImage(string $path): array
-    {
-        $variants = [];
-        
-        foreach ($this->sizes as $name => [$width, $height]) {
-            $image = Image::make(storage_path("app/public/{$path}"));
-            
-            // Resize maintaining aspect ratio
-            $image->fit($width, $height, function ($constraint) {
-                $constraint->aspectRatio();
-                $constraint->upsize();
-            });
-            
-            // Compress
-            $image->encode('jpg', 85);
-            
-            // Save
-            $variantPath = $this->getVariantPath($path, $name);
-            $image->save(storage_path("app/public/{$variantPath}"));
-            
-            // Generate WebP version
-            $webpPath = $this->generateWebP($variantPath);
-            
-            $variants[$name] = [
-                'path' => $variantPath,
-                'webp_path' => $webpPath,
-                'width' => $image->width(),
-                'height' => $image->height(),
-            ];
-        }
-        
-        // Strip EXIF from original
-        $this->stripExif($path);
-        
-        return $variants;
-    }
-    
-    private function generateWebP(string $path): string
-    {
-        $image = Image::make(storage_path("app/public/{$path}"));
-        $webpPath = preg_replace('/\.(jpg|jpeg|png)$/i', '.webp', $path);
-        $image->encode('webp', 85)->save(storage_path("app/public/{$webpPath}"));
-        return $webpPath;
-    }
-    
-    private function stripExif(string $path): void
-    {
-        $image = Image::make(storage_path("app/public/{$path}"));
-        $image->save(storage_path("app/public/{$path}"));
-    }
-}
-```
-
-### 19. Dark Mode Support
-
-**Design Decision**: CSS variables with localStorage persistence, Alpine.js toggle.
-
-**Dark Mode Implementation**:
-```html
-<!-- In layout -->
-<html x-data="{ darkMode: localStorage.getItem('darkMode') === 'true' }" 
-      x-init="$watch('darkMode', val => localStorage.setItem('darkMode', val))"
-      :class="{ 'dark': darkMode }">
-<head>
-    <script>
-        // Prevent flash of unstyled content
-        if (localStorage.getItem('darkMode') === 'true') {
-            document.documentElement.classList.add('dark');
-        }
-    </script>
-</head>
-<body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-    <!-- Dark mode toggle -->
-    <button @click="darkMode = !darkMode">
-        <svg x-show="!darkMode"><!-- Sun icon --></svg>
-        <svg x-show="darkMode"><!-- Moon icon --></svg>
-    </button>
-</body>
-</html>
-```
-
-**Tailwind Configuration**:
-```js
-// tailwind.config.js
-module.exports = {
-    darkMode: 'class',
-    theme: {
-        extend: {
-            colors: {
-                // Custom dark mode colors
-            }
-        }
-    }
-}
-```
-
-### 20. Social Media Integration
-
-**Design Decision**: Client-side sharing with Web Share API fallback.
-
-**Share Buttons**:
-```html
-<div x-data="sharePost()">
-    <!-- Facebook -->
-    <button @click="shareOnFacebook">
-        <svg><!-- Facebook icon --></svg>
-    </button>
-    
-    <!-- Twitter -->
-    <button @click="shareOnTwitter">
-        <svg><!-- Twitter icon --></svg>
-    </button>
-    
-    <!-- Copy Link -->
-    <button @click="copyLink">
-        <svg><!-- Link icon --></svg>
-    </button>
-</div>
-
-<script>
-function sharePost() {
-    return {
-        shareOnFacebook() {
-            const url = encodeURIComponent(window.location.href);
-            window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
-        },
-        shareOnTwitter() {
-            const url = encodeURIComponent(window.location.href);
-            const text = encodeURIComponent(document.title);
-            window.open(`https://twitter.com/intent/tweet?url=${url}&text=${text}`, '_blank');
-        },
-        async copyLink() {
-            await navigator.clipboard.writeText(window.location.href);
-            alert('Link copied to clipboard!');
-        }
-    }
-}
-</script>
-```
-
-### 21. Reading Progress Indicator
-
-**Design Decision**: JavaScript scroll tracking with fixed position progress bar.
-
-**Progress Bar Component**:
-```html
-<div x-data="readingProgress()" 
-     x-init="init()"
-     class="fixed top-0 left-0 w-full h-1 bg-gray-200 z-50">
-    <div class="h-full bg-blue-600 transition-all duration-100"
-         :style="`width: ${progress}%`"></div>
-</div>
-
-<script>
-function readingProgress() {
-    return {
-        progress: 0,
-        init() {
-            window.addEventListener('scroll', () => {
-                const article = document.querySelector('article');
-                const articleTop = article.offsetTop;
-                const articleHeight = article.offsetHeight;
-                const windowHeight = window.innerHeight;
-                const scrollTop = window.scrollY;
-                
-                const scrolled = scrollTop - articleTop;
-                const total = articleHeight - windowHeight;
-                
-                this.progress = Math.min(100, Math.max(0, (scrolled / total) * 100));
-            });
-        }
-    }
-}
-</script>
-```
-
-### 22. Related Posts Algorithm
-
-**Design Decision**: Weighted scoring algorithm with caching.
-
-**Related Posts Service**:
-```php
-class RelatedPostsService
-{
-    public function getRelatedPosts(Post $post, int $limit = 4): Collection
-    {
-        return Cache::remember("related_posts.{$post->id}", 3600, function () use ($post, $limit) {
-            $posts = Post::published()
-                ->where('id', '!=', $post->id)
-                ->get();
-            
-            $scored = $posts->map(function ($candidate) use ($post) {
-                $score = 0;
-                
-                // Same category: 40%
-                if ($candidate->category_id === $post->category_id) {
-                    $score += 40;
-                }
-                
-                // Shared tags: 40%
-                $sharedTags = $candidate->tags->pluck('id')
-                    ->intersect($post->tags->pluck('id'))
-                    ->count();
-                $score += ($sharedTags / max(1, $post->tags->count())) * 40;
-                
-                // Publication date proximity: 20%
-                $daysDiff = abs($candidate->published_at->diffInDays($post->published_at));
-                $score += max(0, 20 - ($daysDiff / 30) * 20);
-                
-                return ['post' => $candidate, 'score' => $score];
-            });
-            
-            return $scored->sortByDesc('score')
-                ->take($limit)
-                ->pluck('post');
-        });
-    }
-}
-```
-
-### 23. Comment Reply and Nesting
-
-**Design Decision**: Inline reply forms with Alpine.js, max depth validation.
-
-**Comment Component**:
-```html
-<div x-data="{ replyFormOpen: false }" 
-     class="comment" 
-     :style="`margin-left: ${depth * 40}px`">
-    
-    <div class="comment-content">
-        {{ $comment->content }}
-    </div>
-    
-    @if($comment->canReply())
-        <button @click="replyFormOpen = !replyFormOpen">Reply</button>
-        
-        <div x-show="replyFormOpen" x-cloak>
-            <form action="{{ route('comments.store') }}" method="POST">
-                @csrf
-                <input type="hidden" name="parent_id" value="{{ $comment->id }}">
-                <textarea name="content" required></textarea>
-                <button type="submit">Submit Reply</button>
-                <button type="button" @click="replyFormOpen = false">Cancel</button>
-            </form>
-        </div>
-    @endif
-    
-    <!-- Nested replies -->
-    @foreach($comment->replies as $reply)
-        @include('comments.comment', ['comment' => $reply, 'depth' => $depth + 1])
-    @endforeach
-</div>
-```
-
-### 24. Email Notification System
-
-**Design Decision**: Queued jobs for all email notifications, Mailable classes.
-
-**Notification Jobs**:
-```php
-class SendCommentNotification implements ShouldQueue
-{
-    use Queueable;
-    
-    public function __construct(
-        private Comment $comment
-    ) {}
-    
-    public function handle()
-    {
-        // Notify post author
-        Mail::to($this->comment->post->author->email)
-            ->send(new CommentApprovedMail($this->comment));
-        
-        // Notify parent commenter if reply
-        if ($this->comment->parent) {
-            Mail::to($this->comment->parent->author_email)
-                ->send(new CommentReplyMail($this->comment));
-        }
-    }
-}
-```
-
-**Mailable Classes**:
-```php
-class CommentApprovedMail extends Mailable
-{
-    public function __construct(
-        public Comment $comment
-    ) {}
-    
-    public function build()
-    {
-        return $this->subject('New comment on your post')
-            ->markdown('emails.comment-approved');
-    }
-}
-```
-
-### 25. Breadcrumb Navigation
-
-**Design Decision**: View composer with breadcrumb generation logic.
-
-**Breadcrumb Service**:
-```php
-class BreadcrumbService
-{
-    public function generate(Request $request): array
-    {
-        $breadcrumbs = [
-            ['title' => 'Home', 'url' => route('home')]
-        ];
-        
-        if ($request->route()->named('posts.show')) {
-            $post = $request->route('post');
-            
-            // Add category hierarchy
-            $category = $post->category;
-            $categoryPath = [];
-            while ($category) {
-                array_unshift($categoryPath, $category);
-                $category = $category->parent;
-            }
-            
-            foreach ($categoryPath as $cat) {
-                $breadcrumbs[] = [
-                    'title' => $cat->name,
-                    'url' => route('categories.show', $cat->slug)
-                ];
-            }
-            
-            // Add post
-            $breadcrumbs[] = [
-                'title' => $post->title,
-                'url' => null // Current page
-            ];
-        }
-        
-        return $breadcrumbs;
-    }
-}
-```
-
-**Structured Data**:
-```php
-// In view
-<script type="application/ld+json">
-{
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": [
-        @foreach($breadcrumbs as $index => $crumb)
-        {
-            "@type": "ListItem",
-            "position": {{ $index + 1 }},
-            "name": "{{ $crumb['title'] }}",
-            "item": "{{ $crumb['url'] }}"
-        }{{ !$loop->last ? ',' : '' }}
-        @endforeach
-    ]
-}
-</script>
-```
-
-### 26. Post Filtering and Sorting
-
-**Design Decision**: AJAX-based filtering with URL parameter persistence.
-
-**Filter Component**:
-```html
-<div x-data="postFilter()">
-    <!-- Sort dropdown -->
-    <select @change="updateFilter('sort', $event.target.value)">
-        <option value="latest">Latest</option>
-        <option value="popular">Popular</option>
-        <option value="oldest">Oldest</option>
-    </select>
-    
-    <!-- Date filter -->
-    <select @change="updateFilter('date', $event.target.value)">
-        <option value="">All Time</option>
-        <option value="today">Today</option>
-        <option value="week">This Week</option>
-        <option value="month">This Month</option>
-    </select>
-    
-    <!-- Posts container -->
-    <div id="posts-container">
-        <!-- Posts loaded here -->
-    </div>
-</div>
-
-<script>
-function postFilter() {
-    return {
-        filters: new URLSearchParams(window.location.search),
-        
-        updateFilter(key, value) {
-            this.filters.set(key, value);
-            
-            // Update URL
-            const newUrl = `${window.location.pathname}?${this.filters.toString()}`;
-            history.pushState({}, '', newUrl);
-            
-            // Fetch filtered posts
-            this.fetchPosts();
-        },
-        
-        async fetchPosts() {
-            const response = await fetch(`/api/posts?${this.filters.toString()}`);
-            const html = await response.text();
-            document.getElementById('posts-container').innerHTML = html;
-        }
-    }
-}
-</script>
-```
-
-### 27. Lazy Loading and Infinite Scroll
-
-**Design Decision**: Intersection Observer API for scroll detection.
-
-**Infinite Scroll Component**:
-```html
-<div x-data="infiniteScroll()">
-    <div id="posts-container">
-        @foreach($posts as $post)
-            @include('partials.post-card', ['post' => $post])
-        @endforeach
-    </div>
-    
-    <div x-ref="sentinel" class="h-20"></div>
-    
-    <div x-show="loading" class="text-center py-4">
-        <svg class="animate-spin"><!-- Spinner --></svg>
-    </div>
-    
-    <div x-show="allLoaded" class="text-center py-4">
-        End of content
-    </div>
-</div>
-
-<script>
-function infiniteScroll() {
-    return {
-        loading: false,
-        allLoaded: false,
-        page: 2,
-        
-        init() {
-            const observer = new IntersectionObserver((entries) => {
-                if (entries[0].isIntersecting && !this.loading && !this.allLoaded) {
-                    this.loadMore();
-                }
-            }, { rootMargin: '200px' });
-            
-            observer.observe(this.$refs.sentinel);
-        },
-        
-        async loadMore() {
-            this.loading = true;
-            
-            const response = await fetch(`/posts?page=${this.page}`);
-            const html = await response.text();
-            
-            if (html.trim() === '') {
-                this.allLoaded = true;
-            } else {
-                document.getElementById('posts-container').insertAdjacentHTML('beforeend', html);
-                this.page++;
-                
-                // Update URL
-                history.pushState({}, '', `?page=${this.page}`);
-            }
-            
-            this.loading = false;
-        }
-    }
-}
-</script>
-```
-
-### 28. Settings Management System
-
-**Design Decision**: Key-value settings table with caching and grouping.
-
-**Setting Model**:
-```php
-class Setting extends Model
-{
-    protected $fillable = ['key', 'value', 'group', 'type'];
-    
-    protected $casts = [
-        'value' => 'json',
-    ];
-    
-    public static function get(string $key, $default = null)
-    {
-        return Cache::remember("setting.{$key}", 86400, function () use ($key, $default) {
-            return static::where('key', $key)->value('value') ?? $default;
-        });
-    }
-    
-    public static function set(string $key, $value, string $group = 'general')
-    {
-        static::updateOrCreate(
-            ['key' => $key],
-            ['value' => $value, 'group' => $group]
-        );
-        
-        Cache::forget("setting.{$key}");
-    }
-}
-```
-
-**Settings Groups**:
-- General: Site name, tagline, timezone
-- SEO: Meta defaults, sitemap settings
-- Social Media: Social links, sharing options
-- Email: SMTP settings, notification preferences
-- Comments: Moderation settings, spam thresholds
-- Media: Upload limits, image sizes
-- Reading: Posts per page, excerpt length
-- Appearance: Theme colors, logo
-
-### 29. Menu Builder System
-
-**Design Decision**: Polymorphic menu items with drag-and-drop ordering.
-
-**Menu Models**:
-```php
-class Menu extends Model
-{
-    protected $fillable = ['name', 'location'];
-    
-    public function items(): HasMany
-    {
-        return $this->hasMany(MenuItem::class)->whereNull('parent_id')->orderBy('order');
-    }
-}
-
-class MenuItem extends Model
-{
-    protected $fillable = [
-        'menu_id', 'parent_id', 'title', 'url',
-        'type', 'target', 'css_class', 'order'
-    ];
-    
-    public function parent(): BelongsTo;
-    public function children(): HasMany;
-    
-    // Polymorphic relationship for linkable items
-    public function linkable(): MorphTo;
-}
-```
-
-**Menu Builder Interface**:
-- Drag-and-drop using SortableJS
-- AJAX save on reorder
-- Add items from pages, categories, tags, or custom URLs
-- Nested menu support with visual indentation
-
-### 30. Widget Management System
-
-**Design Decision**: Widget areas with JSON configuration storage.
-
-**Widget Models**:
-```php
-class WidgetArea extends Model
-{
-    protected $fillable = ['name', 'slug', 'description'];
-    
-    public function widgets(): HasMany
-    {
-        return $this->hasMany(Widget::class)->orderBy('order');
-    }
-}
-
-class Widget extends Model
-{
-    protected $fillable = [
-        'widget_area_id', 'type', 'title',
-        'settings', 'order', 'active'
-    ];
-    
-    protected $casts = [
-        'settings' => 'array',
-        'active' => 'boolean',
-    ];
-}
-```
-
-**Built-in Widget Types**:
-- `recent-posts`: Display recent posts
-- `popular-posts`: Display most viewed posts
-- `categories`: Category list
-- `tags-cloud`: Tag cloud
-- `newsletter`: Newsletter signup form
-- `search`: Search form
-- `custom-html`: Custom HTML content
-
-**Widget Rendering**:
-```php
-class WidgetService
-{
-    public function render(Widget $widget): string
-    {
-        return match($widget->type) {
-            'recent-posts' => view('widgets.recent-posts', [
-                'posts' => Post::latest()->take($widget->settings['count'] ?? 5)->get()
-            ])->render(),
-            'popular-posts' => view('widgets.popular-posts', [
-                'posts' => Post::orderByDesc('view_count')->take($widget->settings['count'] ?? 5)->get()
-            ])->render(),
-            // ... other widget types
-        };
-    }
-}
-```
-
-### 31. Spam Detection and Prevention
-
-**Design Decision**: Multi-layer spam detection with honeypot, rate limiting, keyword filtering.
-
-**Spam Detection Implementation**:
-```php
-class SpamDetectionService
-{
-    private array $blacklistedWords = ['viagra', 'casino', 'lottery', /* ... */];
-    
-    public function isSpam(array $data): bool
-    {
-        // Link count check
-        if (substr_count($data['content'], 'http') > 3) {
-            return true;
-        }
-        
-        // Submission speed check
-        if (($data['submitted_at'] - $data['page_loaded_at']) < 3) {
-            return true;
-        }
-        
-        // Keyword check
-        $content = strtolower($data['content']);
-        foreach ($this->blacklistedWords as $word) {
-            if (str_contains($content, $word)) {
-                return true;
-            }
-        }
-        
-        // Honeypot check
-        if (!empty($data['website'])) { // Hidden field
-            return true;
-        }
-        
-        return false;
-    }
-}
-```
-
-**Rate Limiting**:
-```php
-// In bootstrap/app.php or middleware
-RateLimiter::for('comments', function (Request $request) {
-    return Limit::perMinute(5)->by($request->ip());
-});
-```
-
-### 32. Activity Logging System
-
-**Design Decision**: Trait-based activity logging with model observers.
-
-**ActivityLog Model**:
-```php
-class ActivityLog extends Model
-{
-    protected $fillable = [
-        'user_id', 'action', 'model_type', 'model_id',
-        'description', 'ip_address', 'user_agent',
-        'old_values', 'new_values'
-    ];
-    
-    protected $casts = [
-        'old_values' => 'array',
-        'new_values' => 'array',
-    ];
-    
-    public function user(): BelongsTo;
-    public function subject(): MorphTo;
-}
-```
-
-**LogsActivity Trait**:
-```php
-trait LogsActivity
-{
-    protected static function bootLogsActivity()
-    {
-        static::created(function ($model) {
-            ActivityLog::create([
-                'user_id' => auth()->id(),
-                'action' => 'created',
-                'model_type' => get_class($model),
-                'model_id' => $model->id,
-                'description' => "Created {$model->getTable()} #{$model->id}",
-                'ip_address' => request()->ip(),
-                'user_agent' => request()->userAgent(),
-                'new_values' => $model->getAttributes(),
-            ]);
-        });
-        
-        static::updated(function ($model) {
-            ActivityLog::create([
-                'user_id' => auth()->id(),
-                'action' => 'updated',
-                'model_type' => get_class($model),
-                'model_id' => $model->id,
-                'description' => "Updated {$model->getTable()} #{$model->id}",
-                'ip_address' => request()->ip(),
-                'user_agent' => request()->userAgent(),
-                'old_values' => $model->getOriginal(),
-                'new_values' => $model->getChanges(),
-            ]);
-        });
-        
-        static::deleted(function ($model) {
-            ActivityLog::create([
-                'user_id' => auth()->id(),
-                'action' => 'deleted',
-                'model_type' => get_class($model),
-                'model_id' => $model->id,
-                'description' => "Deleted {$model->getTable()} #{$model->id}",
-                'ip_address' => request()->ip(),
-                'user_agent' => request()->userAgent(),
-                'old_values' => $model->getAttributes(),
-            ]);
-        });
-    }
-}
-```
-
-**Archiving Old Logs**:
-```php
-// Scheduled command
-Schedule::command('activity-logs:archive')->daily();
-
-class ArchiveActivityLogsCommand extends Command
-{
-    public function handle()
-    {
-        $threshold = now()->subDays(90);
-        $count = ActivityLog::where('created_at', '<', $threshold)->count();
-        
-        if ($count > 10000) {
-            // Archive to file or separate table
-            $logs = ActivityLog::where('created_at', '<', $threshold)->get();
-            Storage::put("activity-logs/archive-{$threshold->format('Y-m-d')}.json", $logs->toJson());
-            
-            // Delete archived logs
-            ActivityLog::where('created_at', '<', $threshold)->delete();
-            
-            $this->info("Archived {$count} activity logs");
-        }
-    }
-}
-```
-
-### 33. Backup and Restore System
-
-**Design Decision**: Automated SQLite database backups with cloud storage support.
-
-**Backup Command**:
-```php
-class BackupDatabaseCommand extends Command
-{
-    protected $signature = 'db:backup {--cloud : Upload to cloud storage}';
-    
-    public function handle()
-    {
-        $dbPath = database_path('database.sqlite');
-        $backupName = 'backup-' . now()->format('Y-m-d-His') . '.sqlite';
-        $backupPath = storage_path("app/backups/{$backupName}");
-        
-        // Create backup directory if not exists
-        if (!File::exists(storage_path('app/backups'))) {
-            File::makeDirectory(storage_path('app/backups'), 0755, true);
-        }
-        
-        // Copy database file
-        File::copy($dbPath, $backupPath);
-        
-        $this->info("Database backed up to: {$backupPath}");
-        
-        // Upload to cloud if requested
-        if ($this->option('cloud') && config('filesystems.cloud')) {
-            Storage::cloud()->put("backups/{$backupName}", File::get($backupPath));
-            $this->info("Backup uploaded to cloud storage");
-        }
-        
-        // Clean old backups (keep last 30 days)
-        $this->cleanOldBackups();
-    }
-    
-    private function cleanOldBackups()
-    {
-        $files = File::files(storage_path('app/backups'));
-        $threshold = now()->subDays(30);
-        
-        foreach ($files as $file) {
-            if (File::lastModified($file) < $threshold->timestamp) {
-                File::delete($file);
-            }
-        }
-    }
-}
-```
-
-**Restore Command**:
-```php
-class RestoreDatabaseCommand extends Command
-{
-    protected $signature = 'db:restore {backup : Backup filename}';
-    
-    public function handle()
-    {
-        $backupPath = storage_path("app/backups/{$this->argument('backup')}");
-        
-        if (!File::exists($backupPath)) {
-            $this->error("Backup file not found: {$backupPath}");
-            return 1;
-        }
-        
-        if (!$this->confirm('This will overwrite the current database. Continue?')) {
-            return 0;
-        }
-        
-        $dbPath = database_path('database.sqlite');
-        
-        // Create backup of current database
-        File::copy($dbPath, $dbPath . '.before-restore');
-        
-        // Restore backup
-        File::copy($backupPath, $dbPath);
-        
-        $this->info("Database restored from: {$backupPath}");
-    }
-}
-```
-
-**Scheduler Configuration**:
-```php
-Schedule::command('db:backup --cloud')->dailyAt('02:00');
-```
-
-### 34. Two-Factor Authentication
-
-**Design Decision**: TOTP-based 2FA with backup codes.
-
-**User Model Enhancement**:
-```php
-class User extends Authenticatable
-{
-    protected $fillable = [
-        // ... existing fields
-        'two_factor_secret', 'two_factor_recovery_codes',
-        'two_factor_confirmed_at'
-    ];
-    
-    protected $casts = [
-        'two_factor_recovery_codes' => 'array',
-        'two_factor_confirmed_at' => 'datetime',
-    ];
-    
-    protected $hidden = [
-        'password', 'two_factor_secret', 'two_factor_recovery_codes',
-    ];
-    
-    public function hasTwoFactorEnabled(): bool
-    {
-        return !is_null($this->two_factor_confirmed_at);
-    }
-}
-```
-
-**2FA Service**:
-```php
-use PragmaRX\Google2FA\Google2FA;
-
-class TwoFactorAuthService
-{
-    private Google2FA $google2fa;
-    
-    public function __construct()
-    {
-        $this->google2fa = new Google2FA();
-    }
-    
-    public function generateSecret(): string
-    {
-        return $this->google2fa->generateSecretKey();
-    }
-    
-    public function getQRCodeUrl(User $user, string $secret): string
-    {
-        return $this->google2fa->getQRCodeUrl(
-            config('app.name'),
-            $user->email,
-            $secret
-        );
-    }
-    
-    public function verify(string $secret, string $code): bool
-    {
-        return $this->google2fa->verifyKey($secret, $code);
-    }
-    
-    public function generateRecoveryCodes(): array
-    {
-        $codes = [];
-        for ($i = 0; $i < 10; $i++) {
-            $codes[] = Str::random(10);
-        }
-        return $codes;
-    }
-}
-```
-
-**2FA Middleware**:
-```php
-class RequireTwoFactorAuth
-{
-    public function handle($request, Closure $next)
-    {
-        $user = $request->user();
-        
-        if ($user && $user->hasTwoFactorEnabled() && !session('2fa_verified')) {
-            return redirect()->route('two-factor.challenge');
-        }
-        
-        return $next($request);
-    }
-}
-```
-
-### 35. Content Import and Export
-
-**Design Decision**: Support WordPress XML, JSON, and Markdown formats.
-
-**Import Service**:
-```php
-class ContentImportService
-{
-    public function importWordPress(string $xmlPath): array
-    {
-        $xml = simplexml_load_file($xmlPath);
-        $imported = ['posts' => 0, 'categories' => 0, 'tags' => 0];
-        
-        // Import categories
-        foreach ($xml->xpath('//wp:category') as $wpCategory) {
-            $category = Category::firstOrCreate([
-                'slug' => (string) $wpCategory->{'wp:category_nicename'}
-            ], [
-                'name' => (string) $wpCategory->{'wp:cat_name'},
-                'description' => (string) $wpCategory->{'wp:category_description'},
-            ]);
-            $imported['categories']++;
-        }
-        
-        // Import posts
-        foreach ($xml->channel->item as $item) {
-            if ((string) $item->children('wp', true)->post_type !== 'post') {
-                continue;
-            }
-            
-            $post = Post::create([
-                'title' => (string) $item->title,
-                'slug' => Str::slug((string) $item->title),
-                'content' => (string) $item->children('content', true)->encoded,
-                'excerpt' => (string) $item->children('excerpt', true)->encoded,
-                'status' => (string) $item->children('wp', true)->status === 'publish' ? 'published' : 'draft',
-                'published_at' => (string) $item->pubDate,
-                'user_id' => auth()->id(),
-            ]);
-            
-            // Import tags
-            foreach ($item->category as $category) {
-                if ((string) $category['domain'] === 'post_tag') {
-                    $tag = Tag::firstOrCreate([
-                        'slug' => Str::slug((string) $category)
-                    ], [
-                        'name' => (string) $category
-                    ]);
-                    $post->tags()->attach($tag->id);
-                    $imported['tags']++;
-                }
-            }
-            
-            $imported['posts']++;
-        }
-        
-        return $imported;
-    }
-    
-    public function importMarkdown(string $filePath): Post
-    {
-        $content = File::get($filePath);
-        
-        // Parse YAML frontmatter
-        preg_match('/^---\n(.*?)\n---\n(.*)$/s', $content, $matches);
-        $frontmatter = Yaml::parse($matches[1] ?? '');
-        $markdown = $matches[2] ?? $content;
-        
-        return Post::create([
-            'title' => $frontmatter['title'] ?? 'Untitled',
-            'slug' => $frontmatter['slug'] ?? Str::slug($frontmatter['title'] ?? 'untitled'),
-            'content' => Str::markdown($markdown),
-            'excerpt' => $frontmatter['excerpt'] ?? '',
-            'status' => $frontmatter['status'] ?? 'draft',
-            'published_at' => $frontmatter['date'] ?? now(),
-            'user_id' => auth()->id(),
-        ]);
-    }
-}
-```
-
-**Export Service**:
-```php
-class ContentExportService
-{
-    public function exportToJson(): string
-    {
-        $data = [
-            'posts' => Post::with(['author', 'category', 'tags'])->get(),
-            'categories' => Category::all(),
-            'tags' => Tag::all(),
-            'pages' => Page::all(),
-        ];
-        
-        return json_encode($data, JSON_PRETTY_PRINT);
-    }
-    
-    public function exportToZip(): string
-    {
-        $zip = new ZipArchive();
-        $filename = storage_path('app/exports/export-' . now()->format('Y-m-d-His') . '.zip');
-        
-        if ($zip->open($filename, ZipArchive::CREATE) !== true) {
-            throw new \Exception('Cannot create zip file');
-        }
-        
-        // Add JSON data
-        $zip->addFromString('data.json', $this->exportToJson());
-        
-        // Add media files
-        $media = Media::all();
-        foreach ($media as $item) {
-            $path = storage_path("app/public/{$item->path}");
-            if (File::exists($path)) {
-                $zip->addFile($path, "media/{$item->filename}");
-            }
-        }
-        
-        $zip->close();
-        
-        return $filename;
-    }
-}
-```
-
-### 36. Post Revision System
-
-**Design Decision**: Automatic revision creation on update with diff comparison.
-
-**PostRevision Model**:
-```php
-class PostRevision extends Model
-{
-    protected $fillable = [
-        'post_id', 'user_id', 'title', 'content',
-        'excerpt', 'revision_number'
-    ];
-    
-    public function post(): BelongsTo;
-    public function author(): BelongsTo;
-}
-```
-
-**Revision Service**:
-```php
-class PostRevisionService
-{
-    private const MAX_REVISIONS = 25;
-    
-    public function createRevision(Post $post): PostRevision
-    {
-        $revisionNumber = $post->revisions()->max('revision_number') + 1;
-        
-        $revision = PostRevision::create([
-            'post_id' => $post->id,
-            'user_id' => auth()->id(),
-            'title' => $post->getOriginal('title'),
-            'content' => $post->getOriginal('content'),
-            'excerpt' => $post->getOriginal('excerpt'),
-            'revision_number' => $revisionNumber,
-        ]);
-        
-        // Clean old revisions
-        $this->cleanOldRevisions($post);
-        
-        return $revision;
-    }
-    
-    private function cleanOldRevisions(Post $post): void
-    {
-        $count = $post->revisions()->count();
-        
-        if ($count > self::MAX_REVISIONS) {
-            $post->revisions()
-                ->orderBy('created_at')
-                ->limit($count - self::MAX_REVISIONS)
-                ->delete();
-        }
-    }
-    
-    public function restore(PostRevision $revision): Post
-    {
-        $post = $revision->post;
-        
-        // Create revision of current state before restoring
-        $this->createRevision($post);
-        
-        $post->update([
-            'title' => $revision->title,
-            'content' => $revision->content,
-            'excerpt' => $revision->excerpt,
-        ]);
-        
-        return $post;
-    }
-    
-    public function diff(PostRevision $from, PostRevision $to): array
-    {
-        return [
-            'title' => $this->generateDiff($from->title, $to->title),
-            'content' => $this->generateDiff($from->content, $to->content),
-        ];
-    }
-    
-    private function generateDiff(string $old, string $new): string
-    {
-        // Use a diff library like sebastian/diff
-        $differ = new \SebastianBergmann\Diff\Differ();
-        return $differ->diff($old, $new);
-    }
-}
-```
-
-### 37. Post Series Management
-
-**Design Decision**: Series as separate model with ordered post relationships.
-
-**Series Model**:
+#### Series Model
 ```php
 class Series extends Model
 {
-    protected $fillable = ['name', 'slug', 'description'];
+    // Attributes
+    - id: int
+    - name: string
+    - slug: string (unique)
+    - description: text (nullable)
+    - image: string (nullable)
+    - timestamps
     
-    public function posts(): BelongsToMany
-    {
-        return $this->belongsToMany(Post::class)
-            ->withPivot('order')
-            ->orderBy('order');
-    }
+    // Relationships
+    - posts(): hasMany(Post)
+    
+    // Methods
+    + getPostCount(): int
+    + getOrderedPosts(): Collection
 }
 ```
 
-**Series Navigation Component**:
-```php
-class SeriesNavigationService
-{
-    public function getNavigation(Post $post): ?array
-    {
-        $series = $post->series;
-        
-        if (!$series) {
-            return null;
-        }
-        
-        $posts = $series->posts;
-        $currentIndex = $posts->search(fn($p) => $p->id === $post->id);
-        
-        return [
-            'series' => $series,
-            'current_position' => $currentIndex + 1,
-            'total_posts' => $posts->count(),
-            'previous' => $posts[$currentIndex - 1] ?? null,
-            'next' => $posts[$currentIndex + 1] ?? null,
-            'all_posts' => $posts,
-        ];
-    }
-}
-```
-
-### 38. Reading List and Bookmarks
-
-**Design Decision**: Bookmark model with user relationship, AJAX toggle.
-
-**Bookmark Model**:
+#### Bookmark Model
 ```php
 class Bookmark extends Model
 {
-    protected $fillable = ['user_id', 'post_id'];
+    // Attributes
+    - id: int
+    - user_id: int (foreign key)
+    - post_id: int (foreign key)
+    - collection_id: int (nullable, foreign key)
+    - timestamps
     
-    public function user(): BelongsTo;
-    public function post(): BelongsTo;
+    // Relationships
+    - user(): belongsTo(User)
+    - post(): belongsTo(Post)
+    - collection(): belongsTo(BookmarkCollection)
+    
+    // Unique constraint on (user_id, post_id)
 }
 ```
 
-**Bookmark Controller**:
+#### BookmarkCollection Model
 ```php
-class BookmarkController extends Controller
+class BookmarkCollection extends Model
 {
-    public function toggle(Post $post)
-    {
-        $user = auth()->user();
-        
-        $bookmark = Bookmark::where('user_id', $user->id)
-            ->where('post_id', $post->id)
-            ->first();
-        
-        if ($bookmark) {
-            $bookmark->delete();
-            return response()->json(['bookmarked' => false]);
-        }
-        
-        Bookmark::create([
-            'user_id' => $user->id,
-            'post_id' => $post->id,
-        ]);
-        
-        return response()->json(['bookmarked' => true]);
-    }
+    // Attributes
+    - id: int
+    - user_id: int (foreign key)
+    - name: string
+    - description: text (nullable)
+    - is_public: boolean (default false)
+    - timestamps
     
-    public function index()
-    {
-        $bookmarks = auth()->user()
-            ->bookmarks()
-            ->with('post')
-            ->latest()
-            ->paginate(20);
-        
-        return view('bookmarks.index', compact('bookmarks'));
-    }
+    // Relationships
+    - user(): belongsTo(User)
+    - bookmarks(): hasMany(Bookmark)
+    
+    // Methods
+    + getBookmarkCount(): int
 }
 ```
 
-### 39. Advanced Search with Filters
-
-**Design Decision**: Query builder with multiple filter support.
-
-**Advanced Search Service**:
-```php
-class AdvancedSearchService
-{
-    public function search(array $filters): Collection
-    {
-        $query = Post::query()->where('status', 'published');
-        
-        // Text search
-        if (!empty($filters['q'])) {
-            $query->where(function ($q) use ($filters) {
-                $q->where('title', 'LIKE', "%{$filters['q']}%")
-                  ->orWhere('content', 'LIKE', "%{$filters['q']}%");
-            });
-        }
-        
-        // Date range
-        if (!empty($filters['date_from'])) {
-            $query->where('published_at', '>=', $filters['date_from']);
-        }
-        if (!empty($filters['date_to'])) {
-            $query->where('published_at', '<=', $filters['date_to']);
-        }
-        
-        // Author filter
-        if (!empty($filters['author'])) {
-            $query->where('user_id', $filters['author']);
-        }
-        
-        // Category filter (including subcategories)
-        if (!empty($filters['category'])) {
-            $category = Category::find($filters['category']);
-            $categoryIds = $this->getCategoryWithDescendants($category);
-            $query->whereIn('category_id', $categoryIds);
-        }
-        
-        // Tag filter
-        if (!empty($filters['tags'])) {
-            $query->whereHas('tags', function ($q) use ($filters) {
-                $q->whereIn('tags.id', (array) $filters['tags']);
-            });
-        }
-        
-        return $query->with(['author', 'category', 'tags'])
-            ->paginate(15);
-    }
-    
-    private function getCategoryWithDescendants(Category $category): array
-    {
-        $ids = [$category->id];
-        
-        foreach ($category->children as $child) {
-            $ids = array_merge($ids, $this->getCategoryWithDescendants($child));
-        }
-        
-        return $ids;
-    }
-}
-```
-
-### 40. Content Calendar
-
-**Design Decision**: Full calendar view with drag-and-drop scheduling.
-
-**Calendar Controller**:
-```php
-class ContentCalendarController extends Controller
-{
-    public function index(Request $request)
-    {
-        $month = $request->input('month', now()->month);
-        $year = $request->input('year', now()->year);
-        
-        $posts = Post::whereYear('published_at', $year)
-            ->whereMonth('published_at', $month)
-            ->orWhere(function ($q) use ($year, $month) {
-                $q->whereYear('scheduled_at', $year)
-                  ->whereMonth('scheduled_at', $month);
-            })
-            ->with('author')
-            ->get();
-        
-        return view('admin.calendar', compact('posts', 'month', 'year'));
-    }
-    
-    public function updateDate(Post $post, Request $request)
-    {
-        $validated = $request->validate([
-            'date' => 'required|date',
-        ]);
-        
-        if ($post->status === 'scheduled') {
-            $post->update(['scheduled_at' => $validated['date']]);
-        } else {
-            $post->update(['published_at' => $validated['date']]);
-        }
-        
-        return response()->json(['success' => true]);
-    }
-}
-```
-
-### 41. Notification System
-
-**Design Decision**: Database notifications with real-time updates.
-
-**Notification Model**:
-```php
-class Notification extends Model
-{
-    protected $fillable = [
-        'user_id', 'type', 'data', 'read_at'
-    ];
-    
-    protected $casts = [
-        'data' => 'array',
-        'read_at' => 'datetime',
-    ];
-    
-    public function user(): BelongsTo;
-    
-    public function markAsRead(): void
-    {
-        $this->update(['read_at' => now()]);
-    }
-}
-```
-
-**Notification Service**:
-```php
-class NotificationService
-{
-    public function notifyNewComment(Comment $comment): void
-    {
-        Notification::create([
-            'user_id' => $comment->post->user_id,
-            'type' => 'new_comment',
-            'data' => [
-                'comment_id' => $comment->id,
-                'post_id' => $comment->post_id,
-                'commenter_name' => $comment->author_name,
-                'message' => "New comment on your post: {$comment->post->title}",
-            ],
-        ]);
-    }
-    
-    public function getUnreadCount(User $user): int
-    {
-        return $user->notifications()->whereNull('read_at')->count();
-    }
-}
-```
-
-### 42. GDPR Compliance Features
-
-**Design Decision**: Cookie consent, data export, right to be forgotten.
-
-**GDPR Service**:
-```php
-class GdprService
-{
-    public function exportUserData(User $user): array
-    {
-        return [
-            'user' => $user->only(['name', 'email', 'created_at']),
-            'posts' => $user->posts,
-            'comments' => $user->comments,
-            'bookmarks' => $user->bookmarks()->with('post')->get(),
-            'activity_logs' => ActivityLog::where('user_id', $user->id)->get(),
-        ];
-    }
-    
-    public function deleteUserData(User $user): void
-    {
-        // Anonymize comments instead of deleting
-        $user->comments()->update([
-            'author_name' => 'Anonymous',
-            'author_email' => 'deleted@example.com',
-            'user_id' => null,
-        ]);
-        
-        // Delete bookmarks
-        $user->bookmarks()->delete();
-        
-        // Anonymize activity logs
-        ActivityLog::where('user_id', $user->id)->update([
-            'user_id' => null,
-            'ip_address' => '0.0.0.0',
-        ]);
-        
-        // Delete user account
-        $user->delete();
-    }
-}
-```
-
-**Cookie Consent Component**:
-```html
-<div x-data="cookieConsent()" x-show="!hasConsent" x-cloak>
-    <div class="fixed bottom-0 left-0 right-0 bg-gray-900 text-white p-4">
-        <p>We use cookies to improve your experience. By using our site, you agree to our cookie policy.</p>
-        <div class="flex gap-4 mt-2">
-            <button @click="accept" class="btn-primary">Accept</button>
-            <button @click="decline" class="btn-secondary">Decline</button>
-        </div>
-    </div>
-</div>
-
-<script>
-function cookieConsent() {
-    return {
-        hasConsent: localStorage.getItem('cookie_consent') !== null,
-        
-        accept() {
-            localStorage.setItem('cookie_consent', 'accepted');
-            this.hasConsent = true;
-        },
-        
-        decline() {
-            localStorage.setItem('cookie_consent', 'declined');
-            this.hasConsent = true;
-            // Disable tracking scripts
-        }
-    }
-}
-</script>
-```
-
-### 43. Performance Monitoring Dashboard
-
-**Design Decision**: Custom performance metrics tracking.
-
-**Performance Metrics Service**:
-```php
-class PerformanceMetricsService
-{
-    public function trackPageLoad(float $loadTime, string $url): void
-    {
-        Cache::increment('perf.page_loads');
-        Cache::increment('perf.total_load_time', $loadTime);
-    }
-    
-    public function getAverageLoadTime(): float
-    {
-        $total = Cache::get('perf.total_load_time', 0);
-        $count = Cache::get('perf.page_loads', 1);
-        
-        return $total / $count;
-    }
-    
-    public function trackSlowQuery(string $sql, float $time): void
-    {
-        if ($time > 100) { // milliseconds
-            Log::warning('Slow query detected', [
-                'sql' => $sql,
-                'time' => $time,
-            ]);
-        }
-    }
-    
-    public function getCacheStats(): array
-    {
-        return [
-            'hits' => Cache::get('cache.hits', 0),
-            'misses' => Cache::get('cache.misses', 0),
-            'ratio' => $this->getCacheHitRatio(),
-        ];
-    }
-    
-    private function getCacheHitRatio(): float
-    {
-        $hits = Cache::get('cache.hits', 0);
-        $misses = Cache::get('cache.misses', 0);
-        $total = $hits + $misses;
-        
-        return $total > 0 ? ($hits / $total) * 100 : 0;
-    }
-}
-```
-
-### 44. Sitemap Generation
-
-**Design Decision**: Automatic sitemap with index for large sites.
-
-**Sitemap Service** (Enhanced):
-```php
-class SitemapService
-{
-    private const MAX_URLS_PER_SITEMAP = 50000;
-    
-    public function generate(): void
-    {
-        $postCount = Post::published()->count();
-        
-        if ($postCount > self::MAX_URLS_PER_SITEMAP) {
-            $this->generateSitemapIndex();
-        } else {
-            $this->generateSingleSitemap();
-        }
-    }
-    
-    private function generateSingleSitemap(): void
-    {
-        $sitemap = Sitemap::create();
-        
-        // Add homepage
-        $sitemap->add(Url::create('/')
-            ->setPriority(1.0)
-            ->setChangeFrequency(Url::CHANGE_FREQUENCY_DAILY));
-        
-        // Add posts
-        Post::published()->chunk(1000, function ($posts) use ($sitemap) {
-            foreach ($posts as $post) {
-                $sitemap->add(
-                    Url::create(route('posts.show', $post->slug))
-                        ->setLastModificationDate($post->updated_at)
-                        ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
-                        ->setPriority(0.8)
-                );
-            }
-        });
-        
-        // Add categories, pages, tags...
-        
-        $sitemap->writeToFile(public_path('sitemap.xml'));
-    }
-    
-    private function generateSitemapIndex(): void
-    {
-        // Generate multiple sitemaps and index
-        // Implementation for large sites
-    }
-}
-```
-
-### 45. Rate Limiting and Throttling
-
-**Design Decision**: Laravel's built-in rate limiter with custom limits per endpoint.
-
-**Rate Limit Configuration**:
-```php
-// In bootstrap/app.php
-use Illuminate\Cache\RateLimiting\Limit;
-use Illuminate\Support\Facades\RateLimiter;
-
-RateLimiter::for('login', function (Request $request) {
-    return Limit::perMinute(5)->by($request->ip());
-});
-
-RateLimiter::for('comments', function (Request $request) {
-    return Limit::perMinute(3)->by($request->ip());
-});
-
-RateLimiter::for('api', function (Request $request) {
-    return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip())
-        ->response(function () {
-            return response()->json([
-                'message' => 'Too many requests',
-            ], 429);
-        });
-});
-```
-
-**Rate Limit Middleware Usage**:
-```php
-Route::post('/login', [AuthController::class, 'login'])
-    ->middleware('throttle:login');
-
-Route::post('/comments', [CommentController::class, 'store'])
-    ->middleware('throttle:comments');
-```
-
-### 46. Maintenance Mode
-
-**Design Decision**: Laravel's built-in maintenance mode with custom page and bypass.
-
-**Maintenance Controller**:
-```php
-class MaintenanceController extends Controller
-{
-    public function enable(Request $request)
-    {
-        $secret = Str::random(32);
-        
-        Artisan::call('down', [
-            '--secret' => $secret,
-            '--retry' => 60,
-        ]);
-        
-        return response()->json([
-            'message' => 'Maintenance mode enabled',
-            'bypass_url' => url("/{$secret}"),
-        ]);
-    }
-    
-    public function disable()
-    {
-        Artisan::call('up');
-        
-        return response()->json([
-            'message' => 'Maintenance mode disabled',
-        ]);
-    }
-    
-    public function addAllowedIp(Request $request)
-    {
-        $validated = $request->validate([
-            'ip' => 'required|ip',
-        ]);
-        
-        // Store allowed IPs in config or database
-        Setting::set('maintenance.allowed_ips', 
-            array_merge(
-                Setting::get('maintenance.allowed_ips', []),
-                [$validated['ip']]
-            )
-        );
-    }
-}
-```
-
-**Custom Maintenance Page**:
-```blade
-{{-- resources/views/errors/503.blade.php --}}
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Site Maintenance</title>
-    <style>
-        body {
-            font-family: sans-serif;
-            text-align: center;
-            padding: 50px;
-        }
-    </style>
-</head>
-<body>
-    <h1>We'll be back soon!</h1>
-    <p>We're performing scheduled maintenance. We'll be back online shortly.</p>
-    @if(isset($retryAfter))
-        <p>Please check back in {{ $retryAfter }} seconds.</p>
-    @endif
-</body>
-</html>
-```
-
-### 47. Broken Link Checker
-
-**Design Decision**: Scheduled job to check external links.
-
-**Broken Link Checker Job**:
-```php
-class CheckBrokenLinks implements ShouldQueue
-{
-    use Queueable;
-    
-    public function handle()
-    {
-        Post::published()->chunk(100, function ($posts) {
-            foreach ($posts as $post) {
-                $this->checkPostLinks($post);
-            }
-        });
-    }
-    
-    private function checkPostLinks(Post $post): void
-    {
-        preg_match_all('/<a\s+href="(https?:\/\/[^"]+)"/', $post->content, $matches);
-        $links = $matches[1] ?? [];
-        
-        foreach ($links as $url) {
-            try {
-                $response = Http::timeout(10)->get($url);
-                
-                if ($response->failed()) {
-                    $this->reportBrokenLink($post, $url, $response->status());
-                }
-            } catch (\Exception $e) {
-                $this->reportBrokenLink($post, $url, 0);
-            }
-        }
-    }
-    
-    private function reportBrokenLink(Post $post, string $url, int $statusCode): void
-    {
-        BrokenLink::updateOrCreate([
-            'post_id' => $post->id,
-            'url' => $url,
-        ], [
-            'status_code' => $statusCode,
-            'last_checked_at' => now(),
-        ]);
-    }
-}
-```
-
-**BrokenLink Model**:
+#### BrokenLink Model
 ```php
 class BrokenLink extends Model
 {
-    protected $fillable = [
-        'post_id', 'url', 'status_code',
-        'last_checked_at', 'fixed_at', 'ignored'
-    ];
+    // Attributes
+    - id: int
+    - post_id: int (foreign key)
+    - url: string
+    - status_code: int (nullable)
+    - error_message: text (nullable)
+    - status: enum (pending, fixed, ignored)
+    - checked_at: timestamp
+    - timestamps
     
-    protected $casts = [
-        'last_checked_at' => 'datetime',
-        'fixed_at' => 'datetime',
-        'ignored' => 'boolean',
-    ];
+    // Relationships
+    - post(): belongsTo(Post)
     
-    public function post(): BelongsTo;
+    // Scopes
+    + scopePending($query)
+    + scopeFixed($query)
 }
 ```
 
-### 48. Image Alt Text Validation
+#### Poll Model
+```php
+class Poll extends Model
+{
+    // Attributes
+    - id: int
+    - question: string
+    - options: json (array of options)
+    - votes: json (array of vote counts)
+    - end_date: timestamp (nullable)
+    - is_active: boolean (default true)
+    - timestamps
+    
+    // Methods
+    + hasVoted(string $ip): bool
+    + recordVote(int $optionIndex, string $ip): void
+    + getResults(): array
+    + isExpired(): bool
+}
+```
 
-**Design Decision**: Pre-save validation with warnings.
+### Service Layer
 
-**Alt Text Validator**:
+#### PostService
+```php
+class PostService
+{
+    // Methods
+    + create(array $data): Post
+    + update(Post $post, array $data): Post
+    + publish(Post $post): Post
+    + schedule(Post $post, Carbon $date): Post
+    + archive(Post $post): Post
+    + incrementViewCount(Post $post, Request $request): void
+    + getRelatedPosts(Post $post, int $limit = 4): Collection
+    + calculateReadingTime(string $content): int
+    + generateTableOfContents(string $content): array
+    + extractHeadings(string $content): array
+}
+```
+
+#### PostRevisionService
+```php
+class PostRevisionService
+{
+    // Methods
+    + createRevision(Post $post): PostRevision
+    + getRevisions(Post $post): Collection
+    + compareRevisions(PostRevision $rev1, PostRevision $rev2): array
+    + restoreRevision(Post $post, PostRevision $revision): Post
+    + pruneOldRevisions(Post $post, int $maxRevisions = 25): void
+}
+```
+
+#### SeriesNavigationService
+```php
+class SeriesNavigationService
+{
+    // Methods
+    + getSeriesNavigation(Post $post): array
+    + getSeriesProgress(Post $post): array
+    + getNextPost(Post $post): ?Post
+    + getPreviousPost(Post $post): ?Post
+}
+```
+
+#### SearchService
+```php
+class SearchService
+{
+    // Methods
+    + search(string $query, array $filters = []): Collection
+    + autocomplete(string $query, int $limit = 5): Collection
+    + logSearch(string $query, int $resultCount): void
+    + getPopularSearches(int $limit = 10): Collection
+    + voiceSearch(string $transcript): Collection
+}
+```
+
+#### AdvancedSearchService
+```php
+class AdvancedSearchService
+{
+    // Methods
+    + searchWithFilters(string $query, array $filters): Collection
+    + filterByDateRange(Builder $query, Carbon $start, Carbon $end): Builder
+    + filterByAuthor(Builder $query, int $authorId): Builder
+    + filterByCategory(Builder $query, int $categoryId, bool $includeSubcategories = true): Builder
+    + applyMultipleFilters(Builder $query, array $filters): Builder
+}
+```
+
+#### CacheService
+```php
+class CacheService
+{
+    // Methods
+    + rememberPost(int $postId, Closure $callback): Post
+    + rememberCategory(int $categoryId, Closure $callback): Category
+    + rememberSettings(): Collection
+    + clearPostCache(Post $post): void
+    + clearCategoryCache(Category $category): void
+    + clearAllCache(): void
+}
+```
+
+#### ImageProcessingService
+```php
+class ImageProcessingService
+{
+    // Methods
+    + upload(UploadedFile $file): Media
+    + generateVariants(Media $media): void
+    + optimize(string $path): void
+    + convertToWebP(string $path): string
+    + stripExif(string $path): void
+    + resize(string $path, int $width, int $height): void
+    + generateQRCode(string $url): string
+}
+```
+
+#### AltTextValidator
 ```php
 class AltTextValidator
 {
-    public function validate(string $content): array
-    {
-        $issues = [];
-        
-        preg_match_all('/<img[^>]+>/', $content, $matches);
-        
-        foreach ($matches[0] as $img) {
-            if (!preg_match('/alt=["\']([^"\']*)["\']/', $img, $altMatch)) {
-                $issues[] = 'Image missing alt attribute';
-            } elseif (empty(trim($altMatch[1]))) {
-                $issues[] = 'Image has empty alt attribute';
-            }
-        }
-        
-        return $issues;
-    }
+    // Methods
+    + validatePostImages(Post $post): array
+    + findImagesWithoutAltText(string $content): array
+    + generateAccessibilityReport(): Collection
+    + bulkUpdateAltText(array $updates): void
 }
 ```
 
-**Post Form Request**:
+#### NotificationService
 ```php
-class StorePostRequest extends FormRequest
+class NotificationService
 {
-    public function withValidator($validator)
-    {
-        $validator->after(function ($validator) {
-            $altTextValidator = new AltTextValidator();
-            $issues = $altTextValidator->validate($this->content);
-            
-            if (!empty($issues)) {
-                session()->flash('alt_text_warnings', $issues);
-            }
-        });
-    }
+    // Methods
+    + notifyCommentApproved(Comment $comment): void
+    + notifyCommentReply(Comment $comment): void
+    + notifyPostPublished(Post $post): void
+    + notifyScheduledPost(Post $post): void
+    + sendWelcomeEmail(User $user): void
 }
 ```
 
-### 49. Multi-language Support
-
-**Design Decision**: Laravel localization with language switcher.
-
-**Language Configuration**:
+#### SpamDetectionService
 ```php
-// config/app.php
-'locale' => 'en',
-'fallback_locale' => 'en',
-'available_locales' => ['en', 'es', 'fr', 'de', 'ar'],
+class SpamDetectionService
+{
+    // Methods
+    + isSpam(string $content, string $email, string $ip): bool
+    + checkLinkCount(string $content): bool
+    + checkBlacklist(string $content): bool
+    + checkSubmissionSpeed(string $ip): bool
+    + checkHoneypot(Request $request): bool
+    + blockIp(string $ip, int $minutes): void
+}
 ```
 
-**Language Middleware**:
+#### BrokenLinkChecker
 ```php
-class SetLocale
+class BrokenLinkChecker
 {
-    public function handle($request, Closure $next)
-    {
-        $locale = $request->cookie('locale') 
-            ?? $request->user()?->locale 
-            ?? config('app.locale');
-        
-        if (in_array($locale, config('app.available_locales'))) {
-            app()->setLocale($locale);
-        }
-        
-        return $next($request);
-    }
+    // Methods
+    + scanPost(Post $post): array
+    + checkUrl(string $url): array
+    + markAsBroken(Post $post, string $url, int $statusCode): BrokenLink
+    + generateReport(): Collection
+    + fixBrokenLink(BrokenLink $link, string $newUrl): void
 }
 ```
 
-**Post Translation**:
+#### GdprService
 ```php
-class PostTranslation extends Model
+class GdprService
 {
-    protected $fillable = [
-        'post_id', 'locale', 'title', 'content', 'excerpt'
-    ];
-    
-    public function post(): BelongsTo;
+    // Methods
+    + exportUserData(User $user): array
+    + anonymizeUser(User $user): void
+    + deleteUserData(User $user): void
+    + recordConsent(string $ip, array $preferences): void
+    + withdrawConsent(string $ip): void
 }
+```
 
-// In Post model
-public function translations(): HasMany
+#### PerformanceMetricsService
+```php
+class PerformanceMetricsService
 {
-    return $this->hasMany(PostTranslation::class);
+    // Methods
+    + recordPageLoad(string $url, float $loadTime): void
+    + recordQueryTime(string $query, float $executionTime): void
+    + getCacheHitRate(int $days = 7): array
+    + getSlowQueries(int $threshold = 100): Collection
+    + getAverageLoadTime(int $hours = 24): float
+    + getMemoryUsage(): array
 }
+```
 
-public function translate(string $locale): ?PostTranslation
+#### SitemapService
+```php
+class SitemapService
 {
-    return $this->translations()->where('locale', $locale)->first();
+    // Methods
+    + generate(): void
+    + addPost(Post $post): void
+    + addCategory(Category $category): void
+    + addPage(Page $page): void
+    + addTag(Tag $tag): void
+    + splitSitemap(int $maxUrls = 50000): array
 }
 ```
 
-**RTL Support**:
-```html
-<html dir="{{ in_array(app()->getLocale(), ['ar', 'he']) ? 'rtl' : 'ltr' }}">
+### Controllers
+
+#### Frontend Controllers
+
+**HomeController**
+- index(): Display homepage with featured posts, breaking news, and category sections
+- search(): Handle search requests with filters
+
+**PostController**
+- index(): List all published posts with pagination
+- show(Post $post): Display single post with comments and related posts
+- incrementView(Post $post): Track post views via AJAX
+
+**CategoryController**
+- show(Category $category): Display category page with filtered posts
+
+**TagController**
+- show(Tag $tag): Display tag page with associated posts
+
+**CommentController**
+- store(Request $request, Post $post): Submit new comment
+- reply(Request $request, Comment $comment): Reply to comment
+
+**BookmarkController**
+- index(): Display user's bookmarked posts
+- store(Post $post): Add post to bookmarks
+- destroy(Post $post): Remove post from bookmarks
+- toggle(Post $post): Toggle bookmark status via AJAX
+
+**BookmarkCollectionController**
+- index(): List user's bookmark collections
+- store(Request $request): Create new collection
+- update(BookmarkCollection $collection): Update collection
+- destroy(BookmarkCollection $collection): Delete collection
+- addPost(BookmarkCollection $collection, Post $post): Add post to collection
+
+**SeriesController**
+- show(Series $series): Display series landing page with all posts
+- progress(Series $series, Post $post): Track user progress in series
+
+**NewsletterController**
+- subscribe(Request $request): Handle newsletter subscription
+- verify(string $token): Verify email subscription
+- unsubscribe(string $token): Handle unsubscribe requests
+- export(): Export verified subscribers as CSV
+
+**NotificationController**
+- index(): Display user notifications
+- markAsRead(Notification $notification): Mark single notification as read
+- markAllAsRead(): Mark all notifications as read
+- destroy(Notification $notification): Delete notification
+
+**GdprController**
+- exportData(): Export user's personal data
+- deleteAccount(): Request account deletion
+- consent(): Display and manage cookie consent preferences
+
+**ReadingHistoryController**
+- index(): Display user's reading history
+- track(Post $post): Record post view in history
+- clear(): Clear all reading history
+
+#### Admin Controllers (Nova Resources)
+
+**PostResource**
+- fields(): Define post fields for Nova
+- filters(): Category, tag, status, author, series filters
+- actions(): Publish, schedule, archive, mark as breaking, mark as editor's pick actions
+- lenses(): Popular posts, scheduled posts, breaking news, editor's picks
+
+**SeriesResource**
+- fields(): Define series fields with post relationship
+- actions(): Reorder posts in series
+
+**BrokenLinkResource**
+- fields(): Define broken link fields with post reference
+- filters(): Status filter
+- actions(): Mark as fixed, mark as ignored, bulk fix
+
+**PollResource**
+- fields(): Define poll fields with options and results
+- actions(): Activate, deactivate, reset votes
+
+**CategoryResource**
+- fields(): Define category fields with parent selector
+- actions(): Reorder categories
+
+**UserResource**
+- fields(): Define user fields with role selector
+- filters(): Role, status filters
+- actions(): Suspend user, reset password
+
+**MediaResource**
+- fields(): Define media fields with preview
+- actions(): Bulk delete, regenerate thumbnails
+
+### View Components
+
+#### Layout Components
+
+**Header Component**
+```blade
+<x-layout.header>
+    - Logo
+    - Main navigation menu
+    - Search bar
+    - User account dropdown
+    - Dark mode toggle
+    - Mobile menu button
+</x-layout.header>
 ```
 
-### 50. Progressive Web App Features
-
-**Design Decision**: Service worker for offline support, web manifest for installability.
-
-**Web Manifest** (`public/manifest.json`):
-```json
-{
-    "name": "TechNewsHub",
-    "short_name": "TechNews",
-    "description": "Technology news and blog platform",
-    "start_url": "/",
-    "display": "standalone",
-    "background_color": "#ffffff",
-    "theme_color": "#3b82f6",
-    "icons": [
-        {
-            "src": "/images/icon-192.png",
-            "sizes": "192x192",
-            "type": "image/png"
-        },
-        {
-            "src": "/images/icon-512.png",
-            "sizes": "512x512",
-            "type": "image/png"
-        }
-    ]
-}
+**Footer Component**
+```blade
+<x-layout.footer>
+    - Footer navigation
+    - Newsletter signup form
+    - Social media links
+    - Copyright information
+</x-layout.footer>
 ```
 
-**Service Worker** (`public/sw.js`):
-```javascript
-const CACHE_NAME = 'technewshub-v1';
-const urlsToCache = [
-    '/',
-    '/css/app.css',
-    '/js/app.js',
-    '/offline.html'
-];
-
-self.addEventListener('install', event => {
-    event.waitUntil(
-        caches.open(CACHE_NAME)
-            .then(cache => cache.addAll(urlsToCache))
-    );
-});
-
-self.addEventListener('fetch', event => {
-    event.respondWith(
-        caches.match(event.request)
-            .then(response => {
-                if (response) {
-                    return response;
-                }
-                return fetch(event.request)
-                    .catch(() => caches.match('/offline.html'));
-            })
-    );
-});
+**Sidebar Component**
+```blade
+<x-layout.sidebar>
+    - Dynamic widget areas
+    - Recent posts widget
+    - Popular posts widget
+    - Categories widget
+    - Tags cloud widget
+    - Newsletter widget
+</x-layout.sidebar>
 ```
 
-**Service Worker Registration**:
-```javascript
-// In app.js
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js')
-        .then(registration => console.log('SW registered'))
-        .catch(error => console.log('SW registration failed', error));
-}
+#### Content Components
+
+**Post Card Component**
+```blade
+<x-post-card :post="$post">
+    - Featured image with lazy loading
+    - Category badge
+    - Title with link
+    - Excerpt
+    - Author info
+    - Publication date
+    - Reading time
+    - View count
+    - Bookmark button
+</x-post-card>
 ```
+
+**Comment Component**
+```blade
+<x-comment :comment="$comment">
+    - Author avatar
+    - Author name
+    - Comment content
+    - Timestamp
+    - Reply button
+    - Nested replies (recursive)
+</x-comment>
+```
+
+**Breaking News Ticker Component**
+```blade
+<x-breaking-news-ticker>
+    - Scrolling news items
+    - Auto-rotation every 5 seconds
+    - Click to view full article
+    - Distinctive background color and icon
+    - Auto-remove items older than 24 hours
+</x-breaking-news-ticker>
+```
+
+**Series Navigation Component**
+```blade
+<x-series-navigation :post="$post">
+    - Previous/Next post links
+    - Series progress indicator
+    - Current position in series
+    - Link to series landing page
+</x-series-navigation>
+```
+
+**Reading Progress Bar Component**
+```blade
+<x-reading-progress-bar>
+    - Fixed position at top
+    - Percentage-based width
+    - Smooth animation
+    - Based on article content height
+</x-reading-progress-bar>
+```
+
+**Font Size Controls Component**
+```blade
+<x-font-size-controls>
+    - Increase button
+    - Decrease button
+    - Reset button
+    - Current size percentage display
+    - LocalStorage persistence
+</x-font-size-controls>
+```
+
+**Image Lightbox Component**
+```blade
+<x-image-lightbox>
+    - Full-size image display
+    - Navigation arrows for galleries
+    - Caption display
+    - Close on ESC or outside click
+    - Pinch-to-zoom support
+</x-image-lightbox>
+```
+
+**Poll Widget Component**
+```blade
+<x-poll-widget :poll="$poll">
+    - Question display
+    - Answer options with radio buttons
+    - Vote button
+    - Results with percentage bars
+    - Vote count display
+    - Expired state handling
+</x-poll-widget>
+```
+
+**Countdown Timer Component**
+```blade
+<x-countdown-timer :targetDate="$date">
+    - Days, hours, minutes, seconds
+    - Real-time JavaScript updates
+    - Completion message
+    - Customizable labels
+</x-countdown-timer>
+```
+
+**Scroll to Top Button Component**
+```blade
+<x-scroll-to-top>
+    - Fixed bottom-right position
+    - Appears after 300px scroll
+    - Smooth scroll animation
+    - Fade in/out transitions
+</x-scroll-to-top>
+```
+
+**Live Updates Feed Component**
+```blade
+<x-live-updates-feed>
+    - WebSocket connection
+    - New post notifications
+    - "View new post" button
+    - Badge count for multiple updates
+    - Auto-reconnect on disconnect
+</x-live-updates-feed>
+```
+
+**Skeleton Loading Component**
+```blade
+<x-skeleton-loader :type="$type">
+    - Post card skeleton
+    - Article content skeleton
+    - Sidebar widget skeleton
+    - Shimmer animation effect
+</x-skeleton-loader>
+```
+
+**Table of Contents Component**
+```blade
+<x-table-of-contents :post="$post">
+    - Auto-generated from headings
+    - Sticky positioning
+    - Active section highlighting
+    - Smooth scroll navigation
+</x-table-of-contents>
+```
+
+### API Endpoints
+
+#### Public API (Rate Limited: 60 requests/minute)
+
+```
+GET    /api/posts                    - List published posts
+GET    /api/posts/{slug}             - Get single post
+GET    /api/categories               - List categories
+GET    /api/categories/{slug}/posts  - Get category posts
+GET    /api/tags                     - List tags
+GET    /api/tags/{slug}/posts        - Get tag posts
+GET    /api/search                   - Search posts
+```
+
+#### Authenticated API (Rate Limited: 120 requests/minute)
+
+```
+POST   /api/posts                    - Create post (Editor/Admin)
+PUT    /api/posts/{id}               - Update post
+DELETE /api/posts/{id}               - Delete post
+POST   /api/comments                 - Create comment
+POST   /api/bookmarks                - Add bookmark
+DELETE /api/bookmarks/{id}           - Remove bookmark
+```
+
+### Database Schema Design
+
+#### Core Tables
+
+**users**
+- Primary key: id
+- Indexes: email (unique), role, status
+- Foreign keys: None
+
+**posts**
+- Primary key: id
+- Indexes: slug (unique), user_id, status, published_at, is_featured, is_breaking
+- Foreign keys: user_id → users(id)
+- Full-text index: title, content, excerpt
+
+**categories**
+- Primary key: id
+- Indexes: slug (unique), parent_id, order
+- Foreign keys: parent_id → categories(id)
+
+**tags**
+- Primary key: id
+- Indexes: slug (unique)
+- Foreign keys: None
+
+**comments**
+- Primary key: id
+- Indexes: post_id, user_id, parent_id, status
+- Foreign keys: post_id → posts(id), user_id → users(id), parent_id → comments(id)
+
+**media**
+- Primary key: id
+- Indexes: user_id, mime_type
+- Foreign keys: user_id → users(id)
+
+#### Pivot Tables
+
+**category_post**
+- Composite primary key: (category_id, post_id)
+- Indexes: category_id, post_id
+- Foreign keys: category_id → categories(id), post_id → posts(id)
+
+**post_tag**
+- Composite primary key: (post_id, tag_id)
+- Indexes: post_id, tag_id
+- Foreign keys: post_id → posts(id), tag_id → tags(id)
+
+#### Supporting Tables
+
+**newsletters**
+- Primary key: id
+- Indexes: email (unique), status, verification_token
+- Foreign keys: None
+
+**post_views**
+- Primary key: id
+- Indexes: post_id, session_id, created_at
+- Foreign keys: post_id → posts(id)
+
+**bookmarks**
+- Primary key: id
+- Indexes: user_id, post_id, composite (user_id, post_id) unique
+- Foreign keys: user_id → users(id), post_id → posts(id)
+
+**post_revisions**
+- Primary key: id
+- Indexes: post_id, user_id, created_at
+- Foreign keys: post_id → posts(id), user_id → users(id)
+
+**notifications**
+- Primary key: id
+- Indexes: user_id, read_at, created_at
+- Foreign keys: user_id → users(id)
+
+**activity_logs**
+- Primary key: id
+- Indexes: user_id, subject_type, subject_id, created_at
+- Foreign keys: user_id → users(id)
+
+**settings**
+- Primary key: id
+- Indexes: key (unique)
+- Foreign keys: None
+
+**series**
+- Primary key: id
+- Indexes: slug (unique)
+- Foreign keys: None
+
+**broken_links**
+- Primary key: id
+- Indexes: post_id, status, checked_at
+- Foreign keys: post_id → posts(id)
+
 
 ## Data Models
 
-### Database Schema Overview
+### Post Content Structure
 
-**Core Tables**:
-- `users`: User accounts with roles
-- `posts`: Blog posts and articles
-- `categories`: Hierarchical post categories
-- `tags`: Flat tag system
-- `post_tag`: Pivot table for post-tag relationships
-- `comments`: User comments with nesting
-- `media`: Media library files
-- `pages`: Static pages
-- `newsletters`: Newsletter subscriptions
-- `settings`: Site configuration
-- `activity_logs`: Audit trail
-- `post_views`: Analytics tracking
-- `post_revisions`: Version history
-- `bookmarks`: User reading lists
-- `series`: Post series
-- `notifications`: User notifications
-- `contact_messages`: Contact form submissions
-- `broken_links`: Link checker results
-- `menus` & `menu_items`: Navigation menus
-- `widget_areas` & `widgets`: Sidebar widgets
+Posts use a rich content structure stored as HTML with embedded components:
 
-### Key Relationships
+```html
+<article class="prose">
+    <h2>Section Heading</h2>
+    <p>Regular paragraph content...</p>
+    
+    <!-- Pull Quote -->
+    <blockquote class="pull-quote">
+        <p>Important quote text</p>
+        <cite>Attribution</cite>
+    </blockquote>
+    
+    <!-- Image with Caption -->
+    <figure>
+        <img src="..." alt="..." loading="lazy" />
+        <figcaption>Image caption</figcaption>
+    </figure>
+    
+    <!-- Photo Gallery -->
+    <div class="gallery" data-gallery-id="1">
+        <img src="..." alt="..." />
+        <img src="..." alt="..." />
+    </div>
+    
+    <!-- Embedded Chart -->
+    <div class="chart" data-chart-type="line" data-chart-data="...">
+    </div>
+    
+    <!-- Poll Widget -->
+    <div class="poll" data-poll-id="123">
+    </div>
+    
+    <!-- Code Block -->
+    <pre><code class="language-php">
+    // Code content
+    </code></pre>
+</article>
+```
+
+### Settings Structure
+
+Settings are stored as key-value pairs with JSON values for complex settings:
+
+```json
+{
+    "site_name": "TechNewsHub",
+    "site_tagline": "Your Source for Tech News",
+    "posts_per_page": 15,
+    "comments_enabled": true,
+    "comments_require_approval": true,
+    "newsletter_enabled": true,
+    "breaking_news_duration_hours": 24,
+    "cache_duration_minutes": 10,
+    "social_links": {
+        "twitter": "https://twitter.com/...",
+        "facebook": "https://facebook.com/...",
+        "linkedin": "https://linkedin.com/..."
+    },
+    "seo_settings": {
+        "meta_title_template": "{title} | {site_name}",
+        "meta_description_default": "...",
+        "og_image_default": "/images/og-default.jpg"
+    }
+}
+```
+
+### Cache Keys Structure
 
 ```
-User
-├── hasMany: Posts (as author)
-├── hasMany: Comments
-├── hasMany: Bookmarks
-├── hasMany: Notifications
-└── hasMany: ActivityLogs
+// Post caching
+post:{id}
+post:slug:{slug}
+post:related:{id}
+post:views:{id}
 
-Post
-├── belongsTo: User (author)
-├── belongsTo: Category
-├── belongsToMany: Tags
-├── hasMany: Comments
-├── hasMany: PostViews
-├── hasMany: PostRevisions
-├── hasMany: Bookmarks
-└── belongsToMany: Series
+// Category caching
+category:{id}
+category:slug:{slug}
+category:posts:{id}
+category:tree
 
-Category
-├── belongsTo: Category (parent)
-├── hasMany: Category (children)
-└── hasMany: Posts
+// Settings caching
+settings:all
+settings:{key}
 
-Comment
-├── belongsTo: Post
-├── belongsTo: User
-├── belongsTo: Comment (parent)
-└── hasMany: Comment (replies)
+// Widget caching
+widget:{area}:{position}
+
+// Search caching
+search:{query}:{filters_hash}
 ```
 
 ## Error Handling
 
-### Exception Handling Strategy
+### Exception Hierarchy
 
-1. **Validation Errors**: Return 422 with detailed field errors
-2. **Authentication Errors**: Redirect to login with intended URL
-3. **Authorization Errors**: Return 403 with error message
-4. **Not Found Errors**: Return 404 with custom page
-5. **Server Errors**: Log error, return 500 with generic message (hide details in production)
+```
+App\Exceptions\
+├── PostNotFoundException
+├── CategoryNotFoundException
+├── UnauthorizedActionException
+├── InvalidMediaTypeException
+├── SpamDetectedException
+├── RateLimitExceededException
+└── MaintenanceModeException
+```
 
-### Custom Exception Handler
+### Error Responses
 
-```php
-class Handler extends ExceptionHandler
+**API Error Response Format**
+```json
 {
-    public function render($request, Throwable $exception)
-    {
-        if ($exception instanceof ModelNotFoundException) {
-            return response()->view('errors.404', [], 404);
-        }
-        
-        if ($exception instanceof AuthorizationException) {
-            return response()->view('errors.403', [], 403);
-        }
-        
-        if ($request->expectsJson()) {
-            return response()->json([
-                'message' => $exception->getMessage(),
-                'errors' => $exception instanceof ValidationException 
-                    ? $exception->errors() 
-                    : null,
-            ], $this->getStatusCode($exception));
-        }
-        
-        return parent::render($request, $exception);
-    }
+    "message": "Human-readable error message",
+    "errors": {
+        "field_name": [
+            "Validation error message"
+        ]
+    },
+    "code": "ERROR_CODE",
+    "status": 422
 }
 ```
 
-### Logging Strategy
+**Frontend Error Handling**
+- 404: Custom not found page with search and popular posts
+- 500: Generic error page with contact information
+- 503: Maintenance mode page with estimated return time
+- 429: Rate limit exceeded page with retry information
 
-- **Error Logs**: All exceptions logged to `storage/logs/laravel.log`
-- **Activity Logs**: User actions logged to database
-- **Performance Logs**: Slow queries logged separately
-- **Security Logs**: Failed login attempts, rate limit violations
+### Validation Rules
+
+**Post Validation**
+```php
+[
+    'title' => 'required|string|max:255',
+    'slug' => 'required|string|max:255|unique:posts,slug,' . $post->id,
+    'content' => 'required|string',
+    'excerpt' => 'nullable|string|max:500',
+    'status' => 'required|in:draft,scheduled,published,archived',
+    'published_at' => 'nullable|date',
+    'scheduled_at' => 'nullable|date|after:now',
+    'categories' => 'required|array|min:1',
+    'categories.*' => 'exists:categories,id',
+    'tags' => 'nullable|array',
+    'tags.*' => 'exists:tags,id',
+    'featured_image' => 'nullable|image|max:10240',
+    'meta_title' => 'nullable|string|max:60',
+    'meta_description' => 'nullable|string|max:160',
+]
+```
+
+**Comment Validation**
+```php
+[
+    'content' => 'required|string|min:10|max:1000',
+    'author_name' => 'required_without:user_id|string|max:100',
+    'author_email' => 'required_without:user_id|email|max:255',
+    'parent_id' => 'nullable|exists:comments,id',
+]
+```
+
+**Media Upload Validation**
+```php
+[
+    'file' => 'required|file|mimes:jpg,jpeg,png,gif,webp,pdf,doc,docx|max:10240',
+    'alt_text' => 'nullable|string|max:255',
+    'caption' => 'nullable|string|max:500',
+]
+```
 
 ## Testing Strategy
 
-### Test Coverage Goals
+### Unit Tests
 
-- **Unit Tests**: 80% coverage for services, models
-- **Feature Tests**: All API endpoints, critical user flows
-- **Browser Tests**: Key user journeys (optional)
+**Model Tests**
+- Test model relationships
+- Test scopes and query builders
+- Test attribute accessors and mutators
+- Test model methods
 
-### Test Structure
+**Service Tests**
+- Test business logic in isolation
+- Mock external dependencies
+- Test edge cases and error conditions
 
-```
-tests/
-├── Unit/
-│   ├── Services/
-│   │   ├── PostServiceTest.php
-│   │   ├── ImageProcessingServiceTest.php
-│   │   └── SpamDetectionServiceTest.php
-│   └── Models/
-│       ├── PostTest.php
-│       └── CommentTest.php
-└── Feature/
-    ├── Auth/
-    │   ├── LoginTest.php
-    │   └── RegistrationTest.php
-    ├── Admin/
-    │   ├── PostManagementTest.php
-    │   └── UserManagementTest.php
-    └── Api/
-        ├── PostApiTest.php
-        └── AuthenticationTest.php
-```
+**Helper Tests**
+- Test utility functions
+- Test string manipulation
+- Test date formatting
 
-### Testing Approach
+### Feature Tests
 
-1. **Database**: Use in-memory SQLite for tests
-2. **Factories**: Create test data using model factories
-3. **Assertions**: Test both happy paths and edge cases
-4. **Mocking**: Mock external services (email, HTTP requests)
-5. **Coverage**: Run `php artisan test --coverage` to check coverage
+**Authentication Tests**
+- Test login/logout flow
+- Test registration
+- Test password reset
+- Test 2FA flow
+- Test role-based access control
 
-### Example Test
+**Post Management Tests**
+- Test post creation
+- Test post publishing
+- Test post scheduling
+- Test post archiving
+- Test slug generation
+- Test reading time calculation
+
+**Comment Tests**
+- Test comment submission
+- Test comment approval
+- Test spam detection
+- Test nested replies
+- Test comment moderation
+
+**Search Tests**
+- Test search functionality
+- Test autocomplete
+- Test filters
+- Test result ranking
+
+**API Tests**
+- Test all API endpoints
+- Test authentication
+- Test rate limiting
+- Test error responses
+- Test pagination
+
+### Browser Tests (Dusk)
+
+**Critical User Flows**
+- Complete post creation and publication flow
+- Comment submission and approval flow
+- Newsletter subscription flow
+- Bookmark management flow
+- Search and filter flow
+
+**Interactive Features**
+- Test infinite scroll
+- Test lazy loading
+- Test modal interactions
+- Test form submissions
+- Test AJAX updates
+
+### Performance Tests
+
+**Load Testing**
+- Homepage load under concurrent users
+- Post page load with comments
+- Search performance with large datasets
+- API endpoint response times
+
+**Database Query Tests**
+- N+1 query detection
+- Slow query identification
+- Index effectiveness
+
+### Accessibility Tests
+
+**WCAG 2.1 AA Compliance**
+- Keyboard navigation
+- Screen reader compatibility
+- Color contrast ratios
+- Alt text presence
+- ARIA attributes
+- Focus management
+
+## Security Considerations
+
+### Authentication & Authorization
+
+**Password Security**
+- Minimum 8 characters
+- Bcrypt hashing with cost factor 12
+- Password reset tokens expire after 1 hour
+- Account lockout after 5 failed attempts
+
+**Session Management**
+- Secure, HTTP-only cookies
+- Session timeout after 120 minutes of inactivity
+- CSRF protection on all forms
+- Session regeneration on login
+
+**Two-Factor Authentication**
+- TOTP-based (Google Authenticator compatible)
+- Backup codes for account recovery
+- "Remember device" option for 30 days
+- Rate limiting on 2FA attempts
+
+### Input Validation & Sanitization
+
+**XSS Prevention**
+- Escape all user-generated content
+- Use Blade's {{ }} syntax for automatic escaping
+- Sanitize HTML content with HTMLPurifier
+- Content Security Policy headers
+
+**SQL Injection Prevention**
+- Use Eloquent ORM exclusively
+- Parameterized queries for raw SQL
+- Input validation on all database operations
+
+**File Upload Security**
+- Validate MIME types
+- Restrict file extensions
+- Store uploads outside web root
+- Generate unique filenames
+- Scan for malware (optional)
+
+### API Security
+
+**Rate Limiting**
+- Public endpoints: 60 requests/minute per IP
+- Authenticated endpoints: 120 requests/minute per user
+- Sliding window algorithm
+- Custom rate limits for specific endpoints
+
+**Authentication**
+- Laravel Sanctum for API tokens
+- Token expiration after 30 days
+- Ability to revoke tokens
+- Separate tokens for different applications
+
+### Data Protection
+
+**GDPR Compliance**
+- Cookie consent banner
+- Data export functionality
+- Right to be forgotten (account deletion)
+- Privacy policy page
+- Data retention policies
+
+**Encryption**
+- Encrypt sensitive data at rest
+- HTTPS for all connections
+- Encrypt 2FA secrets
+- Encrypt backup codes
+
+### Security Headers
 
 ```php
-class PostServiceTest extends TestCase
-{
-    use RefreshDatabase;
-    
-    public function test_calculate_reading_time()
-    {
-        $service = new PostService();
-        $content = str_repeat('word ', 200); // 200 words
-        
-        $readingTime = $service->calculateReadingTime($content);
-        
-        $this->assertEquals(1, $readingTime); // 1 minute
-    }
-    
-    public function test_publish_scheduled_posts()
-    {
-        $post = Post::factory()->create([
-            'status' => 'scheduled',
-            'scheduled_at' => now()->subMinute(),
-        ]);
-        
-        Artisan::call('posts:publish-scheduled');
-        
-        $post->refresh();
-        $this->assertEquals('published', $post->status);
-        $this->assertNotNull($post->published_at);
-    }
-}
+// Middleware to set security headers
+'X-Frame-Options' => 'SAMEORIGIN',
+'X-Content-Type-Options' => 'nosniff',
+'X-XSS-Protection' => '1; mode=block',
+'Referrer-Policy' => 'strict-origin-when-cross-origin',
+'Permissions-Policy' => 'geolocation=(), microphone=(), camera=()',
+'Content-Security-Policy' => "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline';"
 ```
 
-## Design Rationale
+## Performance Optimization
 
-### Key Design Decisions
+### Caching Strategy
 
-1. **SQLite Database**: Chosen for simplicity and portability. Suitable for small to medium traffic sites. Can migrate to MySQL/PostgreSQL if needed.
+**Page Caching**
+- Homepage: 10 minutes
+- Category pages: 15 minutes
+- Tag pages: 15 minutes
+- Static pages: 1 hour
+- Post pages: 1 hour (cleared on update)
 
-2. **Blade Templates**: Native Laravel templating with Alpine.js for interactivity. Avoids complexity of SPA frameworks while maintaining good UX.
+**Query Caching**
+- Popular posts: 1 hour
+- Recent posts: 10 minutes
+- Category tree: 1 day
+- Settings: 24 hours
+- Menu items: 1 day
 
-3. **Tailwind CSS**: Utility-first approach enables rapid development and consistent design. Mobile-first by default.
+**Fragment Caching**
+- Sidebar widgets: 30 minutes
+- Footer content: 1 day
+- Navigation menu: 1 day
+- Breaking news ticker: 5 minutes
 
-4. **Service Layer**: Business logic extracted to service classes for testability and reusability.
+### Database Optimization
 
-5. **Job Queues**: Asynchronous processing for emails, image processing, and scheduled tasks prevents blocking requests.
+**Eager Loading**
+```php
+// Always eager load relationships
+Post::with(['author', 'categories', 'tags'])
+    ->published()
+    ->latest()
+    ->paginate(15);
+```
 
-6. **Caching Strategy**: Multi-layer caching (query, view, model) balances performance with data freshness.
+**Query Optimization**
+- Use select() to limit columns
+- Use chunk() for large datasets
+- Use cursor() for memory-efficient iteration
+- Add indexes on frequently queried columns
 
-7. **API Resources**: Consistent API responses with controlled data exposure.
+**Connection Pooling**
+- Configure persistent connections
+- Set appropriate pool size
+- Monitor connection usage
 
-8. **Policy-Based Authorization**: Centralized authorization logic, easy to test and maintain.
+### Asset Optimization
 
-9. **Trait-Based Activity Logging**: Automatic audit trail without cluttering controllers.
+**CSS Optimization**
+- PurgeCSS to remove unused styles
+- Minification in production
+- Critical CSS inline for above-the-fold content
+- Defer non-critical CSS
 
-10. **Repository Pattern (Optional)**: Can be added later if data source abstraction needed.
+**JavaScript Optimization**
+- Code splitting by route
+- Lazy load non-critical scripts
+- Minification and compression
+- Tree shaking to remove unused code
 
-### Performance Considerations
+**Image Optimization**
+- Lazy loading for below-the-fold images
+- Responsive images with srcset
+- WebP format with JPEG fallback
+- Image compression (85% quality)
+- CDN delivery (optional)
 
-- Eager loading to prevent N+1 queries
-- Database indexing on frequently queried columns
-- Query result caching for expensive operations
-- Image optimization and lazy loading
-- Asset bundling and minification
-- CDN integration for static assets (future)
+### Frontend Performance
 
-### Security Considerations
+**Loading Strategy**
+- Critical CSS inline
+- Defer JavaScript loading
+- Preload key resources
+- DNS prefetch for external domains
 
-- CSRF protection on all forms
-- XSS prevention through output escaping
-- SQL injection prevention via Eloquent ORM
-- Rate limiting on sensitive endpoints
-- File upload validation and sanitization
-- Security headers middleware
-- Password hashing with bcrypt
-- Two-factor authentication support
+**Rendering Optimization**
+- Minimize DOM manipulation
+- Use CSS transforms for animations
+- Debounce scroll and resize events
+- Virtual scrolling for long lists
 
-### Scalability Considerations
+**Metrics Targets**
+- First Contentful Paint: < 1.8s
+- Largest Contentful Paint: < 2.5s
+- Time to Interactive: < 3.8s
+- Cumulative Layout Shift: < 0.1
+- First Input Delay: < 100ms
 
-- Horizontal scaling: Stateless application design
-- Database: Can migrate from SQLite to MySQL/PostgreSQL
-- Caching: Redis/Memcached for distributed caching
-- Queue workers: Multiple workers for job processing
-- CDN: Offload static assets
-- Load balancing: Multiple application servers
+## Deployment Architecture
 
+### Environment Configuration
+
+**Development**
+- SQLite database
+- File-based cache
+- Database queue driver
+- Debug mode enabled
+- Detailed error pages
+
+**Staging**
+- SQLite or PostgreSQL
+- Redis cache
+- Redis queue driver
+- Debug mode disabled
+- Error logging to file
+
+**Production**
+- PostgreSQL or MySQL
+- Redis cache with replication
+- Redis queue with Horizon
+- Debug mode disabled
+- Error logging to external service (Sentry)
+- CDN for static assets
+- Load balancer for multiple app servers
+
+### Deployment Process
+
+1. Run tests (PHPUnit, Dusk)
+2. Build assets (npm run build)
+3. Deploy code to server
+4. Run migrations (php artisan migrate --force)
+5. Clear and warm cache
+6. Restart queue workers
+7. Run smoke tests
+8. Monitor error logs
+
+### Backup Strategy
+
+**Database Backups**
+- Daily full backups at 2:00 AM
+- Retain for 30 days
+- Store in cloud storage (S3, DO Spaces)
+- Test restore process monthly
+
+**Media Backups**
+- Weekly full backups
+- Incremental daily backups
+- Store in cloud storage
+- Retain for 90 days
+
+### Monitoring
+
+**Application Monitoring**
+- Error tracking (Sentry, Bugsnag)
+- Performance monitoring (New Relic, Scout)
+- Uptime monitoring (Pingdom, UptimeRobot)
+- Log aggregation (Papertrail, Loggly)
+
+**Infrastructure Monitoring**
+- Server resources (CPU, memory, disk)
+- Database performance
+- Cache hit rates
+- Queue processing times
+
+**Alerts**
+- Error rate threshold exceeded
+- Response time degradation
+- Disk space low
+- Queue backlog growing
+- Database connection issues
+
+## Frontend Design System
+
+### Typography
+
+**Font Stack**
+```css
+--font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+--font-serif: 'Merriweather', Georgia, serif;
+--font-mono: 'Fira Code', 'Courier New', monospace;
+```
+
+**Type Scale**
+- xs: 0.75rem (12px)
+- sm: 0.875rem (14px)
+- base: 1rem (16px)
+- lg: 1.125rem (18px)
+- xl: 1.25rem (20px)
+- 2xl: 1.5rem (24px)
+- 3xl: 1.875rem (30px)
+- 4xl: 2.25rem (36px)
+- 5xl: 3rem (48px)
+
+### Color Palette
+
+**Brand Colors**
+```css
+--primary-50: #eff6ff;
+--primary-500: #3b82f6;
+--primary-900: #1e3a8a;
+
+--secondary-50: #f8fafc;
+--secondary-500: #64748b;
+--secondary-900: #0f172a;
+```
+
+**Semantic Colors**
+```css
+--success: #10b981;
+--warning: #f59e0b;
+--error: #ef4444;
+--info: #3b82f6;
+```
+
+**Dark Mode**
+```css
+--bg-primary-dark: #0f172a;
+--bg-secondary-dark: #1e293b;
+--text-primary-dark: #f1f5f9;
+--text-secondary-dark: #cbd5e1;
+```
+
+### Spacing System
+
+Based on 4px base unit:
+- 0: 0
+- 1: 0.25rem (4px)
+- 2: 0.5rem (8px)
+- 3: 0.75rem (12px)
+- 4: 1rem (16px)
+- 6: 1.5rem (24px)
+- 8: 2rem (32px)
+- 12: 3rem (48px)
+- 16: 4rem (64px)
+
+### Breakpoints
+
+```css
+--screen-sm: 640px;
+--screen-md: 768px;
+--screen-lg: 1024px;
+--screen-xl: 1280px;
+--screen-2xl: 1536px;
+```
+
+### Component Patterns
+
+**Button Variants**
+- Primary: Solid background, high contrast
+- Secondary: Outline style
+- Ghost: Transparent background
+- Link: Text-only, underline on hover
+
+**Card Patterns**
+- Post card: Image, title, excerpt, metadata
+- Comment card: Avatar, content, actions
+- Widget card: Title, content, optional footer
+
+**Form Patterns**
+- Input fields with floating labels
+- Inline validation messages
+- Loading states
+- Success/error feedback
+
+### Animation Guidelines
+
+**Timing Functions**
+- ease-in: Accelerating
+- ease-out: Decelerating (preferred for UI)
+- ease-in-out: Smooth start and end
+
+**Duration**
+- Micro-interactions: 150ms
+- Component transitions: 300ms
+- Page transitions: 500ms
+
+**Reduced Motion**
+- Respect prefers-reduced-motion
+- Disable parallax and complex animations
+- Use simple fade transitions
+
+## Accessibility Implementation
+
+### Keyboard Navigation
+
+**Focus Management**
+- Visible focus indicators (2px outline)
+- Logical tab order
+- Skip to main content link
+- Focus trap in modals
+
+**Keyboard Shortcuts**
+- / : Focus search
+- Esc: Close modals/overlays
+- N/P: Next/previous page
+- ?: Show keyboard shortcuts help
+
+### Screen Reader Support
+
+**ARIA Landmarks**
+```html
+<header role="banner">
+<nav role="navigation" aria-label="Main">
+<main role="main">
+<aside role="complementary">
+<footer role="contentinfo">
+```
+
+**ARIA Labels**
+- Descriptive labels for interactive elements
+- aria-label for icon-only buttons
+- aria-describedby for form hints
+- aria-live for dynamic content updates
+
+**Semantic HTML**
+- Use proper heading hierarchy (h1-h6)
+- Use <article>, <section>, <nav>
+- Use <button> for actions, <a> for navigation
+- Use <label> for form inputs
+
+### Color Contrast
+
+**WCAG AA Requirements**
+- Normal text: 4.5:1 minimum
+- Large text (18pt+): 3:1 minimum
+- UI components: 3:1 minimum
+
+**Testing Tools**
+- Automated: axe DevTools, Lighthouse
+- Manual: Color contrast analyzer
+- User testing: Screen reader testing
+
+### Alternative Text
+
+**Image Alt Text Guidelines**
+- Descriptive for informative images
+- Empty alt="" for decorative images
+- Avoid "image of" or "picture of"
+- Include relevant context
+
+## Integration Points
+
+### Third-Party Services
+
+**Email Service**
+- Provider: Mailgun, SendGrid, or SES
+- Transactional emails: Welcome, notifications, password reset
+- Marketing emails: Newsletter campaigns
+- Email templates: Blade-based, responsive
+
+**Analytics**
+- Google Analytics 4
+- Custom event tracking
+- Privacy-compliant implementation
+- Cookie consent integration
+
+**CDN**
+- CloudFlare, AWS CloudFront, or DigitalOcean Spaces
+- Static asset delivery
+- Image optimization
+- DDoS protection
+
+**Search Enhancement (Optional)**
+- Algolia or Meilisearch
+- Real-time indexing
+- Advanced filtering
+- Typo tolerance
+
+**Social Media**
+- Open Graph meta tags
+- Twitter Card meta tags
+- Social sharing buttons
+- Embed support (Twitter, Facebook, Instagram)
+
+### Webhook Support
+
+**Outgoing Webhooks**
+- Post published event
+- Comment approved event
+- User registered event
+- Configurable endpoints
+- Retry logic with exponential backoff
+
+**Incoming Webhooks**
+- Newsletter subscription confirmations
+- Payment notifications (if monetization added)
+- Third-party integrations
+
+## Migration & Import
+
+### WordPress Import
+
+**Supported Data**
+- Posts with content, metadata
+- Categories and tags
+- Authors (mapped to users)
+- Comments
+- Featured images
+- Custom fields (mapped to metadata)
+
+**Import Process**
+1. Upload WordPress XML export
+2. Parse and validate data
+3. Map categories and tags
+4. Create users for authors
+5. Import posts with relationships
+6. Import comments
+7. Download and import media
+8. Generate slugs and permalinks
+9. Validate imported data
+
+### Export Functionality
+
+**Export Formats**
+- JSON: Complete data export
+- CSV: Posts, users, comments
+- Markdown: Posts with frontmatter
+- WordPress XML: For migration to WordPress
+
+**Export Options**
+- Select date range
+- Filter by category/tag
+- Include/exclude comments
+- Include/exclude media
+
+This design document provides a comprehensive blueprint for implementing all 75 requirements of the TechNewsHub platform. The architecture is scalable, maintainable, and follows Laravel best practices while ensuring performance, security, and accessibility.

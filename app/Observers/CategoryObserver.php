@@ -20,7 +20,8 @@ class CategoryObserver
      */
     public function created(Category $category): void
     {
-        // No action needed - posts will be indexed when category is assigned
+        // Invalidate category menu cache (navigation)
+        \Cache::forget('category_menu');
     }
 
     /**
@@ -30,6 +31,9 @@ class CategoryObserver
     {
         // Invalidate categories index cache when category is updated
         $this->searchIndexService->invalidateCategoriesCache();
+
+        // Invalidate category menu cache (navigation)
+        \Cache::forget('category_menu');
 
         // Invalidate view caches (Requirement 20.5)
         $this->cacheService->invalidateCategory($category->id);
@@ -47,6 +51,9 @@ class CategoryObserver
      */
     public function deleting(Category $category): void
     {
+        // Invalidate category menu cache (navigation)
+        \Cache::forget('category_menu');
+
         // Invalidate view caches (Requirement 20.5)
         $this->cacheService->invalidateCategory($category->id);
         $this->cacheService->invalidateCategoryBySlug($category->slug);

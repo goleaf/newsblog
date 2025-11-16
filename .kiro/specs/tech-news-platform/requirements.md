@@ -16,7 +16,8 @@ TechNewsHub is a modern, full-featured news and blog platform built with Laravel
 - **User Role**: The permission level assigned to a user (Admin, Editor, or Author)
 - **Newsletter Subscriber**: An email address registered to receive periodic content updates
 - **Comment**: User-submitted feedback or discussion attached to a post
-- **Featured Post**: A post marked for prominent display on the hom- **Trending Post**: A post with high recent engag metrics
+- **Featured Post**: A post marked for prominent display on the homepage
+- **Trending Post**: A post with high recent engagement metrics
 - **Slug**: A URL-friendly identifier derived from a title
 - **SEO Metadata**: Search engine optimization information including meta titles, descriptions, and keywords
 - **API Endpoint**: A RESTful interface for programmatic access to System data
@@ -624,3 +625,303 @@ TechNewsHub is a modern, full-featured news and blog platform built with Laravel
 3. THE System SHALL implement a service worker that caches static assets for offline access
 4. WHEN a user is offline, THE System SHALL display a custom offline page with cached content
 5. THE System SHALL support browser push notifications for new post alerts to subscribed users
+
+### Requirement 51: Breaking News Ticker
+
+**User Story:** As a site visitor, I want to see breaking news updates in a prominent ticker, so that I can stay informed of urgent developments.
+
+#### Acceptance Criteria
+
+1. WHEN breaking news posts are published with "breaking" flag enabled, THE System SHALL display them in a horizontal scrolling ticker at the top of the page
+2. WHEN multiple breaking news items exist, THE System SHALL rotate through them with 5-second intervals
+3. WHEN a user clicks a breaking news item in the ticker, THE System SHALL navigate to the full article
+4. THE System SHALL display the breaking news ticker with a distinctive background color and icon
+5. WHEN breaking news items are older than 24 hours, THE System SHALL automatically remove them from the ticker
+
+### Requirement 52: Live Updates Feed
+
+**User Story:** As a site visitor, I want to see live content updates without refreshing the page, so that I can stay current with new publications.
+
+#### Acceptance Criteria
+
+1. WHEN a new post is published, THE System SHALL push a notification to all active page viewers via WebSocket connection
+2. WHEN a live update notification appears, THE System SHALL display a banner with post title and "View new post" button
+3. WHEN a user clicks the live update notification, THE System SHALL load the new content without full page reload
+4. THE System SHALL maintain WebSocket connection with automatic reconnection on connection loss
+5. WHEN more than 5 live updates accumulate, THE System SHALL display a count badge instead of individual notifications
+
+### Requirement 53: Reading History Tracking
+
+**User Story:** As a registered user, I want the system to track my reading history, so that I can revisit articles I've read.
+
+#### Acceptance Criteria
+
+1. WHEN a logged-in user views a post for more than 10 seconds, THE System SHALL record the post in their reading history
+2. WHEN a user accesses their reading history page, THE System SHALL display posts in reverse chronological order with read timestamp
+3. THE System SHALL limit reading history to the most recent 100 posts per user
+4. WHEN a user views a previously read post, THE System SHALL display a "Read on [date]" indicator
+5. THE System SHALL provide a "Clear history" button that removes all reading history entries for the user
+
+### Requirement 54: Font Size Controls
+
+**User Story:** As a site visitor with visual preferences, I want to adjust article font size, so that I can read content comfortably.
+
+#### Acceptance Criteria
+
+1. WHEN a user clicks the font size increase button, THE System SHALL increase article text size by 10 percent up to a maximum of 150 percent
+2. WHEN a user clicks the font size decrease button, THE System SHALL decrease article text size by 10 percent down to a minimum of 80 percent
+3. WHEN font size is adjusted, THE System SHALL store the preference in localStorage for persistence across sessions
+4. THE System SHALL display the current font size percentage in the control interface
+5. WHEN a user clicks the reset button, THE System SHALL restore font size to 100 percent default
+
+### Requirement 55: Image Zoom and Lightbox
+
+**User Story:** As a site visitor, I want to view article images in full size, so that I can see details clearly.
+
+#### Acceptance Criteria
+
+1. WHEN a user clicks an image within article content, THE System SHALL open the image in a lightbox overlay
+2. WHEN the lightbox is open, THE System SHALL display navigation arrows for moving between multiple images
+3. WHEN a user clicks outside the image or presses the Escape key, THE System SHALL close the lightbox
+4. THE System SHALL display image captions below the image in the lightbox view
+5. WHEN an image is displayed in the lightbox, THE System SHALL support pinch-to-zoom on touch devices
+
+### Requirement 56: Photo Gallery Slideshow
+
+**User Story:** As a content creator, I want to embed photo galleries in posts, so that I can showcase multiple related images.
+
+#### Acceptance Criteria
+
+1. WHEN a user creates a post with a gallery, THE System SHALL provide an interface to select multiple images from the Media Library
+2. WHEN a gallery is displayed, THE System SHALL show thumbnail navigation below the main image
+3. WHEN a user clicks the play button, THE System SHALL auto-advance through gallery images with 3-second intervals
+4. THE System SHALL display image counter showing current position and total count (e.g., "3 of 10")
+5. WHEN a user swipes left or right on touch devices, THE System SHALL navigate to the previous or next gallery image
+
+### Requirement 57: Pull Quotes Styling
+
+**User Story:** As a content creator, I want to highlight important quotes within articles, so that key points stand out visually.
+
+#### Acceptance Criteria
+
+1. WHEN a user formats text as a pull quote in the Content Editor, THE System SHALL apply distinctive styling with larger font size
+2. THE System SHALL display pull quotes with quotation mark decorations and accent color border
+3. WHEN a pull quote is displayed, THE System SHALL float it to the right or left with text wrapping around it
+4. THE System SHALL ensure pull quotes maintain readability on mobile devices with viewport width less than 768 pixels
+5. WHEN a pull quote contains attribution, THE System SHALL display the author name in smaller italic text
+
+### Requirement 58: Table of Contents Generation
+
+**User Story:** As a reader of long articles, I want an automatic table of contents, so that I can navigate to specific sections quickly.
+
+#### Acceptance Criteria
+
+1. WHEN a post contains 3 or more heading elements (H2, H3), THE System SHALL automatically generate a table of contents
+2. WHEN a user clicks a table of contents link, THE System SHALL smooth scroll to the corresponding heading
+3. THE System SHALL display the table of contents in a sticky sidebar that remains visible during scrolling
+4. WHEN a user scrolls past a section, THE System SHALL highlight the corresponding table of contents entry
+5. THE System SHALL generate anchor IDs for all headings based on the heading text with URL-safe formatting
+
+### Requirement 59: Embedded Social Media Posts
+
+**User Story:** As a content creator, I want to embed social media posts in articles, so that I can reference external content directly.
+
+#### Acceptance Criteria
+
+1. WHEN a user pastes a Twitter/X post URL in the Content Editor, THE System SHALL automatically convert it to an embedded tweet
+2. WHEN a user pastes a Facebook post URL, THE System SHALL embed the post with Facebook's embed code
+3. WHEN a user pastes an Instagram post URL, THE System SHALL embed the post with proper aspect ratio
+4. THE System SHALL lazy load embedded social media content to improve initial page load performance
+5. WHEN embedded content fails to load, THE System SHALL display a fallback link to the original post
+
+### Requirement 60: Interactive Charts and Graphs
+
+**User Story:** As a content creator, I want to embed interactive charts in articles, so that I can present data visually.
+
+#### Acceptance Criteria
+
+1. WHEN a user creates a chart in the Content Editor, THE System SHALL provide options for line, bar, pie, and area chart types
+2. WHEN a chart is displayed, THE System SHALL render it using a JavaScript charting library with responsive sizing
+3. WHEN a user hovers over chart data points, THE System SHALL display tooltips with exact values
+4. THE System SHALL allow chart data input via CSV upload or manual entry in a table format
+5. WHEN a chart is viewed on mobile devices, THE System SHALL maintain interactivity with touch-friendly controls
+
+### Requirement 61: Polls and Surveys Widget
+
+**User Story:** As a content creator, I want to embed polls in articles, so that I can gather reader opinions.
+
+#### Acceptance Criteria
+
+1. WHEN a user creates a poll, THE System SHALL allow adding a question with 2 to 10 answer options
+2. WHEN a visitor votes in a poll, THE System SHALL record the vote and display results immediately
+3. THE System SHALL prevent duplicate voting from the same IP address within 24 hours
+4. WHEN poll results are displayed, THE System SHALL show percentage bars for each option with vote counts
+5. WHEN a poll expires based on end date, THE System SHALL disable voting and display final results
+
+### Requirement 62: Weather Widget
+
+**User Story:** As a site visitor, I want to see current weather information, so that I can stay informed about local conditions.
+
+#### Acceptance Criteria
+
+1. WHEN the weather widget is displayed, THE System SHALL fetch current weather data from a weather API
+2. THE System SHALL display temperature, weather condition icon, and location name
+3. WHEN weather data is fetched, THE System SHALL cache the results for 30 minutes to reduce API calls
+4. THE System SHALL detect user location via browser geolocation API with permission prompt
+5. WHEN geolocation is unavailable or denied, THE System SHALL display weather for a default configured location
+
+### Requirement 63: Stock Market Ticker
+
+**User Story:** As a site visitor interested in financial news, I want to see live stock market data, so that I can monitor market trends.
+
+#### Acceptance Criteria
+
+1. WHEN the stock ticker widget is displayed, THE System SHALL show real-time prices for configured stock symbols
+2. THE System SHALL display price change with green color for gains and red color for losses
+3. WHEN stock prices update, THE System SHALL refresh data every 60 seconds via API polling
+4. THE System SHALL display percentage change alongside absolute price change
+5. WHEN a user clicks a stock symbol, THE System SHALL link to a detailed stock information page or external source
+
+### Requirement 64: Countdown Timer Widget
+
+**User Story:** As a content creator, I want to embed countdown timers in posts, so that I can build anticipation for upcoming events.
+
+#### Acceptance Criteria
+
+1. WHEN a user creates a countdown timer, THE System SHALL require a target date and time with timezone
+2. WHEN the countdown is displayed, THE System SHALL show remaining time in days, hours, minutes, and seconds
+3. THE System SHALL update the countdown display every second using JavaScript
+4. WHEN the countdown reaches zero, THE System SHALL display a custom completion message
+5. THE System SHALL allow customization of countdown labels and styling through widget settings
+
+### Requirement 65: Most Commented Articles Widget
+
+**User Story:** As a site visitor, I want to see which articles have the most discussion, so that I can join active conversations.
+
+#### Acceptance Criteria
+
+1. WHEN the most commented widget is displayed, THE System SHALL show the top 5 posts by approved comment count
+2. THE System SHALL display each post with title, comment count badge, and publication date
+3. THE System SHALL cache the most commented posts list for 1 hour to improve performance
+4. WHEN a user clicks a post in the widget, THE System SHALL navigate to the post and scroll to the comments section
+5. THE System SHALL exclude posts older than 30 days from the most commented calculation
+
+### Requirement 66: Editor's Picks Section
+
+**User Story:** As an editor, I want to manually curate featured content, so that I can highlight quality articles to readers.
+
+#### Acceptance Criteria
+
+1. WHEN an editor marks a post as "Editor's Pick", THE System SHALL add it to the curated collection
+2. WHEN the Editor's Picks section is displayed, THE System SHALL show up to 6 selected posts with featured images
+3. THE System SHALL allow editors to set display order for Editor's Picks via drag-and-drop interface
+4. WHEN an Editor's Pick post is unpublished or deleted, THE System SHALL automatically remove it from the collection
+5. THE System SHALL display an "Editor's Pick" badge on selected posts throughout the site
+
+### Requirement 67: Sponsored Content Labels
+
+**User Story:** As a site administrator, I want to clearly mark sponsored content, so that I maintain transparency with readers.
+
+#### Acceptance Criteria
+
+1. WHEN a post is marked as sponsored, THE System SHALL display a "Sponsored" or "Paid Partnership" label prominently
+2. THE System SHALL display sponsored labels in a distinctive color that contrasts with regular content
+3. WHEN sponsored posts appear in listings, THE System SHALL include the sponsored indicator on post cards
+4. THE System SHALL comply with FTC guidelines for sponsored content disclosure
+5. WHEN a user filters content, THE System SHALL provide an option to exclude sponsored posts from results
+
+### Requirement 68: Voice Search Support
+
+**User Story:** As a mobile user, I want to search using voice input, so that I can find content hands-free.
+
+#### Acceptance Criteria
+
+1. WHEN a user clicks the microphone icon in the search field, THE System SHALL request microphone permission
+2. WHEN voice input is active, THE System SHALL display a visual indicator showing listening status
+3. WHEN speech is detected, THE System SHALL convert it to text using the Web Speech API
+4. THE System SHALL populate the search field with transcribed text and automatically trigger search
+5. WHEN voice recognition fails or is unsupported, THE System SHALL display an error message and fall back to text input
+
+### Requirement 69: Print-Friendly Version
+
+**User Story:** As a site visitor, I want to print articles in a clean format, so that I can read them offline.
+
+#### Acceptance Criteria
+
+1. WHEN a user clicks the print button, THE System SHALL open a print-optimized version of the article
+2. WHEN the print view is generated, THE System SHALL remove navigation, sidebar, comments, and advertisements
+3. THE System SHALL include article title, author, publication date, and full content in the print version
+4. THE System SHALL apply print-specific CSS with black text on white background for optimal printing
+5. WHEN images are included in print view, THE System SHALL ensure they fit within standard page margins
+
+### Requirement 70: QR Code Generation for Articles
+
+**User Story:** As a site visitor, I want to generate a QR code for articles, so that I can easily share them with mobile devices.
+
+#### Acceptance Criteria
+
+1. WHEN a user clicks the QR code button, THE System SHALL generate a QR code containing the article URL
+2. THE System SHALL display the QR code in a modal overlay with download option
+3. WHEN the QR code is scanned, THE System SHALL direct users to the full article page
+4. THE System SHALL generate QR codes with sufficient error correction for reliable scanning
+5. WHEN a user downloads the QR code, THE System SHALL provide it as a PNG image file
+
+### Requirement 71: Keyboard Shortcuts
+
+**User Story:** As a power user, I want keyboard shortcuts for common actions, so that I can navigate efficiently.
+
+#### Acceptance Criteria
+
+1. WHEN a user presses "/" key, THE System SHALL focus the search input field
+2. WHEN a user presses "Escape" key, THE System SHALL close any open modal or overlay
+3. WHEN a user presses "N" key on the homepage, THE System SHALL navigate to the next page of posts
+4. WHEN a user presses "P" key on the homepage, THE System SHALL navigate to the previous page of posts
+5. THE System SHALL display a keyboard shortcuts help modal when user presses "?" key
+
+### Requirement 72: Skeleton Loading Screens
+
+**User Story:** As a site visitor, I want to see content placeholders while pages load, so that I perceive faster load times.
+
+#### Acceptance Criteria
+
+1. WHEN a page is loading, THE System SHALL display skeleton screens matching the layout of the final content
+2. THE System SHALL animate skeleton elements with a shimmer effect to indicate loading state
+3. WHEN content loads, THE System SHALL fade in the actual content replacing skeleton elements
+4. THE System SHALL use skeleton screens for post cards, article content, and sidebar widgets
+5. WHEN content fails to load, THE System SHALL replace skeleton screens with error messages after 10 seconds
+
+### Requirement 73: Parallax Scrolling Effects
+
+**User Story:** As a site visitor, I want engaging visual effects while scrolling, so that I have an enhanced browsing experience.
+
+#### Acceptance Criteria
+
+1. WHEN a user scrolls on the homepage hero section, THE System SHALL move background images at a slower rate than foreground content
+2. THE System SHALL apply parallax effects only on devices with viewport width greater than 1024 pixels
+3. WHEN parallax effects are active, THE System SHALL maintain smooth 60 frames per second scrolling performance
+4. THE System SHALL disable parallax effects when user has enabled reduced motion preferences
+5. WHEN parallax elements scroll into view, THE System SHALL trigger fade-in animations
+
+### Requirement 74: Scroll-to-Top Button
+
+**User Story:** As a site visitor, I want a button to quickly return to the top of the page, so that I can navigate long articles easily.
+
+#### Acceptance Criteria
+
+1. WHEN a user scrolls down more than 300 pixels, THE System SHALL display a scroll-to-top button in the bottom-right corner
+2. WHEN a user clicks the scroll-to-top button, THE System SHALL smoothly scroll to the page top over 500 milliseconds
+3. THE System SHALL hide the scroll-to-top button when the user is within 300 pixels of the page top
+4. THE System SHALL display the button with a fixed position that remains visible during scrolling
+5. WHEN the button appears or disappears, THE System SHALL animate the transition with fade effect
+
+### Requirement 75: Sticky Navigation Bar
+
+**User Story:** As a site visitor, I want the navigation bar to remain visible while scrolling, so that I can access navigation options at any time.
+
+#### Acceptance Criteria
+
+1. WHEN a user scrolls down more than 100 pixels, THE System SHALL fix the navigation bar to the top of the viewport
+2. WHEN the navigation becomes sticky, THE System SHALL reduce its height by 20 percent to save screen space
+3. WHEN a user scrolls up, THE System SHALL show the full-height navigation bar again
+4. THE System SHALL apply a shadow effect to the sticky navigation to distinguish it from page content
+5. WHEN the sticky navigation is active, THE System SHALL adjust page content padding to prevent content jumping

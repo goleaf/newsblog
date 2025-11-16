@@ -26,18 +26,34 @@ class SeriesNavigationService
                 'next' => null,
                 'current_position' => 0,
                 'total_posts' => count($postIds),
+                'all_posts' => collect(),
             ];
         }
+
+        // Load all posts for the series
+        $allPosts = Post::whereIn('id', $postIds)
+            ->select('id', 'title', 'slug', 'featured_image', 'reading_time')
+            ->get();
+
+        // Sort by order using array_search without storing closure in Collection
+        $sortedPosts = [];
+        foreach ($postIds as $postId) {
+            $post = $allPosts->firstWhere('id', $postId);
+            if ($post) {
+                $sortedPosts[] = $post;
+            }
+        }
+        $allPosts = collect($sortedPosts);
 
         $previousPost = null;
         $nextPost = null;
 
         if ($currentIndex > 0) {
-            $previousPost = Post::find($postIds[$currentIndex - 1]);
+            $previousPost = $allPosts[$currentIndex - 1];
         }
 
         if ($currentIndex < count($postIds) - 1) {
-            $nextPost = Post::find($postIds[$currentIndex + 1]);
+            $nextPost = $allPosts[$currentIndex + 1];
         }
 
         return [
@@ -45,6 +61,7 @@ class SeriesNavigationService
             'next' => $nextPost,
             'current_position' => $currentIndex + 1,
             'total_posts' => count($postIds),
+            'all_posts' => $allPosts,
         ];
     }
 

@@ -33,9 +33,7 @@ class AppClassesCoverageTest extends TestCase
         );
     }
 
-    /**
-     * @dataProvider appClassProvider
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('appClassProvider')]
     public function test_app_php_files_are_autoloadable(string $type, string $fqcn): void
     {
         $exists = match ($type) {
@@ -54,9 +52,7 @@ class AppClassesCoverageTest extends TestCase
         $this->assertTrue(function_exists('settings'), 'Global helper settings() must be available.');
     }
 
-    /**
-     * @dataProvider appClassProvider
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('appClassProvider')]
     public function test_app_classes_can_be_instantiated(string $type, string $fqcn): void
     {
         if ($type !== 'class') {

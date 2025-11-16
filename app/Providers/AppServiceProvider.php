@@ -109,6 +109,9 @@ class AppServiceProvider extends ServiceProvider
             $view->with('breadcrumbStructuredData', $structuredData);
         });
 
+        // Register category menu view composer
+        View::composer('components.navigation.category-menu', \App\View\Composers\CategoryMenuComposer::class);
+
         RateLimiter::for('login', function (Request $request): Limit {
             return Limit::perMinute(5)
                 ->by($request->input('email').$request->ip())

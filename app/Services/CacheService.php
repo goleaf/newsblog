@@ -64,11 +64,26 @@ class CacheService
      */
     public function cacheHomepageView(callable $callback): mixed
     {
-        return $this->remember(
-            self::PREFIX_VIEW.'.'.self::PREFIX_HOME,
-            self::TTL_SHORT, // 10 minutes
-            $callback
-        );
+        $key = self::PREFIX_VIEW.'.'.self::PREFIX_HOME;
+
+        // Check if cached HTML exists
+        if (Cache::has($key)) {
+            $html = Cache::get($key);
+
+            return response($html);
+        }
+
+        // Render view and cache the HTML string
+        $view = $callback();
+        if ($view instanceof \Illuminate\View\View) {
+            $html = $view->render();
+            Cache::put($key, $html, self::TTL_SHORT);
+
+            return response($html);
+        }
+
+        // If it's already a response, return it
+        return $view;
     }
 
     /**
@@ -91,7 +106,24 @@ class CacheService
         $filterKey = $this->generateFilterKey($filters);
         $key = self::PREFIX_VIEW.'.'.self::PREFIX_CATEGORY.".{$slug}.{$filterKey}";
 
-        return $this->remember($key, 900, $callback); // 15 minutes
+        // Check if cached HTML exists
+        if (Cache::has($key)) {
+            $html = Cache::get($key);
+
+            return response($html);
+        }
+
+        // Render view and cache the HTML string
+        $view = $callback();
+        if ($view instanceof \Illuminate\View\View) {
+            $html = $view->render();
+            Cache::put($key, $html, 900); // 15 minutes
+
+            return response($html);
+        }
+
+        // If it's already a response, return it
+        return $view;
     }
 
     /**
@@ -114,7 +146,24 @@ class CacheService
         $filterKey = $this->generateFilterKey($filters);
         $key = self::PREFIX_VIEW.'.'.self::PREFIX_TAG.".{$slug}.{$filterKey}";
 
-        return $this->remember($key, 900, $callback); // 15 minutes
+        // Check if cached HTML exists
+        if (Cache::has($key)) {
+            $html = Cache::get($key);
+
+            return response($html);
+        }
+
+        // Render view and cache the HTML string
+        $view = $callback();
+        if ($view instanceof \Illuminate\View\View) {
+            $html = $view->render();
+            Cache::put($key, $html, 900); // 15 minutes
+
+            return response($html);
+        }
+
+        // If it's already a response, return it
+        return $view;
     }
 
     /**
@@ -135,7 +184,24 @@ class CacheService
     {
         $key = self::PREFIX_VIEW.'.'.self::PREFIX_POST.".{$slug}";
 
-        return $this->remember($key, self::TTL_MEDIUM, $callback); // 30 minutes
+        // Check if cached HTML exists
+        if (Cache::has($key)) {
+            $html = Cache::get($key);
+
+            return response($html);
+        }
+
+        // Render view and cache the HTML string
+        $view = $callback();
+        if ($view instanceof \Illuminate\View\View) {
+            $html = $view->render();
+            Cache::put($key, $html, self::TTL_MEDIUM); // 30 minutes
+
+            return response($html);
+        }
+
+        // If it's already a response, return it
+        return $view;
     }
 
     /**
@@ -179,6 +245,7 @@ class CacheService
      */
     public function invalidateCategoryBySlug(string $slug): void
     {
+        Cache::forget(self::PREFIX_MODEL.'.category.'.$slug);
         $this->invalidateByPattern(self::PREFIX_VIEW.'.'.self::PREFIX_CATEGORY.".{$slug}.*");
     }
 
@@ -199,6 +266,7 @@ class CacheService
      */
     public function invalidateTagBySlug(string $slug): void
     {
+        Cache::forget(self::PREFIX_MODEL.'.tag.'.$slug);
         $this->invalidateByPattern(self::PREFIX_VIEW.'.'.self::PREFIX_TAG.".{$slug}.*");
     }
 

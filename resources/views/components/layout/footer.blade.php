@@ -127,22 +127,24 @@
                                 Home
                             </a>
                         </li>
+                        @auth
                         <li>
-                            <a href="{{ route('home') }}" class="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 text-sm transition-colors inline-flex items-center group">
+                            <a href="{{ route('dashboard') }}" class="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 text-sm transition-colors inline-flex items-center group">
                                 <svg class="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                                 </svg>
-                                Browse Articles
+                                Dashboard
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('home') }}" class="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 text-sm transition-colors inline-flex items-center group">
+                            <a href="{{ route('bookmarks.index') }}" class="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 text-sm transition-colors inline-flex items-center group">
                                 <svg class="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                                 </svg>
-                                Categories
+                                Bookmarks
                             </a>
                         </li>
+                        @endauth
                         <li>
                             <a href="{{ route('series.index') }}" class="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 text-sm transition-colors inline-flex items-center group">
                                 <svg class="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -168,6 +170,14 @@
                         Resources
                     </h3>
                     <ul class="space-y-3">
+                        @php
+                            $resourcePages = \App\Models\Page::active()
+                                ->whereIn('slug', ['about', 'contact', 'advertise', 'write-for-us'])
+                                ->get()
+                                ->keyBy('slug');
+                        @endphp
+                        
+                        @if($resourcePages->has('about'))
                         <li>
                             <a href="{{ route('page.show', 'about') }}" class="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 text-sm transition-colors inline-flex items-center group">
                                 <svg class="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -176,6 +186,9 @@
                                 About Us
                             </a>
                         </li>
+                        @endif
+                        
+                        @if($resourcePages->has('contact'))
                         <li>
                             <a href="{{ route('page.show', 'contact') }}" class="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 text-sm transition-colors inline-flex items-center group">
                                 <svg class="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -184,6 +197,9 @@
                                 Contact Us
                             </a>
                         </li>
+                        @endif
+                        
+                        @if($resourcePages->has('advertise'))
                         <li>
                             <a href="{{ route('page.show', 'advertise') }}" class="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 text-sm transition-colors inline-flex items-center group">
                                 <svg class="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -192,6 +208,9 @@
                                 Advertise
                             </a>
                         </li>
+                        @endif
+                        
+                        @if($resourcePages->has('write-for-us'))
                         <li>
                             <a href="{{ route('page.show', 'write-for-us') }}" class="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 text-sm transition-colors inline-flex items-center group">
                                 <svg class="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -200,8 +219,10 @@
                                 Write for Us
                             </a>
                         </li>
+                        @endif
+                        
                         <li>
-                            <a href="{{ route('newsletter.subscribe') }}" class="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 text-sm transition-colors inline-flex items-center group">
+                            <a href="{{ route('home') }}#newsletter" class="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 text-sm transition-colors inline-flex items-center group">
                                 <svg class="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                                 </svg>

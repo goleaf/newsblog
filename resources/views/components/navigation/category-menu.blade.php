@@ -3,34 +3,11 @@
     'limit' => null,
 ])
 
-@php
-    // Fetch active categories with post counts and popular posts for mega menu
-    $categories = \App\Models\Category::active()
-        ->parent()
-        ->ordered()
-        ->withCount(['posts' => function ($query) {
-            $query->published();
-        }])
-        ->with([
-            'children' => function ($query) {
-                $query->active()->ordered()->withCount(['posts' => function ($q) {
-                    $q->published();
-                }]);
-            },
-            'posts' => function ($query) {
-                $query->published()
-                    ->latest()
-                    ->limit(3)
-                    ->select('id', 'title', 'slug', 'featured_image', 'category_id', 'published_at', 'reading_time');
-            }
-        ])
-        ->when($limit, fn($query) => $query->limit($limit))
-        ->get();
-@endphp
+{{-- Categories are provided by CategoryMenuComposer --}}
 
 @if($mobile)
     {{-- Mobile: Vertical List --}}
-    <nav aria-label="Category navigation" class="space-y-1">
+    <nav aria-label="{{ __('Category navigation') }}" class="space-y-1">
         @forelse($categories as $category)
             <a 
                 href="{{ route('category.show', $category->slug) }}" 
@@ -44,39 +21,53 @@
                     @endif
                     {{ $category->name }}
                 </span>
-                <span class="text-xs text-gray-500 dark:text-gray-400" aria-label="{{ $category->posts_count }} posts">
+                <span class="text-xs text-gray-500 dark:text-gray-400" aria-label="{{ __(':count posts', ['count' => $category->posts_count]) }}">
                     {{ $category->posts_count }}
                 </span>
             </a>
         @empty
             <p class="px-4 py-2 text-sm text-gray-500 dark:text-gray-400">
-                No categories available
+                {{ __('No categories available') }}
             </p>
         @endforelse
     </nav>
 @else
     {{-- Desktop: Horizontal Scroll with Mega Menu --}}
-    <nav aria-label="Category navigation" 
-        x-data 
+    <nav aria-label="{{ __('Category navigation') }}" 
         x-data="{ 
             openCategory: null,
             scrollLeft: 0,
             canScrollLeft: false,
             canScrollRight: false,
+            scrollHandler: null,
+            resizeHandler: null,
             checkScroll() {
                 const container = this.$refs.scrollContainer;
+                if (!container) return;
                 this.scrollLeft = container.scrollLeft;
                 this.canScrollLeft = container.scrollLeft > 0;
                 this.canScrollRight = container.scrollLeft < (container.scrollWidth - container.clientWidth);
+            },
+            init() {
+                this.$nextTick(() => {
+                    this.checkScroll();
+                    this.scrollHandler = () => this.checkScroll();
+                    this.resizeHandler = () => this.checkScroll();
+                    this.$refs.scrollContainer.addEventListener('scroll', this.scrollHandler);
+                    window.addEventListener('resize', this.resizeHandler);
+                });
+            },
+            destroy() {
+                if (this.scrollHandler) {
+                    this.$refs.scrollContainer?.removeEventListener('scroll', this.scrollHandler);
+                }
+                if (this.resizeHandler) {
+                    window.removeEventListener('resize', this.resizeHandler);
+                }
             }
         }"
-        x-init="
-            $nextTick(() => {
-                checkScroll();
-                $refs.scrollContainer.addEventListener('scroll', () => checkScroll());
-                window.addEventListener('resize', () => checkScroll());
-            });
-        "
+        x-init="init()"
+        @destroy="destroy()"
         class="relative"
     >
         {{-- Scroll Left Button --}}
@@ -84,7 +75,7 @@
             x-show="canScrollLeft"
             @click="$refs.scrollContainer.scrollBy({ left: -200, behavior: 'smooth' })"
             class="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white dark:bg-gray-800 shadow-lg rounded-full text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
-            aria-label="Scroll categories left"
+            aria-label="{{ __('Scroll categories left') }}"
         >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -126,7 +117,7 @@
                             </span>
                         @endif
                         <span>{{ $category->name }}</span>
-                        <span class="text-xs text-gray-500 dark:text-gray-400" aria-label="{{ $category->posts_count }} posts">
+                        <span class="text-xs text-gray-500 dark:text-gray-400" aria-label="{{ __(':count posts', ['count' => $category->posts_count]) }}">
                             ({{ $category->posts_count }})
                         </span>
                     </a>
@@ -161,7 +152,7 @@
                                     @if($category->children->isNotEmpty())
                                         <div class="space-y-2">
                                             <h4 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
-                                                Subcategories
+                                                {{ __('Subcategories') }}
                                             </h4>
                                             <div class="space-y-1">
                                                 @foreach($category->children as $child)
@@ -179,7 +170,7 @@
                                                                 {{ $child->name }}
                                                             </span>
                                                         </span>
-                                                        <span class="text-xs text-gray-500 dark:text-gray-400" aria-label="{{ $child->posts_count }} posts">
+                                                        <span class="text-xs text-gray-500 dark:text-gray-400" aria-label="{{ __(':count posts', ['count' => $child->posts_count]) }}">
                                                             {{ $child->posts_count }}
                                                         </span>
                                                     </a>
@@ -193,7 +184,7 @@
                                 @if($category->posts->isNotEmpty())
                                     <div class="border-l border-gray-200 dark:border-gray-700 pl-6">
                                         <h4 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
-                                            Recent Posts
+                                            {{ __('Recent Posts') }}
                                         </h4>
                                         <div class="space-y-3">
                                             @foreach($category->posts as $post)
@@ -218,7 +209,7 @@
                                                                 {{ $post->published_at->diffForHumans() }}
                                                             </time>
                                                             <span>•</span>
-                                                            <span>{{ $post->reading_time }} min read</span>
+                                                            <span>{{ $post->reading_time }} {{ __('min read') }}</span>
                                                         </div>
                                                     </div>
                                                 </a>
@@ -233,14 +224,14 @@
                                 href="{{ route('category.show', $category->slug) }}"
                                 class="block mt-6 pt-4 border-t border-gray-200 dark:border-gray-700 text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset rounded"
                             >
-                                View all in {{ $category->name }} →
+                                {{ __('View all in :category', ['category' => $category->name]) }} →
                             </a>
                         </div>
                     @endif
                 </div>
             @empty
                 <p class="text-sm text-gray-500 dark:text-gray-400 px-4">
-                    No categories available
+                    {{ __('No categories available') }}
                 </p>
             @endforelse
         </div>
@@ -250,7 +241,7 @@
             x-show="canScrollRight"
             @click="$refs.scrollContainer.scrollBy({ left: 200, behavior: 'smooth' })"
             class="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white dark:bg-gray-800 shadow-lg rounded-full text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
-            aria-label="Scroll categories right"
+            aria-label="{{ __('Scroll categories right') }}"
         >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />

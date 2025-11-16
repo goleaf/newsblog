@@ -16,6 +16,26 @@ class HomeController extends Controller
 
     public function index(Request $request)
     {
+        // Get sort and page parameters for cache key
+        $sort = $request->get('sort', 'newest');
+        $page = $request->get('page', 1);
+
+        // Cache homepage view for 10 minutes (Requirement 20.1, 20.5)
+        // Only cache first page with default sort for better hit rate
+        if ($page == 1 && $sort === 'newest') {
+            return $this->cacheService->cacheHomepageView(function () use ($request, $sort) {
+                return $this->renderHomepage($request, $sort);
+            });
+        }
+
+        return $this->renderHomepage($request, $sort);
+    }
+
+    /**
+     * Render homepage with cached data components
+     */
+    protected function renderHomepage(Request $request, string $sort)
+    {
         // Cache individual data components with appropriate TTLs (Requirement 12.1, 12.2)
         $featuredPosts = Cache::remember('home.featured', CacheService::TTL_LONG, function () {
             return Post::published()
@@ -36,9 +56,6 @@ class HomeController extends Controller
                 ->take(6)
                 ->get();
         });
-
-        // Get sort parameter
-        $sort = request('sort', 'newest');
 
         // Build query for recent posts with sorting
         $query = Post::published()

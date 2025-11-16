@@ -85,3 +85,4 @@ class ControllerResolutionTest extends TestCase
         return $files;
     }
 }
+

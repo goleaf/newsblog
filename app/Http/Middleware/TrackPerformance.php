@@ -28,6 +28,23 @@ class TrackPerformance
         $route = $request->route()?->getName() ?? $request->path();
         $this->performanceMetrics->trackPageLoad($route, $loadTime);
 
+        // Alert on very slow pages (>3 seconds)
+        if ($loadTime > 3000) {
+            \Illuminate\Support\Facades\Log::channel('performance')->warning('Very slow page load detected', [
+                'route' => $route,
+                'load_time_ms' => round($loadTime, 2),
+                'url' => $request->fullUrl(),
+                'method' => $request->method(),
+                'user_id' => auth()->id(),
+                'ip' => $request->ip(),
+            ]);
+        }
+
+        // Add performance header for debugging (only in non-production)
+        if (! app()->isProduction()) {
+            $response->headers->set('X-Page-Load-Time', round($loadTime, 2).'ms');
+        }
+
         return $response;
     }
 }

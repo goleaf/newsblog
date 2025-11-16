@@ -174,7 +174,6 @@
 </div>
 
 @push('scripts')
-@vite(['resources/js/search-click-tracking.js'])
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const checkbox = document.getElementById('showRelevanceScores');

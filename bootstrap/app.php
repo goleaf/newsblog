@@ -74,6 +74,12 @@ return Application::configure(basePath: dirname(__DIR__))
                 ->dailyAt('23:59')
                 ->withoutOverlapping();
         }
+
+        // Check performance alerts every 15 minutes
+        $schedule->command('performance:check-alerts')
+            ->everyFifteenMinutes()
+            ->withoutOverlapping()
+            ->runInBackground();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (\Illuminate\Http\Exceptions\ThrottleRequestsException $e, Request $request) {

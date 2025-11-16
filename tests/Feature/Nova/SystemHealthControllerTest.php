@@ -70,3 +70,4 @@ class SystemHealthControllerTest extends TestCase
         $this->assertStringContainsString('Sample error message', $payload['errors'][0]['message']);
     }
 }
+

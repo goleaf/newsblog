@@ -31,7 +31,23 @@ class PostController extends Controller
 
     public function show($slug, Request $request)
     {
-        // Cache post for 30 minutes (Requirement 20.1, 6.8)
+        // Cache post view for 30 minutes (Requirement 20.1, 20.5)
+        // Don't cache for authenticated users to show personalized data
+        if (! auth()->check()) {
+            return $this->cacheService->cachePostView($slug, function () use ($slug, $request) {
+                return $this->renderPost($slug, $request);
+            });
+        }
+
+        return $this->renderPost($slug, $request);
+    }
+
+    /**
+     * Render post page with cached data
+     */
+    protected function renderPost(string $slug, Request $request)
+    {
+        // Cache post model for 30 minutes (Requirement 20.1, 6.8)
         $post = Cache::remember("post.{$slug}", 1800, function () use ($slug) {
             return Post::where('slug', $slug)
                 ->published()
@@ -74,16 +90,46 @@ class PostController extends Controller
         // Track view with session-based duplicate prevention (Requirements 15.1, 15.2)
         $this->postViewController->trackView($post, $request);
 
-        // Get related posts using the RelatedPostsService (Requirements 22.1-22.5)
-        $relatedPosts = $this->relatedPostsService->getRelatedPosts($post, 5);
+        // Cache related posts for 30 minutes (Requirement 20.5)
+        $relatedPosts = Cache::remember("post.{$slug}.related", 1800, function () use ($post) {
+            return $this->relatedPostsService->getRelatedPosts($post, 5);
+        });
 
-        // Get series navigation data (Requirements 37.3-37.5)
-        $seriesData = $this->seriesNavigationService->getPostSeriesWithNavigation($post);
+        // Cache series navigation for 30 minutes (Requirement 20.5)
+        $seriesData = Cache::remember("post.{$slug}.series", 1800, function () use ($post) {
+            return $this->seriesNavigationService->getPostSeriesWithNavigation($post);
+        });
 
         return view('posts.show', compact('post', 'relatedPosts', 'seriesData'));
     }
 
     public function category($slug, Request $request)
+    {
+        // Get filters for cache key
+        $sort = $request->get('sort', 'latest');
+        $dateFilter = $request->get('date_filter');
+        $page = $request->get('page', 1);
+        $filters = [
+            'sort' => $sort,
+            'date_filter' => $dateFilter,
+        ];
+
+        // Cache category view for 15 minutes (Requirement 20.1, 20.5)
+        // Only cache first page without filters for better hit rate
+        // Don't cache AJAX requests
+        if ($page == 1 && empty($dateFilter) && $sort === 'latest' && ! $request->wantsJson() && ! $request->ajax()) {
+            return $this->cacheService->cacheCategoryView($slug, $filters, function () use ($slug, $request) {
+                return $this->renderCategory($slug, $request);
+            });
+        }
+
+        return $this->renderCategory($slug, $request);
+    }
+
+    /**
+     * Render category page with cached data
+     */
+    protected function renderCategory(string $slug, Request $request)
     {
         // Cache category model (Requirement 12.3)
         $category = $this->cacheService->cacheModel('category', $slug, \App\Services\CacheService::TTL_LONG, function () use ($slug) {
@@ -162,6 +208,32 @@ class PostController extends Controller
     }
 
     public function tag($slug, Request $request)
+    {
+        // Get filters for cache key
+        $sort = $request->get('sort', 'latest');
+        $dateFilter = $request->get('date_filter');
+        $page = $request->get('page', 1);
+        $filters = [
+            'sort' => $sort,
+            'date_filter' => $dateFilter,
+        ];
+
+        // Cache tag view for 15 minutes (Requirement 20.1, 20.5)
+        // Only cache first page without filters for better hit rate
+        // Don't cache AJAX requests
+        if ($page == 1 && empty($dateFilter) && $sort === 'latest' && ! $request->wantsJson() && ! $request->ajax()) {
+            return $this->cacheService->cacheTagView($slug, $filters, function () use ($slug, $request) {
+                return $this->renderTag($slug, $request);
+            });
+        }
+
+        return $this->renderTag($slug, $request);
+    }
+
+    /**
+     * Render tag page with cached data
+     */
+    protected function renderTag(string $slug, Request $request)
     {
         // Cache tag model (Requirement 12.3)
         $tag = $this->cacheService->cacheModel('tag', $slug, \App\Services\CacheService::TTL_LONG, function () use ($slug) {

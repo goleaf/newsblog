@@ -32,6 +32,9 @@
     
     {{-- Additional Styles --}}
     @stack('styles')
+    
+    {{-- Preload critical resources --}}
+    @stack('preload')
 </head>
 <body class="preload bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 antialiased">
     {{-- Remove preload class after page load to enable transitions --}}
@@ -55,7 +58,7 @@
     @endif
 
     {{-- Main Content --}}
-    <main id="main-content" tabindex="-1">
+    <main id="main-content" role="main" tabindex="-1">
         @isset($slot)
             {{ $slot }}
         @else

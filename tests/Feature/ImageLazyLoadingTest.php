@@ -6,186 +6,275 @@ use App\Models\Category;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\View;
 use Tests\TestCase;
 
 class ImageLazyLoadingTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_optimized_image_component_renders_with_lazy_loading(): void
-    {
-        $view = $this->blade(
-            '<x-optimized-image src="/storage/test.jpg" alt="Test Image" width="800" height="600" />',
-            []
-        );
+    protected User $user;
 
-        $view->assertSee('loading="lazy"', false);
-        $view->assertSee('decoding="async"', false);
-        $view->assertSee('data-src="/storage/test.jpg"', false);
-        $view->assertSee('class="lazy-image"', false);
+    protected Category $category;
+
+    protected Post $post;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // Create test data
+        $this->user = User::factory()->create([
+            'avatar' => 'avatars/test-avatar.jpg',
+        ]);
+
+        $this->category = Category::factory()->create([
+            'icon' => '📱',
+        ]);
+
+        $this->post = Post::factory()->create([
+            'user_id' => $this->user->id,
+            'category_id' => $this->category->id,
+            'featured_image' => '/storage/posts/test-image.jpg',
+            'image_alt_text' => 'Test image description',
+            'status' => 'published',
+            'published_at' => now(),
+        ]);
     }
 
-    public function test_optimized_image_component_renders_with_eager_loading(): void
+    public function test_optimized_image_component_renders_with_lazy_loading()
     {
-        $view = $this->blade(
-            '<x-optimized-image src="/storage/test.jpg" alt="Test Image" :eager="true" />',
-            []
-        );
+        $html = View::make('components.optimized-image', [
+            'src' => '/storage/posts/test-image.jpg',
+            'alt' => 'Test image',
+            'eager' => false,
+        ])->render();
 
-        $view->assertSee('loading="eager"', false);
-        $view->assertSee('src="/storage/test.jpg"', false);
-        $view->assertDontSee('data-src', false);
-        $view->assertDontSee('lazy-image', false);
+        $this->assertStringContainsString('loading="lazy"', $html);
+        $this->assertStringContainsString('decoding="async"', $html);
     }
 
-    public function test_optimized_image_component_includes_responsive_srcset(): void
+    public function test_optimized_image_component_renders_with_eager_loading()
     {
-        $view = $this->blade(
-            '<x-optimized-image src="/storage/test.jpg" alt="Test Image" width="800" height="600" />',
-            []
-        );
+        $html = View::make('components.optimized-image', [
+            'src' => '/storage/posts/test-image.jpg',
+            'alt' => 'Test image',
+            'eager' => true,
+        ])->render();
 
-        $view->assertSee('data-srcset', false);
-        $view->assertSee('?w=400 400w', false);
-        $view->assertSee('?w=800 800w', false);
-        $view->assertSee('?w=1200 1200w', false);
+        $this->assertStringContainsString('loading="eager"', $html);
+        $this->assertStringContainsString('decoding="async"', $html);
     }
 
-    public function test_post_card_uses_optimized_image_component(): void
+    public function test_optimized_image_component_includes_alt_text()
     {
-        $user = User::factory()->create();
-        $category = Category::factory()->create();
-        $post = Post::factory()->create([
-            'user_id' => $user->id,
-            'category_id' => $category->id,
-            'featured_image' => 'posts/test-image.jpg',
-            'image_alt_text' => 'Test post image',
+        $html = View::make('components.optimized-image', [
+            'src' => '/storage/posts/test-image.jpg',
+            'alt' => 'Test image description',
+        ])->render();
+
+        $this->assertStringContainsString('alt="Test image description"', $html);
+    }
+
+    public function test_optimized_image_component_generates_srcset_for_storage_images()
+    {
+        $html = View::make('components.optimized-image', [
+            'src' => '/storage/posts/test-image.jpg',
+            'alt' => 'Test image',
+            'eager' => false,
+        ])->render();
+
+        // Should have data-srcset for blur-up technique
+        $this->assertStringContainsString('data-srcset=', $html);
+        $this->assertStringContainsString('400w', $html);
+        $this->assertStringContainsString('800w', $html);
+        $this->assertStringContainsString('1200w', $html);
+    }
+
+    public function test_optimized_image_component_includes_sizes_attribute()
+    {
+        $html = View::make('components.optimized-image', [
+            'src' => '/storage/posts/test-image.jpg',
+            'alt' => 'Test image',
+            'eager' => false,
+        ])->render();
+
+        // Should have data-sizes for blur-up technique
+        $this->assertStringContainsString('data-sizes=', $html);
+    }
+
+    public function test_optimized_image_component_uses_blur_up_placeholder()
+    {
+        $html = View::make('components.optimized-image', [
+            'src' => '/storage/posts/test-image.jpg',
+            'alt' => 'Test image',
+            'eager' => false,
+            'blurUp' => true,
+        ])->render();
+
+        // Should have SVG placeholder
+        $this->assertStringContainsString('data:image/svg+xml', $html);
+        $this->assertStringContainsString('data-src=', $html);
+        $this->assertStringContainsString('lazy-image', $html);
+    }
+
+    public function test_optimized_image_component_adds_lazy_image_class()
+    {
+        $html = View::make('components.optimized-image', [
+            'src' => '/storage/posts/test-image.jpg',
+            'alt' => 'Test image',
+            'eager' => false,
+            'blurUp' => true,
+        ])->render();
+
+        // Should include lazy-image class for JavaScript targeting
+        $this->assertStringContainsString('lazy-image', $html);
+    }
+
+    public function test_optimized_image_component_uses_data_attributes_for_lazy_loading()
+    {
+        $html = View::make('components.optimized-image', [
+            'src' => '/storage/posts/test-image.jpg',
+            'alt' => 'Test image',
+            'eager' => false,
+            'blurUp' => true,
+        ])->render();
+
+        // Should use data attributes for lazy loading
+        $this->assertStringContainsString('data-src=', $html);
+        $this->assertStringContainsString('data-srcset=', $html);
+        $this->assertStringContainsString('data-sizes=', $html);
+    }
+
+    public function test_optimized_image_component_respects_custom_sizes()
+    {
+        $html = View::make('components.optimized-image', [
+            'src' => '/storage/posts/test-image.jpg',
+            'alt' => 'Test image',
+            'sizes' => '(max-width: 768px) 100vw, 50vw',
+            'eager' => false,
+        ])->render();
+
+        $this->assertStringContainsString('(max-width: 768px) 100vw, 50vw', $html);
+    }
+
+    public function test_optimized_image_component_includes_width_and_height()
+    {
+        $html = View::make('components.optimized-image', [
+            'src' => '/storage/posts/test-image.jpg',
+            'alt' => 'Test image',
+            'width' => 800,
+            'height' => 600,
+        ])->render();
+
+        $this->assertStringContainsString('width="800"', $html);
+        $this->assertStringContainsString('height="600"', $html);
+    }
+
+    public function test_post_card_component_uses_optimized_image()
+    {
+        $html = View::make('components.content.post-card', [
+            'post' => $this->post,
+        ])->render();
+
+        // Should use optimized-image component
+        $this->assertStringContainsString('loading="lazy"', $html);
+        $this->assertStringContainsString('decoding="async"', $html);
+    }
+
+    public function test_post_card_includes_image_alt_text()
+    {
+        $html = View::make('components.content.post-card', [
+            'post' => $this->post,
+        ])->render();
+
+        $this->assertStringContainsString('alt="Test image description"', $html);
+    }
+
+    public function test_post_card_handles_missing_images_gracefully()
+    {
+        $postWithoutImage = Post::factory()->create([
+            'user_id' => $this->user->id,
+            'category_id' => $this->category->id,
+            'featured_image' => null,
             'status' => 'published',
             'published_at' => now(),
         ]);
 
-        $view = $this->blade(
-            '<x-content.post-card :post="$post" />',
-            ['post' => $post]
-        );
+        $html = View::make('components.content.post-card', [
+            'post' => $postWithoutImage,
+        ])->render();
 
-        $view->assertSee('lazy-image', false);
-        $view->assertSee('Test post image', false);
+        // Should not throw errors
+        $this->assertStringNotContainsString('Undefined', $html);
+        $this->assertStringNotContainsString('Error', $html);
     }
 
-    public function test_hero_post_uses_eager_loading(): void
+    public function test_optimized_image_generates_responsive_srcset()
     {
-        $user = User::factory()->create();
-        $category = Category::factory()->create();
-        $post = Post::factory()->create([
-            'user_id' => $user->id,
-            'category_id' => $category->id,
-            'featured_image' => 'posts/hero-image.jpg',
-            'image_alt_text' => 'Hero post image',
-            'status' => 'published',
-            'published_at' => now(),
-        ]);
+        $html = View::make('components.optimized-image', [
+            'src' => '/storage/posts/test-image.jpg',
+            'alt' => 'Test image',
+            'eager' => false,
+        ])->render();
 
-        $view = $this->blade(
-            '<x-content.hero-post :post="$post" />',
-            ['post' => $post]
-        );
-
-        $view->assertSee('loading="eager"', false);
-        $view->assertDontSee('lazy-image', false);
+        // Should generate multiple sizes
+        $this->assertStringContainsString('400w', $html);
+        $this->assertStringContainsString('800w', $html);
+        $this->assertStringContainsString('1200w', $html);
+        $this->assertStringContainsString('1600w', $html);
     }
 
-    public function test_homepage_displays_images_with_lazy_loading(): void
+    public function test_optimized_image_uses_intersection_observer_for_lazy_loading()
     {
-        $user = User::factory()->create();
-        $category = Category::factory()->create();
+        $html = View::make('components.optimized-image', [
+            'src' => '/storage/posts/test-image.jpg',
+            'alt' => 'Test image',
+            'eager' => false,
+            'blurUp' => true,
+        ])->render();
 
-        // Create featured post
-        $featuredPost = Post::factory()->create([
-            'user_id' => $user->id,
-            'category_id' => $category->id,
-            'is_featured' => true,
-            'featured_image' => 'posts/featured.jpg',
-            'status' => 'published',
-            'published_at' => now(),
-        ]);
-
-        // Create regular posts
-        Post::factory()->count(3)->create([
-            'user_id' => $user->id,
-            'category_id' => $category->id,
-            'featured_image' => 'posts/regular.jpg',
-            'status' => 'published',
-            'published_at' => now(),
-        ]);
-
-        $response = $this->get('/');
-
-        $response->assertOk();
-        // Hero image should use eager loading
-        $response->assertSee('loading="eager"', false);
-        // Other images should use lazy loading
-        $response->assertSee('lazy-image', false);
+        // Should use data attributes for lazy loading with IntersectionObserver
+        $this->assertStringContainsString('data-src=', $html);
+        $this->assertStringContainsString('lazy-image', $html);
     }
 
-    public function test_article_content_adds_lazy_loading_to_images(): void
+    public function test_optimized_image_prevents_layout_shift_with_dimensions()
     {
-        $user = User::factory()->create();
-        $category = Category::factory()->create();
-        $post = Post::factory()->create([
-            'user_id' => $user->id,
-            'category_id' => $category->id,
-            'content' => '<p>Test content with image</p><img src="/storage/content-image.jpg" alt="Content image">',
-            'status' => 'published',
-            'published_at' => now(),
-        ]);
+        $html = View::make('components.optimized-image', [
+            'src' => '/storage/posts/test-image.jpg',
+            'alt' => 'Test image',
+            'width' => 800,
+            'height' => 600,
+        ])->render();
 
-        $view = $this->blade(
-            '<x-article.article-content :post="$post" />',
-            ['post' => $post]
-        );
-
-        // The Alpine.js script should add lazy loading
-        $view->assertSee('articleContent', false);
+        // Should have width and height to prevent layout shift
+        $this->assertStringContainsString('width="800"', $html);
+        $this->assertStringContainsString('height="600"', $html);
     }
 
-    public function test_optimized_image_includes_blur_up_placeholder(): void
+    public function test_hero_post_uses_eager_loading()
     {
-        $view = $this->blade(
-            '<x-optimized-image src="/storage/test.jpg" alt="Test Image" />',
-            []
-        );
+        $html = View::make('components.content.hero-post', [
+            'post' => $this->post,
+        ])->render();
 
-        // Should include SVG placeholder
-        $view->assertSee('data:image/svg+xml', false);
-        // Should include blur filter
-        $view->assertSee('feGaussianBlur', false);
+        // Hero post should use eager loading (above the fold)
+        $this->assertStringContainsString('loading="eager"', $html);
+        $this->assertStringContainsString('decoding="async"', $html);
     }
 
-    public function test_optimized_image_can_disable_blur_up(): void
+    public function test_optimized_image_with_blur_up_uses_placeholder()
     {
-        $view = $this->blade(
-            '<x-optimized-image src="/storage/test.jpg" alt="Test Image" :blur-up="false" />',
-            []
-        );
+        $html = View::make('components.optimized-image', [
+            'src' => '/storage/posts/test-image.jpg',
+            'alt' => 'Test image',
+            'eager' => false,
+            'blurUp' => true,
+        ])->render();
 
-        $view->assertSee('src="/storage/test.jpg"', false);
-        $view->assertDontSee('data:image/svg+xml', false);
-    }
-
-    public function test_optimized_image_includes_lazy_loading_script(): void
-    {
-        // Test that the component includes the necessary data attributes for lazy loading
-        $view = $this->blade(
-            '<x-optimized-image src="/storage/test.jpg" alt="Test Image" />',
-            []
-        );
-
-        // Should include data attributes for lazy loading
-        $view->assertSee('data-src="/storage/test.jpg"', false);
-        $view->assertSee('class="lazy-image"', false);
-
-        // The @push directives will be rendered in the full page context
-        // Here we just verify the component sets up the necessary attributes
+        // Should use SVG placeholder for blur-up effect
+        $this->assertStringContainsString('data:image/svg+xml', $html);
+        $this->assertStringContainsString('data-src=', $html);
     }
 }

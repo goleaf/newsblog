@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.app', ['page' => 'article'])
 
 @push('meta-tags')
     <x-seo.meta-tags :post="$post" />
@@ -21,11 +21,15 @@
         <div class="lg:col-span-2">
             <article class="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 overflow-hidden" id="article-content" data-post-id="{{ $post->id }}">
                 @if($post->featured_image)
-                    <img 
-                        src="{{ $post->featured_image_url }}" 
-                        alt="{{ $post->image_alt_text ?? $post->title }}" 
+                    <x-optimized-image 
+                        :src="$post->featured_image_url" 
+                        :alt="$post->image_alt_text ?? $post->title"
+                        :width="1200"
+                        :height="600"
+                        :eager="true"
+                        :blur-up="false"
+                        sizes="(max-width: 1024px) 100vw, 1200px"
                         class="w-full h-96 object-cover"
-                        loading="eager"
                     />
                 @endif
                 
@@ -151,7 +155,4 @@
     </div>
 </div>
 
-@push('scripts')
-@vite(['resources/js/engagement-tracking.js'])
-@endpush
 @endsection

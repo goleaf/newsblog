@@ -1,58 +1,58 @@
 @props(['page' => 'default'])
 
 @php
-    // Determine if we're in production
-    $isProduction = app()->environment('production');
+    // Determine which critical CSS to inline based on page type
+    $criticalCssMap = [
+        'home' => 'critical-home',
+        'article' => 'critical-article',
+        'category' => 'critical-category',
+        'search' => 'critical-search',
+        'dashboard' => 'critical-dashboard',
+        'default' => 'critical',
+    ];
     
-    // Get critical CSS path
-    $criticalCssPath = public_path('build/assets/critical.css');
+    $criticalCssFile = $criticalCssMap[$page] ?? 'critical';
+    
+    // Get the critical CSS content for inlining
+    $criticalCssPath = public_path('build/assets/' . $criticalCssFile . '.css');
     $criticalCss = '';
     
-    // In production, inline critical CSS
-    if ($isProduction && file_exists($criticalCssPath)) {
+    // In production, inline the critical CSS
+    if (app()->environment('production') && file_exists($criticalCssPath)) {
         $criticalCss = file_get_contents($criticalCssPath);
     }
 @endphp
 
-@if($isProduction && !empty($criticalCss))
-    {{-- Inline critical CSS for faster initial render --}}
-    <style id="critical-css">
+@if($criticalCss)
+    {{-- Inline Critical CSS for faster initial render --}}
+    <style>
         {!! $criticalCss !!}
     </style>
     
     {{-- Preload main CSS --}}
-    <link rel="preload" href="{{ Vite::asset('resources/css/app.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    @vite(['resources/css/app.css'], 'build')
+    
+    {{-- Defer non-critical CSS using media="print" trick --}}
+    <link rel="preload" 
+          href="{{ Vite::asset('resources/css/app.css') }}" 
+          as="style" 
+          onload="this.onload=null;this.rel='stylesheet'">
     
     {{-- Fallback for browsers without JavaScript --}}
     <noscript>
         @vite(['resources/css/app.css'])
     </noscript>
-    
-    {{-- Load main CSS asynchronously --}}
-    <script>
-        // Load CSS asynchronously
-        (function() {
-            var link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.href = '{{ Vite::asset('resources/css/app.css') }}';
-            document.head.appendChild(link);
-            
-            // Remove critical CSS once main CSS is loaded to avoid duplication
-            link.onload = function() {
-                var criticalCss = document.getElementById('critical-css');
-                if (criticalCss) {
-                    setTimeout(function() {
-                        criticalCss.remove();
-                    }, 100);
-                }
-            };
-        })();
-    </script>
 @else
-    {{-- Development mode: load CSS normally --}}
-    @vite(['resources/css/app.css'])
+    {{-- Development mode or critical CSS not found - load normally --}}
+    @vite(['resources/css/critical.css', 'resources/css/app.css'])
 @endif
 
-{{-- Preconnect to external resources --}}
-<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
-<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+{{-- Preconnect to external resources if needed --}}
+@if(config('services.cdn.enabled', false))
+    <link rel="preconnect" href="{{ config('services.cdn.url') }}" crossorigin>
+    <link rel="dns-prefetch" href="{{ config('services.cdn.url') }}">
+@endif
+
+{{-- Resource hints for fonts --}}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

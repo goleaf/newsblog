@@ -7,6 +7,8 @@ export default defineConfig({
             input: [
                 'resources/css/app.css',
                 'resources/css/critical.css',
+                'resources/css/critical-home.css',
+                'resources/css/critical-article.css',
                 'resources/js/app.js',
                 // Page-specific entry points for code splitting
                 'resources/js/pages/homepage.js',

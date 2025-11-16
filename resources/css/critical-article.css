@@ -1,0 +1,154 @@
+/* Critical CSS for Article Pages - Above the fold styles */
+
+/* Base styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.5;
+}
+
+body {
+    margin: 0;
+    background-color: #f9fafb;
+    color: #111827;
+}
+
+.dark body {
+    background-color: #111827;
+    color: #f9fafb;
+}
+
+[x-cloak] {
+    display: none !important;
+}
+
+.preload * {
+    transition: none !important;
+}
+
+/* Header */
+header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background-color: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.dark header {
+    background-color: #1f2937;
+    border-bottom-color: #374151;
+}
+
+/* Article container */
+article {
+    max-width: 65rem;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    background-color: #ffffff;
+}
+
+.dark article {
+    background-color: #1f2937;
+}
+
+/* Article header */
+.article-header {
+    margin-bottom: 2rem;
+}
+
+/* Typography for articles */
+h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    line-height: 1.2;
+    color: #111827;
+    margin-bottom: 1rem;
+}
+
+.dark h1 {
+    color: #f9fafb;
+}
+
+/* Article meta */
+.article-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+.dark .article-meta {
+    color: #9ca3af;
+}
+
+/* Featured image */
+.featured-image {
+    width: 100%;
+    height: auto;
+    border-radius: 0.5rem;
+    margin-bottom: 2rem;
+}
+
+/* Article content */
+.article-content {
+    font-size: 1.125rem;
+    line-height: 1.75;
+    color: #374151;
+}
+
+.dark .article-content {
+    color: #d1d5db;
+}
+
+.article-content p {
+    margin-bottom: 1.5rem;
+}
+
+.article-content h2 {
+    font-size: 1.875rem;
+    font-weight: 700;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    color: #111827;
+}
+
+.dark .article-content h2 {
+    color: #f9fafb;
+}
+
+/* Reading progress */
+.reading-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 3px;
+    background-color: #3b82f6;
+    z-index: 100;
+}
+
+/* Focus styles */
+*:focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+/* Screen reader only */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}

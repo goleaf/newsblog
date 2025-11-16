@@ -22,6 +22,11 @@ class PostObserver
     {
         $this->indexPost($post);
 
+        // Invalidate category menu cache (affects post counts)
+        if ($post->status === 'published') {
+            \Cache::forget('category_menu');
+        }
+
         // Invalidate homepage and category caches (Requirement 20.5)
         $this->cacheService->invalidateHomepage();
         if ($post->category_id) {
@@ -38,6 +43,11 @@ class PostObserver
         $post->load(['user', 'category', 'tags']);
 
         $this->searchIndexService->updatePost($post);
+
+        // Invalidate category menu cache if status or category changed (affects post counts)
+        if ($post->isDirty(['status', 'category_id'])) {
+            \Cache::forget('category_menu');
+        }
 
         // Invalidate related posts cache if relevant fields changed
         $relatedPostsRelevantFields = ['title', 'excerpt', 'content', 'category_id', 'status', 'published_at'];

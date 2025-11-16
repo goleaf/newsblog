@@ -79,3 +79,4 @@ class ModelResolutionTest extends TestCase
         return $files;
     }
 }
+
