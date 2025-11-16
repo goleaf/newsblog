@@ -104,7 +104,7 @@ class GdprComplianceTest extends TestCase
         // User should be anonymized
         $user->refresh();
         $this->assertEquals('Deleted User', $user->name);
-        $this->assertEquals('deleted', $user->status);
+        $this->assertEquals('deleted', $user->status->value);
         $this->assertStringStartsWith('deleted_', $user->email);
     }
 
@@ -200,7 +200,7 @@ class GdprComplianceTest extends TestCase
 
         $user->refresh();
         $this->assertEquals('Deleted User', $user->name);
-        $this->assertEquals('deleted', $user->status);
+        $this->assertEquals('deleted', $user->status->value);
         $this->assertStringStartsWith('deleted_', $user->email);
         $this->assertNull($user->bio);
 

@@ -7,6 +7,7 @@ enum UserStatus: string
     case Active = 'active';
     case Suspended = 'suspended';
     case Inactive = 'inactive';
+    case Deleted = 'deleted';
 
     /**
      * Get all status values as an array for Nova filters.
@@ -19,6 +20,7 @@ enum UserStatus: string
             'Active' => self::Active->value,
             'Suspended' => self::Suspended->value,
             'Inactive' => self::Inactive->value,
+            'Deleted' => self::Deleted->value,
         ];
     }
 
@@ -31,6 +33,7 @@ enum UserStatus: string
             self::Active => 'Active',
             self::Suspended => 'Suspended',
             self::Inactive => 'Inactive',
+            self::Deleted => 'Deleted',
         };
     }
 }
