@@ -26,7 +26,7 @@ class RegisterRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role' => ['nullable', 'string', 'in:user,author'],
+            'role' => ['nullable', 'string', 'in:user'],
         ];
     }
 
@@ -47,5 +47,15 @@ class RegisterRequest extends FormRequest
             'role.in' => __('The selected role is invalid.'),
         ];
     }
-}
 
+    /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation(): void
+    {
+        // Ensure role defaults to 'user' for public registration
+        $this->merge([
+            'role' => $this->input('role', 'user'),
+        ]);
+    }
+}

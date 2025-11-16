@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Enums\UserRole;
+use App\Enums\UserStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Models\User;
@@ -30,13 +32,15 @@ class RegisteredUserController extends Controller
     {
         $validated = $request->validated();
 
-        $role = $validated['role'] ?? 'user';
+        // Public registration always defaults to 'user' role
+        $role = $validated['role'] ?? UserRole::User->value;
 
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
             'role' => $role,
+            'status' => UserStatus::Active->value,
         ]);
 
         event(new Registered($user));

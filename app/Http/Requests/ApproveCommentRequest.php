@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\UserRole;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ApproveCommentRequest extends FormRequest
@@ -13,7 +14,13 @@ class ApproveCommentRequest extends FormRequest
     {
         $user = $this->user();
 
-        return $user && in_array($user->role, ['admin', 'editor'], true);
+        if (! $user) {
+            return false;
+        }
+
+        $userRole = $user->role instanceof \BackedEnum ? $user->role->value : $user->role;
+
+        return in_array($userRole, [UserRole::Admin->value, UserRole::Editor->value], true);
     }
 
     /**

@@ -60,9 +60,9 @@
                 <p class="text-xs text-gray-500 dark:text-gray-400 truncate">
                     {{ auth()->user()->email }}
                 </p>
-                @if(auth()->user()->role !== 'user')
+                @if(auth()->user()->role !== \App\Enums\UserRole::User)
                     <span class="inline-flex items-center px-2 py-0.5 mt-1 rounded text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300">
-                        {{ ucfirst(auth()->user()->role) }}
+                        {{ auth()->user()->role->label() }}
                     </span>
                 @endif
             </div>

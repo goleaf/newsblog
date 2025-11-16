@@ -16,19 +16,8 @@
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
-        <!-- Role -->
-        <div class="mt-4">
-            <x-input-label for="role" :value="__('Role')" />
-            <select
-                id="role"
-                name="role"
-                class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block mt-1 w-full"
-            >
-                <option value="user" @selected(old('role', 'user') === 'user')>{{ __('User') }}</option>
-                <option value="author" @selected(old('role') === 'author')>{{ __('Author') }}</option>
-            </select>
-            <x-input-error :messages="$errors->get('role')" class="mt-2" />
-        </div>
+        <!-- Role (hidden, defaults to user for public registration) -->
+        <input type="hidden" name="role" value="user">
 
         <!-- Password -->
         <div class="mt-4">

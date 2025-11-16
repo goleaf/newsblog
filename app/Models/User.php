@@ -175,6 +175,11 @@ class User extends Authenticatable
         return $this->role === UserRole::Author;
     }
 
+    public function isActive(): bool
+    {
+        return $this->status === UserStatus::Active;
+    }
+
     public function getFullNameAttribute()
     {
         return $this->name;
