@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\DataTransferObjects\SearchResult;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\SearchRequest;
+use App\Models\Post;
 use App\Services\FuzzySearchService;
 use App\Services\SearchAnalyticsService;
 use Illuminate\Http\JsonResponse;
@@ -88,19 +89,80 @@ class SearchController extends Controller
         $limit = $request->validated()['limit'] ?? 15;
 
         try {
-            // Use searchPosts method which returns SearchResult DTOs
-            $results = $this->fuzzySearchService->searchPosts($query, [
-                'threshold' => $threshold,
-                'limit' => $limit,
-                'filters' => $filters,
-            ]);
+            // Optional engine override: use Scout if requested
+            if ($request->string('engine')->lower() === 'scout') {
+                $builder = Post::search($query)
+                    ->query(function ($q) use ($filters, $request) {
+                        if (! empty($filters['category'])) {
+                            $q->whereHas('category', function ($sub) use ($filters) {
+                                $sub->where('slug', $filters['category']);
+                            });
+                        }
+                        if (! empty($filters['author'])) {
+                            $q->whereHas('user', function ($sub) use ($filters) {
+                                $sub->where('name', 'like', '%'.$filters['author'].'%');
+                            });
+                        }
+                        if (! empty($filters['date_from'])) {
+                            $q->where('published_at', '>=', $filters['date_from']);
+                        }
+                        if (! empty($filters['date_to'])) {
+                            $q->where('published_at', '<=', $filters['date_to']);
+                        }
+
+                        // Sorting within the Eloquent query stage
+                        $sort = strtolower((string) $request->input('sort', 'relevance'));
+                        if ($sort === 'date') {
+                            $q->orderByDesc('published_at');
+                        } elseif ($sort === 'popularity') {
+                            $q->orderByDesc('view_count');
+                        }
+                    });
+
+                // Pagination support
+                $perPage = (int) max(1, min((int) $request->input('per_page', $limit), 50));
+                $page = (int) max(1, (int) $request->input('page', 1));
+
+                $paginator = $builder->paginate($perPage, 'page', $page);
+
+                $items = collect($paginator->items());
+                $results = $items->values()->map(function ($post, $idx) use ($page, $perPage) {
+                    $pos = (($page - 1) * $perPage) + $idx;
+                    $score = max(1, 100 - $pos);
+
+                    return SearchResult::fromPost($post, (float) $score);
+                });
+
+                return response()->json([
+                    'success' => true,
+                    'data' => $results->map(fn ($r) => $r->toArray()),
+                    'meta' => [
+                        'query' => $query,
+                        'count' => $paginator->total(),
+                        'fuzzy_enabled' => false,
+                        'pagination' => [
+                            'current_page' => $paginator->currentPage(),
+                            'per_page' => $paginator->perPage(),
+                            'last_page' => $paginator->lastPage(),
+                            'total' => $paginator->total(),
+                        ],
+                    ],
+                ]);
+            } else {
+                // Use fuzzy search service (default)
+                $results = $this->fuzzySearchService->searchPosts($query, [
+                    'threshold' => $threshold,
+                    'limit' => $limit,
+                    'filters' => $filters,
+                ]);
+            }
 
             $executionTime = (microtime(true) - $startTime) * 1000;
 
             // Async query logging
             if (config('fuzzy-search.analytics.log_queries', true)) {
                 $resultCount = $results->count();
-                $fuzzyEnabled = $this->fuzzySearchService->isEnabled('posts');
+                $fuzzyEnabled = $request->string('engine')->lower() !== 'scout' && $this->fuzzySearchService->isEnabled('posts');
                 $analyticsService = $this->analyticsService;
 
                 dispatch(function () use ($query, $resultCount, $executionTime, $filters, $fuzzyEnabled, $analyticsService) {

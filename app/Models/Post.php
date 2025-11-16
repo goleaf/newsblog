@@ -10,10 +10,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
+use Laravel\Scout\Searchable;
 
 class Post extends Model
 {
-    use HasFactory, LogsActivity, SoftDeletes;
+    use HasFactory, LogsActivity, Searchable, SoftDeletes;
 
     protected $fillable = [
         'user_id',
@@ -473,5 +474,48 @@ class Post extends Model
         }
 
         return $data;
+    }
+
+    /**
+     * Laravel Scout: Only index published posts.
+     */
+    public function shouldBeSearchable(): bool
+    {
+        return $this->isPublished();
+    }
+
+    /**
+     * Laravel Scout: Index payload for search engines.
+     *
+     * @return array<string, mixed>
+     */
+    public function toSearchableArray(): array
+    {
+        // Avoid heavy relationship loading; accessors are null-safe
+        $author = $this->user?->name;
+        $category = $this->category?->name;
+        $tags = $this->relationLoaded('tags') ? $this->tags->pluck('name')->all() : $this->tags()->pluck('name')->all();
+
+        return [
+            'id' => $this->id,
+            'title' => (string) $this->title,
+            'slug' => (string) $this->slug,
+            'excerpt' => trim((string) strip_tags((string) $this->excerpt)),
+            'content' => trim((string) strip_tags((string) $this->content)),
+            'author' => $author,
+            'category' => $category,
+            'tags' => $tags,
+            'view_count' => (int) $this->view_count,
+            'reading_time' => (int) $this->reading_time,
+            'published_at' => $this->published_at?->toDateTimeString(),
+        ];
+    }
+
+    /**
+     * Optional custom index name.
+     */
+    public function searchableAs(): string
+    {
+        return (string) (config('scout.prefix') ? config('scout.prefix').'_posts' : 'posts');
     }
 }
