@@ -134,5 +134,32 @@
     "dashboard.no_notifications": "You’re all caught up. No recent notifications.",
     "dashboard.reading_history": "Reading History",
     "dashboard.reading_history_subtitle": "Your last 100 viewed posts",
-    "dashboard.viewed_at": "Viewed"
+    "dashboard.viewed_at": "Viewed",
+
+    "gallery.prev": "Previous image",
+    "gallery.next": "Next image",
+    "gallery.play": "Play",
+    "gallery.pause": "Pause",
+    "gallery.fullscreen": "Full screen",
+
+    "social.open": "Open",
+    "social.twitter": "Twitter/X post",
+    "social.facebook": "Facebook post",
+    "social.instagram": "Instagram post",
+    "Weather": "Weather",
+    "Market": "Market",
+    "Refresh": "Refresh",
+    "Countdown": "Countdown",
+    "keyboard.shortcuts": "Keyboard Shortcuts",
+    "keyboard.description": "Use these shortcuts to navigate quickly.",
+    "keyboard.search": "Open search",
+    "keyboard.close_modal": "Close modal",
+    "keyboard.next_page": "Next page",
+    "keyboard.previous_page": "Previous page",
+    "keyboard.show_help": "Show shortcuts help"
+    ,
+    "qr.title": "QR Code",
+    "qr.generate": "Generate",
+    "qr.download": "Download",
+    "qr.open": "Show QR code"
 }

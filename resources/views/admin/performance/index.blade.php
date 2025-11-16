@@ -176,89 +176,12 @@
         </div>
     </div>
 
-    @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <script>
-        // Page Load Chart
-        @if(count($pageLoads) > 0)
-        const pageLoadCtx = document.getElementById('pageLoadChart').getContext('2d');
-        new Chart(pageLoadCtx, {
-            type: 'line',
-            data: {
-                labels: @json(array_column($pageLoads, 'hour')),
-                datasets: [{
-                    label: 'Average Load Time (ms)',
-                    data: @json(array_column($pageLoads, 'average')),
-                    borderColor: 'rgb(59, 130, 246)',
-                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: true
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'Milliseconds'
-                        }
-                    }
-                }
-            }
-        });
-        @endif
-
-        // Cache Stats Chart
-        @if(count($cacheStats) > 0)
-        const cacheStatsCtx = document.getElementById('cacheStatsChart').getContext('2d');
-        new Chart(cacheStatsCtx, {
-            type: 'bar',
-            data: {
-                labels: @json(array_column($cacheStats, 'date')),
-                datasets: [
-                    {
-                        label: 'Cache Hits',
-                        data: @json(array_column($cacheStats, 'hits')),
-                        backgroundColor: 'rgba(34, 197, 94, 0.5)',
-                        borderColor: 'rgb(34, 197, 94)',
-                        borderWidth: 1
-                    },
-                    {
-                        label: 'Cache Misses',
-                        data: @json(array_column($cacheStats, 'misses')),
-                        backgroundColor: 'rgba(239, 68, 68, 0.5)',
-                        borderColor: 'rgb(239, 68, 68)',
-                        borderWidth: 1
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: true
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'Count'
-                        }
-                    }
-                }
-            }
-        });
-        @endif
+    <!-- Page-specific data for charts (consumed by resources/js/pages/performance.js) -->
+    <script type="application/json" id="performance-data">
+        {
+            "pageLoads": @json($pageLoads),
+            "cacheStats": @json($cacheStats)
+        }
     </script>
-    @endpush
+    <x-page-scripts page="performance" />
 </x-app-layout>

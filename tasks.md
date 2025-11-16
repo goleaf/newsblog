@@ -1,4 +1,57 @@
+# Work Plan: Analytics & Reporting
+
+- [x] Inventory existing analytics (models, controllers, views, tests)
+- [ ] Fix SearchAnalyticsService::logQuery to store query
+- [ ] Create Form Requests:
+  - [ ] TrackEngagementRequest
+  - [ ] TrackSearchClickRequest
+- [ ] Views over last 30 days:
+  - [ ] Controller data
+  - [ ] Blade + JS chart renderer (local, no CDN)
+- [ ] Popular categories (by views in period)
+- [ ] Traffic sources breakdown (direct/search/social/referral)
+- [ ] Tests:
+  - [ ] Analytics calculations
+  - [ ] Search logging (queries/cliks)
+- [ ] Run Pint
+- [ ] npm run build
+
 # Phase 5: User Features & Engagement
+
+## 35. Implement additional UI enhancements
+
+- [ ] 35.1 Add keyboard shortcuts
+  - [x] Implement "/" to focus search
+  - [x] Add "Esc" to close modals (existing components support Esc)
+  - [x] Create "N/P" for next/previous page
+  - [x] Add "?" to show shortcuts help modal
+  - _Requirements: 71_
+
+- [ ] 35.2 Create parallax scrolling effects
+  - [x] Add parallax to homepage hero
+  - [x] Limit to desktop (1024px+)
+  - [x] Maintain 60fps performance
+  - [x] Respect reduced motion preferences
+  - _Requirements: 73_
+
+- [ ] 35.3 Implement print-friendly version
+  - [x] Create print stylesheet
+  - [x] Remove navigation, sidebar, ads
+  - [x] Include title, author, date, content
+  - [x] Optimize for black and white printing
+  - _Requirements: 69_
+
+- [ ] 35.4 Add QR code generation
+  - [x] Scaffold QR code modal and button on articles
+  - [ ] Integrate QR code library via npm (pending approval)
+  - [ ] Generate with error correction and download option
+  - _Requirements: 70_
+
+- [ ] 35.5 Write UI enhancement tests
+  - [x] Test keyboard shortcuts
+  - [x] Test parallax effects
+  - [x] Test print stylesheet inclusion
+  - [x] Test QR code UI scaffold (placeholder without library)
 
 - [ ] 23. Implement SEO optimization features
   - [x] 23.1 Create SEO meta tags component (OG, Twitter, Schema.org, canonical)
@@ -275,3 +328,37 @@ Conventions & constraints to uphold:
     - Test avatar upload and deletion
     - Test email preferences can be updated
     - Test validation rules for profile updates
+
+## 33. Advanced UI Components
+- [ ] 33.1 Create photo gallery component
+  - [ ] Build gallery with thumbnail navigation
+  - [ ] Add full-screen mode
+  - [ ] Implement auto-play slideshow (3s intervals)
+  - [ ] Add image counter display
+  - [ ] Support swipe gestures on touch devices
+  - [ ] Tests for gallery navigation and autoplay
+- [ ] 33.2 Add pull quotes styling
+  - [ ] Create pull quote component with left/right float
+  - [ ] Add quotation mark decorations and attribution
+  - [ ] Ensure mobile responsiveness
+  - [ ] Tests for pull quote rendering
+- [ ] 33.3 Implement embedded social media
+  - [ ] Add Twitter/X, Facebook, Instagram fallbacks
+  - [ ] Lazy load embedded content (policy-friendly placeholders)
+  - [ ] Show fallback links on error
+  - [ ] Tests for social embed placeholders and lazy-load hooks
+- [ ] 33.4 Create interactive charts component
+  - [ ] Integrate Chart.js (line, bar, pie, area)
+  - [ ] Add hover tooltips and touch support
+  - [ ] Allow inline CSV string or JSON config input
+  - [ ] Tests for chart config hydration
+- [ ] 33.5 Wire demo page and build
+  - [ ] Add demo route/controller/view
+  - [ ] i18n strings in `lang/en.json`
+  - [ ] Bundle JS and run `npm run build`
+
+## 43. Content Calendar
+- [ ] 43.1 Build calendar view component
+- [ ] 43.2 Implement drag-and-drop scheduling
+- [ ] 43.3 Add calendar sidebar
+- [ ] 43.4 Write content calendar tests

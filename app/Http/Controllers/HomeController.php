@@ -47,6 +47,16 @@ class HomeController extends Controller
                 ->get();
         });
 
+        $editorsPicks = Cache::remember('home.editors-picks', CacheService::TTL_MEDIUM, function () {
+            return Post::published()
+                ->where('is_editors_pick', true)
+                ->orderByRaw('COALESCE(editors_pick_order, 9999) asc')
+                ->with(['user:id,name', 'category:id,name,slug'])
+                ->select(['id', 'title', 'slug', 'excerpt', 'featured_image', 'published_at', 'reading_time', 'view_count', 'user_id', 'category_id', 'is_editors_pick'])
+                ->take(6)
+                ->get();
+        });
+
         $breakingNews = Cache::remember('home.breaking', CacheService::TTL_MEDIUM, function () {
             return Post::published()
                 ->breaking()
@@ -117,6 +127,10 @@ class HomeController extends Controller
             ->with(['user:id,name', 'category:id,name,slug'])
             ->select(['id', 'title', 'slug', 'excerpt', 'featured_image', 'published_at', 'reading_time', 'view_count', 'user_id', 'category_id']);
 
+        if ($request->boolean('exclude_sponsored')) {
+            $query->withoutSponsored();
+        }
+
         // Apply sorting
         switch ($sort) {
             case 'popular':
@@ -144,12 +158,28 @@ class HomeController extends Controller
                 ->get();
         });
 
+        // Return JSON for AJAX infinite scroll requests (Requirements 27.1-27.5)
+        if ($request->wantsJson() || $request->ajax()) {
+            $html = '';
+            foreach ($recentPosts as $post) {
+                $html .= view('partials.post-card', compact('post'))->render();
+            }
+
+            return response()->json([
+                'html' => $html,
+                'currentPage' => $recentPosts->currentPage(),
+                'lastPage' => $recentPosts->lastPage(),
+                'hasMorePages' => $recentPosts->hasMorePages(),
+            ]);
+        }
+
         return view('home', compact(
             'featuredPosts',
             'breakingNews',
             'trendingPosts',
             'mostPopular',
             'trendingNow',
+            'editorsPicks',
             'categorySections',
             'recentPosts',
             'categories'

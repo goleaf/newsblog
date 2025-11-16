@@ -5,6 +5,8 @@ namespace App\Nova;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\DateTime;
+use Laravel\Nova\Fields\BelongsTo;
+use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Select;
@@ -162,8 +164,8 @@ class Page extends Resource
                 ->options([
                     'default' => 'Default',
                     'full-width' => 'Full Width',
-                    'sidebar' => 'With Sidebar',
-                    'landing' => 'Landing Page',
+                    'contact' => 'Contact',
+                    'about' => 'About',
                 ])
                 ->default('default')
                 ->rules('required')
@@ -175,6 +177,19 @@ class Page extends Resource
                 ->sortable()
                 ->rules('required', 'integer', 'min:0')
                 ->help('Order in which pages appear in navigation'),
+
+            BelongsTo::make('Parent Page', 'parent', Page::class)
+                ->nullable()
+                ->searchable()
+                ->help('Select a parent page to create hierarchy')
+                ->fillUsing(function (NovaRequest $request, $model, $attribute, $requestAttribute) {
+                    $value = $request->input($requestAttribute) ?? $request->input('parent_id');
+                    if ($value) {
+                        $model->parent()->associate($value);
+                    } else {
+                        $model->parent()->dissociate();
+                    }
+                }),
 
             Select::make('Status')
                 ->options([
@@ -208,6 +223,8 @@ class Page extends Resource
                 ->readonly()
                 ->sortable()
                 ->hideFromIndex(),
+
+            HasMany::make('Child Pages', 'children', Page::class),
         ];
     }
 

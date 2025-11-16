@@ -1,3 +1,39 @@
+## Analytics & Reporting (Priority)
+
+1) Fix search query logging (ensure `query` saved)
+2) Replace inline validations with Form Requests:
+   - `EngagementMetricController@track`
+   - `SearchClickController@track`
+3) Views last 30 days chart (data + JS renderer)
+4) Popular categories analytics (controller + view)
+5) Traffic sources breakdown (direct/search/social/referral)
+6) Tests:
+   - View tracking + dedup (existing coverage)
+   - Analytics calculations (categories, sources, 30d views)
+   - Search logging (queries saved, clicks)
+7) Code style & assets:
+   - Run Pint
+   - npm run build
+
+## Broken Link Checker (Task 30)
+
+- [ ] 30.1 Create BrokenLink model and migration
+  - [ ] Migration with: post_id, url, status, checked_at, response_code, timestamps
+  - [ ] Model with relation to `Post`
+- [ ] 30.2 Implement CheckBrokenLinks job
+  - [ ] Scan all published posts for external links
+  - [ ] Check HTTP status; mark 404/timeouts as broken
+  - [ ] Upsert results and build basic report (logs)
+  - [ ] Schedule weekly
+- [ ] 30.3 Build Broken Links UI in Nova
+  - [ ] Nova resource for `BrokenLink`
+  - [ ] Actions: Fix (replace URL in post), Ignore
+  - [ ] Show last checked timestamp, response code
+- [ ] 30.4 Tests
+  - [ ] Test link scanning
+  - [ ] Test broken link detection
+  - [ ] Test ignore internal links and ok/broken states
+
 ## Security Measures (Priority)
 
 - [x] 26.1 Rate limiting middleware
@@ -163,3 +199,30 @@ Notes:
   - [x] Test widget rendering
   - [x] Test widget ordering
   - [x] Test widget configuration
+
+## 43. Content Calendar
+
+- [ ] 43.1 Build calendar view component
+  - [x] Create monthly calendar grid
+  - [x] Display posts on their dates
+  - [x] Color-code by status (published, scheduled, draft)
+  - [x] Add month navigation
+  - _Requirements: 40_
+
+- [ ] 43.2 Implement drag-and-drop scheduling
+  - [x] Allow dragging posts to different dates
+  - [x] Update scheduled_at or published_at
+  - [ ] Show confirmation on drop
+  - [x] Validate date changes
+  - _Requirements: 40_
+
+- [ ] 43.3 Add calendar sidebar
+  - [x] Show posts for selected date
+  - [x] Display post details
+  - [x] Add quick edit options
+  - _Requirements: 40_
+
+- [ ] 43.4 Write content calendar tests
+  - [ ] Test calendar rendering
+  - [ ] Test drag-and-drop
+  - [ ] Test date updates

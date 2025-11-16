@@ -3,16 +3,18 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\Calendar\GetPostsForDateRequest;
+use App\Http\Requests\Admin\Calendar\ShowCalendarRequest;
+use App\Http\Requests\Admin\Calendar\UpdatePostDateRequest;
 use App\Models\Post;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 
 class ContentCalendarController extends Controller
 {
     /**
      * Display the content calendar view.
      */
-    public function index(Request $request)
+    public function index(ShowCalendarRequest $request)
     {
         // Get the requested month and year, default to current
         $month = $request->input('month', now()->month);
@@ -47,13 +49,9 @@ class ContentCalendarController extends Controller
     /**
      * Get posts for a specific date (AJAX endpoint).
      */
-    public function getPostsForDate(Request $request)
+    public function getPostsForDate(GetPostsForDateRequest $request)
     {
         $date = $request->input('date');
-
-        if (! $date) {
-            return response()->json(['error' => 'Date is required'], 400);
-        }
 
         $posts = Post::query()
             ->with(['user', 'category'])
@@ -81,11 +79,9 @@ class ContentCalendarController extends Controller
     /**
      * Update post date via drag-and-drop.
      */
-    public function updatePostDate(Request $request, Post $post)
+    public function updatePostDate(UpdatePostDateRequest $request, Post $post)
     {
-        $validated = $request->validate([
-            'date' => 'required|date',
-        ]);
+        $validated = $request->validated();
 
         $newDate = Carbon::parse($validated['date']);
 
@@ -112,7 +108,7 @@ class ContentCalendarController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Post date updated successfully',
+            'message' => __('calendar.post_date_updated'),
             'post' => [
                 'id' => $post->id,
                 'title' => $post->title,

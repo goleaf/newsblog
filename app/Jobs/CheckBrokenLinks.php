@@ -16,102 +16,94 @@ class CheckBrokenLinks implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    public int $timeout = 120;
+    public int $tries = 1;
+
     public function handle(): void
     {
-        $posts = Post::published()->get();
-        $checkedLinks = [];
+        $appUrl = config('app.url');
+        $appHost = parse_url($appUrl ?? '', PHP_URL_HOST);
 
-        foreach ($posts as $post) {
-            // Extract links from content
-            preg_match_all('/<a[^>]+href=["\']([^"\']+)["\'][^>]*>/i', $post->content, $matches);
-
-            if (! empty($matches[1])) {
-                foreach ($matches[1] as $url) {
-                    // Skip internal links, mailto links, and anchors
-                    if (str_starts_with($url, '/') || str_starts_with($url, 'mailto:') || str_starts_with($url, '#')) {
+        Post::query()
+            ->where('status', 'published')
+            ->when(true, function ($q) {
+                $q->whereNotNull('published_at');
+            })
+            ->orderByDesc('published_at')
+            ->chunkById(100, function ($posts) use ($appHost) {
+                foreach ($posts as $post) {
+                    $links = $this->extractExternalLinks((string) $post->content, $appHost);
+                    if (empty($links)) {
                         continue;
                     }
 
-                    // Skip if we already checked this URL for this post
-                    $linkKey = $post->id.':'.$url;
-                    if (in_array($linkKey, $checkedLinks)) {
-                        continue;
+                    foreach ($links as $url) {
+                        $this->checkAndStore($post->id, $url);
                     }
-                    $checkedLinks[] = $linkKey;
-
-                    $this->checkLink($post, $url);
                 }
+            });
+    }
+
+    /**
+     * @param string $html
+     * @param string|null $appHost
+     * @return array<int, string>
+     */
+    protected function extractExternalLinks(string $html, ?string $appHost): array
+    {
+        $urls = [];
+        if (preg_match_all('/href=["\']([^"\']+)["\']/i', $html, $matches)) {
+            foreach ($matches[1] as $href) {
+                if (!str_starts_with($href, 'http://') && !str_starts_with($href, 'https://')) {
+                    continue;
+                }
+                $host = parse_url($href, PHP_URL_HOST);
+                if ($appHost && $host === $appHost) {
+                    continue; // internal link
+                }
+                $urls[] = $href;
             }
         }
 
-        // Remove broken links that are now fixed
-        $this->removeFixedLinks();
-
-        Log::info('Broken link check completed', [
-            'posts_checked' => $posts->count(),
-            'broken_links_found' => BrokenLink::pending()->count(),
-        ]);
+        return array_values(array_unique($urls));
     }
 
-    private function checkLink(Post $post, string $url): void
+    protected function checkAndStore(int $postId, string $url): void
     {
+        $status = 'ok';
+        $code = null;
+
         try {
-            $response = Http::timeout(10)->head($url);
+            $response = Http::timeout(10)
+                ->withHeaders(['User-Agent' => 'TechNewsHubLinkChecker/1.0'])
+                ->head($url);
 
-            if ($response->failed()) {
-                // Link is broken, create or update record
-                BrokenLink::updateOrCreate(
-                    [
-                        'post_id' => $post->id,
-                        'url' => $url,
-                    ],
-                    [
-                        'status_code' => $response->status(),
-                        'error_message' => null,
-                        'last_checked_at' => now(),
-                        'status' => 'pending',
-                    ]
-                );
-            } else {
-                // Link is working, remove from broken links if it exists
-                BrokenLink::where('post_id', $post->id)
-                    ->where('url', $url)
-                    ->where('status', 'pending')
-                    ->delete();
+            if ($response->status() === 405) {
+                $response = Http::timeout(10)->get($url);
             }
-        } catch (\Exception $e) {
-            // Connection timeout or other error
-            BrokenLink::updateOrCreate(
-                [
-                    'post_id' => $post->id,
-                    'url' => $url,
-                ],
-                [
-                    'status_code' => null,
-                    'error_message' => $e->getMessage(),
-                    'last_checked_at' => now(),
-                    'status' => 'pending',
-                ]
-            );
-        }
-    }
 
-    private function removeFixedLinks(): void
-    {
-        // Get all pending broken links
-        $brokenLinks = BrokenLink::pending()->get();
+            $code = $response->status();
 
-        foreach ($brokenLinks as $brokenLink) {
-            try {
-                $response = Http::timeout(10)->head($brokenLink->url);
-
-                if ($response->successful()) {
-                    // Link is now working, remove it
-                    $brokenLink->delete();
-                }
-            } catch (\Exception $e) {
-                // Still broken, keep it
+            if ($code === 404 || $code === 410 || $code >= 500) {
+                $status = 'broken';
             }
+        } catch (\Throwable $e) {
+            $status = 'broken';
+            $code = null;
+            Log::warning('Broken link check failed', [
+                'url' => $url,
+                'post_id' => $postId,
+                'error' => $e->getMessage(),
+            ]);
         }
+
+        BrokenLink::query()->updateOrCreate(
+            ['post_id' => $postId, 'url' => $url],
+            [
+                'status' => $status,
+                'response_code' => $code,
+                'checked_at' => now(),
+            ]
+        );
     }
 }

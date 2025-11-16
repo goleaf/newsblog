@@ -220,27 +220,29 @@
                         @csrf
                         
                         <!-- Success Message -->
-                        <div x-show="success" x-cloak class="p-3 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 rounded text-sm">
-                            <p class="font-medium">Successfully subscribed!</p>
-                            <p class="text-xs mt-1">Please check your email to confirm your subscription.</p>
+                        <div x-show="success" x-cloak class="p-3 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 rounded text-sm" aria-live="polite" role="status">
+                            <p class="font-medium">{{ __('newsletter.form.success_title') }}</p>
+                            <p class="text-xs mt-1">{{ __('newsletter.form.success_hint') }}</p>
                         </div>
                         
                         <!-- Error Message -->
-                        <div x-show="error" x-cloak class="p-3 bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 rounded text-sm" x-text="error"></div>
+                        <div x-show="error" x-cloak class="p-3 bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 rounded text-sm" x-text="error" aria-live="assertive" role="alert"></div>
                         
                         <!-- Email Input -->
                         <div x-show="!success">
-                            <label for="footer-newsletter-email" class="sr-only">Email address</label>
+                            <label for="footer-newsletter-email" class="sr-only">{{ __('newsletter.form.email_label') }}</label>
                             <input 
                                 type="email" 
                                 id="footer-newsletter-email"
                                 name="email"
                                 x-model="email"
                                 required
-                                placeholder="Enter your email"
+                                placeholder="{{ __('newsletter.form.email_placeholder') }}"
                                 class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 text-sm"
                                 :disabled="submitting"
+                                aria-describedby="footer-newsletter-email-hint"
                             >
+                            <p id="footer-newsletter-email-hint" class="sr-only">{{ __('newsletter.validation.email_required') }}</p>
                         </div>
                         
                         <!-- GDPR Consent -->
@@ -254,10 +256,10 @@
                                 class="mt-1 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500 dark:bg-gray-800"
                                 :disabled="submitting"
                             >
-                            <label for="footer-newsletter-gdpr" class="text-xs text-gray-600 dark:text-gray-400">
-                                I agree to receive newsletters and accept the 
+                            <label for="footer-newsletter-gdpr" class="text-xs text-gray-600 dark:text-gray-400" id="footer-newsletter-gdpr-label">
+                                {{ __('newsletter.form.gdpr_prompt') }} 
                                 <a href="{{ route('gdpr.privacy-policy') }}" class="text-blue-600 dark:text-blue-400 hover:underline" target="_blank">
-                                    privacy policy
+                                    {{ __('newsletter.form.privacy_policy') }}
                                 </a>
                             </label>
                         </div>
@@ -269,13 +271,13 @@
                             :disabled="submitting"
                             class="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 text-sm"
                         >
-                            <span x-show="!submitting">Subscribe</span>
+                            <span x-show="!submitting">{{ __('newsletter.form.submit') }}</span>
                             <span x-show="submitting" class="flex items-center justify-center gap-2">
                                 <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                 </svg>
-                                <span>Subscribing...</span>
+                                <span>{{ __('newsletter.form.submitting') }}</span>
                             </span>
                         </button>
                     </form>

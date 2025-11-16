@@ -10,6 +10,7 @@ use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\RobotsController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UiDemoController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -203,3 +204,6 @@ Route::middleware(['auth', 'role:admin,editor'])->prefix('admin')->name('admin.'
 });
 
 require __DIR__.'/auth.php';
+
+// Public UI demo (no auth)
+Route::get('/ui-demo', [UiDemoController::class, 'show'])->name('ui.demo');

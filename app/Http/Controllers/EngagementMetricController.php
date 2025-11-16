@@ -17,7 +17,7 @@ class EngagementMetricController extends Controller
      * Track engagement metrics for a post.
      * Requirement: 16.3
      */
-    public function track(Request $request): JsonResponse
+    public function track(\App\Http\Requests\TrackEngagementRequest $request): JsonResponse
     {
         $startTime = microtime(true);
 
@@ -29,16 +29,7 @@ class EngagementMetricController extends Controller
             return response()->json(['success' => true, 'message' => 'Tracking disabled']);
         }
 
-        $validated = $request->validate([
-            'post_id' => 'required|integer|exists:posts,id',
-            'time_on_page' => 'nullable|integer|min:0',
-            'scroll_depth' => 'nullable|integer|min:0|max:100',
-            'clicked_bookmark' => 'nullable|boolean',
-            'clicked_share' => 'nullable|boolean',
-            'clicked_reaction' => 'nullable|boolean',
-            'clicked_comment' => 'nullable|boolean',
-            'clicked_related_post' => 'nullable|boolean',
-        ]);
+        $validated = $request->validated();
 
         $sessionId = session()->getId();
 

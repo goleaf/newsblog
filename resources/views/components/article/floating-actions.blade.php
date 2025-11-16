@@ -71,6 +71,18 @@
             </svg>
         </button>
 
+        {{-- QR Code Button --}}
+        <button
+            @click="showQrModal = true"
+            class="flex items-center justify-center w-12 h-12 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+            aria-label="{{ __('qr.open') }}"
+            title="{{ __('qr.title') }}"
+        >
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h6v6H3V3zm12 0h6v6h-6V3zM3 15h6v6H3v-6zm12 4h2v2h-2v-2zm4-8h2v6h-6v-2h4v-4zM11 11h2v2h-2v-2z" />
+            </svg>
+        </button>
+
         {{-- Reaction Button --}}
         @auth
             <div class="relative">
@@ -237,6 +249,59 @@
     </div>
 </div>
 
+{{-- QR Code Modal (scaffold) --}}
+<div 
+    x-show="showQrModal"
+    x-transition
+    @keydown.escape.window="showQrModal = false"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 print:hidden"
+    style="display:none"
+    role="dialog"
+    aria-modal="true"
+    aria-label="QR code"
+>
+    <div @click.stop class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-sm p-6">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('qr.title') }}</h3>
+            <button @click="showQrModal = false" aria-label="Close" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        <div class="flex flex-col items-center gap-4">
+            <div id="qr-container" class="w-48 h-48 bg-white"></div>
+            <div class="flex items-center gap-2">
+                <button
+                    @click="
+                        if (window.generateQRCode) {
+                            window.generateQRCode('#qr-container', window.location.href);
+                        } else {
+                            document.querySelector('#qr-container').innerHTML = '<div class=\'text-sm text-gray-600\'>QR library not installed</div>';
+                        }
+                    "
+                    class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-colors"
+                >
+                    {{ __('qr.generate') }}
+                </button>
+                <button
+                    @click="
+                        const canvas = document.querySelector('#qr-container canvas');
+                        if (!canvas) return;
+                        const link = document.createElement('a');
+                        link.href = canvas.toDataURL('image/png');
+                        link.download = 'qr.png';
+                        link.click();
+                    "
+                    class="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg text-sm font-medium transition-colors"
+                >
+                    {{ __('qr.download') }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @push('styles')
 <style>
 .reaction-btn {
@@ -260,6 +325,7 @@ document.addEventListener('alpine:init', () => {
         reactions: config.reactions,
         showReactionPicker: false,
         showShareModal: false,
+        showQrModal: false,
         shareUrl: window.location.href,
         linkCopied: false,
         lastScrollY: 0,

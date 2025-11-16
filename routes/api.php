@@ -6,6 +6,8 @@ use App\Http\Controllers\Api\SearchController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\Nova\SystemHealthController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\WeatherController;
+use App\Http\Controllers\Api\StockController;
 
 // Nova System Health API endpoint
 Route::get('/nova-api/system-health', [SystemHealthController::class, 'index'])
@@ -25,6 +27,14 @@ Route::prefix('v1')->middleware(['throttle:api'])->group(function () {
     Route::prefix('search')->middleware('throttle:search')->group(function () {
         Route::get('/', [SearchController::class, 'search'])->name('api.search');
         Route::get('/suggestions', [SearchController::class, 'suggestions'])->name('api.search.suggestions');
+    });
+
+    // Widgets data endpoints
+    Route::prefix('widgets')->group(function () {
+        // Weather: accepts optional lat, lon, and fallback_city
+        Route::get('/weather', [WeatherController::class, 'current'])->name('api.widgets.weather');
+        // Stocks: accepts comma-separated symbols param
+        Route::get('/stocks', [StockController::class, 'tickers'])->name('api.widgets.stocks');
     });
 
     // Authenticated endpoints

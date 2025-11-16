@@ -53,6 +53,14 @@
                     @if($post->is_trending)
                         <x-content.post-badge type="trending" />
                     @endif
+
+                    @if($post->is_sponsored)
+                        <x-content.post-badge type="sponsored" />
+                    @endif
+
+                    @if($post->is_editors_pick)
+                        <x-content.post-badge type="editors-pick" />
+                    @endif
                 </div>
                 
                 {{-- Bookmark Button --}}
@@ -70,6 +78,14 @@
             
             @if($post->is_trending)
                 <x-content.post-badge type="trending" />
+            @endif
+
+            @if($post->is_sponsored)
+                <x-content.post-badge type="sponsored" />
+            @endif
+
+            @if($post->is_editors_pick)
+                <x-content.post-badge type="editors-pick" />
             @endif
         </div>
     @endif

@@ -32,6 +32,8 @@
     
     {{-- Additional Styles --}}
     @stack('styles')
+    {{-- Print styles --}}
+    <link rel="stylesheet" href="{{ Vite::asset('resources/css/print.css') }}" media="print">
     
     {{-- PWA Manifest and theme color --}}
     <link rel="manifest" href="/manifest.webmanifest">
@@ -49,7 +51,7 @@
     </script>
     {{-- Skip to Main Content Link (Accessibility) --}}
     <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded-md">
-        Skip to main content
+        {{ __('a11y.skip_to_main') }}
     </a>
 
     {{-- Header --}}
@@ -82,6 +84,8 @@
 
     {{-- Search Modal --}}
     <x-ui.search-modal />
+    {{-- Shortcuts Help Modal --}}
+    <x-ui.shortcuts-modal />
 
     {{-- Modal Container --}}
     <div id="modal-container">

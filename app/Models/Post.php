@@ -176,6 +176,11 @@ class Post extends Model
         return $query->orderBy('view_count', 'desc');
     }
 
+    public function scopeWithoutSponsored($query)
+    {
+        return $query->where('is_sponsored', false);
+    }
+
     public function scopeWithoutContent($query)
     {
         return $query->whereNotNull('title')

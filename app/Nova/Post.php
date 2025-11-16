@@ -22,6 +22,8 @@ use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Textarea;
 use Laravel\Nova\Fields\Trix;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use App\Nova\Filters\MissingAltText;
+use App\Services\AltTextValidator;
 
 class Post extends Resource
 {
@@ -275,6 +277,27 @@ class Post extends Resource
                 ->sortable()
                 ->default(0),
 
+            // Accessibility
+            Number::make('Image Count', function () {
+                $content = (string) ($this->content ?? '');
+                if ($content === '') {
+                    return 0;
+                }
+                /** @var AltTextValidator $validator */
+                $validator = app(AltTextValidator::class);
+                return $validator->scanHtml($content)->totalImages;
+            })->onlyOnIndex()->sortable(),
+
+            Number::make('Missing Alt Count', function () {
+                $content = (string) ($this->content ?? '');
+                if ($content === '') {
+                    return 0;
+                }
+                /** @var AltTextValidator $validator */
+                $validator = app(AltTextValidator::class);
+                return $validator->scanHtml($content)->missingAltCount;
+            })->onlyOnIndex()->sortable(),
+
             \Laravel\Nova\Panel::make('SEO', [
                 Text::make('Meta Title', 'meta_title')
                     ->nullable()
@@ -322,6 +345,7 @@ class Post extends Resource
             new PostAuthor,
             new PostFeatured,
             new DateRange,
+            new MissingAltText,
         ];
     }
 

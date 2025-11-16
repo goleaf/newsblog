@@ -3,6 +3,9 @@
 @section('title', 'Analytics Dashboard')
 
 @section('content')
+@push('page-scripts')
+    <x-page-scripts page="analytics-dashboard" />
+@endpush
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="mb-6 flex items-center justify-between">
         <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
@@ -33,6 +36,14 @@
         <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
             View Statistics
         </h2>
+        {{-- Views over time (last 30 days when period=month) --}}
+        <div 
+            id="views-over-time-chart" 
+            class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6"
+            data-views-over-time='@json($viewStats["views_over_time"])'
+        >
+            <canvas id="viewsOverTimeCanvas" height="120"></canvas>
+        </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                 <div class="flex items-center justify-between">
@@ -163,6 +174,7 @@
         <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
             Search Analytics
         </h2>
+        <p class="sr-only">Search metrics for the selected period.</p>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                 <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Searches</p>
@@ -271,6 +283,52 @@
                     @endforelse
                 </tbody>
             </table>
+        </div>
+    </div>
+
+    {{-- Popular Categories --}}
+    <div class="mb-8">
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+            Most Popular Categories
+        </h2>
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                @forelse($popularCategories as $cat)
+                    <div class="flex items-center justify-between p-4 rounded border border-gray-200 dark:border-gray-700">
+                        <span class="text-sm text-gray-700 dark:text-gray-300">{{ $cat->name }}</span>
+                        <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ number_format($cat->views) }}</span>
+                    </div>
+                @empty
+                    <p class="text-sm text-gray-500 dark:text-gray-400">No data available</p>
+                @endforelse
+            </div>
+        </div>
+    </div>
+
+    {{-- Traffic Sources --}}
+    <div class="mb-8">
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+            Traffic Sources
+        </h2>
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+            <dl class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="p-4 rounded border border-gray-200 dark:border-gray-700">
+                    <dt class="text-sm text-gray-600 dark:text-gray-400">Direct</dt>
+                    <dd class="mt-2 text-2xl font-bold text-gray-900 dark:text-white">{{ number_format($trafficSources['direct']) }}</dd>
+                </div>
+                <div class="p-4 rounded border border-gray-200 dark:border-gray-700">
+                    <dt class="text-sm text-gray-600 dark:text-gray-400">Search</dt>
+                    <dd class="mt-2 text-2xl font-bold text-gray-900 dark:text-white">{{ number_format($trafficSources['search']) }}</dd>
+                </div>
+                <div class="p-4 rounded border border-gray-200 dark:border-gray-700">
+                    <dt class="text-sm text-gray-600 dark:text-gray-400">Social</dt>
+                    <dd class="mt-2 text-2xl font-bold text-gray-900 dark:text-white">{{ number_format($trafficSources['social']) }}</dd>
+                </div>
+                <div class="p-4 rounded border border-gray-200 dark:border-gray-700">
+                    <dt class="text-sm text-gray-600 dark:text-gray-400">Referral</dt>
+                    <dd class="mt-2 text-2xl font-bold text-gray-900 dark:text-white">{{ number_format($trafficSources['referral']) }}</dd>
+                </div>
+            </dl>
         </div>
     </div>
 </div>

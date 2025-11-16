@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Page;
 use Illuminate\Http\Request;
+use App\Http\Requests\SubmitContactRequest;
+use App\Models\ContactMessage;
+use App\Mail\ContactMessageReceived;
+use Illuminate\Support\Facades\Mail;
 
 class PageController extends Controller
 {
@@ -25,20 +29,18 @@ class PageController extends Controller
         return view($view, compact('page'));
     }
 
-    public function submitContact(Request $request)
+    public function submitContact(SubmitContactRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|max:255',
-            'email' => 'required|email|max:255',
-            'subject' => 'required|max:255',
-            'message' => 'required|max:5000',
-        ]);
+        $validated = $request->validated();
 
-        \App\Models\ContactMessage::create([
+        $message = ContactMessage::create([
             ...$validated,
             'status' => 'new',
         ]);
 
-        return back()->with('success', 'Thank you for your message. We will get back to you soon!');
+        Mail::to(config('mail.from.address'))
+            ->queue(new ContactMessageReceived($message));
+
+        return back()->with('success', __('messages.contact.thanks'));
     }
 }

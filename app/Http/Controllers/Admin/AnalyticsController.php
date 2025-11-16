@@ -40,6 +40,12 @@ class AnalyticsController extends Controller
         // Top performing posts
         $topPosts = $this->getTopPosts($period);
 
+        // Popular categories by views
+        $popularCategories = $this->getPopularCategories($period);
+
+        // Traffic sources breakdown
+        $trafficSources = $this->getTrafficSources($period);
+
         return view('admin.analytics.index', compact(
             'viewStats',
             'engagementStats',
@@ -48,6 +54,8 @@ class AnalyticsController extends Controller
             'noResultQueries',
             'clickThroughRate',
             'topPosts',
+            'popularCategories',
+            'trafficSources',
             'period'
         ));
     }
@@ -80,6 +88,81 @@ class AnalyticsController extends Controller
             'posts_viewed' => $stats->posts_viewed ?? 0,
             'views_over_time' => $viewsOverTime,
         ];
+    }
+
+    /**
+     * Get popular categories by views for the period
+     */
+    protected function getPopularCategories(string $period, int $limit = 5): \Illuminate\Support\Collection
+    {
+        $query = DB::table('post_views')
+            ->join('posts', 'post_views.post_id', '=', 'posts.id')
+            ->join('categories', 'posts.category_id', '=', 'categories.id')
+            ->select('categories.name', DB::raw('COUNT(*) as views'))
+            ->groupBy('categories.name')
+            ->orderByDesc('views')
+            ->limit($limit);
+
+        $query = match ($period) {
+            'day' => $query->where('post_views.viewed_at', '>=', now()->subDay()),
+            'week' => $query->where('post_views.viewed_at', '>=', now()->subWeek()),
+            'month' => $query->where('post_views.viewed_at', '>=', now()->subMonth()),
+            'year' => $query->where('post_views.viewed_at', '>=', now()->subYear()),
+            default => $query->where('post_views.viewed_at', '>=', now()->subWeek()),
+        };
+
+        return $query->get();
+    }
+
+    /**
+     * Get traffic sources breakdown for the period
+     */
+    protected function getTrafficSources(string $period): array
+    {
+        $baseQuery = DB::table('post_views')
+            ->select('referer', DB::raw('COUNT(*) as count'));
+
+        $baseQuery = match ($period) {
+            'day' => $baseQuery->where('viewed_at', '>=', now()->subDay()),
+            'week' => $baseQuery->where('viewed_at', '>=', now()->subWeek()),
+            'month' => $baseQuery->where('viewed_at', '>=', now()->subMonth()),
+            'year' => $baseQuery->where('viewed_at', '>=', now()->subYear()),
+            default => $baseQuery->where('viewed_at', '>=', now()->subWeek()),
+        };
+
+        $rows = $baseQuery->groupBy('referer')->get();
+
+        $sources = [
+            'direct' => 0,
+            'search' => 0,
+            'social' => 0,
+            'referral' => 0,
+        ];
+
+        foreach ($rows as $row) {
+            $referer = $row->referer ?? '';
+            $count = (int) $row->count;
+
+            if (empty($referer)) {
+                $sources['direct'] += $count;
+                continue;
+            }
+
+            $host = parse_url($referer, PHP_URL_HOST) ?: '';
+            $host = strtolower($host);
+
+            if ($host === '') {
+                $sources['direct'] += $count;
+            } elseif (str_contains($host, 'google.') || str_contains($host, 'bing.') || str_contains($host, 'duckduckgo.') || str_contains($host, 'yahoo.')) {
+                $sources['search'] += $count;
+            } elseif (str_contains($host, 'twitter.') || str_contains($host, 'x.com') || str_contains($host, 'facebook.') || str_contains($host, 'instagram.') || str_contains($host, 'linkedin.')) {
+                $sources['social'] += $count;
+            } else {
+                $sources['referral'] += $count;
+            }
+        }
+
+        return $sources;
     }
 
     /**

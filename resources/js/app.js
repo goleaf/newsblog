@@ -10,6 +10,17 @@ import modalStore from './stores/modal';
 // Import browser notifications
 import './browser-notifications';
 import './bookmarks';
+import './shortcuts';
+import './utils/qrcode';
+
+// UI components
+import './components/gallery';
+import './components/social-embed';
+import './components/chart';
+// Widgets
+import { initWeatherWidgets } from './widgets/weather';
+import { initStockTickerWidgets } from './widgets/stock';
+import { initCountdownWidgets } from './widgets/countdown';
 
 window.Alpine = Alpine;
 
@@ -23,6 +34,13 @@ Alpine.data('themeToggle', themeStore);
 
 // Start Alpine
 Alpine.start();
+
+// Init widgets
+document.addEventListener('DOMContentLoaded', () => {
+    initWeatherWidgets();
+    initStockTickerWidgets();
+    initCountdownWidgets();
+});
 
 // Dynamic imports for page-specific functionality
 // These will be loaded on-demand based on the page

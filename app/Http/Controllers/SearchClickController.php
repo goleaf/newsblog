@@ -17,13 +17,9 @@ class SearchClickController extends Controller
      * Track a search result click.
      * Requirement: 16.2
      */
-    public function track(Request $request): JsonResponse
+    public function track(\App\Http\Requests\TrackSearchClickRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'search_log_id' => 'required|integer|exists:search_logs,id',
-            'post_id' => 'required|integer|exists:posts,id',
-            'position' => 'required|integer|min:0',
-        ]);
+        $validated = $request->validated();
 
         // Log the click (Requirement 16.2)
         $this->searchAnalytics->logClick(

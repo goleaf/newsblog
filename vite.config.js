@@ -16,6 +16,7 @@ export default defineConfig({
                 'resources/js/pages/article.js',
                 'resources/js/pages/dashboard.js',
                 'resources/js/pages/search.js',
+                'resources/js/pages/analytics-dashboard.js',
             ],
             refresh: true,
         }),

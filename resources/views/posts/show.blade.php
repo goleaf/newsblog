@@ -38,7 +38,17 @@
                 
                 <div class="p-8">
                     <!-- Article Header -->
-                    <x-article.article-header :post="$post" />
+                    <div class="flex items-start justify-between gap-4">
+                        <x-article.article-header :post="$post" />
+                        <div class="flex gap-2">
+                            @if($post->is_sponsored)
+                                <x-content.post-badge type="sponsored" />
+                            @endif
+                            @if($post->is_editors_pick)
+                                <x-content.post-badge type="editors-pick" />
+                            @endif
+                        </div>
+                    </div>
 
                     <!-- Font Size Controls -->
                     <div class="mb-6">

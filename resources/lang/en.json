@@ -1,0 +1,23 @@
+{
+    "messages.contact.thanks": "Thank you for your message. We will get back to you soon!",
+    "mail.contact.subject": "New contact message: :subject",
+    "mail.contact.no_subject": "No subject",
+    "mail.contact.header": "New Contact Message",
+    "mail.contact.name": "Name",
+    "mail.contact.email": "Email",
+    "mail.contact.subject_label": "Subject",
+    "mail.contact.message": "Message",
+    "mail.contact.footer": "This email was generated automatically.",
+    "validation.custom.contact.name_required": "Please enter your name.",
+    "validation.custom.contact.email_required": "Please enter a valid email address.",
+    "validation.custom.contact.email_email": "Please enter a valid email address.",
+    "validation.custom.contact.subject_max": "Subject may not be greater than :max characters.",
+    "validation.custom.contact.message_required": "Please enter a message.",
+    "infinite_scroll.end_of_content": "You've reached the end of the content",
+    "home.empty_latest_title": "No articles found",
+    "home.empty_latest_message": "There are no published articles yet. Check back soon!",
+    "home.empty_latest_action": "Back to homepage",
+    "infinite_scroll.error_generic": "Failed to load more posts. Please try again."
+}
+
+

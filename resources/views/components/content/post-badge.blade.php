@@ -1,5 +1,5 @@
 @props([
-    'type' => 'featured', // featured, trending, ai-generated
+    'type' => 'featured', // featured, trending, ai-generated, sponsored, editors-pick
     'rank' => null, // For trending badge rank
 ])
 
@@ -21,6 +21,18 @@
             'text' => 'AI Generated',
             'icon' => '<svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd" /></svg>',
             'bgClass' => 'bg-purple-500 dark:bg-purple-600',
+            'textClass' => 'text-white',
+        ],
+        'sponsored' => [
+            'text' => 'Sponsored',
+            'icon' => '<svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M2 5a2 2 0 012-2h12a2 2 0 012 2v1l-8 4-8-4V5z" /><path d="M18 8.118l-8 4-8-4V15a2 2 0 002 2h12a2 2 0 002-2V8.118z"/></svg>',
+            'bgClass' => 'bg-amber-600 dark:bg-amber-700',
+            'textClass' => 'text-white',
+        ],
+        'editors-pick' => [
+            'text' => "Editor's Pick",
+            'icon' => '<svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2l2.39 4.84L18 7.27l-4 3.9.94 5.48L10 14.77 5.06 16.65 6 11.17 2 7.27l5.61-.43L10 2z"/></svg>',
+            'bgClass' => 'bg-sky-600 dark:bg-sky-700',
             'textClass' => 'text-white',
         ],
     ];

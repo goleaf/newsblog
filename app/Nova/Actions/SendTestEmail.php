@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Mail;
 use Laravel\Nova\Actions\Action;
 use Laravel\Nova\Fields\ActionFields;
 use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Http\Requests\NovaRequest;
 
 class SendTestEmail extends Action
 {
@@ -15,7 +16,7 @@ class SendTestEmail extends Action
 
     public $name = 'Send Test Email';
 
-    public function fields(): array
+    public function fields(NovaRequest $request): array
     {
         return [
             Text::make('Email', 'email')

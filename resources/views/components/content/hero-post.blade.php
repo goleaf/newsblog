@@ -10,7 +10,7 @@
             :eager="true"
             :blur-up="false"
             sizes="100vw"
-            class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 js-parallax-hero"
         />
     @else
         <div class="w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600"></div>

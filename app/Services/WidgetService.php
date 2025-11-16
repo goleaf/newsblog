@@ -20,11 +20,13 @@ class WidgetService
             return '';
         }
 
-        return Cache::remember(
-            "widget.{$widget->id}",
-            now()->addMinutes(10),
-            fn () => $this->renderWidget($widget)
-        );
+        // Per-widget TTL (defaults to 10 minutes). Most-commented requires 60 minutes.
+        $ttlMinutes = match ($widget->type) {
+            'most-commented' => 60,
+            default => 10,
+        };
+
+        return Cache::remember("widget.{$widget->id}", now()->addMinutes($ttlMinutes), fn () => $this->renderWidget($widget));
     }
 
     public function renderArea(string $slug): string
@@ -102,11 +104,15 @@ class WidgetService
         return match ($widget->type) {
             'recent-posts' => $this->renderRecentPosts($widget),
             'popular-posts' => $this->renderPopularPosts($widget),
+            'most-commented' => $this->renderMostCommented($widget),
             'categories' => $this->renderCategories($widget),
             'tags-cloud' => $this->renderTagsCloud($widget),
             'newsletter' => $this->renderNewsletter($widget),
             'search' => $this->renderSearch($widget),
             'custom-html' => $this->renderCustomHtml($widget),
+            'weather' => $this->renderWeather($widget),
+            'stock-ticker' => $this->renderStockTicker($widget),
+            'countdown' => $this->renderCountdown($widget),
             default => '',
         };
     }
@@ -188,6 +194,71 @@ class WidgetService
         return View::make('components.widgets.custom-html', [
             'widget' => $widget,
             'content' => $content,
+        ])->render();
+    }
+
+    protected function renderWeather(Widget $widget): string
+    {
+        $default = config('services.weather.default_location', [
+            'lat' => 51.5074,
+            'lon' => -0.1278,
+            'label' => 'London',
+        ]);
+
+        return View::make('components.widgets.weather', [
+            'widget' => $widget,
+            'defaultLat' => (float) ($widget->settings['lat'] ?? $default['lat']),
+            'defaultLon' => (float) ($widget->settings['lon'] ?? $default['lon']),
+            'defaultLabel' => (string) ($widget->settings['label'] ?? $default['label']),
+        ])->render();
+    }
+
+    protected function renderStockTicker(Widget $widget): string
+    {
+        $symbols = (string) ($widget->settings['symbols'] ?? 'AAPL,MSFT,GOOG');
+
+        return View::make('components.widgets.stock-ticker', [
+            'widget' => $widget,
+            'symbols' => $symbols,
+        ])->render();
+    }
+
+    protected function renderCountdown(Widget $widget): string
+    {
+        $target = (string) ($widget->settings['target'] ?? now()->addDays(7)->toIso8601String());
+        $labels = $widget->settings['labels'] ?? [
+            'days' => __('Days'),
+            'hours' => __('Hours'),
+            'minutes' => __('Minutes'),
+            'seconds' => __('Seconds'),
+            'done' => __('Completed'),
+        ];
+
+        return View::make('components.widgets.countdown', [
+            'widget' => $widget,
+            'target' => $target,
+            'labels' => $labels,
+        ])->render();
+    }
+
+    protected function renderMostCommented(Widget $widget): string
+    {
+        $count = $widget->settings['count'] ?? 5;
+        $since = now()->subDays(30);
+
+        // Top posts by approved comment count in last 30 days, excluding older posts.
+        $posts = Post::published()
+            ->where('published_at', '>=', $since)
+            ->withCount(['comments' => function ($q) use ($since) {
+                $q->where('created_at', '>=', $since);
+            }])
+            ->orderByDesc('comments_count')
+            ->take($count)
+            ->get();
+
+        return View::make('components.widgets.most-commented', [
+            'widget' => $widget,
+            'posts' => $posts,
         ])->render();
     }
 

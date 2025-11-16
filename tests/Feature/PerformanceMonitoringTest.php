@@ -161,6 +161,19 @@ class PerformanceMonitoringTest extends TestCase
         $this->assertTrue($response->headers->has('X-Page-Load-Time'));
     }
 
+    public function test_middleware_adds_query_count_and_memory_peak_headers_in_non_production(): void
+    {
+        app()->detectEnvironment(fn () => 'local');
+
+        $response = $this->get('/');
+
+        $response->assertOk();
+        $this->assertTrue($response->headers->has('X-DB-Query-Count'));
+        $this->assertTrue($response->headers->has('X-Memory-Peak'));
+        $this->assertIsNumeric((int) $response->headers->get('X-DB-Query-Count'));
+        $this->assertIsNumeric((int) $response->headers->get('X-Memory-Peak'));
+    }
+
     public function test_monitoring_service_tracks_dnt_compliance(): void
     {
         $this->monitoring->trackDntCompliance(true, 'post.show');

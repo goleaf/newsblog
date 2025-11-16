@@ -1,0 +1,60 @@
+/* Print-friendly stylesheet */
+@media print {
+    /* Hide non-essential UI */
+    header, footer, nav, .sidebar, .print\\:hidden, .no-print, .fixed, .sticky, [role="dialog"] {
+        display: none !important;
+    }
+
+    /* Layout */
+    body {
+        background: #fff !important;
+        color: #000 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        font-size: 12pt;
+        line-height: 1.5;
+    }
+
+    a {
+        color: #000 !important;
+        text-decoration: none;
+    }
+
+    /* Article content focus */
+    #article-content,
+    article[role="article"],
+    main {
+        max-width: 100% !important;
+        box-shadow: none !important;
+        border: none !important;
+    }
+
+    /* Ensure title/metadata are visible */
+    h1, h2, h3 {
+        color: #000 !important;
+        page-break-after: avoid;
+    }
+
+    time, .author, .meta, .prose {
+        color: #000 !important;
+    }
+
+    /* Images */
+    img {
+        max-width: 100% !important;
+        height: auto !important;
+        page-break-inside: avoid;
+    }
+
+    /* Remove paginated navigation */
+    .pagination, nav[aria-label="Pagination"] {
+        display: none !important;
+    }
+
+    /* Avoid breaking inside paragraphs and code blocks */
+    p, pre, blockquote {
+        page-break-inside: avoid;
+    }
+}
+
+

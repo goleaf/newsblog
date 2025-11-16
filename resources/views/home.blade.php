@@ -50,6 +50,18 @@
                 </div>
             @endif
 
+            <!-- Editor's Picks Section -->
+            @if(isset($editorsPicks) && $editorsPicks->count() > 0)
+                <div class="mb-12">
+                    <div x-show="loading">
+                        <x-ui.skeleton-loader type="card" :count="6" />
+                    </div>
+                    <div x-show="!loading" x-transition.opacity>
+                        <x-content.editors-picks :posts="$editorsPicks" />
+                    </div>
+                </div>
+            @endif
+
             <!-- Category-Based Content Sections -->
             @if(isset($categorySections) && $categorySections->isNotEmpty())
                 <div class="mb-12">
@@ -86,15 +98,32 @@
                     <x-ui.skeleton-loader type="card" :count="6" />
                 </div>
                 <div x-show="!loading" x-transition.opacity>
-                    <x-content.post-grid :posts="$recentPosts" :columns="3" />
+                    @if($recentPosts->total() > 0)
+                        <x-infinite-scroll :posts="$recentPosts" container-class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            @foreach($recentPosts as $post)
+                                <div data-post-item>
+                                    <x-content.post-card :post="$post" />
+                                </div>
+                            @endforeach
+                        </x-infinite-scroll>
+                    @else
+                        <x-ui.empty-state 
+                            title="{{ __('home.empty_latest_title') }}"
+                            message="{{ __('home.empty_latest_message') }}"
+                            actionText="{{ __('home.empty_latest_action') }}"
+                            actionUrl="{{ route('home') }}"
+                        />
+                    @endif
                 </div>
-                
-                <!-- Pagination -->
-                @if($recentPosts->hasPages())
-                    <div class="mt-8">
-                        {{ $recentPosts->links() }}
-                    </div>
-                @endif
+
+                <!-- Pagination (No-JS fallback) -->
+                <noscript>
+                    @if($recentPosts->hasPages())
+                        <div class="mt-8">
+                            {{ $recentPosts->links() }}
+                        </div>
+                    @endif
+                </noscript>
             </div>
 
             <!-- Category Showcase -->

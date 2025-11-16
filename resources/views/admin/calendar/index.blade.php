@@ -1,4 +1,5 @@
 <x-app-layout>
+    <x-page-scripts page="admin-calendar" />
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
@@ -7,15 +8,15 @@
             <div class="flex items-center gap-4">
                 <div class="flex items-center gap-2">
                     <span class="inline-flex h-3 w-3 rounded-full bg-green-500"></span>
-                    <span class="text-sm text-gray-600 dark:text-gray-400">Published</span>
+                    <span class="text-sm text-gray-600 dark:text-gray-400">{{ __('Published') }}</span>
                 </div>
                 <div class="flex items-center gap-2">
                     <span class="inline-flex h-3 w-3 rounded-full bg-blue-500"></span>
-                    <span class="text-sm text-gray-600 dark:text-gray-400">Scheduled</span>
+                    <span class="text-sm text-gray-600 dark:text-gray-400">{{ __('Scheduled') }}</span>
                 </div>
                 <div class="flex items-center gap-2">
                     <span class="inline-flex h-3 w-3 rounded-full bg-gray-500"></span>
-                    <span class="text-sm text-gray-600 dark:text-gray-400">Draft</span>
+                    <span class="text-sm text-gray-600 dark:text-gray-400">{{ __('Draft') }}</span>
                 </div>
             </div>
         </div>
@@ -30,14 +31,14 @@
                         <div class="flex items-center gap-4">
                             <a href="{{ route('admin.calendar.index', ['month' => $date->copy()->subMonth()->month, 'year' => $date->copy()->subMonth()->year]) }}"
                                class="rounded-md bg-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
-                                &larr; Previous
+                                &larr; {{ __('Previous') }}
                             </a>
                             <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
                                 {{ $date->format('F Y') }}
                             </h3>
                             <a href="{{ route('admin.calendar.index', ['month' => $date->copy()->addMonth()->month, 'year' => $date->copy()->addMonth()->year]) }}"
                                class="rounded-md bg-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
-                                Next &rarr;
+                                {{ __('Next') }} &rarr;
                             </a>
                         </div>
                         <div>
@@ -52,7 +53,7 @@
                     <!-- Calendar Grid -->
                     <div x-data="contentCalendar()" class="grid grid-cols-7 gap-2">
                         <!-- Day Headers -->
-                        @foreach(['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as $day)
+                        @foreach([__('Sun'), __('Mon'), __('Tue'), __('Wed'), __('Thu'), __('Fri'), __('Sat')] as $day)
                             <div class="p-2 text-center text-sm font-semibold text-gray-700 dark:text-gray-300">
                                 {{ $day }}
                             </div>
@@ -124,7 +125,7 @@
                 <div class="flex h-full flex-col">
                     <div class="flex items-center justify-between border-b border-gray-200 p-4 dark:border-gray-700">
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                            Posts for <span x-text="selectedDate"></span>
+                            {{ __('Posts for') }} <span x-text="selectedDate"></span>
                         </h3>
                         <button @click="open = false" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
                             <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -134,30 +135,30 @@
                     </div>
                     <div class="flex-1 overflow-y-auto p-4">
                         <template x-if="posts.length === 0">
-                            <p class="text-gray-500 dark:text-gray-400">No posts scheduled for this date.</p>
+                            <p class="text-gray-500 dark:text-gray-400">{{ __('No posts scheduled for this date.') }}</p>
                         </template>
                         <div class="space-y-3">
                             <template x-for="post in posts" :key="post.id">
                                 <div class="rounded-lg border border-gray-200 p-3 dark:border-gray-700">
                                     <h4 class="font-semibold text-gray-900 dark:text-gray-100" x-text="post.title"></h4>
                                     <div class="mt-2 space-y-1 text-sm text-gray-600 dark:text-gray-400">
-                                        <p><span class="font-medium">Status:</span> <span :class="{
+                                        <p><span class="font-medium">{{ __('Status:') }}</span> <span :class="{
                                             'text-green-600 dark:text-green-400': post.status === 'published',
                                             'text-blue-600 dark:text-blue-400': post.status === 'scheduled',
                                             'text-gray-600 dark:text-gray-400': post.status === 'draft'
                                         }" x-text="post.status"></span></p>
-                                        <p><span class="font-medium">Author:</span> <span x-text="post.author"></span></p>
-                                        <p><span class="font-medium">Category:</span> <span x-text="post.category"></span></p>
+                                        <p><span class="font-medium">{{ __('Author:') }}</span> <span x-text="post.author"></span></p>
+                                        <p><span class="font-medium">{{ __('Category:') }}</span> <span x-text="post.category"></span></p>
                                         <template x-if="post.published_at">
-                                            <p><span class="font-medium">Published:</span> <span x-text="post.published_at"></span></p>
+                                            <p><span class="font-medium">{{ __('Published:') }}</span> <span x-text="post.published_at"></span></p>
                                         </template>
                                         <template x-if="post.scheduled_at">
-                                            <p><span class="font-medium">Scheduled:</span> <span x-text="post.scheduled_at"></span></p>
+                                            <p><span class="font-medium">{{ __('Scheduled:') }}</span> <span x-text="post.scheduled_at"></span></p>
                                         </template>
                                     </div>
                                     <div class="mt-3">
                                         <a :href="post.edit_url" class="text-sm text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300">
-                                            Edit Post &rarr;
+                                            {{ __('Edit Post →') }}
                                         </a>
                                     </div>
                                 </div>
@@ -177,59 +178,4 @@
                  class="fixed inset-0 z-40 bg-black bg-opacity-50"></div>
         </div>
     </div>
-
-    @push('scripts')
-    <script>
-        function contentCalendar() {
-            return {
-                draggedPostId: null,
-
-                handleDragStart(event, postId) {
-                    this.draggedPostId = postId;
-                    event.dataTransfer.effectAllowed = 'move';
-                },
-
-                async handleDrop(event, date) {
-                    if (!this.draggedPostId) return;
-
-                    try {
-                        const response = await fetch(`/admin/calendar/posts/${this.draggedPostId}/update-date`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                            },
-                            body: JSON.stringify({ date }),
-                        });
-
-                        if (response.ok) {
-                            // Reload the page to show updated calendar
-                            window.location.reload();
-                        } else {
-                            alert('Failed to update post date');
-                        }
-                    } catch (error) {
-                        console.error('Error updating post date:', error);
-                        alert('An error occurred while updating the post date');
-                    }
-
-                    this.draggedPostId = null;
-                },
-
-                async showPostsForDate(date) {
-                    try {
-                        const response = await fetch(`/admin/calendar/posts?date=${date}`);
-                        const posts = await response.json();
-
-                        window.dispatchEvent(new CustomEvent('show-posts', {
-                            detail: { posts, date }
-                        }));
-                    } catch (error) {
-                        console.error('Error fetching posts:', error);
-                    }
-                }
-            };
-        }
-    </script>
-    @endpush
 </x-app-layout>

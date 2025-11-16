@@ -133,10 +133,11 @@
                             'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100': !errors.author_email
                         }"
                         placeholder="your@email.com"
+                        aria-describedby="author_email_hint"
                         required
                     />
-                    <p x-show="errors.author_email" class="mt-1 text-sm text-red-600 dark:text-red-400" x-text="errors.author_email?.[0]"></p>
-                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Your email will not be published</p>
+                    <p x-show="errors.author_email" class="mt-1 text-sm text-red-600 dark:text-red-400" x-text="errors.author_email?.[0]" role="alert" aria-live="polite"></p>
+                    <p id="author_email_hint" class="mt-1 text-xs text-gray-500 dark:text-gray-400">Your email will not be published</p>
                 </div>
             </div>
         @endguest
@@ -172,11 +173,12 @@
                     }"
                     placeholder="Share your thoughts..."
                     :maxlength="maxLength"
+                    aria-describedby="comment_remaining_hint"
                     required
                 ></textarea>
                 <div class="flex items-center justify-between mt-1">
-                    <p x-show="errors.content" class="text-sm text-red-600 dark:text-red-400" x-text="errors.content?.[0]"></p>
-                    <p class="text-sm text-gray-500 dark:text-gray-400 ml-auto" :class="{ 'text-red-600 dark:text-red-400': remainingChars < 100 }">
+                    <p x-show="errors.content" class="text-sm text-red-600 dark:text-red-400" x-text="errors.content?.[0]" role="alert" aria-live="polite"></p>
+                    <p id="comment_remaining_hint" class="text-sm text-gray-500 dark:text-gray-400 ml-auto" :class="{ 'text-red-600 dark:text-red-400': remainingChars < 100 }" aria-live="polite">
                         <span x-text="remainingChars"></span> characters remaining
                     </p>
                 </div>

@@ -35,4 +35,12 @@ return [
         ],
     ],
 
+    'weather' => [
+        'default_location' => [
+            'lat' => (float) env('WEATHER_DEFAULT_LAT', 51.5074),
+            'lon' => (float) env('WEATHER_DEFAULT_LON', -0.1278),
+            'label' => env('WEATHER_DEFAULT_LABEL', 'London'),
+        ],
+    ],
+
 ];
