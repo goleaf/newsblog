@@ -66,6 +66,9 @@ Route::middleware('auth')->group(function () {
 Route::post('/newsletter/subscribe', [\App\Http\Controllers\NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
 Route::get('/newsletter/verify/{token}', [\App\Http\Controllers\NewsletterController::class, 'verify'])->name('newsletter.verify');
 Route::get('/newsletter/unsubscribe/{token}', [\App\Http\Controllers\NewsletterController::class, 'unsubscribe'])->name('newsletter.unsubscribe');
+// Newsletter tracking
+Route::get('/newsletter/open/{sendId}.png', [\App\Http\Controllers\NewsletterTrackingController::class, 'open'])->name('newsletter.open');
+Route::get('/newsletter/click', [\App\Http\Controllers\NewsletterTrackingController::class, 'click'])->name('newsletter.click');
 
 Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])

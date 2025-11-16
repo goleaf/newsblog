@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StorePostRequest;
+use App\Http\Requests\UpdatePostRequest;
 use App\Http\Resources\PostResource;
 use App\Models\Post;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
@@ -109,5 +112,39 @@ class PostController extends Controller
             ->firstOrFail();
 
         return new PostResource($post);
+    }
+
+    /**
+     * Create Post (auth)
+     */
+    public function store(StorePostRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+        $data['user_id'] = $request->user()->id;
+
+        $post = Post::create($data);
+
+        return response()->json(new PostResource($post->fresh(['user', 'category'])), 201);
+    }
+
+    /**
+     * Update Post (auth)
+     */
+    public function update(UpdatePostRequest $request, Post $post): JsonResponse
+    {
+        $post->update($request->validated());
+
+        return response()->json(new PostResource($post->fresh(['user', 'category'])));
+    }
+
+    /**
+     * Delete Post (auth)
+     */
+    public function destroy(Request $request, Post $post): JsonResponse
+    {
+        $this->authorize('delete', $post);
+        $post->delete();
+
+        return response()->json(null, 204);
     }
 }

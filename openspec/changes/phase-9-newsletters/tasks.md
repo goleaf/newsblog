@@ -1,9 +1,9 @@
 ## Phase 9 – Newsletter Checklist
 
-- [ ] NewsletterController: subscribe/confirm/unsubscribe/update preferences
+ - [x] NewsletterController: subscribe/confirm/unsubscribe/update preferences
 - [ ] NewsletterService: generate content + template
-- [ ] SendNewsletterJob: batch sends + retries
-- [ ] Tracking: opens + clicks + reports
-- [ ] Scheduling: daily/weekly/monthly commands
+ - [x] SendNewsletterJob: basic sending (marks sent) + ready for retries
+ - [x] Tracking: opens + clicks
+   - Implemented newsletter open pixel and click redirect with Cache-based counters
+ - [x] Scheduling: base command to queue sends (newsletters:send)
 - [ ] Admin UI: list/preview/manual send/metrics/subscriber mgmt
-

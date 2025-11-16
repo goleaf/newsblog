@@ -64,6 +64,11 @@ class Comment extends Model
         return $this->hasMany(CommentReaction::class);
     }
 
+    public function flags()
+    {
+        return $this->hasMany(\App\Models\CommentFlag::class);
+    }
+
     public function scopeApproved($query)
     {
         return $query->where('status', CommentStatusEnum::Approved);

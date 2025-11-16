@@ -66,6 +66,19 @@ return [
             'transaction_mode' => null,
         ],
 
+        // Dedicated SQLite connection for the database cache store
+        'cache_sqlite' => [
+            'driver' => 'sqlite',
+            'url' => null,
+            'database' => storage_path('framework/cache/cache.sqlite'),
+            'prefix' => '',
+            'foreign_key_constraints' => true,
+            'busy_timeout' => null,
+            'journal_mode' => null,
+            'synchronous' => null,
+            'transaction_mode' => null,
+        ],
+
         'mysql' => [
             'driver' => 'mysql',
             'url' => env('DB_URL'),

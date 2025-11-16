@@ -103,6 +103,12 @@ return Application::configure(basePath: dirname(__DIR__))
             ->dailyAt('02:15')
             ->withoutOverlapping()
             ->runInBackground();
+
+        // Daily database backup (sqlite only) with 30-day retention
+        $schedule->command('backup:database --retention=30')
+            ->dailyAt('03:10')
+            ->withoutOverlapping()
+            ->description('Backup sqlite database and prune old backups');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (\Illuminate\Http\Exceptions\ThrottleRequestsException $e, Request $request) {

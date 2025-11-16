@@ -10,11 +10,14 @@ class NewsletterSend extends Model
     use HasFactory;
 
     protected $fillable = [
-        'newsletter_id', // reference to Newsletter subscription or campaign id as appropriate
+        'subscriber_id', // references newsletters.id
+        'batch_id',
         'subject',
+        'content',
         'status', // queued, sending, sent, failed
         'sent_at',
         'provider_message_id',
+        'error',
         'meta',
     ];
 
