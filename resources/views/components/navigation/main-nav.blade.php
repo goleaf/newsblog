@@ -14,16 +14,16 @@ $navItems = [
 ];
 @endphp
 
-<nav {{ $attributes->merge(['class' => 'items-center gap-8']) }} role="navigation" aria-label="Main navigation">
+<nav {{ $attributes->merge(['class' => 'items-center gap-8 transition-all duration-300']) }} role="navigation" aria-label="Main navigation">
     @foreach($navItems as $item)
         <a 
             href="{{ route($item['route']) }}" 
-            class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium relative group"
+            class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 font-medium relative group"
             aria-current="{{ request()->routeIs($item['pattern']) ? 'page' : 'false' }}"
         >
             {{ $item['label'] }}
             <span 
-                class="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 dark:bg-blue-400 transition-all group-hover:w-full {{ request()->routeIs($item['pattern']) ? '!w-full' : '' }}"
+                class="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 dark:bg-blue-400 transition-all duration-300 ease-in-out group-hover:w-full {{ request()->routeIs($item['pattern']) ? '!w-full' : '' }}"
             ></span>
         </a>
     @endforeach

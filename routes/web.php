@@ -15,7 +15,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 // Sitemap routes
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap.index');
 Route::get('/post/{slug}', [PublicPostController::class, 'show'])->name('post.show');
-Route::get('/category/{slug}', [PublicPostController::class, 'category'])->name('category.show');
+Route::get('/category/{slug}', [\App\Http\Controllers\CategoryController::class, 'show'])->name('category.show');
 Route::get('/tag/{slug}', [PublicPostController::class, 'tag'])->name('tag.show');
 Route::get('/series', [\App\Http\Controllers\SeriesController::class, 'index'])->name('series.index');
 Route::get('/series/{slug}', [\App\Http\Controllers\SeriesController::class, 'show'])->name('series.show');

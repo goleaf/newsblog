@@ -13,7 +13,13 @@ class RejectCommentRequest extends FormRequest
     {
         $user = $this->user();
 
-        return $user && in_array($user->role, ['admin', 'editor'], true);
+        if (! $user) {
+            return false;
+        }
+
+        $userRole = $user->role instanceof \BackedEnum ? $user->role->value : $user->role;
+
+        return in_array($userRole, [\App\Enums\UserRole::Admin->value, \App\Enums\UserRole::Editor->value], true);
     }
 
     /**

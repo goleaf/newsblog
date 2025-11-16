@@ -37,6 +37,11 @@
                     <!-- Article Header -->
                     <x-article.article-header :post="$post" />
 
+                    <!-- Font Size Controls -->
+                    <div class="mb-6">
+                        <x-article.font-size-controls target="#article-content" />
+                    </div>
+
                     <!-- Article Content -->
                     <x-article.article-content :post="$post" />
 

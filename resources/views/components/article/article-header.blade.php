@@ -93,6 +93,42 @@
             </svg>
             <span>{{ number_format($post->view_count) }} views</span>
         </span>
+
+        {{-- Bookmark Button (for logged-in users) --}}
+        @auth
+            <span class="text-gray-300 dark:text-gray-600" aria-hidden="true">•</span>
+            <div x-data="bookmarkButton({
+                toggleUrl: @js(route('bookmarks.toggle', $post)),
+                initialBookmarked: @js($post->isBookmarkedBy(auth()->id())),
+                sizeClass: 'w-4 h-4',
+                messages: {
+                    addToReadingList: @js(__('post.add_to_reading_list')),
+                    removeFromReadingList: @js(__('post.remove_from_reading_list')),
+                    error: @js(__('post.bookmark_error')),
+                }
+            })">
+                <button
+                    type="button"
+                    @click="toggle"
+                    :title="tooltip"
+                    :aria-pressed="bookmarked.toString()"
+                    class="inline-flex items-center gap-1.5 text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                >
+                    <svg
+                        :class="iconClassList"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        :fill="iconFill"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        aria-hidden="true"
+                    >
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+                    </svg>
+                    <span class="text-sm" x-text="bookmarked ? '{{ __('post.bookmarked') }}' : '{{ __('post.bookmark') }}'"></span>
+                </button>
+            </div>
+        @endauth
     </div>
 
     {{-- Tags --}}

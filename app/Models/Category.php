@@ -72,6 +72,90 @@ class Category extends Model
         return route('category.show', $this->slug);
     }
 
+    /**
+     * Get all descendant category IDs (including self and all children recursively).
+     */
+    public function getAllDescendantIds(): array
+    {
+        $ids = [$this->id];
+
+        // Ensure children are loaded
+        if (! $this->relationLoaded('children')) {
+            $this->load('children');
+        }
+
+        foreach ($this->children as $child) {
+            $ids = array_merge($ids, $child->getAllDescendantIds());
+        }
+
+        return $ids;
+    }
+
+    /**
+     * Get SEO meta tags for the category.
+     */
+    public function getMetaTags(): array
+    {
+        $url = route('category.show', $this->slug);
+
+        return [
+            // Basic meta tags
+            'title' => $this->meta_title ?: $this->name.' - '.config('app.name', 'TechNewsHub'),
+            'description' => $this->getMetaDescription(),
+            'keywords' => null,
+
+            // Open Graph tags
+            'og:title' => $this->meta_title ?: $this->name,
+            'og:description' => $this->getMetaDescription(),
+            'og:image' => asset('images/default-og-image.jpg'),
+            'og:url' => $url,
+            'og:type' => 'website',
+            'og:site_name' => config('app.name', 'TechNewsHub'),
+
+            // Twitter Card tags
+            'twitter:card' => 'summary',
+            'twitter:title' => $this->meta_title ?: $this->name,
+            'twitter:description' => $this->getMetaDescription(),
+            'twitter:image' => asset('images/default-og-image.jpg'),
+            'twitter:url' => $url,
+        ];
+    }
+
+    /**
+     * Get meta description with validation (max 160 chars).
+     */
+    public function getMetaDescription(): string
+    {
+        $description = $this->meta_description ?: Str::limit(strip_tags($this->description ?? ''), 160, '');
+
+        // Ensure it doesn't exceed 160 characters
+        return Str::limit($description, 160, '') ?: 'Browse articles in '.$this->name;
+    }
+
+    /**
+     * Get Schema.org CollectionPage structured data.
+     */
+    public function getStructuredData(): array
+    {
+        $data = [
+            '@context' => 'https://schema.org',
+            '@type' => 'CollectionPage',
+            'name' => $this->name,
+            'description' => $this->getMetaDescription(),
+            'url' => route('category.show', $this->slug),
+        ];
+
+        if ($this->description) {
+            $data['about'] = [
+                '@type' => 'Thing',
+                'name' => $this->name,
+                'description' => $this->description,
+            ];
+        }
+
+        return $data;
+    }
+
     protected static function boot()
     {
         parent::boot();

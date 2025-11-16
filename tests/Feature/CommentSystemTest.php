@@ -534,10 +534,10 @@ class CommentSystemTest extends TestCase
             ->post(route('comments.reject', $comment));
 
         $response->assertRedirect();
-        $response->assertSessionHas('success', 'Comment rejected and marked as spam.');
+        $response->assertSessionHas('success', 'Comment rejected successfully.');
 
         $comment->refresh();
-        $this->assertEquals(CommentStatus::Spam, $comment->status);
+        $this->assertEquals(CommentStatus::Rejected, $comment->status);
     }
 
     public function test_editor_can_reject_pending_comment(): void
@@ -554,7 +554,7 @@ class CommentSystemTest extends TestCase
         $response->assertSessionHas('success');
 
         $comment->refresh();
-        $this->assertEquals(CommentStatus::Spam, $comment->status);
+        $this->assertEquals(CommentStatus::Rejected, $comment->status);
     }
 
     public function test_regular_user_cannot_reject_comment(): void
@@ -574,14 +574,14 @@ class CommentSystemTest extends TestCase
     {
         $comment = Comment::factory()->create([
             'post_id' => $this->post->id,
-            'status' => CommentStatus::Spam,
+            'status' => CommentStatus::Rejected,
         ]);
 
         $response = $this->actingAs($this->admin)
             ->post(route('comments.reject', $comment));
 
         $response->assertRedirect();
-        $response->assertSessionHas('info', 'Comment is already marked as spam.');
+        $response->assertSessionHas('info', 'Comment is already rejected.');
     }
 
     public function test_moderation_workflow_approve_then_reject(): void
@@ -598,12 +598,12 @@ class CommentSystemTest extends TestCase
         $comment->refresh();
         $this->assertEquals(CommentStatus::Approved, $comment->status);
 
-        // Reject (mark as spam)
+        // Reject
         $this->actingAs($this->admin)
             ->post(route('comments.reject', $comment));
 
         $comment->refresh();
-        $this->assertEquals(CommentStatus::Spam, $comment->status);
+        $this->assertEquals(CommentStatus::Rejected, $comment->status);
     }
 
     public function test_user_can_delete_own_comment(): void
@@ -690,7 +690,7 @@ class CommentSystemTest extends TestCase
         $this->assertEquals(CommentStatus::Approved, $comment->status);
         Queue::assertPushed(SendCommentApprovedNotification::class);
 
-        // 3. Reject comment (mark as spam)
+        // 3. Reject comment
         $response = $this->actingAs($this->admin)
             ->post(route('comments.reject', $comment));
 
@@ -698,7 +698,7 @@ class CommentSystemTest extends TestCase
         $response->assertSessionHas('success');
 
         $comment->refresh();
-        $this->assertEquals(CommentStatus::Spam, $comment->status);
+        $this->assertEquals(CommentStatus::Rejected, $comment->status);
 
         // 4. Delete comment
         $response = $this->actingAs($this->admin)

@@ -1,0 +1,140 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\ShowCategoryRequest;
+use App\Models\Category;
+use App\Models\Post;
+use App\Services\BreadcrumbService;
+use App\Services\CacheService;
+use Illuminate\Http\Request;
+
+class CategoryController extends Controller
+{
+    public function __construct(
+        protected BreadcrumbService $breadcrumbService,
+        protected CacheService $cacheService
+    ) {}
+
+    /**
+     * Display the category page with posts.
+     */
+    public function show(ShowCategoryRequest $request)
+    {
+        $slug = $request->getSlug();
+
+        // Get filters for cache key
+        $sort = $request->get('sort', 'latest');
+        $dateFilter = $request->get('date_filter');
+        $page = $request->get('page', 1);
+        $filters = [
+            'sort' => $sort,
+            'date_filter' => $dateFilter,
+        ];
+
+        // Cache category view for 15 minutes (Requirement 20.1, 20.5)
+        // Only cache first page without filters for better hit rate
+        // Don't cache AJAX requests
+        if ($page == 1 && empty($dateFilter) && $sort === 'latest' && ! $request->wantsJson() && ! $request->ajax()) {
+            return $this->cacheService->cacheCategoryView($slug, $filters, function () use ($slug, $request) {
+                return $this->renderCategory($slug, $request);
+            });
+        }
+
+        return $this->renderCategory($slug, $request);
+    }
+
+    /**
+     * Render category page with cached data.
+     */
+    protected function renderCategory(string $slug, Request $request): \Illuminate\Contracts\View\View|\Illuminate\Http\JsonResponse
+    {
+        // Cache category model (Requirement 12.3)
+        $category = $this->cacheService->cacheModel('category', $slug, CacheService::TTL_LONG, function () use ($slug) {
+            return Category::where('slug', $slug)
+                ->active()
+                ->with([
+                    'parent:id,name,slug',
+                    'children' => function ($query) {
+                        $query->active()
+                            ->withCount(['posts' => function ($q) {
+                                $q->published();
+                            }])
+                            ->orderBy('display_order')
+                            ->orderBy('name');
+                    },
+                    'children.children' => function ($query) {
+                        $query->active();
+                    },
+                ])
+                ->select(['id', 'name', 'slug', 'description', 'parent_id', 'icon', 'color_code', 'meta_title', 'meta_description'])
+                ->firstOrFail();
+        });
+
+        // Get all category IDs including subcategories (recursively)
+        $categoryIds = $category->getAllDescendantIds();
+
+        // Build query with filters and sorting (Requirements 26.1-26.5)
+        $query = Post::published()
+            ->whereIn('category_id', $categoryIds)
+            ->with(['user:id,name', 'category:id,name,slug'])
+            ->select(['id', 'title', 'slug', 'excerpt', 'featured_image', 'published_at', 'reading_time', 'view_count', 'user_id', 'category_id']);
+
+        // Apply sorting (Requirement 26.2, 26.3)
+        $sort = $request->get('sort', 'latest');
+        match ($sort) {
+            'popular' => $query->orderBy('view_count', 'desc'),
+            'oldest' => $query->orderBy('published_at', 'asc'),
+            default => $query->orderBy('published_at', 'desc'),
+        };
+
+        // Apply date filters (Requirement 26.4)
+        $dateFilter = $request->get('date_filter');
+        if ($dateFilter) {
+            match ($dateFilter) {
+                'today' => $query->whereDate('published_at', today()),
+                'week' => $query->where('published_at', '>=', now()->subWeek()),
+                'month' => $query->where('published_at', '>=', now()->subMonth()),
+                default => null,
+            };
+        }
+
+        // Cache query results for category pages (Requirement 12.1, 12.2)
+        $page = $request->get('page', 1);
+        $filters = [
+            'sort' => $sort,
+            'date_filter' => $dateFilter,
+            'page' => $page,
+        ];
+
+        // Only cache first page without filters for better hit rate
+        if ($page == 1 && empty($dateFilter) && $sort === 'latest') {
+            $posts = $this->cacheService->cacheCategoryPage($category->id, $filters, function () use ($query) {
+                return $query->paginate(15)->withQueryString();
+            });
+        } else {
+            $posts = $query->paginate(15)->withQueryString();
+        }
+
+        // Generate breadcrumbs
+        $breadcrumbs = $this->breadcrumbService->generate($request);
+        $breadcrumbStructuredData = $this->breadcrumbService->generateStructuredData($breadcrumbs);
+
+        // Return JSON for AJAX requests (Requirements 26.1, 27.1-27.5)
+        if ($request->wantsJson() || $request->ajax()) {
+            $html = '';
+            foreach ($posts as $post) {
+                $html .= view('partials.post-card', compact('post'))->render();
+            }
+
+            return response()->json([
+                'html' => $html,
+                'currentPage' => $posts->currentPage(),
+                'lastPage' => $posts->lastPage(),
+                'hasMorePages' => $posts->hasMorePages(),
+            ]);
+        }
+
+        return view('categories.show', compact('category', 'posts', 'breadcrumbs', 'breadcrumbStructuredData'));
+    }
+}

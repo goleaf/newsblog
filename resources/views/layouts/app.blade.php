@@ -92,5 +92,8 @@
     
     {{-- Cookie Consent Banner (Requirement 16.4) --}}
     <x-gdpr.cookie-consent />
+    
+    {{-- Scroll to Top Button (Requirement 74) --}}
+    <x-ui.scroll-to-top />
 </body>
 </html>

@@ -106,10 +106,10 @@ class SearchController extends Controller
         // Log query and get search_log_id for click tracking (Requirement 16.2)
         $executionTime = (microtime(true) - $startTime) * 1000;
         $searchLogId = null;
-        
+
         if (config('fuzzy-search.analytics.log_queries', true) && ! empty($query)) {
             $resultCount = $posts->total();
-            
+
             // Create search log synchronously to get ID for click tracking
             $searchLog = \App\Models\SearchLog::create([
                 'query' => $query,
@@ -123,7 +123,7 @@ class SearchController extends Controller
                 'user_agent' => request()->userAgent(),
                 'user_id' => auth()->id(),
             ]);
-            
+
             $searchLogId = $searchLog->id;
         }
 
@@ -163,6 +163,7 @@ class SearchController extends Controller
     /**
      * Get search suggestions for autocomplete.
      * Implements Requirements 2.1, 2.2 (autocomplete with debounced search)
+     * Implements Requirement 8: Autocomplete method with debouncing
      *
      * @return \Illuminate\Http\JsonResponse
      */
@@ -175,9 +176,9 @@ class SearchController extends Controller
             return response()->json([]);
         }
 
-        // Use FuzzySearchService for better suggestions with typo tolerance
-        $suggestions = $this->fuzzySearchService->getSuggestions($query, 5);
+        // Use SearchService autocomplete method which supports FTS5
+        $suggestions = $this->searchService->autocomplete($query, 5);
 
-        return response()->json($suggestions);
+        return response()->json($suggestions->toArray());
     }
 }

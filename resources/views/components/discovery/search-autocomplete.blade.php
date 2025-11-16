@@ -33,13 +33,56 @@
             :aria-expanded="showDropdown && (results.length > 0 || recentSearches.length > 0 || popularSearches.length > 0)"
         >
         
+        <!-- Voice Search Button -->
+        <button 
+            x-show="!isListening && !query.length"
+            @click="startVoiceSearch()"
+            type="button"
+            class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+            aria-label="Start voice search"
+            title="Voice search"
+            x-cloak
+        >
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+            </svg>
+        </button>
+        
+        <!-- Listening Indicator -->
+        <div 
+            x-show="isListening"
+            class="absolute inset-y-0 right-0 pr-3 flex items-center"
+            aria-label="Listening..."
+            x-cloak
+        >
+            <div class="flex items-center gap-2">
+                <div class="animate-pulse flex gap-1">
+                    <div class="h-2 w-2 bg-red-500 rounded-full"></div>
+                    <div class="h-2 w-2 bg-red-500 rounded-full animation-delay-75"></div>
+                    <div class="h-2 w-2 bg-red-500 rounded-full animation-delay-150"></div>
+                </div>
+                <button 
+                    @click="stopVoiceSearch()"
+                    type="button"
+                    class="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                    aria-label="Stop listening"
+                >
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
         <!-- Clear Button -->
         <button 
-            x-show="query.length > 0"
+            x-show="query.length > 0 && !isListening"
             @click="clearSearch()"
             type="button"
             class="absolute inset-y-0 right-0 pr-3 flex items-center"
             aria-label="Clear search"
+            x-cloak
         >
             <svg class="h-5 w-5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -194,8 +237,46 @@ document.addEventListener('alpine:init', () => {
         showDropdown: false,
         selectedIndex: -1,
         minLength: {{ $minLength }},
+        isListening: false,
+        recognition: null,
+        voiceSearchSupported: false,
         
         init() {
+            // Check if Web Speech API is supported
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                this.voiceSearchSupported = true;
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                this.recognition = new SpeechRecognition();
+                this.recognition.continuous = false;
+                this.recognition.interimResults = false;
+                this.recognition.lang = navigator.language || 'en-US';
+                
+                this.recognition.onresult = (event) => {
+                    const transcript = event.results[0][0].transcript;
+                    this.query = transcript.trim();
+                    this.stopVoiceSearch();
+                    this.search();
+                };
+                
+                this.recognition.onerror = (event) => {
+                    console.error('Speech recognition error:', event.error);
+                    this.stopVoiceSearch();
+                    
+                    // Show error message to user
+                    if (event.error === 'no-speech') {
+                        alert('No speech detected. Please try again.');
+                    } else if (event.error === 'not-allowed') {
+                        alert('Microphone permission denied. Please enable microphone access in your browser settings.');
+                    } else {
+                        alert('Voice search error: ' + event.error);
+                    }
+                };
+                
+                this.recognition.onend = () => {
+                    this.isListening = false;
+                };
+            }
+            
             // Load recent searches from localStorage
             const stored = localStorage.getItem('recentSearches');
             if (stored) {
@@ -214,6 +295,33 @@ document.addEventListener('alpine:init', () => {
                 'TypeScript',
                 'Tailwind CSS'
             ];
+        },
+        
+        startVoiceSearch() {
+            if (!this.voiceSearchSupported) {
+                alert('Voice search is not supported in your browser. Please use Chrome, Edge, or Safari.');
+                return;
+            }
+            
+            try {
+                this.isListening = true;
+                this.recognition.start();
+            } catch (error) {
+                console.error('Failed to start voice search:', error);
+                this.isListening = false;
+                alert('Failed to start voice search. Please try again.');
+            }
+        },
+        
+        stopVoiceSearch() {
+            if (this.recognition && this.isListening) {
+                try {
+                    this.recognition.stop();
+                } catch (error) {
+                    console.error('Error stopping recognition:', error);
+                }
+            }
+            this.isListening = false;
         },
         
         async search() {

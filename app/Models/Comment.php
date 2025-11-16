@@ -66,6 +66,11 @@ class Comment extends Model
         return $query->where('status', CommentStatusEnum::Pending);
     }
 
+    public function scopeRejected($query)
+    {
+        return $query->where('status', CommentStatusEnum::Rejected);
+    }
+
     public function scopeRecent($query)
     {
         return $query->orderBy('created_at', 'desc');
@@ -89,6 +94,11 @@ class Comment extends Model
     public function markAsSpam(): void
     {
         $this->update(['status' => CommentStatusEnum::Spam]);
+    }
+
+    public function markAsRejected(): void
+    {
+        $this->update(['status' => CommentStatusEnum::Rejected]);
     }
 
     /**

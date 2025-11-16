@@ -1,7 +1,7 @@
 @props(['post'])
 
 <div 
-    class="prose prose-lg dark:prose-invert max-w-none
+    class="prose prose-lg dark:prose-invert max-w-none article-content-wrapper
            prose-headings:font-bold prose-headings:text-gray-900 dark:prose-headings:text-white
            prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:leading-relaxed
            prose-a:text-indigo-600 dark:prose-a:text-indigo-400 prose-a:no-underline hover:prose-a:underline
@@ -15,6 +15,7 @@
            prose-ul:list-disc prose-ol:list-decimal
            prose-li:text-gray-700 dark:prose-li:text-gray-300"
     x-data="articleContent"
+    style="font-size: 100%;"
 >
     {!! $post->content !!}
 </div>

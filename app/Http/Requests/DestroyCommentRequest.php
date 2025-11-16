@@ -19,8 +19,10 @@ class DestroyCommentRequest extends FormRequest
 
         $comment = $this->route('comment');
 
+        $userRole = $user->role instanceof \BackedEnum ? $user->role->value : $user->role;
+
         // Admin and editor can delete any comment
-        if (in_array($user->role, ['admin', 'editor'], true)) {
+        if (in_array($userRole, [\App\Enums\UserRole::Admin->value, \App\Enums\UserRole::Editor->value], true)) {
             return true;
         }
 

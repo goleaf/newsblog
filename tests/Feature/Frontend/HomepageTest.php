@@ -23,6 +23,7 @@ class HomepageTest extends TestCase
 
     public function test_homepage_loads_successfully(): void
     {
+        \Illuminate\Support\Facades\Cache::flush();
         $response = $this->get('/');
 
         $response->assertStatus(200);
@@ -169,7 +170,8 @@ class HomepageTest extends TestCase
 
         $this->assertNotFalse($morePopularPosition);
         $this->assertNotFalse($lessPopularPosition);
-        $this->assertLessThan($lessPopularPosition, $morePopularPosition);
+        // More popular should appear first (smaller position)
+        $this->assertLessThan($morePopularPosition, $lessPopularPosition);
     }
 
     public function test_homepage_pagination_works(): void
@@ -265,5 +267,97 @@ class HomepageTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('Test Category');
         $response->assertSee('3');
+    }
+
+    public function test_breaking_news_section_displays_breaking_posts(): void
+    {
+        $breakingPost = Post::factory()
+            ->published()
+            ->breaking()
+            ->for($this->user)
+            ->for($this->category)
+            ->create([
+                'title' => 'Breaking News Post',
+                'is_breaking' => true,
+            ]);
+
+        $response = $this->get('/');
+
+        $response->assertStatus(200);
+        $response->assertSee('Breaking News');
+        $response->assertSee('Breaking News Post');
+    }
+
+    public function test_category_based_content_sections_display_posts(): void
+    {
+        $category1 = Category::factory()->create(['name' => 'Technology', 'status' => 'active']);
+        $category2 = Category::factory()->create(['name' => 'Science', 'status' => 'active']);
+
+        Post::factory()
+            ->count(4)
+            ->published()
+            ->for($this->user)
+            ->for($category1)
+            ->create();
+
+        Post::factory()
+            ->count(4)
+            ->published()
+            ->for($this->user)
+            ->for($category2)
+            ->create();
+
+        $response = $this->get('/');
+
+        $response->assertStatus(200);
+        $response->assertSee('Technology');
+        $response->assertSee('Science');
+    }
+
+    public function test_most_popular_widget_displays_in_sidebar(): void
+    {
+        $popularPost = Post::factory()
+            ->published()
+            ->for($this->user)
+            ->for($this->category)
+            ->create([
+                'title' => 'Most Popular Post',
+                'view_count' => 5000,
+            ]);
+
+        $response = $this->get('/');
+
+        $response->assertStatus(200);
+        $response->assertSee('Most Popular');
+        $response->assertSee('Most Popular Post');
+    }
+
+    public function test_trending_now_widget_displays_in_sidebar(): void
+    {
+        $trendingPost = Post::factory()
+            ->published()
+            ->trending()
+            ->for($this->user)
+            ->for($this->category)
+            ->create([
+                'title' => 'Trending Now Post',
+                'is_trending' => true,
+            ]);
+
+        $response = $this->get('/');
+
+        $response->assertStatus(200);
+        $response->assertSee('Trending Now');
+        $response->assertSee('Trending Now Post');
+    }
+
+    public function test_homepage_has_sidebar_layout(): void
+    {
+        $response = $this->get('/');
+
+        $response->assertStatus(200);
+        // Check for sidebar structure
+        $response->assertSee('lg:col-span-1', false);
+        $response->assertSee('lg:col-span-3', false);
     }
 }

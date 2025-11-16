@@ -45,5 +45,19 @@
     "A search term is required.": "A search term is required.",
     "The search term may not be greater than 255 characters.": "The search term may not be greater than 255 characters.",
     "Media uploaded successfully.": "Media uploaded successfully.",
-    "Media deleted successfully.": "Media deleted successfully."
+    "Media deleted successfully.": "Media deleted successfully.",
+
+    "post.font_size": "Font Size",
+    "post.decrease_font_size": "Decrease font size",
+    "post.increase_font_size": "Increase font size",
+    "post.reset_font_size": "Reset font size to default",
+    "post.reset": "Reset",
+    "post.bookmarked": "Bookmarked",
+    "post.bookmark": "Bookmark",
+    "post.add_to_reading_list": "Add to reading list",
+    "post.remove_from_reading_list": "Remove from reading list",
+    "post.bookmark_error": "Failed to bookmark",
+    "post.share_this_post": "Share this post",
+    "post.link_copied": "Link copied to clipboard!",
+    "post.copy_link_error": "Failed to copy link"
 }

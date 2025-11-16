@@ -183,11 +183,11 @@ class CommentControllerTest extends TestCase
             ->post(route('comments.reject', $comment));
 
         $response->assertRedirect();
-        $response->assertSessionHas('success', 'Comment rejected and marked as spam.');
+        $response->assertSessionHas('success', 'Comment rejected successfully.');
 
         $this->assertDatabaseHas('comments', [
             'id' => $comment->id,
-            'status' => CommentStatus::Spam->value,
+            'status' => CommentStatus::Rejected->value,
         ]);
     }
 
@@ -216,14 +216,14 @@ class CommentControllerTest extends TestCase
     {
         $comment = Comment::factory()->create([
             'post_id' => $this->post->id,
-            'status' => CommentStatus::Spam,
+            'status' => CommentStatus::Rejected,
         ]);
 
         $response = $this->actingAs($this->admin)
             ->post(route('comments.reject', $comment));
 
         $response->assertRedirect();
-        $response->assertSessionHas('info', 'Comment is already marked as spam.');
+        $response->assertSessionHas('info', 'Comment is already rejected.');
     }
 
     public function test_destroy_deletes_comment(): void

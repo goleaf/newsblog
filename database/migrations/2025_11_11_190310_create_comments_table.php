@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('author_name');
             $table->string('author_email');
             $table->text('content');
-            $table->enum('status', ['pending', 'approved', 'spam'])->default('pending');
+            $table->enum('status', ['pending', 'approved', 'spam', 'rejected'])->default('pending');
             $table->string('ip_address', 45)->nullable();
             $table->text('user_agent')->nullable();
             $table->timestamps();

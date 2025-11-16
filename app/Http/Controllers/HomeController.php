@@ -47,6 +47,17 @@ class HomeController extends Controller
                 ->get();
         });
 
+        $breakingNews = Cache::remember('home.breaking', CacheService::TTL_MEDIUM, function () {
+            return Post::published()
+                ->breaking()
+                ->where('published_at', '>=', now()->subDay()) // Filter posts from last 24 hours
+                ->with(['user:id,name', 'category:id,name,slug'])
+                ->select(['id', 'title', 'slug', 'excerpt', 'featured_image', 'published_at', 'reading_time', 'view_count', 'user_id', 'category_id'])
+                ->latest()
+                ->take(10)
+                ->get();
+        });
+
         $trendingPosts = Cache::remember('home.trending', CacheService::TTL_MEDIUM, function () {
             return Post::published()
                 ->trending()
@@ -55,6 +66,50 @@ class HomeController extends Controller
                 ->latest()
                 ->take(6)
                 ->get();
+        });
+
+        $mostPopular = Cache::remember('home.popular', CacheService::TTL_MEDIUM, function () {
+            return Post::published()
+                ->popular()
+                ->with(['user:id,name', 'category:id,name,slug'])
+                ->select(['id', 'title', 'slug', 'excerpt', 'featured_image', 'published_at', 'reading_time', 'view_count', 'user_id', 'category_id'])
+                ->take(5)
+                ->get();
+        });
+
+        $trendingNow = Cache::remember('home.trending-now', CacheService::TTL_MEDIUM, function () {
+            return Post::published()
+                ->trending()
+                ->with(['user:id,name', 'category:id,name,slug'])
+                ->select(['id', 'title', 'slug', 'excerpt', 'featured_image', 'published_at', 'reading_time', 'view_count', 'user_id', 'category_id'])
+                ->latest()
+                ->take(5)
+                ->get();
+        });
+
+        // Category-based content sections
+        $categorySections = Cache::remember('home.category-sections', CacheService::TTL_MEDIUM, function () {
+            return Category::active()
+                ->parents()
+                ->ordered()
+                ->withCount('posts')
+                ->select(['id', 'name', 'slug', 'description', 'icon', 'color_code'])
+                ->take(4)
+                ->get()
+                ->filter(function ($category) {
+                    return $category->posts_count > 0;
+                })
+                ->map(function ($category) {
+                    $category->posts = Post::published()
+                        ->byCategory($category->id)
+                        ->with(['user:id,name', 'category:id,name,slug'])
+                        ->select(['id', 'title', 'slug', 'excerpt', 'featured_image', 'published_at', 'reading_time', 'view_count', 'user_id', 'category_id'])
+                        ->latest()
+                        ->take(4)
+                        ->get();
+
+                    return $category;
+                });
         });
 
         // Build query for recent posts with sorting
@@ -89,6 +144,15 @@ class HomeController extends Controller
                 ->get();
         });
 
-        return view('home', compact('featuredPosts', 'trendingPosts', 'recentPosts', 'categories'));
+        return view('home', compact(
+            'featuredPosts',
+            'breakingNews',
+            'trendingPosts',
+            'mostPopular',
+            'trendingNow',
+            'categorySections',
+            'recentPosts',
+            'categories'
+        ));
     }
 }

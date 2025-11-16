@@ -3,13 +3,12 @@
 namespace App\Observers;
 
 use App\Enums\PostStatus;
-use App\Mail\PostPublishedMail;
+use App\Jobs\SendPostPublishedNotification;
 use App\Models\Post;
 use App\Services\CacheService;
 use App\Services\NotificationService;
 use App\Services\PostService;
 use App\Services\SearchIndexService;
-use Illuminate\Support\Facades\Mail;
 
 class PostObserver
 {
@@ -183,13 +182,13 @@ class PostObserver
         // Ensure relationships are loaded
         $post->loadMissing(['user', 'category']);
 
-        // Send email notification to post author
+        // Queue email notification to post author
         if ($post->user && $post->user->email) {
             try {
-                Mail::to($post->user->email)->send(new PostPublishedMail($post));
+                SendPostPublishedNotification::dispatch($post);
             } catch (\Exception $e) {
                 // Log error but don't fail the operation
-                \Log::error('Failed to send post published email', [
+                \Log::error('Failed to queue post published email', [
                     'post_id' => $post->id,
                     'user_id' => $post->user->id,
                     'error' => $e->getMessage(),

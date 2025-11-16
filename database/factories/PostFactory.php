@@ -66,4 +66,11 @@ class PostFactory extends Factory
             'is_trending' => true,
         ]);
     }
+
+    public function breaking(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'is_breaking' => true,
+        ]);
+    }
 }

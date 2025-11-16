@@ -1,47 +1,59 @@
 @extends('layouts.app')
 
-@section('title', $category->meta_title ?? $category->name . ' - Articles')
+@php
+    $metaTags = $category->getMetaTags();
+    $structuredData = $category->getStructuredData();
+@endphp
+
+@push('meta-tags')
+    {{-- Basic Meta Tags --}}
+    <title>{{ $metaTags['title'] }} | {{ config('app.name') }}</title>
+    <meta name="description" content="{{ $metaTags['description'] }}">
+    @if(!empty($metaTags['keywords']))
+        <meta name="keywords" content="{{ $metaTags['keywords'] }}">
+    @endif
+
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+
+    {{-- Canonical URL --}}
+    <link rel="canonical" href="{{ $metaTags['og:url'] }}">
+
+    {{-- Open Graph Meta Tags --}}
+    <meta property="og:title" content="{{ $metaTags['og:title'] }}">
+    <meta property="og:description" content="{{ $metaTags['og:description'] }}">
+    <meta property="og:image" content="{{ $metaTags['og:image'] }}">
+    <meta property="og:url" content="{{ $metaTags['og:url'] }}">
+    <meta property="og:type" content="{{ $metaTags['og:type'] }}">
+    <meta property="og:site_name" content="{{ $metaTags['og:site_name'] }}">
+
+    {{-- Twitter Card Meta Tags --}}
+    <meta name="twitter:card" content="{{ $metaTags['twitter:card'] }}">
+    <meta name="twitter:title" content="{{ $metaTags['twitter:title'] }}">
+    <meta name="twitter:description" content="{{ $metaTags['twitter:description'] }}">
+    <meta name="twitter:image" content="{{ $metaTags['twitter:image'] }}">
+    <meta name="twitter:url" content="{{ $metaTags['twitter:url'] }}">
+@endpush
+
+@push('structured-data')
+    {{-- Schema.org CollectionPage Structured Data (JSON-LD) --}}
+    <script type="application/ld+json">
+        {!! json_encode($structuredData, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
+    </script>
+
+    {{-- BreadcrumbList Structured Data --}}
+    @if(isset($breadcrumbStructuredData))
+        <script type="application/ld+json">
+            {!! $breadcrumbStructuredData !!}
+        </script>
+    @endif
+@endpush
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Breadcrumbs (Requirement 5.1) -->
-    <nav class="mb-6" aria-label="Breadcrumb">
-        <ol class="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
-            <li>
-                <a href="{{ route('home') }}" class="hover:text-gray-700 dark:hover:text-gray-300">
-                    Home
-                </a>
-            </li>
-            <li>
-                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
-                </svg>
-            </li>
-            <li>
-                <span class="text-gray-400 dark:text-gray-500">Categories</span>
-            </li>
-            @if($category->parent)
-                <li>
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
-                    </svg>
-                </li>
-                <li>
-                    <a href="{{ route('category.show', $category->parent->slug) }}" class="hover:text-gray-700 dark:hover:text-gray-300">
-                        {{ $category->parent->name }}
-                    </a>
-                </li>
-            @endif
-            <li>
-                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
-                </svg>
-            </li>
-            <li class="text-gray-900 dark:text-white font-medium" aria-current="page">
-                {{ $category->name }}
-            </li>
-        </ol>
-    </nav>
+    @if(isset($breadcrumbs))
+        <x-breadcrumbs :breadcrumbs="$breadcrumbs" :structured-data="$breadcrumbStructuredData ?? null" />
+    @endif
 
     <!-- Category Header (Requirement 5.1) -->
     <div class="mb-8 bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700">

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SearchRequest;
+use App\Http\Requests\ShowPostRequest;
 use App\Models\Category;
 use App\Models\Post;
 use App\Models\Tag;
@@ -29,8 +30,10 @@ class PostController extends Controller
         protected \App\Services\CacheService $cacheService
     ) {}
 
-    public function show($slug, Request $request)
+    public function show(ShowPostRequest $request)
     {
+        $slug = $request->getSlug();
+
         // Cache post view for 30 minutes (Requirement 20.1, 20.5)
         // Don't cache for authenticated users to show personalized data
         if (! auth()->check()) {
@@ -91,8 +94,9 @@ class PostController extends Controller
         $this->postViewController->trackView($post, $request);
 
         // Cache related posts for 30 minutes (Requirement 20.5)
+        // Limit to 4 related posts (Requirement 22.4)
         $relatedPosts = Cache::remember("post.{$slug}.related", 1800, function () use ($post) {
-            return $this->relatedPostsService->getRelatedPosts($post, 5);
+            return $this->relatedPostsService->getRelatedPosts($post, 4);
         });
 
         // Cache series navigation for 30 minutes (Requirement 20.5)

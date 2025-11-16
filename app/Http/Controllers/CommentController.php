@@ -158,13 +158,13 @@ class CommentController extends Controller
      */
     public function reject(RejectCommentRequest $request, Comment $comment): RedirectResponse
     {
-        if ($comment->status === CommentStatus::Spam) {
-            return redirect()->back()->with('info', 'Comment is already marked as spam.');
+        if ($comment->status === CommentStatus::Rejected) {
+            return redirect()->back()->with('info', 'Comment is already rejected.');
         }
 
-        $comment->markAsSpam();
+        $comment->markAsRejected();
 
-        return redirect()->back()->with('success', 'Comment rejected and marked as spam.');
+        return redirect()->back()->with('success', 'Comment rejected successfully.');
     }
 
     /**

@@ -12,9 +12,14 @@
 >
     {{-- Main Header Bar --}}
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-16">
+        <div 
+            class="flex items-center justify-between transition-all duration-300 ease-in-out"
+            :class="scrolled ? 'h-14' : 'h-16'"
+        >
             {{-- Logo Section --}}
-            <x-navigation.logo />
+            <div :class="scrolled ? 'scale-95' : 'scale-100'" class="transition-transform duration-300 ease-in-out">
+                <x-navigation.logo />
+            </div>
 
             {{-- Desktop Navigation --}}
             <x-navigation.main-nav class="hidden lg:flex" />
@@ -42,30 +47,43 @@ document.addEventListener('alpine:init', () => {
         initScrollBehavior() {
             let ticking = false;
             
+            // Initial check for scroll position
+            this.checkScrollPosition();
+            
+            // Use passive event listener for better performance
             window.addEventListener('scroll', () => {
                 if (!ticking) {
                     window.requestAnimationFrame(() => {
-                        const currentScroll = window.pageYOffset;
-                        this.scrolled = currentScroll > 50;
-                        
-                        if (currentScroll > this.lastScroll && currentScroll > 100) {
-                            this.hidden = true;
-                        } else {
-                            this.hidden = false;
-                        }
-                        
-                        this.lastScroll = currentScroll;
+                        this.checkScrollPosition();
                         ticking = false;
                     });
                     ticking = true;
                 }
-            });
+            }, { passive: true });
+        },
+        
+        checkScrollPosition() {
+            const currentScroll = window.pageYOffset || window.scrollY || document.documentElement.scrollTop;
+            const scrollThreshold = 50;
+            
+            // Update scrolled state
+            this.scrolled = currentScroll > scrollThreshold;
+            
+            // Auto-hide on scroll down, show on scroll up
+            if (currentScroll > this.lastScroll && currentScroll > 100) {
+                this.hidden = true;
+            } else {
+                this.hidden = false;
+            }
+            
+            this.lastScroll = currentScroll;
         },
         
         getHeaderClasses(sticky, transparent) {
             return {
                 'sticky top-0 z-50': sticky,
-                'bg-white dark:bg-gray-900 shadow-md': this.scrolled && !transparent,
+                'bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm shadow-lg': this.scrolled && !transparent,
+                'bg-white dark:bg-gray-900': this.scrolled && transparent === false,
                 'bg-transparent': !this.scrolled && transparent,
                 '-translate-y-full': this.hidden
             };
