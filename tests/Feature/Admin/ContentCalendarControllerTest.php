@@ -12,6 +12,38 @@ class ContentCalendarControllerTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // Ensure a minimal Vite manifest exists for page-specific assets used by the view
+        $buildDir = public_path('build');
+        if (! is_dir($buildDir)) {
+            mkdir($buildDir, 0777, true);
+        }
+
+        $manifestPath = $buildDir.'/manifest.json';
+        $manifest = file_exists($manifestPath)
+            ? json_decode(file_get_contents($manifestPath), true) ?: []
+            : [];
+
+        // Core app entry to satisfy dynamic imports when present
+        $manifest['resources/js/app.js'] = $manifest['resources/js/app.js'] ?? [
+            'file' => 'assets/app.js',
+            'src' => 'resources/js/app.js',
+            'isEntry' => true,
+        ];
+
+        // Admin calendar page chunk referenced by the blade via @vite
+        $manifest['resources/js/pages/admin-calendar.js'] = [
+            'file' => 'assets/admin-calendar.js',
+            'src' => 'resources/js/pages/admin-calendar.js',
+            'isEntry' => true,
+        ];
+
+        file_put_contents($manifestPath, json_encode($manifest));
+    }
+
     public function test_admin_can_access_content_calendar(): void
     {
         $admin = User::factory()->create(['role' => 'admin']);

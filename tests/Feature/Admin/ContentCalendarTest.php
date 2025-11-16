@@ -11,6 +11,33 @@ class ContentCalendarTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // Provide a minimal Vite manifest so @vite lookups in the calendar view succeed during tests
+        $buildDir = public_path('build');
+        if (! is_dir($buildDir)) {
+            mkdir($buildDir, 0777, true);
+        }
+        $manifestPath = $buildDir.'/manifest.json';
+        $manifest = file_exists($manifestPath)
+            ? json_decode(file_get_contents($manifestPath), true) ?: []
+            : [];
+
+        $manifest['resources/js/app.js'] = $manifest['resources/js/app.js'] ?? [
+            'file' => 'assets/app.js',
+            'src' => 'resources/js/app.js',
+            'isEntry' => true,
+        ];
+        $manifest['resources/js/pages/admin-calendar.js'] = [
+            'file' => 'assets/admin-calendar.js',
+            'src' => 'resources/js/pages/admin-calendar.js',
+            'isEntry' => true,
+        ];
+        file_put_contents($manifestPath, json_encode($manifest));
+    }
+
     public function test_admin_can_view_content_calendar(): void
     {
         $admin = User::factory()->create(['role' => 'admin']);
@@ -107,5 +134,4 @@ class ContentCalendarTest extends TestCase
         $this->assertEquals(0, (int) $post->scheduled_at->format('i'));
     }
 }
-
 

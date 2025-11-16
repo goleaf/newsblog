@@ -89,7 +89,7 @@
         </div>
 
         <!-- Sidebar -->
-        <aside class="lg:col-span-1">
+        <aside class="lg:col-span-1" role="complementary" aria-label="Related content">
             <!-- Related Posts -->
             @if($relatedPosts->count() > 0)
                 <x-content.related-posts :posts="$relatedPosts" />
@@ -140,28 +140,40 @@
                 <input type="hidden" name="page_load_time" :value="pageLoadTime">
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <label for="author_name" class="sr-only">{{ __('post.your_name') }}</label>
                     <input 
                         type="text" 
                         name="author_name" 
+                        id="author_name"
                         placeholder="{{ __('post.your_name') }}" 
                         required 
+                        aria-describedby="author_name_hint"
                         class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     >
+                    <span id="author_name_hint" class="sr-only">{{ __('Your display name for the comment') }}</span>
+                    <label for="author_email" class="sr-only">{{ __('post.your_email') }}</label>
                     <input 
                         type="email" 
                         name="author_email" 
+                        id="author_email"
                         placeholder="{{ __('post.your_email') }}" 
                         required 
+                        aria-describedby="author_email_hint"
                         class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     >
+                    <span id="author_email_hint" class="sr-only">{{ __('We will not publish your email') }}</span>
                 </div>
+                <label for="content" class="sr-only">{{ __('post.your_comment') }}</label>
                 <textarea 
                     name="content" 
+                    id="content"
                     rows="4" 
                     placeholder="{{ __('post.your_comment') }}" 
                     required 
+                    aria-describedby="comment_hint"
                     class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 ></textarea>
+                <span id="comment_hint" class="sr-only">{{ __('Share your thoughts about this article') }}</span>
                 <button 
                     type="submit" 
                     class="rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700"

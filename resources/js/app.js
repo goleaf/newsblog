@@ -1,6 +1,7 @@
 import './bootstrap';
 
 import Alpine from 'alpinejs';
+import infiniteScroll from './components/infinite-scroll-html';
 
 // Import global stores (always needed)
 import themeStore from './stores/theme';
@@ -34,6 +35,8 @@ Alpine.store('modal', modalStore());
 
 // Register theme toggle component (used in header on all pages)
 Alpine.data('themeToggle', themeStore);
+// Register infinite scroll component globally
+Alpine.data('infiniteScroll', infiniteScroll);
 
 // Start Alpine
 Alpine.start();

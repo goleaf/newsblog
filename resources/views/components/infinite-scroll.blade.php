@@ -1,4 +1,10 @@
-@props(['posts', 'containerClass' => 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6', 'cardTemplate' => 'partials.post-card'])
+@props([
+    'posts', 
+    'containerClass' => 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6', 
+    'cardTemplate' => 'partials.post-card',
+    // skeletonType: 'card' (grid) or 'list' (vertical list)
+    'skeletonType' => 'card',
+])
 
 <div 
     x-data="infiniteScroll()"
@@ -12,13 +18,13 @@
         {{ $slot }}
     </div>
 
-    <!-- Loading Spinner (Requirement 27.3) -->
-    <div 
-        x-show="loading" 
-        x-cloak
-        class="flex justify-center items-center py-8"
-    >
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 dark:border-indigo-400"></div>
+    <!-- Loading State: Spinner + Skeletons (Requirements 27.3, 72) -->
+    <div x-show="loading" x-cloak class="py-8">
+        <div class="flex justify-center items-center mb-6">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 dark:border-indigo-400" aria-hidden="true"></div>
+            <span class="sr-only">Loading…</span>
+        </div>
+        <x-ui.skeleton-loader :type="$skeletonType" :count="3" />
     </div>
 
     <!-- End of Content Message (Requirement 27.5) -->

@@ -135,6 +135,14 @@
                 </div>
             @endforeach
         </x-infinite-scroll>
+        <!-- Pagination (No-JS fallback) -->
+        <noscript>
+            @if($posts->hasPages())
+                <div class="mt-8">
+                    {{ $posts->links() }}
+                </div>
+            @endif
+        </noscript>
     @else
         <x-ui.empty-state 
             title="{{ __('No articles found') }}"
@@ -151,4 +159,3 @@
     @endif
 </div>
 @endsection
-

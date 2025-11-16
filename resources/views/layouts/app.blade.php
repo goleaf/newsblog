@@ -58,7 +58,7 @@
 
     {{-- Header --}}
     @if(isset($header))
-        <header>
+        <header role="banner">
             {{ $header }}
         </header>
     @else

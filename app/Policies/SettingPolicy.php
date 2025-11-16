@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Enums\UserRole;
 use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
@@ -15,7 +16,7 @@ class SettingPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->role === 'admin';
+        return $user->role === UserRole::Admin;
     }
 
     /**
@@ -23,7 +24,7 @@ class SettingPolicy
      */
     public function view(User $user, Setting $setting): bool
     {
-        return $user->role === 'admin';
+        return $user->role === UserRole::Admin;
     }
 
     /**
@@ -31,7 +32,7 @@ class SettingPolicy
      */
     public function create(User $user): bool
     {
-        return $user->role === 'admin';
+        return $user->role === UserRole::Admin;
     }
 
     /**
@@ -39,7 +40,7 @@ class SettingPolicy
      */
     public function update(User $user, Setting $setting): bool
     {
-        return $user->role === 'admin';
+        return $user->role === UserRole::Admin;
     }
 
     /**
@@ -47,7 +48,7 @@ class SettingPolicy
      */
     public function delete(User $user, Setting $setting): bool
     {
-        return $user->role === 'admin';
+        return $user->role === UserRole::Admin;
     }
 
     /**
@@ -55,7 +56,7 @@ class SettingPolicy
      */
     public function restore(User $user, Setting $setting): bool
     {
-        return $user->role === 'admin';
+        return $user->role === UserRole::Admin;
     }
 
     /**
@@ -63,6 +64,6 @@ class SettingPolicy
      */
     public function forceDelete(User $user, Setting $setting): bool
     {
-        return $user->role === 'admin';
+        return $user->role === UserRole::Admin;
     }
 }

@@ -93,7 +93,7 @@
 
     @if($posts->total() > 0)
         <!-- Infinite Scroll Component (Requirements 27.1-27.5) -->
-        <x-infinite-scroll :posts="$posts" container-class="space-y-6">
+        <x-infinite-scroll :posts="$posts" container-class="space-y-6" skeleton-type="list">
             @foreach($posts as $index => $post)
                 @include('partials.search-post-card', [
                     'post' => $post, 
@@ -104,6 +104,14 @@
                 ])
             @endforeach
         </x-infinite-scroll>
+        <!-- Pagination (No-JS fallback) -->
+        <noscript>
+            @if($posts->hasPages())
+                <div class="mt-8">
+                    {{ $posts->links() }}
+                </div>
+            @endif
+        </noscript>
     @else
         <!-- Empty State (Requirements 2.4, 14.5) -->
         <x-ui.empty-state 
@@ -164,4 +172,3 @@
 @push('scripts')
 @endpush
 @endsection
-
