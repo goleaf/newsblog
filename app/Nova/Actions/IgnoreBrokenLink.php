@@ -4,7 +4,6 @@ namespace App\Nova\Actions;
 
 use App\Models\BrokenLink;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Collection;
@@ -24,11 +23,10 @@ class IgnoreBrokenLink extends Action
             $broken->update([
                 'status' => 'ignored',
                 'checked_at' => now(),
+                'last_checked_at' => now(), // legacy sync
             ]);
         }
 
         return Action::message('Links ignored.');
     }
 }
-
-

@@ -261,4 +261,55 @@ class ContentCalendarControllerTest extends TestCase
         $this->assertStringContainsString('SUMMARY:Include This Post', $ics);
         $this->assertStringNotContainsString('SUMMARY:Do Not Include', $ics);
     }
+
+    public function test_week_view_limits_results_to_week_range(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $anchor = now()->startOfWeek()->addDays(2); // Wednesday
+
+        // Inside the week
+        $in = \App\Models\Post::factory()->create([
+            'user_id' => $admin->id,
+            'status' => 'scheduled',
+            'scheduled_at' => $anchor->copy()->setTime(10, 0),
+        ]);
+
+        // Outside the week
+        $out = \App\Models\Post::factory()->create([
+            'user_id' => $admin->id,
+            'status' => 'scheduled',
+            'scheduled_at' => $anchor->copy()->addWeek()->setTime(10, 0),
+        ]);
+
+        $response = $this->actingAs($admin)->get(route('admin.calendar.index', [
+            'view' => 'week',
+            'date' => $anchor->format('Y-m-d'),
+        ]));
+
+        $response->assertStatus(200);
+        $postsGrouped = $response->viewData('posts');
+        $all = $postsGrouped->flatten(1);
+        $this->assertTrue($all->contains(fn ($p) => (int) $p->id === (int) $in->id));
+        $this->assertFalse($all->contains(fn ($p) => (int) $p->id === (int) $out->id));
+    }
+
+    public function test_reschedule_sends_notification(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $post = \App\Models\Post::factory()->create([
+            'user_id' => $admin->id,
+            'status' => 'scheduled',
+            'scheduled_at' => now()->addDay()->setTime(9, 0),
+        ]);
+
+        $newDate = now()->addDays(2)->toDateString();
+        $this->actingAs($admin)->postJson(route('admin.calendar.posts.update-date', $post), [
+            'date' => $newDate,
+        ])->assertOk();
+
+        $this->assertDatabaseHas('notifications', [
+            'user_id' => $admin->id,
+            'type' => 'post_rescheduled',
+        ]);
+    }
 }

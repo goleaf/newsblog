@@ -258,7 +258,7 @@
     style="display:none"
     role="dialog"
     aria-modal="true"
-    aria-label="QR code"
+    aria-label="{{ __('qr.title') }}"
 >
     <div @click.stop class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-sm p-6">
         <div class="flex items-center justify-between mb-4">

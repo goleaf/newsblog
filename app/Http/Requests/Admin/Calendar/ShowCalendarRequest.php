@@ -18,6 +18,8 @@ class ShowCalendarRequest extends FormRequest
             'year' => ['nullable', 'integer', 'min:1970', 'max:2100'],
             'author' => ['nullable', 'integer', 'exists:users,id'],
             'category' => ['nullable', 'integer', 'exists:categories,id'],
+            'view' => ['nullable', 'in:month,week,day'],
+            'date' => ['nullable', 'date'],
         ];
     }
 

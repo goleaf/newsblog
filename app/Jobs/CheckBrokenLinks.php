@@ -27,7 +27,6 @@ class CheckBrokenLinks implements ShouldQueue
 
         Post::query()
             ->published()
-            ->orderByDesc('published_at')
             ->chunkById(100, function ($posts) use ($appHost) {
                 foreach ($posts as $post) {
                     $links = $this->extractExternalLinks((string) $post->content, $appHost);
@@ -100,7 +99,9 @@ class CheckBrokenLinks implements ShouldQueue
             [
                 'status' => $status,
                 'response_code' => $code,
+                'status_code' => $code, // keep legacy column in sync for older schemas
                 'checked_at' => now(),
+                'last_checked_at' => now(), // keep legacy column in sync for older schemas
                 // Persist error message when we hit exceptions (timeouts, DNS, etc.)
                 'error_message' => $error,
             ]

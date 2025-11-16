@@ -95,7 +95,9 @@
     </div>
 
     {{-- Core App JS + Page-Specific Scripts (Code Splitting) --}}
-    @vite(['resources/js/app.js'])
+    @if(app()->environment('local') || file_exists(public_path('build/manifest.json')))
+        @vite(['resources/js/app.js'])
+    @endif
     @stack('page-scripts')
     
     {{-- Additional Scripts --}}

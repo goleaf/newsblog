@@ -43,7 +43,10 @@ class FixBrokenLink extends Action
                 'url' => $newUrl,
                 'status' => 'ok',
                 'response_code' => null,
+                'status_code' => null, // legacy sync
                 'checked_at' => now(),
+                'last_checked_at' => now(), // legacy sync
+                'error_message' => null,
             ]);
         }
 

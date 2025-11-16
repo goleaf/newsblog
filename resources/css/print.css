@@ -4,7 +4,8 @@
 
 @media print {
     /* Hide non-essential UI */
-    header, footer, nav, .sidebar, .print\\:hidden, .no-print, .fixed, .sticky, [role="dialog"] {
+    header, footer, nav, .sidebar, .print\\:hidden, .no-print, .fixed, .sticky, [role="dialog"],
+    .ad, .ads, [data-ad], .advert, .advertisement {
         display: none !important;
     }
 
@@ -78,4 +79,3 @@
     /* Print-only helpers */
     .print-only { display: block !important; }
 }
-

@@ -33,9 +33,23 @@
                                class="rounded-md bg-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
                                 &larr; {{ __('Previous') }}
                             </a>
-                            <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                                {{ $date->format('F Y') }}
-                            </h3>
+                            <div class="flex items-center gap-3">
+                                <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                                    @if(($view ?? 'month') === 'month')
+                                        {{ $date->format('F Y') }}
+                                    @elseif(($view ?? 'month') === 'week')
+                                        {{ $rangeStart->format('M d') }} – {{ $rangeEnd->format('M d, Y') }}
+                                    @else
+                                        {{ $date->format('M d, Y') }}
+                                    @endif
+                                </h3>
+                                <div class="flex rounded-md border border-gray-300 text-sm dark:border-gray-700">
+                                    @php $v = $view ?? 'month'; @endphp
+                                    <a href="{{ route('admin.calendar.index', array_merge(request()->only(['month','year','author','category','date']), ['view' => 'month'])) }}" class="px-2 py-1 {{ $v==='month' ? 'bg-gray-200 dark:bg-gray-700' : '' }}">{{ __('Month') }}</a>
+                                    <a href="{{ route('admin.calendar.index', array_merge(request()->only(['month','year','author','category','date']), ['view' => 'week', 'date' => $date->format('Y-m-d')])) }}" class="px-2 py-1 {{ $v==='week' ? 'bg-gray-200 dark:bg-gray-700' : '' }}">{{ __('Week') }}</a>
+                                    <a href="{{ route('admin.calendar.index', array_merge(request()->only(['month','year','author','category','date']), ['view' => 'day', 'date' => $date->format('Y-m-d')])) }}" class="px-2 py-1 {{ $v==='day' ? 'bg-gray-200 dark:bg-gray-700' : '' }}">{{ __('Day') }}</a>
+                                </div>
+                            </div>
                             <a href="{{ route('admin.calendar.index', ['month' => $date->copy()->addMonth()->month, 'year' => $date->copy()->addMonth()->year, 'author' => request('author'), 'category' => request('category')]) }}"
                                class="rounded-md bg-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
                                 {{ __('Next') }} &rarr;
@@ -45,6 +59,10 @@
                             <form id="calendarFilters" method="GET" action="{{ route('admin.calendar.index') }}" class="flex flex-col items-stretch gap-3 md:flex-row md:items-center">
                                 <input type="hidden" name="month" value="{{ $date->format('m') }}">
                                 <input type="hidden" name="year" value="{{ $date->format('Y') }}">
+                                <input type="hidden" name="view" value="{{ $view ?? 'month' }}">
+                                @if(($view ?? 'month') !== 'month')
+                                    <input type="hidden" name="date" value="{{ $date->format('Y-m-d') }}">
+                                @endif
 
                                 <label class="text-sm text-gray-700 dark:text-gray-300">
                                     <span class="sr-only">{{ __('Author') }}</span>
@@ -77,7 +95,7 @@
                                        class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
                                        onchange="(function(){const v=document.getElementById('monthPicker').value.split('-'); const params=new URLSearchParams(window.location.search); params.set('month', v[1]); params.set('year', v[0]); window.location.href='{{ route('admin.calendar.index') }}' + '?' + params.toString();})()">
 
-                                <a href="{{ route('admin.calendar.export', ['month' => $date->format('m'), 'year' => $date->format('Y'), 'author' => request('author'), 'category' => request('category')]) }}"
+                                <a href="{{ route('admin.calendar.export', array_merge(request()->only(['month','year','author','category','view','date']))) }}"
                                    class="rounded-md bg-emerald-600 px-3 py-2 text-white hover:bg-emerald-700">
                                     {{ __('Export iCal') }}
                                 </a>
@@ -85,7 +103,28 @@
                         </div>
                     </div>
 
+                    <!-- Stats Bar -->
+                    <div class="mb-4 grid grid-cols-2 gap-3 md:grid-cols-4">
+                        <div class="rounded-md border border-gray-200 p-3 text-sm dark:border-gray-700">
+                            <div class="text-gray-500 dark:text-gray-400">{{ __('Total Posts') }}</div>
+                            <div class="text-xl font-semibold">{{ $totalPosts }}</div>
+                        </div>
+                        <div class="rounded-md border border-gray-200 p-3 text-sm dark:border-gray-700">
+                            <div class="text-gray-500 dark:text-gray-400">{{ __('Published') }}</div>
+                            <div class="text-xl font-semibold">{{ $publishedCount }}</div>
+                        </div>
+                        <div class="rounded-md border border-gray-200 p-3 text-sm dark:border-gray-700">
+                            <div class="text-gray-500 dark:text-gray-400">{{ __('Scheduled') }}</div>
+                            <div class="text-xl font-semibold">{{ $scheduledCount }}</div>
+                        </div>
+                        <div class="rounded-md border border-gray-200 p-3 text-sm dark:border-gray-700">
+                            <div class="text-gray-500 dark:text-gray-400">{{ __('Days With No Posts') }}</div>
+                            <div class="text-xl font-semibold">{{ $gapDays }}</div>
+                        </div>
+                    </div>
+
                     <!-- Calendar Grid -->
+                    @if(($view ?? 'month') === 'month')
                     <div x-data="contentCalendar()" class="grid grid-cols-7 gap-2">
                         <!-- Day Headers -->
                         @foreach([__('Sun'), __('Mon'), __('Tue'), __('Wed'), __('Thu'), __('Fri'), __('Sat')] as $day)
@@ -146,6 +185,40 @@
                             <div class="min-h-32 rounded-lg border border-gray-200 bg-gray-50 p-2 dark:border-gray-700 dark:bg-gray-900"></div>
                         @endfor
                     </div>
+                    @else
+                        <!-- Week/Day list view -->
+                        <div x-data="contentCalendar()" class="space-y-3">
+                            @php
+                                $cursor = $rangeStart->copy();
+                            @endphp
+                            @while($cursor <= $rangeEnd)
+                                @php
+                                    $dateKey = $cursor->format('Y-m-d');
+                                    $dayPosts = $posts->get($dateKey, collect());
+                                @endphp
+                                <div class="rounded-lg border border-gray-200 p-3 dark:border-gray-700">
+                                    <div class="mb-2 flex items-center justify-between">
+                                        <div class="font-semibold text-gray-800 dark:text-gray-100">{{ $cursor->format('D, M d, Y') }}</div>
+                                        <div class="text-sm text-gray-500">{{ $dayPosts->count() }} {{ __('posts') }}</div>
+                                    </div>
+                                    <div class="flex flex-wrap gap-2">
+                                        @forelse($dayPosts as $post)
+                                            <div draggable="true"
+                                                 @dragstart="handleDragStart($event, {{ $post->id }})"
+                                                 @drop.prevent="handleDrop($event, '{{ $dateKey }}')"
+                                                 @dragover.prevent
+                                                 class="cursor-move rounded px-2 py-1 text-xs {{ $post->status === 'published' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : ($post->status === 'scheduled' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200') }}">
+                                                {{ \Illuminate\Support\Str::limit($post->title, 40) }}
+                                            </div>
+                                        @empty
+                                            <div class="text-sm text-gray-500 dark:text-gray-400">{{ __('No posts') }}</div>
+                                        @endforelse
+                                    </div>
+                                </div>
+                                @php $cursor->addDay(); @endphp
+                            @endwhile
+                        </div>
+                    @endif
                 </div>
             </div>
 

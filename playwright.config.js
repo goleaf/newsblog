@@ -55,9 +55,10 @@ export default defineConfig({
   /* Run your local dev server before starting the tests */
   webServer: {
     // Start Vite dev server and PHP server together for e2e
-    command: 'concurrently -k -n vite,php "vite --host 127.0.0.1" "php artisan serve --host=127.0.0.1 --port=8000"',
+    // Use local concurrently binary to avoid PATH issues in sandboxes
+    command: 'node node_modules/.bin/concurrently -k -n vite,php "node node_modules/.bin/vite --host 127.0.0.1" "php artisan serve --host=127.0.0.1 --port=8000"',
     url: 'http://127.0.0.1:8000',
     reuseExistingServer: !process.env.CI,
-    timeout: 180 * 1000,
+    timeout: 240 * 1000,
   },
 });

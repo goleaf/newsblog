@@ -19,39 +19,46 @@ class ContentCalendarController extends Controller
      */
     public function index(ShowCalendarRequest $request)
     {
-        // Get the requested month and year, default to current
+        // Get the requested period and filters
         $month = (int) $request->input('month', now()->month);
         $year = (int) $request->input('year', now()->year);
-
+        $view = $request->input('view', 'month');
         $authorId = $request->input('author');
         $categoryId = $request->input('category');
 
-        // Create a Carbon instance for the first day of the month
-        $date = Carbon::create($year, $month, 1);
+        // Determine the date anchor and range based on view
+        if ($view === 'week') {
+            $anchor = $request->filled('date') ? Carbon::parse($request->input('date')) : now();
+            $date = $anchor->copy();
+            $rangeStart = $anchor->copy()->startOfWeek();
+            $rangeEnd = $anchor->copy()->endOfWeek();
+        } elseif ($view === 'day') {
+            $anchor = $request->filled('date') ? Carbon::parse($request->input('date')) : now();
+            $date = $anchor->copy();
+            $rangeStart = $anchor->copy()->startOfDay();
+            $rangeEnd = $anchor->copy()->endOfDay();
+        } else { // month
+            $date = Carbon::create($year, $month, 1);
+            $rangeStart = $date->copy()->startOfMonth();
+            $rangeEnd = $date->copy()->endOfMonth();
+            $view = 'month';
+        }
 
-        // Build base query for posts within the month (published or scheduled)
+        // Build base query within range
         $query = Post::query()
             ->with(['user', 'category'])
-            ->where(function ($q) use ($year, $month) {
-                $q->where(function ($q2) use ($year, $month) {
-                    $q2->whereYear('published_at', $year)
-                        ->whereMonth('published_at', $month);
-                })->orWhere(function ($q3) use ($year, $month) {
-                    $q3->whereYear('scheduled_at', $year)
-                        ->whereMonth('scheduled_at', $month);
-                });
+            ->where(function ($q) use ($rangeStart, $rangeEnd) {
+                $q->whereBetween('published_at', [$rangeStart, $rangeEnd])
+                    ->orWhereBetween('scheduled_at', [$rangeStart, $rangeEnd]);
             })
             ->when($authorId, fn ($q) => $q->where('user_id', $authorId))
             ->when($categoryId, fn ($q) => $q->where('category_id', $categoryId));
 
-        $posts = $query
-            ->get()
+        $posts = $query->get()
             ->groupBy(function ($post) {
-                // Group by the date (published_at or scheduled_at)
                 $date = $post->status === 'scheduled' && $post->scheduled_at
                     ? $post->scheduled_at
                     : $post->published_at;
-
                 return $date ? $date->format('Y-m-d') : null;
             })
             ->filter(fn ($group, $key) => $key !== null);
@@ -66,7 +73,16 @@ class ContentCalendarController extends Controller
             ->orderBy('name')
             ->get(['id', 'name']);
 
-        return view('admin.calendar.index', compact('date', 'posts', 'authors', 'categories', 'authorId', 'categoryId'));
+        // Simple stats for the header
+        $totalPosts = $posts->flatten(1)->count();
+        $publishedCount = $posts->flatten(1)->where('status', PostStatus::Published)->count();
+        $scheduledCount = $posts->flatten(1)->where('status', PostStatus::Scheduled)->count();
+        $gapDays = $this->countGapDays($rangeStart, $rangeEnd, $posts);
+
+        return view('admin.calendar.index', compact(
+            'date', 'posts', 'authors', 'categories', 'authorId', 'categoryId', 'view',
+            'totalPosts', 'publishedCount', 'scheduledCount', 'rangeStart', 'rangeEnd', 'gapDays'
+        ));
     }
 
     /**
@@ -129,6 +145,24 @@ class ContentCalendarController extends Controller
 
         $post->save();
 
+        // Notify assigned author about schedule change
+        try {
+            app(\App\Services\NotificationService::class)->create(
+                user: $post->user,
+                type: 'post_rescheduled',
+                title: 'Post rescheduled',
+                message: '"'.$post->title.'" has been rescheduled to '.$newDate->toDateString(),
+                actionUrl: url('/nova/resources/posts/'.$post->id.'/edit'),
+                icon: 'calendar-days',
+                data: [
+                    'post_id' => $post->id,
+                    'new_date' => $newDate->toDateString(),
+                ]
+            );
+        } catch (\Throwable $e) {
+            // Ignore notification failures to not block scheduling
+        }
+
         return response()->json([
             'success' => true,
             'message' => __('calendar.post_date_updated'),
@@ -149,19 +183,29 @@ class ContentCalendarController extends Controller
     {
         $month = (int) $request->input('month', now()->month);
         $year = (int) $request->input('year', now()->year);
+        $view = $request->input('view', 'month');
         $authorId = $request->input('author');
         $categoryId = $request->input('category');
 
+        if ($view === 'week') {
+            $anchor = $request->filled('date') ? Carbon::parse($request->input('date')) : now();
+            $rangeStart = $anchor->copy()->startOfWeek();
+            $rangeEnd = $anchor->copy()->endOfWeek();
+        } elseif ($view === 'day') {
+            $anchor = $request->filled('date') ? Carbon::parse($request->input('date')) : now();
+            $rangeStart = $anchor->copy()->startOfDay();
+            $rangeEnd = $anchor->copy()->endOfDay();
+        } else {
+            $date = Carbon::create($year, $month, 1);
+            $rangeStart = $date->copy()->startOfMonth();
+            $rangeEnd = $date->copy()->endOfMonth();
+        }
+
         $posts = Post::query()
             ->with(['user', 'category'])
-            ->where(function ($q) use ($year, $month) {
-                $q->where(function ($q2) use ($year, $month) {
-                    $q2->whereYear('published_at', $year)
-                        ->whereMonth('published_at', $month);
-                })->orWhere(function ($q3) use ($year, $month) {
-                    $q3->whereYear('scheduled_at', $year)
-                        ->whereMonth('scheduled_at', $month);
-                });
+            ->where(function ($q) use ($rangeStart, $rangeEnd) {
+                $q->whereBetween('published_at', [$rangeStart, $rangeEnd])
+                    ->orWhereBetween('scheduled_at', [$rangeStart, $rangeEnd]);
             })
             ->when($authorId, fn ($q) => $q->where('user_id', $authorId))
             ->when($categoryId, fn ($q) => $q->where('category_id', $categoryId))
@@ -209,7 +253,7 @@ class ContentCalendarController extends Controller
 
         return response($body, 200, [
             'Content-Type' => 'text/calendar; charset=utf-8',
-            'Content-Disposition' => 'attachment; filename="content-calendar-'.$year.'-'.str_pad((string) $month, 2, '0', STR_PAD_LEFT).'.ics"',
+            'Content-Disposition' => 'attachment; filename="content-calendar.ics"',
         ]);
     }
 
@@ -218,5 +262,22 @@ class ContentCalendarController extends Controller
         $text = str_replace(['\\', ';', ',', "\n", "\r"], ['\\\\', '\\;', '\\,', '\\n', ''], $text);
 
         return $text;
+    }
+
+    private function countGapDays(Carbon $start, Carbon $end, $grouped)
+    {
+        $dates = [];
+        $cursor = $start->copy()->startOfDay();
+        while ($cursor <= $end) {
+            $dates[] = $cursor->format('Y-m-d');
+            $cursor->addDay();
+        }
+        $gap = 0;
+        foreach ($dates as $d) {
+            if (! $grouped->has($d) || $grouped->get($d)->isEmpty()) {
+                $gap++;
+            }
+        }
+        return $gap;
     }
 }

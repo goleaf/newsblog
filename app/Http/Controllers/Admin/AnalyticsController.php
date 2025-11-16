@@ -14,8 +14,7 @@ class AnalyticsController extends Controller
 {
     public function __construct(
         protected SearchAnalyticsService $searchAnalytics
-    ) {
-    }
+    ) {}
 
     /**
      * Display analytics dashboard.
@@ -66,7 +65,8 @@ class AnalyticsController extends Controller
     protected function getViewStatistics(string $period): array
     {
         $query = PostView::query();
-        $query = $this->applyPeriodFilter($query, $period);
+        // PostView uses 'viewed_at' instead of 'created_at'
+        $query = $this->applyPeriodFilter($query, $period, 'viewed_at');
 
         $stats = $query->selectRaw('
             COUNT(*) as total_views,
@@ -76,7 +76,7 @@ class AnalyticsController extends Controller
 
         // Get views over time for chart
         $viewsOverTime = PostView::query()
-            ->when($period, fn ($q) => $this->applyPeriodFilter($q, $period))
+            ->when($period, fn ($q) => $this->applyPeriodFilter($q, $period, 'viewed_at'))
             ->selectRaw('DATE(viewed_at) as date, COUNT(*) as views')
             ->groupBy('date')
             ->orderBy('date')
@@ -145,6 +145,7 @@ class AnalyticsController extends Controller
 
             if (empty($referer)) {
                 $sources['direct'] += $count;
+
                 continue;
             }
 
@@ -210,13 +211,14 @@ class AnalyticsController extends Controller
 
         if ($period !== 'all') {
             $query->whereHas('views', function ($q) use ($period) {
-                $this->applyPeriodFilter($q, $period);
+                // Filter by PostView's 'viewed_at'
+                $this->applyPeriodFilter($q, $period, 'viewed_at');
             });
         }
 
         return $query->withCount(['views' => function ($q) use ($period) {
             if ($period !== 'all') {
-                $this->applyPeriodFilter($q, $period);
+                $this->applyPeriodFilter($q, $period, 'viewed_at');
             }
         }])
             ->orderByDesc('views_count')
@@ -227,7 +229,7 @@ class AnalyticsController extends Controller
     /**
      * Apply period filter to query
      */
-    protected function applyPeriodFilter($query, string $period)
+    protected function applyPeriodFilter($query, string $period, string $column = 'created_at')
     {
         $date = match ($period) {
             'day' => now()->subDay(),
@@ -237,6 +239,6 @@ class AnalyticsController extends Controller
             default => now()->subWeek(),
         };
 
-        return $query->where('created_at', '>=', $date);
+        return $query->where($column, '>=', $date);
     }
 }
