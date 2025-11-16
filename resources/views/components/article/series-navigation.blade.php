@@ -1,3 +1,73 @@
+<div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+	<div class="p-6 border-b border-gray-200 dark:border-gray-700">
+		<h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+			{{ $series->name }}
+		</h3>
+		@if(!empty($series->description))
+			<p class="mt-2 text-gray-600 dark:text-gray-300">
+				{{ $series->description }}
+			</p>
+		@endif
+		@if(isset($navigation['current_position'], $navigation['total_posts']))
+			<p class="mt-3 text-sm text-gray-500 dark:text-gray-400">
+				{{ __('series.part_of_total', ['current' => $navigation['current_position'], 'total' => $navigation['total_posts']]) }}
+			</p>
+			<div class="mt-2 w-full bg-gray-100 dark:bg-gray-700 rounded-full h-2">
+				@php
+					$percent = $navigation['total_posts'] > 0 ? ($navigation['current_position'] / $navigation['total_posts']) * 100 : 0;
+				@endphp
+				<div class="bg-indigo-600 h-2 rounded-full" style="width: {{ $percent }}%"></div>
+			</div>
+		@endif
+	</div>
+	<div class="p-6">
+		<div class="flex items-center justify-between gap-4">
+			<div>
+				@if($navigation['previous'])
+					<a href="{{ route('post.show', $navigation['previous']->slug) }}" class="inline-flex items-center text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300">
+						<svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+						</svg>
+						{{ __('series.previous_post') }}
+					</a>
+				@endif
+			</div>
+			<div>
+				@if($navigation['next'])
+					<a href="{{ route('post.show', $navigation['next']->slug) }}" class="inline-flex items-center text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300">
+						{{ __('series.next_post') }}
+						<svg class="h-5 w-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+						</svg>
+					</a>
+				@endif
+			</div>
+		</div>
+		@if($navigation['all_posts'] && $navigation['all_posts']->count() > 0)
+			<ul class="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+				@foreach($navigation['all_posts'] as $idx => $p)
+					<li class="group">
+						<a href="{{ route('post.show', $p->slug) }}" class="block p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-indigo-500 bg-gray-50 dark:bg-gray-900/40 hover:bg-white dark:hover:bg-gray-900 transition">
+							<div class="flex items-start justify-between">
+								<span class="text-xs font-medium text-gray-500 dark:text-gray-400">
+									{{ __('series.part_number', ['number' => $idx + 1]) }}
+								</span>
+								@if(isset($navigation['current_position']) && ($idx + 1) === $navigation['current_position'])
+									<span class="text-[10px] px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-200">{{ __('series.current') }}</span>
+								@endif
+							</div>
+							<h4 class="mt-2 text-sm font-semibold text-gray-900 dark:text-white line-clamp-2">{{ $p->title }}</h4>
+							@if($p->reading_time)
+								<p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ __('series.reading_time_minutes', ['minutes' => $p->reading_time]) }}</p>
+							@endif
+						</a>
+					</li>
+				@endforeach
+			</ul>
+		@endif
+	</div>
+</div>
+
 @props(['series', 'currentPost', 'navigation' => null])
 
 @php

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\NewsletterStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -21,6 +22,7 @@ class Newsletter extends Model
     ];
 
     protected $casts = [
+        'status' => NewsletterStatus::class,
         'verified_at' => 'datetime',
         'verification_token_expires_at' => 'datetime',
         'unsubscribed_at' => 'datetime',
@@ -28,12 +30,12 @@ class Newsletter extends Model
 
     public function scopeSubscribed($query)
     {
-        return $query->where('status', 'subscribed');
+        return $query->where('status', NewsletterStatus::Subscribed->value);
     }
 
     public function scopeUnsubscribed($query)
     {
-        return $query->where('status', 'unsubscribed');
+        return $query->where('status', NewsletterStatus::Unsubscribed->value);
     }
 
     public function scopeVerified($query)
@@ -44,7 +46,7 @@ class Newsletter extends Model
     public function verify(): void
     {
         $this->update([
-            'status' => 'subscribed',
+            'status' => NewsletterStatus::Subscribed,
             'verified_at' => now(),
             'verification_token' => null,
             'verification_token_expires_at' => null,
@@ -54,7 +56,7 @@ class Newsletter extends Model
     public function unsubscribe(): void
     {
         $this->update([
-            'status' => 'unsubscribed',
+            'status' => NewsletterStatus::Unsubscribed,
             'unsubscribed_at' => now(),
         ]);
     }

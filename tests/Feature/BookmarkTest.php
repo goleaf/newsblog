@@ -12,15 +12,15 @@ class BookmarkTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_authenticated_user_can_bookmark_post(): void
+    public function test_authenticated_user_can_bookmark_post_using_store(): void
     {
         $user = User::factory()->create();
         $post = Post::factory()->create(['status' => 'published']);
 
         $response = $this->actingAs($user)
-            ->postJson("/posts/{$post->id}/bookmark");
+            ->postJson(route('bookmarks.store', $post));
 
-        $response->assertStatus(200)
+        $response->assertStatus(201)
             ->assertJson([
                 'success' => true,
                 'bookmarked' => true,
@@ -32,7 +32,7 @@ class BookmarkTest extends TestCase
         ]);
     }
 
-    public function test_authenticated_user_can_unbookmark_post(): void
+    public function test_authenticated_user_can_remove_bookmark_using_destroy(): void
     {
         $user = User::factory()->create();
         $post = Post::factory()->create(['status' => 'published']);
@@ -43,7 +43,7 @@ class BookmarkTest extends TestCase
         ]);
 
         $response = $this->actingAs($user)
-            ->postJson("/posts/{$post->id}/bookmark");
+            ->deleteJson(route('bookmarks.destroy', $post));
 
         $response->assertStatus(200)
             ->assertJson([
@@ -57,11 +57,108 @@ class BookmarkTest extends TestCase
         ]);
     }
 
+    public function test_authenticated_user_can_toggle_bookmark(): void
+    {
+        $user = User::factory()->create();
+        $post = Post::factory()->create(['status' => 'published']);
+
+        // Toggle on
+        $response = $this->actingAs($user)
+            ->postJson(route('bookmarks.toggle', $post));
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'bookmarked' => true,
+            ]);
+
+        $this->assertDatabaseHas('bookmarks', [
+            'user_id' => $user->id,
+            'post_id' => $post->id,
+        ]);
+
+        // Toggle off
+        $response = $this->actingAs($user)
+            ->postJson(route('bookmarks.toggle', $post));
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'bookmarked' => false,
+            ]);
+
+        $this->assertDatabaseMissing('bookmarks', [
+            'user_id' => $user->id,
+            'post_id' => $post->id,
+        ]);
+    }
+
+    public function test_duplicate_bookmark_prevention(): void
+    {
+        $user = User::factory()->create();
+        $post = Post::factory()->create(['status' => 'published']);
+
+        // Create first bookmark
+        Bookmark::create([
+            'user_id' => $user->id,
+            'post_id' => $post->id,
+        ]);
+
+        // Try to create duplicate bookmark
+        $response = $this->actingAs($user)
+            ->postJson(route('bookmarks.store', $post));
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['post']);
+
+        $this->assertDatabaseCount('bookmarks', 1);
+    }
+
+    public function test_user_cannot_delete_other_user_bookmark(): void
+    {
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
+        $post = Post::factory()->create(['status' => 'published']);
+
+        Bookmark::create([
+            'user_id' => $user1->id,
+            'post_id' => $post->id,
+        ]);
+
+        $response = $this->actingAs($user2)
+            ->deleteJson(route('bookmarks.destroy', $post));
+
+        $response->assertStatus(403);
+
+        $this->assertDatabaseHas('bookmarks', [
+            'user_id' => $user1->id,
+            'post_id' => $post->id,
+        ]);
+    }
+
     public function test_guest_cannot_bookmark_post(): void
     {
         $post = Post::factory()->create(['status' => 'published']);
 
-        $response = $this->postJson("/posts/{$post->id}/bookmark");
+        $response = $this->postJson(route('bookmarks.store', $post));
+
+        $response->assertStatus(401);
+    }
+
+    public function test_guest_cannot_remove_bookmark(): void
+    {
+        $post = Post::factory()->create(['status' => 'published']);
+
+        $response = $this->deleteJson(route('bookmarks.destroy', $post));
+
+        $response->assertStatus(401);
+    }
+
+    public function test_guest_cannot_toggle_bookmark(): void
+    {
+        $post = Post::factory()->create(['status' => 'published']);
+
+        $response = $this->postJson(route('bookmarks.toggle', $post));
 
         $response->assertStatus(401);
     }

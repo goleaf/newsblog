@@ -1,24 +1,114 @@
+## Phase 2: Content Management & Admin (Nova)
+
+- [x] 5. Set up Laravel Nova admin panel
+
+- [x] 5.1 Create Nova resources for core models
+  - [x] PostResource with fields and filters
+  - [x] CategoryResource with parent selector
+  - [x] TagResource
+  - [x] UserResource with role management
+  - [x] MediaResource with preview
+
+- [x] 5.2 Add Nova actions for post management
+  - [x] PublishPost action
+  - [x] SchedulePost action
+  - [x] ArchivePost action
+  - [x] BulkPublish action
+
+- [x] 5.3 Create Nova dashboard with metrics
+  - [x] TotalPosts metric card
+  - [x] PostsPerDay trend metric
+  - [x] PendingComments value metric
+  - [x] PopularPosts table
+
+- [x] 5.4 Customize Nova appearance
+  - [x] Configure branding (logo, colors) in `config/nova.php`
+  - [x] Customize navigation menu in `app/Providers/NovaServiceProvider.php`
+  - [x] Add custom CSS for admin panel at `public/css/nova/custom.css`
+
+Notes:
+- Nova path configured at `/admin`.
+- Access control via `NovaServiceProvider::gate()` (roles: admin, editor, author).
+- Main dashboard registered as `App\Nova\Dashboards\Main`.
+
 # TODO: Related Posts Algorithm
 
 ## Priority: High
 
-- [ ] 13.1 Verify and enhance RelatedPostsService
-  - [ ] Verify category weight is 40%
-  - [ ] Verify tag matching weight is 40%
-  - [ ] Verify date proximity weight is 20%
-  - [ ] Verify caching for 1 hour (3600 seconds)
-  - [ ] Verify limit defaults to 4 posts
-  - [ ] Update PostController to use limit of 4 instead of 5
+- [x] 13.1 Verify and enhance RelatedPostsService
+  - [x] Verify category weight is 40%
+  - [x] Verify tag matching weight is 40%
+  - [x] Verify date proximity weight is 20%
+  - [x] Verify caching for 1 hour (3600 seconds)
+  - [x] Verify limit defaults to 4 posts
+  - [x] Update PostController to use limit of 4 instead of 5
 
-- [ ] 13.2 Enhance related posts section on article page
-  - [ ] Add publication date display
-  - [ ] Ensure "Read more" link is visible (or make it more explicit)
-  - [ ] Verify featured images display correctly
-  - [ ] Verify title display
+- [x] 13.2 Enhance related posts section on article page
+  - [x] Add publication date display
+  - [x] Ensure "Read more" link is visible (or make it more explicit)
+  - [x] Verify featured images display correctly
+  - [x] Verify title display
 
-- [ ] 13.3 Enhance related posts algorithm tests
-  - [ ] Add test for exact weight calculations (category = 40%, tags = 40%, date = 20%)
-  - [ ] Add test for cache TTL (1 hour = 3600 seconds)
-  - [ ] Add test for edge case: no related posts found (empty collection)
-  - [ ] Add test for date proximity weight calculation (same day = 20%, 30+ days = 0%)
-  - [ ] Run all tests and fix any failures
+- [x] 13.3 Enhance related posts algorithm tests
+  - [x] Add test for exact weight calculations (category = 40%, tags = 40%, date = 20%)
+  - [x] Add test for cache TTL (1 hour = 3600 seconds)
+  - [x] Add test for edge case: no related posts found (empty collection)
+  - [x] Add test for date proximity weight calculation (same day = 20%, 30+ days = 0%)
+  - [x] Run all tests and fix any failures
+
+## Phase 3: Frontend Public Pages
+
+- [x] 9. Build homepage with featured content
+
+- [x] 9.1 Create HomeController and index view
+  - [x] Implement hero section with featured post
+  - [x] Add breaking news section
+  - [x] Create category-based content sections
+  - [x] Add "Most Popular" sidebar widget
+  - [x] Implement "Trending Now" widget
+
+- [ ] 9.2 Add skeleton loading screens
+  - [ ] Create skeleton components for post cards
+  - [ ] Implement shimmer animation effect
+  - [ ] Add fade-in transition when content loads
+
+- [x] 9.3 Implement lazy loading for images
+  - [x] Add loading="lazy" attribute to images
+  - [x] Create intersection observer for below-fold images
+  - [x] Implement blur-up placeholder technique
+
+- [ ] 9.4 Write homepage tests
+  - [x] Test featured post display
+  - [x] Test breaking news ticker
+  - [ ] Test lazy loading functionality
+
+# Widget System Tasks
+
+- [x] 20.1 Create Widget and WidgetArea models
+  - [x] Migrations for `widgets` and `widget_areas`
+  - [x] Add fields: type, settings (JSON), order, active
+  - [x] Implement relationships (`WidgetArea` hasMany `Widget`)
+
+- [x] 20.2 Create WidgetService
+  - [x] Implement renderWidget for all types
+  - [x] Add renderArea and caching helpers
+  - [x] Align view paths; add missing views
+
+- [x] 20.3 Build built-in widgets
+  - [x] RecentPostsWidget
+  - [x] PopularPostsWidget
+  - [x] CategoriesWidget
+  - [x] TagsCloudWidget
+  - [x] NewsletterWidget
+  - [x] SearchWidget
+  - [x] CustomHTMLWidget
+
+- [ ] 20.4 Create widget management UI in Nova
+  - [x] Add `Widget` and `WidgetArea` Nova resources
+  - [ ] Add drag-and-drop ordering in Nova (follow-up)
+  - [ ] Add rich configuration forms in Nova (follow-up)
+
+- [x] 20.5 Write widget system tests
+  - [x] Test widget rendering
+  - [x] Test widget ordering
+  - [x] Test widget configuration

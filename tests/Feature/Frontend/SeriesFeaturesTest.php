@@ -30,7 +30,9 @@ class SeriesFeaturesTest extends TestCase
         ]);
 
         foreach ($posts as $index => $post) {
-            $series->posts()->attach($post->id, ['order' => $index]);
+            $post->series()->associate($series);
+            $post->order_in_series = $index;
+            $post->save();
         }
 
         $response = $this->get(route('series.index'));
@@ -58,7 +60,9 @@ class SeriesFeaturesTest extends TestCase
         ]);
 
         foreach ($posts as $index => $post) {
-            $series->posts()->attach($post->id, ['order' => $index]);
+            $post->series()->associate($series);
+            $post->order_in_series = $index;
+            $post->save();
         }
 
         $response = $this->get(route('series.show', $series->slug));
@@ -88,7 +92,9 @@ class SeriesFeaturesTest extends TestCase
         ]);
 
         foreach ($posts as $index => $post) {
-            $series->posts()->attach($post->id, ['order' => $index]);
+            $post->series()->associate($series);
+            $post->order_in_series = $index;
+            $post->save();
         }
 
         $response = $this->get(route('series.show', $series->slug));
@@ -158,8 +164,12 @@ class SeriesFeaturesTest extends TestCase
             'title' => 'Draft Post',
         ]);
 
-        $series->posts()->attach($publishedPost->id, ['order' => 0]);
-        $series->posts()->attach($draftPost->id, ['order' => 1]);
+        $publishedPost->series()->associate($series);
+        $publishedPost->order_in_series = 0;
+        $publishedPost->save();
+        $draftPost->series()->associate($series);
+        $draftPost->order_in_series = 1;
+        $draftPost->save();
 
         $response = $this->get(route('series.show', $series->slug));
 
@@ -182,7 +192,9 @@ class SeriesFeaturesTest extends TestCase
         ]);
 
         foreach ($posts as $index => $post) {
-            $series->posts()->attach($post->id, ['order' => $index]);
+            $post->series()->associate($series);
+            $post->order_in_series = $index;
+            $post->save();
         }
 
         $response = $this->get(route('series.index'));

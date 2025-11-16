@@ -157,6 +157,25 @@ class NotificationService
     }
 
     /**
+     * Send welcome email notification to a new user.
+     */
+    public function sendWelcomeEmail(User $user): Notification
+    {
+        return $this->create(
+            user: $user,
+            type: 'welcome',
+            title: 'Welcome to our platform!',
+            message: "Hi {$user->name}, welcome to our news blog. We're glad to have you here!",
+            actionUrl: route('dashboard', absolute: false),
+            icon: 'hand-wave',
+            data: [
+                'user_id' => $user->id,
+                'welcome_message' => true,
+            ]
+        );
+    }
+
+    /**
      * Delete old read notifications.
      */
     public function deleteOldNotifications(int $daysOld = 30): int

@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Post;
 use App\Models\Tag;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
@@ -63,13 +64,12 @@ class AdvancedSearchService
 
         // Apply date range filter (Requirement 39.1)
         if (! empty($filters['date_from'])) {
-            $queryBuilder->where('published_at', '>=', $filters['date_from']);
+            $queryBuilder->whereDate('published_at', '>=', $filters['date_from']);
         }
 
         if (! empty($filters['date_to'])) {
-            // Add 23:59:59 to include the entire end date
-            $endDate = date('Y-m-d 23:59:59', strtotime($filters['date_to']));
-            $queryBuilder->where('published_at', '<=', $endDate);
+            $nextDayStart = Carbon::parse($filters['date_to'])->addDay()->startOfDay();
+            $queryBuilder->where('published_at', '<', $nextDayStart);
         }
 
         // Apply author filter (Requirement 39.2)

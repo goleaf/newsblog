@@ -51,6 +51,12 @@ return Application::configure(basePath: dirname(__DIR__))
                 ->forceDelete();
         })->daily();
 
+        // Clean up old read notifications (older than 30 days)
+        $schedule->job(new \App\Jobs\CleanupOldNotifications(30))
+            ->daily()
+            ->at('03:00')
+            ->description('Clean up old read notifications');
+
         // Check for broken links weekly
         $schedule->job(new \App\Jobs\CheckBrokenLinks)->weekly();
 

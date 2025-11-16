@@ -11,12 +11,29 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->enum('role', ['admin', 'editor', 'author'])->default('author')->after('email');
-            $table->string('avatar')->nullable()->after('role');
-            $table->text('bio')->nullable()->after('avatar');
-            $table->enum('status', ['active', 'inactive'])->default('active')->after('bio');
-        });
+        if (! Schema::hasColumn('users', 'role')) {
+            Schema::table('users', function (Blueprint $table) {
+                $table->enum('role', ['admin', 'editor', 'author'])->default('author')->after('email');
+            });
+        }
+
+        if (! Schema::hasColumn('users', 'avatar')) {
+            Schema::table('users', function (Blueprint $table) {
+                $table->string('avatar')->nullable()->after('role');
+            });
+        }
+
+        if (! Schema::hasColumn('users', 'bio')) {
+            Schema::table('users', function (Blueprint $table) {
+                $table->text('bio')->nullable()->after('avatar');
+            });
+        }
+
+        if (! Schema::hasColumn('users', 'status')) {
+            Schema::table('users', function (Blueprint $table) {
+                $table->enum('status', ['active', 'inactive'])->default('active')->after('bio');
+            });
+        }
     }
 
     /**
@@ -25,7 +42,18 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['role', 'avatar', 'bio', 'status']);
+            if (Schema::hasColumn('users', 'status')) {
+                $table->dropColumn('status');
+            }
+            if (Schema::hasColumn('users', 'bio')) {
+                $table->dropColumn('bio');
+            }
+            if (Schema::hasColumn('users', 'avatar')) {
+                $table->dropColumn('avatar');
+            }
+            if (Schema::hasColumn('users', 'role')) {
+                $table->dropColumn('role');
+            }
         });
     }
 };

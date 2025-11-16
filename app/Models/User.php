@@ -140,6 +140,11 @@ class User extends Authenticatable
         return $this->hasMany(Notification::class);
     }
 
+    public function postViews()
+    {
+        return $this->hasMany(PostView::class)->latest('viewed_at');
+    }
+
     public function scopeActive($query)
     {
         return $query->where('status', UserStatus::Active);

@@ -2,115 +2,40 @@
 
 namespace App\Models;
 
-use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Media extends Model
 {
-    use HasFactory, LogsActivity;
+    use HasFactory;
 
-    protected $table = 'media_library';
+    protected $table = 'media';
 
     protected $fillable = [
-        'user_id',
-        'file_name',
-        'file_path',
-        'file_type',
-        'file_size',
+        'filename',
+        'path',
         'mime_type',
+        'size',
         'alt_text',
-        'title',
         'caption',
         'metadata',
+        'user_id',
     ];
 
+    /**
+     * @return array<string, string>
+     */
     protected function casts(): array
     {
         return [
             'metadata' => 'array',
+            'size' => 'int',
         ];
     }
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function getUrlAttribute()
-    {
-        return asset('storage/'.$this->file_path);
-    }
-
-    public function getSizeHumanReadableAttribute()
-    {
-        $bytes = $this->file_size;
-        $units = ['B', 'KB', 'MB', 'GB'];
-        $i = 0;
-        while ($bytes >= 1024 && $i < count($units) - 1) {
-            $bytes /= 1024;
-            $i++;
-        }
-
-        return round($bytes, 2).' '.$units[$i];
-    }
-
-    /**
-     * Get URL for a specific image variant
-     */
-    public function getVariantUrl(string $variant = 'original', bool $webp = false): string
-    {
-        if ($variant === 'original' || $this->file_type !== 'image') {
-            return $this->url;
-        }
-
-        $pathInfo = pathinfo($this->file_path);
-        $baseFilename = $pathInfo['filename'];
-        $directory = $pathInfo['dirname'];
-
-        $extension = $webp ? 'webp' : 'jpg';
-        $variantFilename = "{$baseFilename}_{$variant}.{$extension}";
-        $variantPath = "{$directory}/{$variantFilename}";
-
-        return asset('storage/'.$variantPath);
-    }
-
-    /**
-     * Get thumbnail URL
-     */
-    public function getThumbnailUrlAttribute(): string
-    {
-        return $this->getVariantUrl('thumbnail');
-    }
-
-    /**
-     * Get medium size URL
-     */
-    public function getMediumUrlAttribute(): string
-    {
-        return $this->getVariantUrl('medium');
-    }
-
-    /**
-     * Get large size URL
-     */
-    public function getLargeUrlAttribute(): string
-    {
-        return $this->getVariantUrl('large');
-    }
-
-    public function scopeImages($query)
-    {
-        return $query->whereIn('file_type', ['image']);
-    }
-
-    public function scopeDocuments($query)
-    {
-        return $query->whereIn('file_type', ['document']);
-    }
-
-    public function scopeRecent($query)
-    {
-        return $query->orderBy('created_at', 'desc');
     }
 }

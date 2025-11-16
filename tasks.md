@@ -1,3 +1,28 @@
+# Phase 1: Foundation & Core Models
+
+- [x] 1. Set up project structure and core configuration
+  - Laravel 12 with SQLite is configured
+  - Tailwind CSS and Alpine.js with Vite are configured
+  - Laravel Nova (v5) admin panel is configured
+
+- [x] 2. Create user authentication system with roles
+- [x] 2.1 Generate User model with role-based authorization
+  - Users table has role enum (admin, editor, author, user)
+  - Status enum (active, suspended, inactive) present
+  - Role checking methods (isAdmin, isEditor, isAuthor) implemented
+
+- [x] 2.2 Implement authentication scaffolding with Laravel Breeze
+  - Breeze installed and configured
+  - Tailwind-based auth views present
+  - Role defaults to user on registration
+
+- [ ] 2.3 Write authentication tests
+  - Test login/logout functionality
+  - Test role-based access control
+  - Test session management
+
+---
+
 1. Reset database with fresh migrations and seed data.
 2. Ensure a default import user exists for posts.
 3. Run CSV import command for 1000 articles with categories and tags.
@@ -82,3 +107,50 @@
     - Tested nested replies: 3-level nesting limit, depth calculation, relationship loading, notification dispatching.
     - Tested moderation workflow: approve/reject by admin/editor, authorization checks, complete workflow from submission to deletion.
     - All 31 tests passing with 95 assertions.
+
+- **16. Implement notification system** ✓
+  - **16.1 Create Notification model and migration** ✓
+    - Notification model exists with user_id, type, data (JSON), read_at timestamp
+    - Updated model to use casts() method (Laravel 12)
+    - Migration includes proper indexes and foreign key constraints
+  - **16.2 Create NotificationService** ✓
+    - Implemented notifyCommentApproved method
+    - Added notifyCommentReply method
+    - Created notifyPostPublished method
+    - Implemented sendWelcomeEmail method
+    - All methods properly typed with return types
+  - **16.3 Build notification UI components** ✓
+    - Notification bell icon with badge count exists
+    - Notification dropdown with list implemented
+    - "Mark all as read" button functionality working
+    - Click to navigate and mark as read implemented
+    - Tailwind CSS styling applied
+  - **16.4 Add notification cleanup job** ✓
+    - Created CleanupOldNotifications job
+    - Job deletes old read notifications (30+ days)
+    - Scheduled to run daily at 03:00
+    - Integrated with NotificationService
+  - **16.5 Write notification system tests** ✓
+    - Test notification creation for all types
+    - Test notification display and dropdown
+    - Test mark as read functionality (single and all)
+    - Test cleanup job deletes old notifications correctly
+    - Test cleanup job keeps unread notifications
+    - All 18 tests passing with 59 assertions
+
+- **17.5 Write dashboard tests**
+  - **17.5.1 Test dashboard data display** ✓
+    - Test admin/editor dashboard displays metrics correctly
+    - Test regular user dashboard displays stats correctly
+    - Test dashboard shows recent bookmarks, comments, and reactions
+    - Test dashboard displays search statistics for admins
+  - **17.5.2 Test reading history tracking** ✓
+    - Test PostView records are created when posts are viewed
+    - Test reading history is tracked per user and session
+    - Test duplicate views are prevented within same session
+    - Test reading history displays correctly on dashboard
+  - **17.5.3 Test profile updates** ✓
+    - Test profile information can be updated
+    - Test avatar upload and deletion
+    - Test email preferences can be updated
+    - Test validation rules for profile updates

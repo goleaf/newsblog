@@ -2,215 +2,211 @@
 
 namespace App\Services;
 
-use App\Models\Media;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Interfaces\ImageInterface;
-use Intervention\Image\Laravel\Facades\Image;
 
 class ImageProcessingService
 {
-    private array $sizes = [
-        'thumbnail' => [150, 150],
-        'medium' => [300, 300],
-        'large' => [1024, 1024],
-    ];
-
     /**
-     * Process an uploaded image file
+     * Validates and stores the original upload.
+     *
+     * @return array{path:string, filename:string, mime_type:string, size:int, metadata:array<string, mixed>}
      */
-    public function processUpload(UploadedFile $file, int $userId): Media
+    public function upload(UploadedFile $file): array
     {
-        return $this->upload($file, $userId);
-    }
-
-    /**
-     * Upload an image with validation and optimization
-     */
-    public function upload(UploadedFile $file, int $userId): Media
-    {
-        // Validate file
-        $this->validateFile($file);
-
-        // Generate unique filename
-        $filename = time().'_'.uniqid().'.'.$file->getClientOriginalExtension();
-        $basePath = 'media/'.date('Y/m');
-
-        // Store original file
-        $originalPath = $file->storeAs($basePath, $filename, 'public');
-
-        // Get full storage path
-        $fullPath = Storage::disk('public')->path($originalPath);
-
-        // Strip EXIF metadata from original
-        $this->stripExif($fullPath);
-
-        // Generate image variants
-        $variants = $this->generateVariants($fullPath, $basePath, pathinfo($filename, PATHINFO_FILENAME));
-
-        // Create media record with variant metadata
-        $media = Media::create([
-            'user_id' => $userId,
-            'file_name' => $file->getClientOriginalName(),
-            'file_path' => $originalPath,
-            'file_type' => 'image',
-            'file_size' => $file->getSize(),
-            'mime_type' => $file->getMimeType(),
-            'metadata' => [
-                'variants' => $variants,
-                'original_dimensions' => [
-                    'width' => Image::read($fullPath)->width(),
-                    'height' => Image::read($fullPath)->height(),
-                ],
-            ],
-        ]);
-
-        return $media;
-    }
-
-    /**
-     * Validate uploaded file
-     */
-    private function validateFile(UploadedFile $file): void
-    {
-        $allowedMimes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
-
-        if (! in_array($file->getMimeType(), $allowedMimes)) {
-            throw new \InvalidArgumentException('Invalid file type. Only JPG, PNG, GIF, and WebP are allowed.');
+        $mimeType = $file->getMimeType() ?? 'application/octet-stream';
+        if (! str_starts_with($mimeType, 'image/')) {
+            throw new \InvalidArgumentException('Only image uploads are supported.');
         }
 
-        if ($file->getSize() > 10 * 1024 * 1024) { // 10MB
-            throw new \InvalidArgumentException('File size exceeds 10MB limit.');
-        }
+        $filename = $this->generateSafeFilename($file);
+        $storedRelative = 'media/'.$filename;
+        Storage::disk('public')->putFileAs('media', $file, $filename);
+        $storedPath = 'public/'.$storedRelative;
+        $absolute = Storage::disk('public')->path($storedRelative);
+
+        // Strip EXIF and optimize the original
+        $this->stripExif($absolute);
+        $this->optimize($absolute, $mimeType);
+
+        [$width, $height] = @getimagesize($absolute) ?: [null, null];
+
+        return [
+            'path' => $storedPath,
+            'filename' => $filename,
+            'mime_type' => $mimeType,
+            'size' => (int) filesize($absolute),
+            'metadata' => array_filter([
+                'width' => $width,
+                'height' => $height,
+            ], static fn ($v) => $v !== null),
+        ];
     }
 
     /**
-     * Generate image variants (thumbnail, medium, large)
+     * Generates thumbnail, medium, and large variants.
+     *
+     * @param  array<string,int>  $sizes
+     * @return array<string,string> sizeName => stored path
      */
-    private function generateVariants(string $originalPath, string $basePath, string $baseFilename): array
+    public function generateVariants(string $absolutePath, array $sizes = ['thumbnail' => 200, 'medium' => 800, 'large' => 1600]): array
     {
-        $variants = [];
+        $results = [];
+        [$width, $height, $type] = @getimagesize($absolutePath) ?: [null, null, null];
 
-        foreach ($this->sizes as $name => [$width, $height]) {
-            $image = Image::read($originalPath);
+        $srcImage = $this->createImageResource($absolutePath, $type);
+        $pathInfo = pathinfo($absolutePath);
 
-            // Resize maintaining aspect ratio
-            $image->scale(width: $width, height: $height);
+        foreach ($sizes as $label => $targetWidth) {
+            $variantFilename = $pathInfo['filename'].'_'.$label.'.'.strtolower($pathInfo['extension'] ?? 'jpg');
+            $storageRelative = 'media/variants/'.$variantFilename;
+            $variantAbsolute = Storage::disk('public')->path($storageRelative);
+            @mkdir(dirname($variantAbsolute), 0777, true);
 
-            // Optimize image before saving
-            $optimizedImage = $this->optimize($image);
+            if ($srcImage && $width && $height) {
+                $scale = $targetWidth / max(1, $width);
+                $targetHeight = (int) round(max(1, $height) * $scale);
+                $dst = imagecreatetruecolor($targetWidth, max(1, $targetHeight));
+                imagecopyresampled($dst, $srcImage, 0, 0, 0, 0, $targetWidth, max(1, $targetHeight), max(1, $width), max(1, $height));
+                $this->saveImageResource($dst, $variantAbsolute, $type);
+                imagedestroy($dst);
+            } else {
+                // Fallback: if GD not available, copy original
+				if (! @copy($absolutePath, $variantAbsolute)) {
+					@file_put_contents($variantAbsolute, @file_get_contents($absolutePath) ?: '');
+				}
+            }
 
-            // Compress with 85% quality
-            $variantFilename = "{$baseFilename}_{$name}.jpg";
-            $variantPath = Storage::disk('public')->path("{$basePath}/{$variantFilename}");
-
-            // Save as JPEG with 85% quality
-            $optimizedImage->toJpeg(quality: 85)->save($variantPath);
-
-            // Generate WebP version
-            $webpFilename = "{$baseFilename}_{$name}.webp";
-            $webpPath = Storage::disk('public')->path("{$basePath}/{$webpFilename}");
-            $this->convertToWebP($variantPath, $webpPath);
-
-            $variants[$name] = [
-                'path' => "{$basePath}/{$variantFilename}",
-                'webp_path' => "{$basePath}/{$webpFilename}",
-                'width' => $image->width(),
-                'height' => $image->height(),
-            ];
-        }
-
-        return $variants;
-    }
-
-    /**
-     * Optimize image for compression
-     */
-    private function optimize(ImageInterface $image, int $quality = 85): ImageInterface
-    {
-        // For now, optimization is handled via encoder quality when saving.
-        // This method exists as a dedicated extension point for further compression tweaks.
-
-        return $image;
-    }
-
-    /**
-     * Convert image to WebP with JPEG fallback
-     */
-    private function convertToWebP(string $sourcePath, string $destinationPath, int $quality = 85): void
-    {
-        try {
-            $image = Image::read($sourcePath);
-            $image->toWebp(quality: $quality)->save($destinationPath);
-        } catch (\Throwable) {
-            // Fallback: keep the JPEG variant only if WebP conversion fails.
-        }
-    }
-
-    /**
-     * Strip EXIF metadata from image
-     */
-    private function stripExif(string $path): void
-    {
-        // Read and re-save the image to strip EXIF data
-        $image = Image::read($path);
-        $image->save($path);
-    }
-
-    /**
-     * Get URL for a specific image variant
-     */
-    public function getVariantUrl(Media $media, string $variant = 'original', bool $webp = false): string
-    {
-        if ($variant === 'original') {
-            return asset('storage/'.$media->file_path);
+            if (is_file($variantAbsolute)) {
+                $this->optimize($variantAbsolute, 'image/jpeg');
+            }
+            $results[$label] = 'public/'.$storageRelative;
         }
 
-        // Use metadata if available
-        if ($media->metadata && isset($media->metadata['variants'][$variant])) {
-            $path = $webp
-                ? $media->metadata['variants'][$variant]['webp_path']
-                : $media->metadata['variants'][$variant]['path'];
-
-            return asset('storage/'.$path);
+        if ($srcImage) {
+            imagedestroy($srcImage);
         }
 
-        // Fallback to naming convention for legacy media
-        $pathInfo = pathinfo($media->file_path);
-        $baseFilename = $pathInfo['filename'];
-        $directory = $pathInfo['dirname'];
-
-        $extension = $webp ? 'webp' : 'jpg';
-        $variantFilename = "{$baseFilename}_{$variant}.{$extension}";
-        $variantPath = "{$directory}/{$variantFilename}";
-
-        return asset('storage/'.$variantPath);
+        return $results;
     }
 
     /**
-     * Delete media file and all its variants
+     * Lossy compression tuned per type, using GD re-encode.
      */
-    public function deleteMedia(Media $media): void
+    public function optimize(string $absolutePath, string $mimeType): void
     {
-        // Delete original file
-        Storage::disk('public')->delete($media->file_path);
-
-        // Delete variants
-        $pathInfo = pathinfo($media->file_path);
-        $baseFilename = $pathInfo['filename'];
-        $directory = $pathInfo['dirname'];
-
-        foreach (array_keys($this->sizes) as $variant) {
-            Storage::disk('public')->delete("{$directory}/{$baseFilename}_{$variant}.jpg");
-            Storage::disk('public')->delete("{$directory}/{$baseFilename}_{$variant}.webp");
+        [$width, $height, $type] = @getimagesize($absolutePath) ?: [null, null, null];
+        if (! $width || ! $height) {
+            return;
         }
+
+        $image = $this->createImageResource($absolutePath, $type);
+        if (! $image) {
+            return;
+        }
+
+        $this->saveImageResource($image, $absolutePath, $type, quality: 82);
+        imagedestroy($image);
     }
 
     /**
-     * Check if a file is an image
+     * Convert to WebP if possible, keep original as fallback.
+     *
+     * @return string|null Stored public path to WebP, or null if conversion failed.
      */
-    public function isImage(UploadedFile $file): bool
+    public function convertToWebP(string $absolutePath): ?string
     {
-        return str_starts_with($file->getMimeType(), 'image/');
+        if (! function_exists('imagewebp')) {
+            return null;
+        }
+
+        [$width, $height, $type] = @getimagesize($absolutePath) ?: [null, null, null];
+        if (! $width || ! $height) {
+            return null;
+        }
+
+        $src = $this->createImageResource($absolutePath, $type);
+        if (! $src) {
+            return null;
+        }
+
+        $pathInfo = pathinfo($absolutePath);
+        $webpRelative = 'media/'.$pathInfo['filename'].'.webp';
+        $webpAbsolute = Storage::disk('public')->path($webpRelative);
+
+        imagepalettetotruecolor($src);
+        imagealphablending($src, true);
+        imagesavealpha($src, true);
+        imagewebp($src, $webpAbsolute, 82);
+        imagedestroy($src);
+
+        return 'public/'.$webpRelative;
+    }
+
+    /**
+     * Strip EXIF by re-encoding.
+     */
+    public function stripExif(string $absolutePath): void
+    {
+        [$width, $height, $type] = @getimagesize($absolutePath) ?: [null, null, null];
+        if (! $width || ! $height) {
+            return;
+        }
+
+        $img = $this->createImageResource($absolutePath, $type);
+        if (! $img) {
+            return;
+        }
+
+        $this->saveImageResource($img, $absolutePath, $type, quality: 85);
+        imagedestroy($img);
+    }
+
+    private function generateSafeFilename(UploadedFile $file): string
+    {
+        $base = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+        $ext = strtolower($file->getClientOriginalExtension() ?: $file->guessExtension() ?: 'bin');
+        $slug = preg_replace('/[^a-z0-9-_]+/i', '-', (string) $base) ?: 'file';
+
+        return $slug.'-'.uniqid('', true).'.'.$ext;
+    }
+
+    /**
+     * @param  int|null  $type  One of the IMAGETYPE_* constants
+     * @return resource|\GdImage|null
+     */
+    private function createImageResource(string $absolutePath, ?int $type)
+    {
+        return match ($type) {
+            IMAGETYPE_JPEG => @imagecreatefromjpeg($absolutePath),
+            IMAGETYPE_PNG => @imagecreatefrompng($absolutePath),
+            IMAGETYPE_WEBP => function_exists('imagecreatefromwebp') ? @imagecreatefromwebp($absolutePath) : null,
+            default => @imagecreatefromstring(@file_get_contents($absolutePath) ?: ''),
+        };
+    }
+
+    /**
+     * @param  resource|\GdImage  $image
+     */
+    private function saveImageResource($image, string $absolutePath, ?int $type, int $quality = 85): void
+    {
+        switch ($type) {
+            case IMAGETYPE_JPEG:
+                @imagejpeg($image, $absolutePath, $quality);
+                break;
+            case IMAGETYPE_PNG:
+                // Convert quality [0,9] where lower is better compression
+                $pngQuality = (int) round((100 - $quality) / 10);
+                @imagepng($image, $absolutePath, max(0, min(9, $pngQuality)));
+                break;
+            case IMAGETYPE_WEBP:
+                if (function_exists('imagewebp')) {
+                    @imagewebp($image, $absolutePath, $quality);
+                    break;
+                }
+                // fall-through to default if webp unsupported
+            default:
+                @imagejpeg($image, $absolutePath, $quality);
+        }
     }
 }

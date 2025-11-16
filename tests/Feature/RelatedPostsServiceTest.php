@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Enums\PostStatus;
 use App\Models\Category;
 use App\Models\Post;
 use App\Models\Tag;
@@ -193,7 +194,7 @@ class RelatedPostsServiceTest extends TestCase
         $this->assertGreaterThan(0, $related->count());
 
         foreach ($related as $relatedPost) {
-            $this->assertEquals('published', $relatedPost->status);
+            $this->assertEquals(PostStatus::Published, $relatedPost->status);
         }
     }
 

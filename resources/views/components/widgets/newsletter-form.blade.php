@@ -1,3 +1,24 @@
+@props(['widget'])
+
+<div class="widget-box">
+	<h3 class="text-base font-semibold text-gray-800 dark:text-gray-100 mb-3">{{ $widget->title }}</h3>
+	<form method="POST" action="{{ route('newsletter.subscribe') }}" class="space-y-3">
+		@csrf
+		<label class="block">
+			<span class="sr-only">{{ __('Your email address') }}</span>
+			<input type="email"
+				   name="email"
+				   required
+				   placeholder="{{ __('Your email address') }}"
+				   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm dark:bg-gray-700 dark:text-gray-100">
+		</label>
+		<button type="submit"
+				class="w-full px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg">
+			{{ __('Subscribe') }}
+		</button>
+	</form>
+</div>
+
 @props([
     'widget',
 ])
@@ -27,7 +48,7 @@
         }"
         @submit.prevent="
             if (!gdprConsent) {
-                error = 'Please accept the privacy policy';
+                error = '{{ __('newsletter.form.accept_privacy') }}';
                 return;
             }
             submitting = true;
@@ -48,11 +69,11 @@
                     email = '';
                     gdprConsent = false;
                 } else {
-                    error = data.message || 'An error occurred';
+                    error = data.message || '{{ __('newsletter.form.error_generic') }}';
                 }
             })
             .catch(() => {
-                error = 'An error occurred. Please try again.';
+                error = '{{ __('newsletter.form.error_retry') }}';
             })
             .finally(() => {
                 submitting = false;
@@ -64,8 +85,8 @@
         
         <!-- Success Message -->
         <div x-show="success" x-cloak class="p-3 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 rounded text-sm">
-            <p class="font-medium">Successfully subscribed!</p>
-            <p class="text-xs mt-1">Please check your email to confirm your subscription.</p>
+            <p class="font-medium">{{ __('newsletter.form.success_title') }}</p>
+            <p class="text-xs mt-1">{{ __('newsletter.form.success_hint') }}</p>
         </div>
         
         <!-- Error Message -->
@@ -73,14 +94,14 @@
         
         <!-- Email Input -->
         <div x-show="!success">
-            <label for="newsletter-email" class="sr-only">Email address</label>
+            <label for="newsletter-email" class="sr-only">{{ __('newsletter.form.email_label') }}</label>
             <input 
                 type="email" 
                 id="newsletter-email"
                 name="email"
                 x-model="email"
                 required
-                placeholder="Enter your email"
+                placeholder="{{ __('newsletter.form.email_placeholder') }}"
                 class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                 :disabled="submitting"
             >
@@ -98,9 +119,9 @@
                 :disabled="submitting"
             >
             <label for="newsletter-gdpr" class="text-xs text-gray-600 dark:text-gray-400">
-                I agree to receive newsletters and accept the 
+                {{ __('newsletter.form.gdpr_prompt') }} 
                 <a href="{{ route('gdpr.privacy-policy') }}" class="text-blue-600 dark:text-blue-400 hover:underline" target="_blank">
-                    privacy policy
+                    {{ __('newsletter.form.privacy_policy') }}
                 </a>
             </label>
         </div>
@@ -112,13 +133,13 @@
             :disabled="submitting"
             class="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
         >
-            <span x-show="!submitting">Subscribe</span>
+            <span x-show="!submitting">{{ __('newsletter.form.submit') }}</span>
             <span x-show="submitting" class="flex items-center justify-center gap-2">
                 <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                <span>Subscribing...</span>
+                <span>{{ __('newsletter.form.submitting') }}</span>
             </span>
         </button>
     </form>

@@ -12,12 +12,11 @@ class SeriesNavigationService
      */
     public function getNavigation(Post $post, Series $series): array
     {
-        $posts = $series->posts()->pluck('posts.id', 'post_series.order')->toArray();
-
-        // Sort by order
-        ksort($posts);
-
-        $postIds = array_values($posts);
+        // Fetch ordered post IDs within the series (one-to-many)
+        $postIds = $series->posts()
+            ->orderBy('order_in_series')
+            ->pluck('id')
+            ->toArray();
         $currentIndex = array_search($post->id, $postIds);
 
         if ($currentIndex === false) {
@@ -70,15 +69,13 @@ class SeriesNavigationService
      */
     public function getPostSeriesWithNavigation(Post $post): array
     {
-        $seriesData = [];
-
-        foreach ($post->series as $series) {
-            $seriesData[] = [
-                'series' => $series,
-                'navigation' => $this->getNavigation($post, $series),
-            ];
+        if (! $post->series) {
+            return [];
         }
 
-        return $seriesData;
+        return [[
+            'series' => $post->series,
+            'navigation' => $this->getNavigation($post, $post->series),
+        ]];
     }
 }

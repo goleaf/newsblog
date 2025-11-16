@@ -19,8 +19,8 @@ class SeriesController extends Controller
         $series = Series::withCount('posts')
             ->with(['posts' => function ($query) {
                 $query->where('status', 'published')
-                    ->select('posts.id', 'posts.featured_image', 'posts.reading_time')
-                    ->orderBy('post_series.order')
+                    ->select('posts.id', 'posts.series_id', 'posts.featured_image', 'posts.reading_time', 'posts.order_in_series')
+                    ->orderBy('order_in_series')
                     ->limit(1);
             }])
             ->latest()
@@ -31,7 +31,7 @@ class SeriesController extends Controller
             $item->total_reading_time = $item->posts()
                 ->where('status', 'published')
                 ->sum('reading_time');
-            
+
             // Get first post's featured image as series thumbnail
             $firstPost = $item->posts->first();
             $item->thumbnail = $firstPost?->featured_image_url;
@@ -49,20 +49,21 @@ class SeriesController extends Controller
 
         $series->load(['posts' => function ($query) {
             $query->where('status', 'published')
-                ->with(['user', 'category']);
+                ->with(['user', 'category'])
+                ->orderBy('order_in_series');
         }]);
 
         // Calculate total reading time
         $totalReadingTime = $series->posts->sum('reading_time');
-        
+
         // Get user's read posts for this series (from localStorage or session)
         $readPosts = [];
         if (auth()->check()) {
             // For authenticated users, we'll track in localStorage via JavaScript
             // The controller just provides the data structure
-            $readPosts = session()->get('series_progress.' . $series->id, []);
+            $readPosts = session()->get('series_progress.'.$series->id, []);
         }
-        
+
         // Calculate completion percentage
         $totalPosts = $series->posts->count();
         $readCount = count($readPosts);

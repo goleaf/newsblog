@@ -32,7 +32,7 @@
             <svg class="w-5 h-5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
-            <span class="font-bold text-sm uppercase tracking-wider">Breaking</span>
+            <span class="font-bold text-sm uppercase tracking-wider">{{ __('home.breaking') }}</span>
         </div>
     </div>
 

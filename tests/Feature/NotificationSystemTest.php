@@ -266,4 +266,116 @@ class NotificationSystemTest extends TestCase
 
         $this->assertEquals(10, $notifications->count());
     }
+
+    public function test_notification_creation_for_welcome_email(): void
+    {
+        $user = User::factory()->create();
+
+        $notification = $this->notificationService->sendWelcomeEmail($user);
+
+        $this->assertInstanceOf(Notification::class, $notification);
+        $this->assertEquals($user->id, $notification->user_id);
+        $this->assertEquals('welcome', $notification->type);
+        $this->assertStringContainsString('welcome', strtolower($notification->title));
+        $this->assertStringContainsString($user->name, $notification->message);
+        $this->assertNotNull($notification->action_url);
+        $this->assertArrayHasKey('welcome_message', $notification->data);
+        $this->assertTrue($notification->data['welcome_message']);
+    }
+
+    public function test_cleanup_job_deletes_old_read_notifications(): void
+    {
+        $user = User::factory()->create();
+
+        // Create old read notifications (35 days old)
+        Notification::factory()->count(5)->create([
+            'user_id' => $user->id,
+            'read_at' => now()->subDays(35),
+        ]);
+
+        // Create recent read notifications (10 days old)
+        Notification::factory()->count(3)->create([
+            'user_id' => $user->id,
+            'read_at' => now()->subDays(10),
+        ]);
+
+        // Create unread notifications
+        Notification::factory()->count(2)->create([
+            'user_id' => $user->id,
+            'read_at' => null,
+        ]);
+
+        $initialCount = Notification::count();
+        $this->assertEquals(10, $initialCount);
+
+        // Run cleanup job (default 30 days)
+        $job = new \App\Jobs\CleanupOldNotifications(30);
+        $job->handle($this->notificationService);
+
+        // Only old read notifications should be deleted
+        $this->assertEquals(5, $initialCount - Notification::count());
+        $this->assertEquals(5, Notification::count());
+    }
+
+    public function test_cleanup_job_keeps_unread_notifications(): void
+    {
+        $user = User::factory()->create();
+
+        // Create unread notifications (should not be deleted)
+        Notification::factory()->count(5)->create([
+            'user_id' => $user->id,
+            'read_at' => null,
+        ]);
+
+        // Create old read notifications (should be deleted)
+        Notification::factory()->count(3)->create([
+            'user_id' => $user->id,
+            'read_at' => now()->subDays(35),
+        ]);
+
+        $initialCount = Notification::count();
+        $this->assertEquals(8, $initialCount);
+
+        // Run cleanup job
+        $job = new \App\Jobs\CleanupOldNotifications(30);
+        $job->handle($this->notificationService);
+
+        // Only read notifications should be deleted, unread should remain
+        $this->assertEquals(5, Notification::count());
+        $this->assertEquals(5, Notification::whereNull('read_at')->count());
+    }
+
+    public function test_cleanup_job_deletes_notifications_older_than_specified_days(): void
+    {
+        $user = User::factory()->create();
+
+        // Create notifications of different ages
+        $oldNotification1 = Notification::factory()->create([
+            'user_id' => $user->id,
+            'read_at' => now()->subDays(40), // Older than 30 days
+        ]);
+
+        $oldNotification2 = Notification::factory()->create([
+            'user_id' => $user->id,
+            'read_at' => now()->subDays(35), // Older than 30 days
+        ]);
+
+        Notification::factory()->count(3)->create([
+            'user_id' => $user->id,
+            'read_at' => now()->subDays(25), // Not older than 30 days
+        ]);
+
+        // Run cleanup with 30 days threshold
+        $job = new \App\Jobs\CleanupOldNotifications(30);
+        $job->handle($this->notificationService);
+
+        // Only notifications older than 30 days should be deleted
+        $this->assertEquals(3, Notification::count());
+        $this->assertDatabaseMissing('notifications', [
+            'id' => $oldNotification1->id,
+        ]);
+        $this->assertDatabaseMissing('notifications', [
+            'id' => $oldNotification2->id,
+        ]);
+    }
 }

@@ -21,26 +21,43 @@ return new class extends Migration
             // Create FTS5 virtual table for posts
             DB::statement('
                 CREATE VIRTUAL TABLE IF NOT EXISTS posts_fts5 USING fts5(
-                    post_id UNINDEXED,
                     title,
                     content,
-                    excerpt,
-                    content_rowid=post_id
-                )
+                    excerpt
+                );
             ');
 
-            // Populate FTS5 table with existing posts
-            DB::statement('
-                INSERT INTO posts_fts5(post_id, title, content, excerpt)
-                SELECT id, title, content, COALESCE(excerpt, "")
-                FROM posts
-                WHERE status = "published" AND published_at <= datetime("now")
-            ');
+            // Populate FTS5 table with existing posts in batches to avoid memory issues
+            // Use chunking with raw queries to minimize memory usage
+            \App\Models\Post::query()
+                ->where('status', 'published')
+                ->where(function ($q) {
+                    $q->whereNull('published_at')
+                        ->orWhere('published_at', '<=', now());
+                })
+                ->chunkById(100, function ($posts) {
+                    foreach ($posts as $post) {
+                        try {
+                            DB::statement('
+                                INSERT INTO posts_fts5(rowid, title, content, excerpt)
+                                VALUES(?, ?, ?, ?)
+                            ', [
+                                $post->id,
+                                $post->title ?? '',
+                                $post->content ?? '',
+                                $post->excerpt ?? '',
+                            ]);
+                        } catch (\Exception $e) {
+                            // Skip if already exists or other error
+                            continue;
+                        }
+                    }
+                });
 
             // Create trigger to keep FTS5 table in sync when posts are inserted
             DB::statement('
                 CREATE TRIGGER IF NOT EXISTS posts_fts5_insert AFTER INSERT ON posts BEGIN
-                    INSERT INTO posts_fts5(post_id, title, content, excerpt)
+                    INSERT INTO posts_fts5(rowid, title, content, excerpt)
                     VALUES(new.id, new.title, new.content, COALESCE(new.excerpt, ""));
                 END
             ');
@@ -52,14 +69,14 @@ return new class extends Migration
                     SET title = new.title,
                         content = new.content,
                         excerpt = COALESCE(new.excerpt, "")
-                    WHERE post_id = new.id;
+                    WHERE rowid = new.id;
                 END
             ');
 
             // Create trigger to keep FTS5 table in sync when posts are deleted
             DB::statement('
                 CREATE TRIGGER IF NOT EXISTS posts_fts5_delete AFTER DELETE ON posts BEGIN
-                    DELETE FROM posts_fts5 WHERE post_id = old.id;
+                    DELETE FROM posts_fts5 WHERE rowid = old.id;
                 END
             ');
         }

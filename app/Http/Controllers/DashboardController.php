@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bookmark;
-use App\Models\BookmarkCollection;
 use App\Models\Comment;
+use App\Models\Notification;
+use App\Models\PostView;
 use App\Models\Reaction;
 use App\Models\SearchLog;
 use App\Services\DashboardService;
@@ -46,12 +47,16 @@ class DashboardController extends Controller
         $recentBookmarks = $this->getRecentBookmarks($user);
         $recentComments = $this->getRecentComments($user);
         $recentReactions = $this->getRecentReactions($user);
+        $readingHistory = $this->getReadingHistory($user);
+        $notificationSummary = $this->getNotificationSummary($user);
 
         return view('dashboard', [
             'stats' => $stats,
             'recentBookmarks' => $recentBookmarks,
             'recentComments' => $recentComments,
             'recentReactions' => $recentReactions,
+            'readingHistory' => $readingHistory,
+            'notificationSummary' => $notificationSummary,
             'metrics' => null,
             'searchStats' => null,
         ]);
@@ -69,7 +74,7 @@ class DashboardController extends Controller
             'total_reading_time' => Bookmark::where('user_id', $user->id)
                 ->with('post')
                 ->get()
-                ->sum(fn($bookmark) => $bookmark->post->reading_time ?? 0),
+                ->sum(fn ($bookmark) => $bookmark->post->reading_time ?? 0),
         ];
     }
 
@@ -107,6 +112,36 @@ class DashboardController extends Controller
             ->latest()
             ->limit(10)
             ->get();
+    }
+
+    /**
+     * Get reading history for the user limited to 100 most recent views.
+     */
+    private function getReadingHistory($user)
+    {
+        return PostView::query()
+            ->where('user_id', $user->id)
+            ->with(['post:id,slug,title,featured_image,image_alt_text,published_at'])
+            ->orderByDesc('viewed_at')
+            ->limit(100)
+            ->get();
+    }
+
+    /**
+     * Get notification summary for the authenticated user.
+     */
+    private function getNotificationSummary($user): array
+    {
+        $unreadCount = Notification::where('user_id', $user->id)->unread()->count();
+        $recent = Notification::where('user_id', $user->id)
+            ->latest()
+            ->limit(5)
+            ->get(['id', 'title', 'message', 'type', 'action_url', 'read_at', 'created_at']);
+
+        return [
+            'unread_count' => $unreadCount,
+            'recent' => $recent,
+        ];
     }
 
     /**

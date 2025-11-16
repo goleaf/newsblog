@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\DestroyBookmarkRequest;
+use App\Http\Requests\StoreBookmarkRequest;
 use App\Models\Bookmark;
+use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -52,6 +55,50 @@ class BookmarkController extends Controller
             ->get();
 
         return view('bookmarks.index', compact('bookmarks', 'categories', 'collections'));
+    }
+
+    public function store(StoreBookmarkRequest $request, Post $post)
+    {
+        $bookmark = Bookmark::create([
+            'user_id' => Auth::id(),
+            'post_id' => $post->id,
+        ]);
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'bookmarked' => true,
+                'message' => __('bookmark.bookmark_created'),
+                'data' => [
+                    'bookmark' => $bookmark,
+                    'bookmarks_count' => $post->fresh()->bookmarks()->count(),
+                ],
+            ], 201);
+        }
+
+        return back()->with('success', __('bookmark.bookmark_created'));
+    }
+
+    public function destroy(DestroyBookmarkRequest $request, Post $post)
+    {
+        $bookmark = Bookmark::where('user_id', Auth::id())
+            ->where('post_id', $post->id)
+            ->firstOrFail();
+
+        $bookmark->delete();
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'bookmarked' => false,
+                'message' => __('bookmark.bookmark_deleted'),
+                'data' => [
+                    'bookmarks_count' => $post->fresh()->bookmarks()->count(),
+                ],
+            ]);
+        }
+
+        return back()->with('success', __('bookmark.bookmark_deleted'));
     }
 
     public function toggle(Request $request, $postId)

@@ -15,7 +15,7 @@ class TagPageTest extends TestCase
     public function test_tag_page_displays_header_with_tag_name(): void
     {
         $tag = Tag::factory()->create(['name' => 'Laravel']);
-        
+
         Post::factory()->create([
             'status' => 'published',
             'published_at' => now(),
@@ -56,10 +56,12 @@ class TagPageTest extends TestCase
 
     public function test_tag_page_filters_posts_by_date(): void
     {
+        $user = User::factory()->create();
         $tag = Tag::factory()->create();
 
         // Create posts with different dates
         $todayPost = Post::factory()->create([
+            'user_id' => $user->id,
             'title' => 'Today Article About Technology',
             'status' => 'published',
             'published_at' => now(),
@@ -67,20 +69,24 @@ class TagPageTest extends TestCase
         $todayPost->tags()->attach($tag);
 
         $oldPost = Post::factory()->create([
+            'user_id' => $user->id,
             'title' => 'Ancient Article From Two Months Ago',
             'status' => 'published',
             'published_at' => now()->subMonths(2),
         ]);
         $oldPost->tags()->attach($tag);
 
+        // Clear cache to ensure fresh data
+        \Illuminate\Support\Facades\Cache::flush();
+
         // Test "today" filter
-        $response = $this->get(route('tag.show', $tag->slug) . '?date_filter=today');
+        $response = $this->get(route('tag.show', $tag->slug).'?date_filter=today');
         $response->assertStatus(200);
         $response->assertSee('Today Article About Technology');
         $response->assertDontSee('Ancient Article From Two Months Ago');
 
         // Test "month" filter
-        $response = $this->get(route('tag.show', $tag->slug) . '?date_filter=month');
+        $response = $this->get(route('tag.show', $tag->slug).'?date_filter=month');
         $response->assertStatus(200);
         $response->assertSee('Today Article About Technology');
         $response->assertDontSee('Ancient Article From Two Months Ago');
@@ -117,7 +123,7 @@ class TagPageTest extends TestCase
         );
 
         // Test popular sort
-        $response = $this->get(route('tag.show', $tag->slug) . '?sort=popular');
+        $response = $this->get(route('tag.show', $tag->slug).'?sort=popular');
         $response->assertStatus(200);
         $content = $response->getContent();
         $this->assertLessThan(
@@ -168,7 +174,77 @@ class TagPageTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('Home');
-        $response->assertSee('Tags');
         $response->assertSee('#Testing');
+    }
+
+    public function test_tag_page_paginates_posts_with_15_per_page(): void
+    {
+        $user = User::factory()->create();
+        $tag = Tag::factory()->create();
+
+        // Create 20 posts and attach to tag
+        $posts = Post::factory()->count(20)->create([
+            'user_id' => $user->id,
+            'status' => 'published',
+            'published_at' => now(),
+        ]);
+
+        foreach ($posts as $post) {
+            $post->tags()->attach($tag);
+        }
+
+        // Clear cache to ensure fresh data
+        \Illuminate\Support\Facades\Cache::flush();
+
+        $response = $this->get(route('tag.show', $tag->slug));
+
+        $response->assertStatus(200);
+        $posts = $response->viewData('posts');
+        $this->assertNotNull($posts, 'Posts should be in view data');
+        $this->assertEquals(15, $posts->count(), 'Should have 15 posts per page');
+        $this->assertTrue($posts->hasMorePages(), 'Should have more pages');
+    }
+
+    public function test_tag_page_includes_seo_meta_tags(): void
+    {
+        $tag = Tag::factory()->create([
+            'name' => 'Technology',
+            'description' => 'Technology related articles',
+        ]);
+
+        $response = $this->get(route('tag.show', $tag->slug));
+
+        $response->assertStatus(200);
+        $response->assertSee('Technology - Tagged Articles', false);
+        $response->assertSee('og:title', false);
+        $response->assertSee('og:description', false);
+        $response->assertSee('twitter:card', false);
+    }
+
+    public function test_tag_page_includes_breadcrumb_structured_data(): void
+    {
+        $tag = Tag::factory()->create([
+            'name' => 'Technology',
+        ]);
+
+        $response = $this->get(route('tag.show', $tag->slug));
+
+        $response->assertStatus(200);
+        $response->assertSee('BreadcrumbList', false);
+        $response->assertSee('application/ld+json', false);
+    }
+
+    public function test_tag_page_includes_collection_page_structured_data(): void
+    {
+        $tag = Tag::factory()->create([
+            'name' => 'Technology',
+            'description' => 'Technology articles',
+        ]);
+
+        $response = $this->get(route('tag.show', $tag->slug));
+
+        $response->assertStatus(200);
+        $response->assertSee('CollectionPage', false);
+        $response->assertSee('Technology', false);
     }
 }

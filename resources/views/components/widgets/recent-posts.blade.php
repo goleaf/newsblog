@@ -1,3 +1,18 @@
+@props(['widget', 'posts'])
+
+<div class="widget-box">
+	<h3 class="text-base font-semibold text-gray-800 dark:text-gray-100 mb-3">{{ $widget->title }}</h3>
+	<ul class="space-y-2">
+		@foreach ($posts as $post)
+			<li>
+				<a href="{{ route('post.show', $post->slug) }}" class="text-sm text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">
+					{{ $post->title }}
+				</a>
+			</li>
+		@endforeach
+	</ul>
+</div>
+
 @props([
     'widget',
     'posts',

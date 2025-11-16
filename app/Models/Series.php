@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
 class Series extends Model
@@ -20,12 +20,10 @@ class Series extends Model
     /**
      * Get the posts in this series.
      */
-    public function posts(): BelongsToMany
+    public function posts(): HasMany
     {
-        return $this->belongsToMany(Post::class, 'post_series')
-            ->withPivot('order')
-            ->withTimestamps()
-            ->orderBy('post_series.order');
+        return $this->hasMany(Post::class)
+            ->orderBy('order_in_series');
     }
 
     /**

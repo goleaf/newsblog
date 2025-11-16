@@ -104,5 +104,3 @@ class PostInteractionControllerTest extends TestCase
         ]);
     }
 }
-
-

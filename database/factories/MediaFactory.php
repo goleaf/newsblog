@@ -7,37 +7,28 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Media>
+ * @extends Factory<Media>
  */
 class MediaFactory extends Factory
 {
-    /**
-     * The name of the factory's corresponding model.
-     *
-     * @var class-string<\Illuminate\Database\Eloquent\Model>
-     */
     protected $model = Media::class;
 
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
-        $fileName = fake()->word().'.'.fake()->fileExtension();
+        $filename = $this->faker->unique()->lexify('image_????????').'.jpg';
 
         return [
-            'user_id' => User::factory(),
-            'file_name' => $fileName,
-            'file_path' => 'media/'.$fileName,
-            'file_type' => fake()->randomElement(['image', 'document', 'video']),
-            'file_size' => fake()->numberBetween(1000, 10000000),
-            'mime_type' => fake()->mimeType(),
-            'alt_text' => fake()->sentence(),
-            'title' => fake()->sentence(),
-            'caption' => fake()->paragraph(),
-            'metadata' => [],
+            'filename' => $filename,
+            'path' => 'public/media/'.$filename,
+            'mime_type' => 'image/jpeg',
+            'size' => $this->faker->numberBetween(10_000, 5_000_000),
+            'alt_text' => $this->faker->sentence(4),
+            'caption' => $this->faker->optional()->sentence(8),
+            'metadata' => [
+                'width' => $this->faker->numberBetween(320, 3840),
+                'height' => $this->faker->numberBetween(240, 2160),
+            ],
+            'user_id' => User::query()->inRandomOrder()->value('id'),
         ];
     }
 }

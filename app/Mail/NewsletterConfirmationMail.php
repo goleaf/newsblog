@@ -9,6 +9,8 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
+use function __;
+
 class NewsletterConfirmationMail extends Mailable
 {
     use Queueable, SerializesModels;
@@ -26,7 +28,7 @@ class NewsletterConfirmationMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Newsletter Subscription Confirmed',
+            subject: __('newsletter.email.confirmation_subject'),
         );
     }
 

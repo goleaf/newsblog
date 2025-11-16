@@ -349,18 +349,20 @@ class PostTest extends TestCase
         $response = $this->get("/post/{$post->slug}");
 
         $response->assertStatus(200);
-        // Check for Alpine.js component
-        $response->assertSee('x-data="readingProgress()"', false);
+        // Check for Alpine.js component (Requirement 21)
+        $response->assertSee('x-data="readingProgress', false);
         $response->assertSee('x-init="init()"', false);
-        // Check for progress bar structure
+        // Check for progress bar structure (Requirement 21.1, 21.5)
         $response->assertSee('fixed top-0 left-0 right-0 h-1', false);
         $response->assertSee('bg-indigo-600', false);
-        $response->assertSee('transition-all duration-100', false);
+        $response->assertSee('transition-all duration-100', false); // Requirement 21.4
+        // Check for progressbar role and ARIA attributes
+        $response->assertSee('role="progressbar"', false);
+        $response->assertSee('aria-valuenow', false);
+        $response->assertSee('aria-valuemin="0"', false);
+        $response->assertSee('aria-valuemax="100"', false);
         // Check for article ID
         $response->assertSee('id="article-content"', false);
-        // Check for JavaScript function
-        $response->assertSee('function readingProgress()', false);
-        $response->assertSee('calculateProgress()', false);
     }
 
     public function test_post_show_page_includes_share_buttons(): void

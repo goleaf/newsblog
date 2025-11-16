@@ -7,18 +7,6 @@
 @endpush
 
 @push('styles')
-<style>
-    .search-highlight, mark.search-highlight {
-        background-color: #fef08a;
-        padding: 2px 4px;
-        border-radius: 3px;
-        font-weight: 500;
-    }
-    .dark .search-highlight, .dark mark.search-highlight {
-        background-color: #713f12;
-        color: #fbbf24;
-    }
-</style>
 @endpush
 
 @section('content')
@@ -174,24 +162,6 @@
 </div>
 
 @push('scripts')
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const checkbox = document.getElementById('showRelevanceScores');
-        const scores = document.querySelectorAll('.relevance-score');
-        
-        if (checkbox) {
-            checkbox.addEventListener('change', function() {
-                scores.forEach(function(score) {
-                    if (this.checked) {
-                        score.classList.remove('hidden');
-                    } else {
-                        score.classList.add('hidden');
-                    }
-                }.bind(this));
-            });
-        }
-    });
-</script>
 @endpush
 @endsection
 

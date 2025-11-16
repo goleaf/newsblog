@@ -44,6 +44,15 @@
         @apply bg-gray-400 dark:bg-gray-500;
     }
     
+    /* Animation delay utilities for voice search indicator */
+    .animation-delay-75 {
+        animation-delay: 75ms;
+    }
+    
+    .animation-delay-150 {
+        animation-delay: 150ms;
+    }
+    
     /* Focus styles for accessibility */
     :focus-visible {
         @apply outline-2 outline-offset-2 outline-primary-500;
@@ -51,6 +60,13 @@
 }
 
 @layer components {
+    /* Highlighted search match */
+    .search-highlight, mark.search-highlight {
+        @apply bg-yellow-200 px-1 rounded font-medium;
+    }
+    .dark .search-highlight, .dark mark.search-highlight {
+        @apply bg-yellow-900 text-yellow-400;
+    }
     /* Modern card hover effect */
     .card-hover {
         @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-1;

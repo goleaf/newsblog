@@ -47,12 +47,14 @@ class SeriesManagementTest extends TestCase
             'status' => 'published',
         ]);
 
-        $series->posts()->attach($post->id, ['order' => 0]);
+        $post->series()->associate($series);
+        $post->order_in_series = 0;
+        $post->save();
 
-        $this->assertDatabaseHas('post_series', [
+        $this->assertDatabaseHas('posts', [
+            'id' => $post->id,
             'series_id' => $series->id,
-            'post_id' => $post->id,
-            'order' => 0,
+            'order_in_series' => 0,
         ]);
     }
 
@@ -81,9 +83,15 @@ class SeriesManagementTest extends TestCase
             'title' => 'Part 3',
         ]);
 
-        $series->posts()->attach($post1->id, ['order' => 0]);
-        $series->posts()->attach($post2->id, ['order' => 1]);
-        $series->posts()->attach($post3->id, ['order' => 2]);
+        $post1->series()->associate($series);
+        $post1->order_in_series = 0;
+        $post1->save();
+        $post2->series()->associate($series);
+        $post2->order_in_series = 1;
+        $post2->save();
+        $post3->series()->associate($series);
+        $post3->order_in_series = 2;
+        $post3->save();
 
         $service = app(SeriesNavigationService::class);
         $navigation = $service->getNavigation($post2, $series);
@@ -111,8 +119,12 @@ class SeriesManagementTest extends TestCase
             'status' => 'published',
         ]);
 
-        $series->posts()->attach($post1->id, ['order' => 0]);
-        $series->posts()->attach($post2->id, ['order' => 1]);
+        $post1->series()->associate($series);
+        $post1->order_in_series = 0;
+        $post1->save();
+        $post2->series()->associate($series);
+        $post2->order_in_series = 1;
+        $post2->save();
 
         $service = app(SeriesNavigationService::class);
         $navigation = $service->getNavigation($post1, $series);
@@ -138,8 +150,12 @@ class SeriesManagementTest extends TestCase
             'status' => 'published',
         ]);
 
-        $series->posts()->attach($post1->id, ['order' => 0]);
-        $series->posts()->attach($post2->id, ['order' => 1]);
+        $post1->series()->associate($series);
+        $post1->order_in_series = 0;
+        $post1->save();
+        $post2->series()->associate($series);
+        $post2->order_in_series = 1;
+        $post2->save();
 
         $service = app(SeriesNavigationService::class);
         $navigation = $service->getNavigation($post2, $series);

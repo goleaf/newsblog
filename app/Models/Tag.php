@@ -32,6 +32,71 @@ class Tag extends Model
         return route('tag.show', $this->slug);
     }
 
+    /**
+     * Get SEO meta tags for the tag.
+     */
+    public function getMetaTags(): array
+    {
+        $url = route('tag.show', $this->slug);
+
+        return [
+            // Basic meta tags
+            'title' => '#'.$this->name.' - Tagged Articles - '.config('app.name', 'TechNewsHub'),
+            'description' => $this->getMetaDescription(),
+            'keywords' => null,
+
+            // Open Graph tags
+            'og:title' => '#'.$this->name.' - Tagged Articles',
+            'og:description' => $this->getMetaDescription(),
+            'og:image' => asset('images/default-og-image.jpg'),
+            'og:url' => $url,
+            'og:type' => 'website',
+            'og:site_name' => config('app.name', 'TechNewsHub'),
+
+            // Twitter Card tags
+            'twitter:card' => 'summary',
+            'twitter:title' => '#'.$this->name.' - Tagged Articles',
+            'twitter:description' => $this->getMetaDescription(),
+            'twitter:image' => asset('images/default-og-image.jpg'),
+            'twitter:url' => $url,
+        ];
+    }
+
+    /**
+     * Get meta description with validation (max 160 chars).
+     */
+    public function getMetaDescription(): string
+    {
+        $description = $this->description ? Str::limit(strip_tags($this->description), 160, '') : '';
+
+        // Ensure it doesn't exceed 160 characters
+        return Str::limit($description, 160, '') ?: 'Browse articles tagged with '.$this->name;
+    }
+
+    /**
+     * Get Schema.org CollectionPage structured data.
+     */
+    public function getStructuredData(): array
+    {
+        $data = [
+            '@context' => 'https://schema.org',
+            '@type' => 'CollectionPage',
+            'name' => '#'.$this->name,
+            'description' => $this->getMetaDescription(),
+            'url' => route('tag.show', $this->slug),
+        ];
+
+        if ($this->description) {
+            $data['about'] = [
+                '@type' => 'Thing',
+                'name' => $this->name,
+                'description' => $this->description,
+            ];
+        }
+
+        return $data;
+    }
+
     protected static function boot()
     {
         parent::boot();

@@ -16,10 +16,10 @@
                 <!-- Welcome Message -->
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                     <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                        Welcome back, {{ auth()->user()->name }}!
+                        {{ __('dashboard.welcome_back') }}, {{ auth()->user()->name }}!
                     </h2>
                     <p class="mt-2 text-gray-600 dark:text-gray-400">
-                        Here's an overview of your activity on TechNewsHub
+                        {{ __('dashboard.overview_text') }}
                     </p>
                 </div>
 
@@ -67,6 +67,73 @@
                     :recent-comments="$recentComments" 
                     :recent-reactions="$recentReactions" 
                 />
+
+                <!-- Notification Summary -->
+                @if(isset($notificationSummary))
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                                {{ __('dashboard.recent_notifications') }}
+                            </h3>
+                            <span class="text-sm text-gray-600 dark:text-gray-400">
+                                {{ __('dashboard.unread_count') }}: {{ number_format($notificationSummary['unread_count'] ?? 0) }}
+                            </span>
+                        </div>
+                        <div class="space-y-3">
+                            @forelse(($notificationSummary['recent'] ?? []) as $n)
+                                <div class="flex items-start justify-between p-3 rounded-md bg-gray-50 dark:bg-gray-700/40">
+                                    <div class="pr-4">
+                                        <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ $n->title }}</div>
+                                        <div class="text-sm text-gray-600 dark:text-gray-400">{{ $n->message }}</div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ $n->created_at->diffForHumans() }}</div>
+                                    </div>
+                                    @if($n->action_url)
+                                        <a class="text-sm text-indigo-600 dark:text-indigo-400 hover:underline" href="{{ $n->action_url }}">
+                                            {{ __('dashboard.view') }}
+                                        </a>
+                                    @endif
+                                </div>
+                            @empty
+                                <p class="text-sm text-gray-600 dark:text-gray-400">{{ __('dashboard.no_notifications') }}</p>
+                            @endforelse
+                        </div>
+                    </div>
+                @endif
+
+                <!-- Reading History -->
+                @if(isset($readingHistory))
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md">
+                        <div class="border-b border-gray-200 dark:border-gray-700 px-6 py-4">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                                {{ __('dashboard.reading_history') }}
+                            </h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">{{ __('dashboard.reading_history_subtitle') }}</p>
+                        </div>
+                        <div class="p-6">
+                            <div class="space-y-3">
+                                @forelse($readingHistory as $view)
+                                    @if($view->post)
+                                        <a href="{{ route('post.show', $view->post->slug) }}" class="flex items-center justify-between p-3 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700/40 transition">
+                                            <div class="min-w-0">
+                                                <div class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                                                    {{ $view->post->title }}
+                                                </div>
+                                                <div class="text-xs text-gray-500 dark:text-gray-400">
+                                                    {{ __('dashboard.viewed_at') }}: {{ $view->viewed_at?->diffForHumans() }}
+                                                </div>
+                                            </div>
+                                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                            </svg>
+                                        </a>
+                                    @endif
+                                @empty
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">{{ __('dashboard.no_reading_history') }}</p>
+                                @endforelse
+                            </div>
+                        </div>
+                    </div>
+                @endif
 
             @elseif(isset($metrics))
                 <!-- Admin Dashboard -->
@@ -190,7 +257,12 @@
                         <p class="text-sm text-gray-600 dark:text-gray-400">Last 30 days</p>
                     </div>
                     <div class="p-6">
-                        <canvas id="postsChart" height="80"></canvas>
+                        <canvas
+                            id="postsChart"
+                            height="80"
+                            data-labels='@json($metrics["posts_chart_data"]["labels"])'
+                            data-values='@json($metrics["posts_chart_data"]["data"])'
+                        ></canvas>
                     </div>
                 </div>
 
@@ -343,100 +415,7 @@
         </div>
     </div>
 
-    @if($metrics)
-        @push('scripts')
-        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const ctx = document.getElementById('postsChart');
-                if (ctx) {
-                    const isDark = document.documentElement.classList.contains('dark');
-                    const textColor = isDark ? '#9CA3AF' : '#6B7280';
-                    const gridColor = isDark ? '#374151' : '#E5E7EB';
-
-                    new Chart(ctx, {
-                        type: 'line',
-                        data: {
-                            labels: @json($metrics['posts_chart_data']['labels']),
-                            datasets: [{
-                                label: 'Posts Published',
-                                data: @json($metrics['posts_chart_data']['data']),
-                                borderColor: '#3B82F6',
-                                backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                                borderWidth: 2,
-                                fill: true,
-                                tension: 0.4,
-                                pointRadius: 3,
-                                pointHoverRadius: 5,
-                                pointBackgroundColor: '#3B82F6',
-                                pointBorderColor: '#fff',
-                                pointBorderWidth: 2,
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: true,
-                            plugins: {
-                                legend: {
-                                    display: false
-                                },
-                                tooltip: {
-                                    mode: 'index',
-                                    intersect: false,
-                                    backgroundColor: isDark ? '#1F2937' : '#fff',
-                                    titleColor: textColor,
-                                    bodyColor: textColor,
-                                    borderColor: gridColor,
-                                    borderWidth: 1,
-                                    padding: 12,
-                                    displayColors: false,
-                                    callbacks: {
-                                        label: function(context) {
-                                            return 'Posts: ' + context.parsed.y;
-                                        }
-                                    }
-                                }
-                            },
-                            scales: {
-                                y: {
-                                    beginAtZero: true,
-                                    ticks: {
-                                        stepSize: 1,
-                                        color: textColor,
-                                        font: {
-                                            size: 11
-                                        }
-                                    },
-                                    grid: {
-                                        color: gridColor,
-                                        drawBorder: false
-                                    }
-                                },
-                                x: {
-                                    ticks: {
-                                        color: textColor,
-                                        font: {
-                                            size: 11
-                                        },
-                                        maxRotation: 45,
-                                        minRotation: 45
-                                    },
-                                    grid: {
-                                        display: false,
-                                        drawBorder: false
-                                    }
-                                }
-                            },
-                            interaction: {
-                                mode: 'nearest',
-                                axis: 'x',
-                                intersect: false
-                            }
-                        }
-                    });
-                }
-            });
-        </script>
-        @endpush
-    @endif
+    @push('page-scripts')
+        <x-page-scripts page="dashboard" />
+    @endpush
 </x-app-layout>

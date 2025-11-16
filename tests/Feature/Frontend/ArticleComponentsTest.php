@@ -158,8 +158,8 @@ class ArticleComponentsTest extends TestCase
             'published_at' => now()->subDay(),
         ]);
 
-        $series->posts()->attach($post1, ['order' => 1]);
-        $series->posts()->attach($post2, ['order' => 2]);
+        $post1->series()->associate($series); $post1->order_in_series = 1; $post1->save();
+        $post2->series()->associate($series); $post2->order_in_series = 2; $post2->save();
 
         $response = $this->get("/post/{$post2->slug}");
 

@@ -295,7 +295,7 @@ class Post extends Resource
 
             HasMany::make('Comments', 'comments', Comment::class),
 
-            // HasMany::make('Revisions', 'revisions', \App\Nova\PostRevision::class),
+            HasMany::make('Revisions', 'revisions', \App\Nova\PostRevision::class),
         ];
     }
 
@@ -350,6 +350,7 @@ class Post extends Resource
             new Actions\PublishPosts,
             new Actions\FeaturePosts,
             new Actions\ExportPosts,
+            new Actions\ViewRevisionHistory,
         ];
     }
 }

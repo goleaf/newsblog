@@ -13,6 +13,7 @@ class PostView extends Model
 
     protected $fillable = [
         'post_id',
+        'user_id',
         'session_id',
         'ip_address',
         'user_agent',
@@ -27,5 +28,10 @@ class PostView extends Model
     public function post()
     {
         return $this->belongsTo(Post::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

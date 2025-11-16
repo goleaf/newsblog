@@ -2,45 +2,51 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SubscribeNewsletterRequest;
+use App\Http\Requests\UnsubscribeNewsletterRequest;
+use App\Http\Requests\VerifyNewsletterRequest;
 use App\Mail\NewsletterConfirmationMail;
 use App\Mail\NewsletterVerificationMail;
 use App\Models\Newsletter;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 
+use function __;
+
 class NewsletterController extends Controller
 {
-    public function subscribe(Request $request)
+    /**
+     * Subscribe to the newsletter with double opt-in.
+     */
+    public function subscribe(SubscribeNewsletterRequest $request)
     {
-        $request->validate([
-            'email' => 'required|email|max:255',
-            'gdpr_consent' => 'required|accepted',
-        ]);
+        $validated = $request->validated();
 
         // Check if email already exists
-        $existing = Newsletter::where('email', $request->email)->first();
+        $existing = Newsletter::where('email', $validated['email'])->first();
 
         if ($existing) {
             if ($existing->status === 'subscribed' && $existing->verified_at) {
                 if ($request->expectsJson()) {
                     return response()->json([
                         'success' => false,
-                        'message' => 'This email is already subscribed to our newsletter.',
+                        'message' => __('newsletter.subscribe.already'),
                     ]);
                 }
-                return back()->with('info', 'This email is already subscribed to our newsletter.');
+
+                return back()->with('info', __('newsletter.subscribe.already'));
             }
 
             if ($existing->status === 'unsubscribed') {
                 if ($request->expectsJson()) {
                     return response()->json([
                         'success' => false,
-                        'message' => 'This email has previously unsubscribed. Please contact us to resubscribe.',
+                        'message' => __('newsletter.subscribe.unsubscribed'),
                     ]);
                 }
-                return back()->with('info', 'This email has previously unsubscribed. Please contact us to resubscribe.');
+
+                return back()->with('info', __('newsletter.subscribe.unsubscribed'));
             }
 
             // Resend verification if not verified
@@ -55,16 +61,17 @@ class NewsletterController extends Controller
                 if ($request->expectsJson()) {
                     return response()->json([
                         'success' => true,
-                        'message' => 'Verification email resent. Please check your inbox.',
+                        'message' => __('newsletter.subscribe.resent'),
                     ]);
                 }
-                return back()->with('success', 'Verification email resent. Please check your inbox.');
+
+                return back()->with('success', __('newsletter.subscribe.resent'));
             }
         }
 
         // Create new subscription
         $newsletter = Newsletter::create([
-            'email' => $request->email,
+            'email' => $validated['email'],
             'status' => 'pending',
             'verification_token' => Newsletter::generateVerificationToken(),
             'verification_token_expires_at' => now()->addDays(7),
@@ -77,26 +84,33 @@ class NewsletterController extends Controller
         if ($request->expectsJson()) {
             return response()->json([
                 'success' => true,
-                'message' => 'Please check your email to verify your subscription.',
+                'message' => __('newsletter.subscribe.success'),
             ]);
         }
-        return back()->with('success', 'Please check your email to verify your subscription.');
+
+        return back()->with('success', __('newsletter.subscribe.success'));
     }
 
-    public function verify(Request $request, string $token): View|RedirectResponse
+    /**
+     * Verify email confirmation via token.
+     */
+    public function verify(VerifyNewsletterRequest $request, string $token): View|RedirectResponse
     {
+        $validated = $request->validated();
+        $token = $validated['token'];
+
         $newsletter = Newsletter::where('verification_token', $token)->first();
 
         if (! $newsletter) {
-            return redirect()->route('home')->with('error', 'Invalid verification token.');
+            return redirect()->route('home')->with('error', __('newsletter.verify.invalid'));
         }
 
         if (! $newsletter->isVerificationTokenValid()) {
-            return redirect()->route('home')->with('error', 'Verification token has expired. Please subscribe again.');
+            return redirect()->route('home')->with('error', __('newsletter.verify.expired'));
         }
 
         if ($newsletter->verified_at) {
-            return redirect()->route('home')->with('info', 'Your subscription is already verified.');
+            return redirect()->route('home')->with('info', __('newsletter.verify.already'));
         }
 
         // Verify the subscription
@@ -108,12 +122,18 @@ class NewsletterController extends Controller
         return view('newsletter.verified', compact('newsletter'));
     }
 
-    public function unsubscribe(Request $request, string $token): View|RedirectResponse
+    /**
+     * Unsubscribe from the newsletter via token.
+     */
+    public function unsubscribe(UnsubscribeNewsletterRequest $request, string $token): View|RedirectResponse
     {
+        $validated = $request->validated();
+        $token = $validated['token'];
+
         $newsletter = Newsletter::where('unsubscribe_token', $token)->first();
 
         if (! $newsletter) {
-            return redirect()->route('home')->with('error', 'Invalid unsubscribe token.');
+            return redirect()->route('home')->with('error', __('newsletter.verify.invalid'));
         }
 
         if ($newsletter->status === 'unsubscribed') {

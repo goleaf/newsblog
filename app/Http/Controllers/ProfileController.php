@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Http\Requests\UpdateEmailPreferencesRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -111,17 +112,9 @@ class ProfileController extends Controller
     /**
      * Update the user's email preferences.
      */
-    public function updateEmailPreferences(Request $request): RedirectResponse
+    public function updateEmailPreferences(UpdateEmailPreferencesRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'preferences' => 'required|array',
-            'preferences.comment_replies' => 'nullable|boolean',
-            'preferences.post_published' => 'nullable|boolean',
-            'preferences.comment_approved' => 'nullable|boolean',
-            'preferences.series_updated' => 'nullable|boolean',
-            'preferences.newsletter' => 'nullable|boolean',
-            'preferences.frequency' => 'required|in:immediate,daily,weekly',
-        ]);
+        $validated = $request->validated();
 
         // Convert checkbox values to boolean
         $preferences = [

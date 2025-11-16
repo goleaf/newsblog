@@ -21,17 +21,30 @@ class Notification extends Model
         'read_at',
     ];
 
-    protected $casts = [
-        'data' => 'array',
-        'read_at' => 'datetime',
-    ];
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'data' => 'array',
+            'read_at' => 'datetime',
+        ];
+    }
 
     // Notification types
     public const TYPE_COMMENT_REPLY = 'comment_reply';
+
     public const TYPE_POST_PUBLISHED = 'post_published';
+
     public const TYPE_COMMENT_APPROVED = 'comment_approved';
+
     public const TYPE_NEW_FOLLOWER = 'new_follower';
+
     public const TYPE_BOOKMARK_REMINDER = 'bookmark_reminder';
+
     public const TYPE_SERIES_UPDATED = 'series_updated';
 
     /**

@@ -51,5 +51,3 @@ class FeedbackTest extends TestCase
         $this->assertTrue($feedback->reviewer->is($reviewer));
     }
 }
-
-

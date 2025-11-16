@@ -120,7 +120,7 @@ class WidgetService
 
     protected function renderSearch(Widget $widget): string
     {
-        return View::make('widgets.search', [
+        return View::make('components.widgets.search', [
             'widget' => $widget,
         ])->render();
     }

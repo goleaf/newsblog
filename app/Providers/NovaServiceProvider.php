@@ -117,7 +117,9 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     protected function gate(): void
     {
         Gate::define('viewNova', function (User $user) {
-            return in_array($user->role, ['admin', 'editor', 'author']);
+            $role = $user->role instanceof \BackedEnum ? $user->role->value : $user->role;
+
+            return in_array($role, ['admin', 'editor', 'author'], true);
         });
 
         Nova::auth(function ($request) {

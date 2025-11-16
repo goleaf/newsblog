@@ -97,9 +97,13 @@ document.addEventListener('alpine:init', () => {
         applyFontSize() {
             const element = document.querySelector(this.target);
             if (element) {
-                // Apply font size to article content
-                const contentElement = element.querySelector('.prose') || element;
-                contentElement.style.fontSize = `${this.fontSize}%`;
+                // Apply font size to article content wrapper
+                const contentElement = element.querySelector('.article-content-wrapper') || 
+                                     element.querySelector('.prose') || 
+                                     element;
+                if (contentElement) {
+                    contentElement.style.fontSize = `${this.fontSize}%`;
+                }
             }
         },
 

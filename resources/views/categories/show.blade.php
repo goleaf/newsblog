@@ -93,7 +93,7 @@
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
                 </svg>
-                Subcategories
+                {{ __('Subcategories') }}
             </h2>
             <div class="flex flex-wrap gap-2">
                 @foreach($category->children as $child)
@@ -117,13 +117,12 @@
     @endif
 
     <!-- Post Filters and Sorting (Requirements 5.2, 26.1-26.5) -->
-    <div class="mb-6 flex items-center justify-between">
+    <div class="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <x-post-filters :current-url="route('category.show', $category->slug)" />
         
-        <x-discovery.sort-dropdown 
-            :current-sort="request('sort', 'newest')"
-            :query="''"
-            :filters="[]"
+        <x-category-sort-dropdown 
+            :current-sort="request('sort', 'latest')"
+            :category-slug="$category->slug"
         />
     </div>
 
@@ -138,9 +137,9 @@
         </x-infinite-scroll>
     @else
         <x-ui.empty-state 
-            title="No articles found"
-            message="There are no published articles in this category{{ request('date_filter') ? ' for the selected time period' : '' }}. {{ request('date_filter') ? 'Try adjusting your filters or' : '' }} Check back soon for new content!"
-            actionText="Browse All Articles"
+            title="{{ __('No articles found') }}"
+            message="{{ __('There are no published articles in this category') }}{{ request('date_filter') ? ' '. __('for the selected time period') : '' }}. {{ request('date_filter') ? __('Try adjusting your filters or') : '' }} {{ __('Check back soon for new content!') }}"
+            actionText="{{ __('Browse All Articles') }}"
             actionUrl="{{ route('home') }}"
         >
             <x-slot:icon>

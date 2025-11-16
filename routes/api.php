@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\PostInteractionController;
 use App\Http\Controllers\Api\SearchController;
+use App\Http\Controllers\MediaController;
 use App\Http\Controllers\Nova\SystemHealthController;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +15,11 @@ Route::prefix('v1')->middleware(['throttle:60,1'])->group(function () {
     // Public endpoints
     Route::get('/posts', [PostController::class, 'index'])->middleware('throttle:100,1');
     Route::get('/posts/{slug}', [PostController::class, 'show'])->middleware('throttle:100,1');
+
+    // Media Library (public, no auth)
+    Route::get('/media', [MediaController::class, 'index'])->name('api.media.index');
+    Route::post('/media', [MediaController::class, 'store'])->name('api.media.store');
+    Route::delete('/media/{media}', [MediaController::class, 'destroy'])->name('api.media.destroy');
 
     // Search endpoints with custom rate limiting
     Route::prefix('search')->middleware('throttle:search')->group(function () {

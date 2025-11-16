@@ -42,7 +42,9 @@ class SeriesProgressTrackingTest extends TestCase
                 'reading_time' => 5,
             ]);
 
-            $this->series->posts()->attach($post->id, ['order' => $i]);
+            $post->series()->associate($this->series);
+            $post->order_in_series = $i;
+            $post->save();
             $this->posts[] = $post;
         }
     }

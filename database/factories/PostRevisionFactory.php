@@ -34,5 +34,3 @@ class PostRevisionFactory extends Factory
         ];
     }
 }
-
-

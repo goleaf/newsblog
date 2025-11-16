@@ -37,4 +37,3 @@ enum UserRole: string
         };
     }
 }
-

@@ -1,3 +1,14 @@
+@props(['widget', 'content' => ''])
+
+<div class="widget-box">
+	@if(!empty($widget->title))
+		<h3 class="text-base font-semibold text-gray-800 dark:text-gray-100 mb-3">{{ $widget->title }}</h3>
+	@endif
+	<div class="prose prose-sm dark:prose-invert max-w-none">
+		{!! $content !!}
+	</div>
+</div>
+
 @props([
     'widget',
     'content' => '',

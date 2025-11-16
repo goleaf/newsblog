@@ -23,13 +23,9 @@ class SeriesNavigationServiceTest extends TestCase
     public function test_gets_navigation_for_first_post(): void
     {
         $series = Series::factory()->create();
-        $post1 = Post::factory()->create();
-        $post2 = Post::factory()->create();
-        $post3 = Post::factory()->create();
-
-        $series->posts()->attach($post1->id, ['order' => 1]);
-        $series->posts()->attach($post2->id, ['order' => 2]);
-        $series->posts()->attach($post3->id, ['order' => 3]);
+        $post1 = Post::factory()->create(['series_id' => $series->id, 'order_in_series' => 1]);
+        $post2 = Post::factory()->create(['series_id' => $series->id, 'order_in_series' => 2]);
+        $post3 = Post::factory()->create(['series_id' => $series->id, 'order_in_series' => 3]);
 
         $navigation = $this->service->getNavigation($post1, $series);
 
@@ -42,13 +38,9 @@ class SeriesNavigationServiceTest extends TestCase
     public function test_gets_navigation_for_middle_post(): void
     {
         $series = Series::factory()->create();
-        $post1 = Post::factory()->create();
-        $post2 = Post::factory()->create();
-        $post3 = Post::factory()->create();
-
-        $series->posts()->attach($post1->id, ['order' => 1]);
-        $series->posts()->attach($post2->id, ['order' => 2]);
-        $series->posts()->attach($post3->id, ['order' => 3]);
+        $post1 = Post::factory()->create(['series_id' => $series->id, 'order_in_series' => 1]);
+        $post2 = Post::factory()->create(['series_id' => $series->id, 'order_in_series' => 2]);
+        $post3 = Post::factory()->create(['series_id' => $series->id, 'order_in_series' => 3]);
 
         $navigation = $this->service->getNavigation($post2, $series);
 
@@ -61,13 +53,9 @@ class SeriesNavigationServiceTest extends TestCase
     public function test_gets_navigation_for_last_post(): void
     {
         $series = Series::factory()->create();
-        $post1 = Post::factory()->create();
-        $post2 = Post::factory()->create();
-        $post3 = Post::factory()->create();
-
-        $series->posts()->attach($post1->id, ['order' => 1]);
-        $series->posts()->attach($post2->id, ['order' => 2]);
-        $series->posts()->attach($post3->id, ['order' => 3]);
+        $post1 = Post::factory()->create(['series_id' => $series->id, 'order_in_series' => 1]);
+        $post2 = Post::factory()->create(['series_id' => $series->id, 'order_in_series' => 2]);
+        $post3 = Post::factory()->create(['series_id' => $series->id, 'order_in_series' => 3]);
 
         $navigation = $this->service->getNavigation($post3, $series);
 
@@ -90,18 +78,14 @@ class SeriesNavigationServiceTest extends TestCase
         $this->assertEquals(0, $navigation['total_posts']);
     }
 
-    public function test_gets_all_series_with_navigation_for_post(): void
+    public function test_gets_series_with_navigation_for_post(): void
     {
-        $series1 = Series::factory()->create();
-        $series2 = Series::factory()->create();
-        $post = Post::factory()->create();
-
-        $series1->posts()->attach($post->id, ['order' => 1]);
-        $series2->posts()->attach($post->id, ['order' => 2]);
+        $series = Series::factory()->create();
+        $post = Post::factory()->create(['series_id' => $series->id, 'order_in_series' => 1]);
 
         $seriesData = $this->service->getPostSeriesWithNavigation($post);
 
-        $this->assertCount(2, $seriesData);
+        $this->assertCount(1, $seriesData);
         $this->assertArrayHasKey('series', $seriesData[0]);
         $this->assertArrayHasKey('navigation', $seriesData[0]);
     }

@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Post;
 use App\Models\PostRevision;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
@@ -29,6 +30,35 @@ class PostRevisionService
                 'meta_title' => $post->meta_title,
                 'meta_description' => $post->meta_description,
                 'meta_keywords' => $post->meta_keywords,
+            ],
+            'revision_note' => $note,
+        ]);
+
+        $this->enforceRevisionLimit($post);
+
+        return $revision;
+    }
+
+    /**
+     * Create a revision from the post's original (pre-update) attributes.
+     */
+    public function createRevisionFromOriginal(Post $post, ?string $note = null): PostRevision
+    {
+        $original = $post->getOriginal();
+
+        $revision = PostRevision::create([
+            'post_id' => $post->id,
+            'user_id' => Auth::id() ?? ($original['user_id'] ?? $post->user_id),
+            'title' => $original['title'] ?? $post->title,
+            'content' => $original['content'] ?? $post->content,
+            'excerpt' => $original['excerpt'] ?? $post->excerpt,
+            'meta_data' => [
+                'slug' => $original['slug'] ?? $post->slug,
+                'status' => $original['status'] ?? $post->status,
+                'featured_image' => $original['featured_image'] ?? $post->featured_image,
+                'meta_title' => $original['meta_title'] ?? $post->meta_title,
+                'meta_description' => $original['meta_description'] ?? $post->meta_description,
+                'meta_keywords' => $original['meta_keywords'] ?? $post->meta_keywords,
             ],
             'revision_note' => $note,
         ]);
@@ -67,6 +97,17 @@ class PostRevisionService
     }
 
     /**
+     * Get revisions for a post with pagination (Requirement 19.2)
+     */
+    public function getRevisionsPaginated(Post $post, int $perPage = 15): LengthAwarePaginator
+    {
+        return $post->revisions()
+            ->with('user')
+            ->orderBy('created_at', 'desc')
+            ->paginate($perPage);
+    }
+
+    /**
      * Restore a post to a specific revision
      */
     public function restoreRevision(Post $post, PostRevision $revision): Post
@@ -75,16 +116,18 @@ class PostRevisionService
         $this->createRevision($post, 'Before restoring to revision #'.$revision->id);
 
         // Restore the post to the revision state
-        $post->update([
-            'title' => $revision->title,
-            'content' => $revision->content,
-            'excerpt' => $revision->excerpt,
-            'slug' => $revision->meta_data['slug'] ?? $post->slug,
-            'featured_image' => $revision->meta_data['featured_image'] ?? $post->featured_image,
-            'meta_title' => $revision->meta_data['meta_title'] ?? null,
-            'meta_description' => $revision->meta_data['meta_description'] ?? null,
-            'meta_keywords' => $revision->meta_data['meta_keywords'] ?? null,
-        ]);
+        Post::withoutEvents(function () use ($post, $revision) {
+            $post->update([
+                'title' => $revision->title,
+                'content' => $revision->content,
+                'excerpt' => $revision->excerpt,
+                'slug' => $revision->meta_data['slug'] ?? $post->slug,
+                'featured_image' => $revision->meta_data['featured_image'] ?? $post->featured_image,
+                'meta_title' => $revision->meta_data['meta_title'] ?? null,
+                'meta_description' => $revision->meta_data['meta_description'] ?? null,
+                'meta_keywords' => $revision->meta_data['meta_keywords'] ?? null,
+            ]);
+        });
 
         // Create a new revision with the restored content
         $this->createRevision($post, 'Restored from revision #'.$revision->id);

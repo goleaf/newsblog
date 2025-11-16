@@ -39,4 +39,3 @@ class PostFlagsTest extends TestCase
         $this->assertTrue($post->status === PostStatus::Published);
     }
 }
-

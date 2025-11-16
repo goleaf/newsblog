@@ -114,10 +114,7 @@ class Post extends Model
 
     public function series()
     {
-        return $this->belongsToMany(Series::class, 'post_series')
-            ->withPivot('order')
-            ->withTimestamps()
-            ->orderBy('post_series.order');
+        return $this->belongsTo(Series::class);
     }
 
     public function brokenLinks()
@@ -321,6 +318,19 @@ class Post extends Model
                 if ($post->isDirty(['status', 'published_at', 'slug'])) {
                     App::make(\App\Services\SitemapService::class)->regenerateIfNeeded();
                 }
+            }
+
+            // Automatically create a revision capturing the previous state when core fields change
+            $revisionRelevantFields = ['title', 'excerpt', 'content', 'slug', 'featured_image', 'meta_title', 'meta_description', 'meta_keywords'];
+            $shouldCreateRevision = false;
+            foreach ($revisionRelevantFields as $field) {
+                if ($post->wasChanged($field)) {
+                    $shouldCreateRevision = true;
+                    break;
+                }
+            }
+            if ($shouldCreateRevision) {
+                App::make(\App\Services\PostRevisionService::class)->createRevisionFromOriginal($post);
             }
         });
 

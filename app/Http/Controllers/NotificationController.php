@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\DeleteNotificationRequest;
+use App\Http\Requests\MarkAllNotificationsReadRequest;
+use App\Http\Requests\MarkNotificationReadRequest;
 use App\Models\Notification;
 use App\Services\NotificationService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class NotificationController extends Controller
@@ -44,13 +46,13 @@ class NotificationController extends Controller
     /**
      * Mark a notification as read.
      */
-    public function markAsRead(Notification $notification): JsonResponse
+    public function markAsRead(MarkNotificationReadRequest $request, Notification $notification): JsonResponse
     {
         // Ensure the notification belongs to the authenticated user
         if ($notification->user_id !== auth()->id()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Unauthorized',
+                'message' => __('Unauthorized'),
             ], 403);
         }
 
@@ -58,33 +60,33 @@ class NotificationController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Notification marked as read',
+            'message' => __('Notification marked as read'),
         ]);
     }
 
     /**
      * Mark all notifications as read.
      */
-    public function markAllAsRead(): JsonResponse
+    public function markAllAsRead(MarkAllNotificationsReadRequest $request): JsonResponse
     {
         $this->notificationService->markAllAsRead(auth()->user());
 
         return response()->json([
             'success' => true,
-            'message' => 'All notifications marked as read',
+            'message' => __('All notifications marked as read'),
         ]);
     }
 
     /**
      * Delete a notification.
      */
-    public function destroy(Notification $notification): JsonResponse
+    public function destroy(DeleteNotificationRequest $request, Notification $notification): JsonResponse
     {
         // Ensure the notification belongs to the authenticated user
         if ($notification->user_id !== auth()->id()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Unauthorized',
+                'message' => __('Unauthorized'),
             ], 403);
         }
 
@@ -92,7 +94,7 @@ class NotificationController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Notification deleted',
+            'message' => __('Notification deleted'),
         ]);
     }
 }

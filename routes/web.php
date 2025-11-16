@@ -16,7 +16,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap.index');
 Route::get('/post/{slug}', [PublicPostController::class, 'show'])->name('post.show');
 Route::get('/category/{slug}', [\App\Http\Controllers\CategoryController::class, 'show'])->name('category.show');
-Route::get('/tag/{slug}', [PublicPostController::class, 'tag'])->name('tag.show');
+Route::get('/tag/{slug}', [\App\Http\Controllers\TagController::class, 'show'])->name('tag.show');
 Route::get('/series', [\App\Http\Controllers\SeriesController::class, 'index'])->name('series.index');
 Route::get('/series/{slug}', [\App\Http\Controllers\SeriesController::class, 'show'])->name('series.show');
 Route::get('/search', [SearchController::class, 'index'])
@@ -78,7 +78,9 @@ Route::middleware('auth')->group(function () {
 
     // Bookmarks
     Route::get('/bookmarks', [\App\Http\Controllers\BookmarkController::class, 'index'])->name('bookmarks.index');
-    Route::post('/posts/{post}/bookmark', [\App\Http\Controllers\BookmarkController::class, 'toggle'])->name('bookmarks.toggle');
+    Route::post('/posts/{post}/bookmark', [\App\Http\Controllers\BookmarkController::class, 'store'])->name('bookmarks.store');
+    Route::delete('/posts/{post}/bookmark', [\App\Http\Controllers\BookmarkController::class, 'destroy'])->name('bookmarks.destroy');
+    Route::post('/posts/{post}/bookmark/toggle', [\App\Http\Controllers\BookmarkController::class, 'toggle'])->name('bookmarks.toggle');
 
     // Bookmark Collections
     Route::post('/bookmarks/collections', [\App\Http\Controllers\BookmarkCollectionController::class, 'store'])->name('bookmarks.collections.store');

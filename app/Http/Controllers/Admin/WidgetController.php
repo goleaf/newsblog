@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\ReorderWidgetsRequest;
+use App\Http\Requests\Admin\StoreWidgetRequest;
+use App\Http\Requests\Admin\UpdateWidgetRequest;
 use App\Models\Widget;
 use App\Models\WidgetArea;
 use App\Services\WidgetService;
-use Illuminate\Http\Request;
 
 class WidgetController extends Controller
 {
@@ -22,15 +24,9 @@ class WidgetController extends Controller
         return view('admin.widgets.index', compact('widgetAreas', 'availableTypes'));
     }
 
-    public function store(Request $request)
+    public function store(StoreWidgetRequest $request)
     {
-        $validated = $request->validate([
-            'widget_area_id' => 'required|exists:widget_areas,id',
-            'type' => 'required|string',
-            'title' => 'required|string|max:255',
-            'settings' => 'nullable|array',
-            'active' => 'boolean',
-        ]);
+        $validated = $request->validated();
 
         $maxOrder = Widget::where('widget_area_id', $validated['widget_area_id'])->max('order') ?? 0;
         $validated['order'] = $maxOrder + 1;
@@ -44,17 +40,13 @@ class WidgetController extends Controller
         return response()->json([
             'success' => true,
             'widget' => $widget->load('widgetArea'),
-            'message' => 'Widget created successfully',
+            'message' => __('Widget created successfully'),
         ]);
     }
 
-    public function update(Request $request, Widget $widget)
+    public function update(UpdateWidgetRequest $request, Widget $widget)
     {
-        $validated = $request->validate([
-            'title' => 'sometimes|string|max:255',
-            'settings' => 'sometimes|array',
-            'active' => 'sometimes|boolean',
-        ]);
+        $validated = $request->validated();
 
         $widget->update($validated);
         $this->widgetService->clearCache($widget);
@@ -62,7 +54,7 @@ class WidgetController extends Controller
         return response()->json([
             'success' => true,
             'widget' => $widget->fresh(),
-            'message' => 'Widget updated successfully',
+            'message' => __('Widget updated successfully'),
         ]);
     }
 
@@ -74,18 +66,13 @@ class WidgetController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Widget deleted successfully',
+            'message' => __('Widget deleted successfully'),
         ]);
     }
 
-    public function reorder(Request $request)
+    public function reorder(ReorderWidgetsRequest $request)
     {
-        $validated = $request->validate([
-            'widgets' => 'required|array',
-            'widgets.*.id' => 'required|exists:widgets,id',
-            'widgets.*.order' => 'required|integer',
-            'widgets.*.widget_area_id' => 'required|exists:widget_areas,id',
-        ]);
+        $validated = $request->validated();
 
         foreach ($validated['widgets'] as $widgetData) {
             Widget::where('id', $widgetData['id'])->update([
@@ -105,7 +92,7 @@ class WidgetController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Widgets reordered successfully',
+            'message' => __('Widgets reordered successfully'),
         ]);
     }
 
@@ -117,7 +104,7 @@ class WidgetController extends Controller
         return response()->json([
             'success' => true,
             'active' => $widget->active,
-            'message' => 'Widget '.($widget->active ? 'enabled' : 'disabled').' successfully',
+            'message' => $widget->active ? __('Widget enabled successfully') : __('Widget disabled successfully'),
         ]);
     }
 

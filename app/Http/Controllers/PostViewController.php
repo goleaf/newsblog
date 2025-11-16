@@ -37,7 +37,8 @@ class PostViewController extends Controller
             session()->getId(),
             $request->ip(),
             $request->userAgent(),
-            $request->header('referer')
+            $request->header('referer'),
+            $request->user()?->id
         );
 
         // Track performance metrics

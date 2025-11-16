@@ -220,4 +220,3 @@ class PostScopesTest extends TestCase
         $this->assertFalse($results->contains($draftFeaturedPost));
     }
 }
-

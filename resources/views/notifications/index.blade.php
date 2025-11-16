@@ -5,7 +5,7 @@
                 <div class="p-6">
                     <div class="flex items-center justify-between mb-6">
                         <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
-                            Notifications
+                            {{ __('Notifications') }}
                         </h2>
                         
                         @if($notifications->total() > 0)
@@ -15,7 +15,7 @@
                                 type="submit"
                                 class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium"
                             >
-                                Mark all as read
+                                {{ __('Mark all as read') }}
                             </button>
                         </form>
                         @endif
@@ -27,9 +27,9 @@
                         <svg class="w-16 h-16 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
                         </svg>
-                        <h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-white">No notifications</h3>
+                        <h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-white">{{ __('No notifications') }}</h3>
                         <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                            You're all caught up! Check back later for new notifications.
+                            {{ __("You're all caught up! Check back later for new notifications.") }}
                         </p>
                     </div>
                     @else
@@ -79,9 +79,9 @@
                                             <button 
                                                 type="submit"
                                                 class="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
-                                                title="Mark as read"
+                                                title="{{ __('Mark as read') }}"
                                             >
-                                                Mark read
+                                                {{ __('Mark read') }}
                                             </button>
                                         </form>
                                         @endif
@@ -92,9 +92,9 @@
                                             <button 
                                                 type="submit"
                                                 class="text-xs text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300"
-                                                title="Delete"
+                                                title="{{ __('Delete') }}"
                                             >
-                                                Delete
+                                                {{ __('Delete') }}
                                             </button>
                                         </form>
                                     </div>
@@ -105,7 +105,7 @@
                                     href="{{ $notification->action_url }}"
                                     class="inline-block mt-2 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
                                 >
-                                    View →
+                                    {{ __('View') }} →
                                 </a>
                                 @endif
                             </div>

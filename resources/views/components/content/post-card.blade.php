@@ -31,7 +31,7 @@
     $classes = $sizeClasses[$size] ?? $sizeClasses['default'];
 @endphp
 
-<article {{ $attributes->merge(['class' => "group bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden {$classes['card']}"]) }}>
+<article {{ $attributes->merge(['class' => "group relative bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden {$classes['card']}"]) }}>
     @if($showImage && $post->featured_image_url)
         <a href="{{ route('post.show', $post->slug) }}" class="block overflow-hidden">
             <div class="relative {{ $imageAspect }} {{ $classes['image'] }} overflow-hidden">
@@ -53,6 +53,11 @@
                     @if($post->is_trending)
                         <x-content.post-badge type="trending" />
                     @endif
+                </div>
+                
+                {{-- Bookmark Button --}}
+                <div class="absolute top-3 right-3 z-10">
+                    <x-bookmark-button :post="$post" size="sm" />
                 </div>
             </div>
         </a>
@@ -206,4 +211,11 @@
             </div>
         </div>
     </div>
+    
+    {{-- Bookmark Button (when no image) --}}
+    @if(!$showImage || !$post->featured_image_url)
+        <div class="absolute top-3 right-3">
+            <x-bookmark-button :post="$post" size="sm" />
+        </div>
+    @endif
 </article>

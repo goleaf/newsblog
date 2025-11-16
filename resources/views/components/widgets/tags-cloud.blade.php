@@ -1,3 +1,26 @@
+@props(['widget', 'tags'])
+
+@php
+	$max = max($tags->pluck('posts_count')->all() ?: [1]);
+@endphp
+
+<div class="widget-box">
+	<h3 class="text-base font-semibold text-gray-800 dark:text-gray-100 mb-3">{{ $widget->title }}</h3>
+	<div class="flex flex-wrap gap-2">
+		@foreach ($tags as $tag)
+			@php
+				$ratio = $max ? ($tag->posts_count / $max) : 0;
+				$size = 0.85 + ($ratio * 0.65); // 0.85rem - 1.5rem
+			@endphp
+			<a href="{{ route('tag.show', $tag->slug) }}"
+			   class="inline-block text-blue-700 dark:text-blue-300 hover:text-blue-900 dark:hover:text-blue-200"
+			   style="font-size: {{ number_format($size, 2) }}rem">
+				#{{ $tag->name }}
+			</a>
+		@endforeach
+	</div>
+</div>
+
 @props([
     'widget',
     'tags',

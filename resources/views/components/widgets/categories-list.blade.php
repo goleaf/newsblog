@@ -1,3 +1,21 @@
+@props(['widget', 'categories', 'showCount' => true])
+
+<div class="widget-box">
+	<h3 class="text-base font-semibold text-gray-800 dark:text-gray-100 mb-3">{{ $widget->title }}</h3>
+	<ul class="space-y-2">
+		@foreach ($categories as $category)
+			<li class="flex items-center justify-between">
+				<a href="{{ route('category.show', $category->slug) }}" class="text-sm text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">
+					{{ $category->name }}
+				</a>
+				@if ($showCount)
+					<span class="text-xs text-gray-500 dark:text-gray-400">{{ $category->posts_count }}</span>
+				@endif
+			</li>
+		@endforeach
+	</ul>
+</div>
+
 @props([
     'widget',
     'categories',
