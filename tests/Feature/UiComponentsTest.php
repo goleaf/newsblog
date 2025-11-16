@@ -2,22 +2,23 @@
 
 namespace Tests\Feature;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class UiComponentsTest extends TestCase
 {
     // No middleware overrides
 
-    /** @test */
-    public function it_renders_ui_demo_page()
+    #[Test]
+    public function it_renders_ui_demo_page(): void
     {
         $response = $this->get(route('ui.demo'));
         $response->assertOk();
         $response->assertSee('Advanced UI Components Demo', false);
     }
 
-    /** @test */
-    public function gallery_component_renders_structure()
+    #[Test]
+    public function gallery_component_renders_structure(): void
     {
         $response = $this->get(route('ui.demo'));
         $response->assertOk();
@@ -31,8 +32,8 @@ class UiComponentsTest extends TestCase
         $response->assertSee('@touchstart', false);
     }
 
-    /** @test */
-    public function pull_quote_component_renders_text_and_attribution()
+    #[Test]
+    public function pull_quote_component_renders_text_and_attribution(): void
     {
         $response = $this->get(route('ui.demo'));
         $response->assertOk();
@@ -40,8 +41,8 @@ class UiComponentsTest extends TestCase
         $response->assertSee('Steve Jobs', false);
     }
 
-    /** @test */
-    public function pull_quote_supports_left_and_right_alignment()
+    #[Test]
+    public function pull_quote_supports_left_and_right_alignment(): void
     {
         // Render component directly to verify class application
         $right = view('components.pull-quote', [
@@ -59,8 +60,8 @@ class UiComponentsTest extends TestCase
         $this->assertStringContainsString('md:float-left md:mr-6', $left);
     }
 
-    /** @test */
-    public function social_embed_component_renders_fallback_card()
+    #[Test]
+    public function social_embed_component_renders_fallback_card(): void
     {
         $response = $this->get(route('ui.demo'));
         $response->assertOk();
@@ -69,8 +70,8 @@ class UiComponentsTest extends TestCase
         $response->assertSee('twitter.com/jack/status/20', false);
     }
 
-    /** @test */
-    public function chart_component_renders_canvas()
+    #[Test]
+    public function chart_component_renders_canvas(): void
     {
         $response = $this->get(route('ui.demo'));
         $response->assertOk();

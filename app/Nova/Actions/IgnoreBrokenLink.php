@@ -7,6 +7,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Schema;
 use Laravel\Nova\Actions\Action;
 use Laravel\Nova\Fields\ActionFields;
 
@@ -20,11 +21,15 @@ class IgnoreBrokenLink extends Action
     {
         /** @var BrokenLink $broken */
         foreach ($models as $broken) {
-            $broken->update([
+            $payload = [
                 'status' => 'ignored',
                 'checked_at' => now(),
-                'last_checked_at' => now(), // legacy sync
-            ]);
+            ];
+            if (Schema::hasColumn('broken_links', 'last_checked_at')) {
+                $payload['last_checked_at'] = now();
+            }
+
+            $broken->update($payload);
         }
 
         return Action::message('Links ignored.');

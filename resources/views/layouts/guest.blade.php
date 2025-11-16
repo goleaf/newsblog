@@ -22,8 +22,10 @@
             })();
         </script>
 
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <!-- Scripts (guard in tests when manifest may not exist) -->
+        @if(app()->environment('local') || file_exists(public_path('build/manifest.json')))
+            @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @endif
     </head>
     <body class="font-sans text-gray-900 dark:text-gray-100 antialiased transition-colors duration-200">
         <!-- Skip to Main Content -->

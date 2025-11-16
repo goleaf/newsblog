@@ -8,6 +8,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Schema;
 use Laravel\Nova\Actions\Action;
 use Laravel\Nova\Fields\ActionFields;
 use Laravel\Nova\Fields\Text;
@@ -39,15 +40,21 @@ class FixBrokenLink extends Action
                 $post->save();
             }
 
-            $broken->update([
+            $payload = [
                 'url' => $newUrl,
                 'status' => 'ok',
                 'response_code' => null,
-                'status_code' => null, // legacy sync
                 'checked_at' => now(),
-                'last_checked_at' => now(), // legacy sync
                 'error_message' => null,
-            ]);
+            ];
+            if (Schema::hasColumn('broken_links', 'status_code')) {
+                $payload['status_code'] = null;
+            }
+            if (Schema::hasColumn('broken_links', 'last_checked_at')) {
+                $payload['last_checked_at'] = now();
+            }
+
+            $broken->update($payload);
         }
 
         return Action::message('Links updated.');

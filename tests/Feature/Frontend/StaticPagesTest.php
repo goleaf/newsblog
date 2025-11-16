@@ -125,4 +125,26 @@ class StaticPagesTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('Parent Page');
     }
+
+    public function test_nested_page_displays_by_slug_path(): void
+    {
+        $parent = Page::factory()->create([
+            'title' => 'Parent Page',
+            'slug' => 'parent-page',
+            'status' => 'published',
+            'template' => 'default',
+        ]);
+
+        $child = Page::factory()->create([
+            'title' => 'Child Page',
+            'slug' => 'child-page',
+            'status' => 'published',
+            'template' => 'default',
+            'parent_id' => $parent->id,
+        ]);
+
+        $response = $this->get("/page/{$parent->slug}/{$child->slug}");
+        $response->assertStatus(200);
+        $response->assertSee('Child Page');
+    }
 }

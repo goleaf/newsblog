@@ -88,7 +88,7 @@
                                                 </td>
                                                 <td class="px-6 py-4">
                                                     <div class="text-gray-900 dark:text-gray-100">
-                                                        {{ Str::limit($link->post->title, 50) }}
+                                                        {{ \Illuminate\Support\Str::limit($link->post->title, 50) }}
                                                     </div>
                                                     <a href="{{ route('post.show', $link->post->slug) }}" target="_blank" class="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400">
                                                         View Post
@@ -111,7 +111,7 @@
                                                     @endif
                                                     @if ($link->error_message)
                                                         <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                                            {{ Str::limit($link->error_message, 40) }}
+                                                            {{ \Illuminate\Support\Str::limit($link->error_message, 40) }}
                                                         </div>
                                                     @endif
                                                 </td>

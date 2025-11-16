@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\File;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class CodeSplittingTest extends TestCase
@@ -20,8 +21,8 @@ class CodeSplittingTest extends TestCase
         }
     }
 
-    /** @test */
-    public function vite_config_has_code_splitting_configuration()
+    #[Test]
+    public function vite_config_has_code_splitting_configuration(): void
     {
         $viteConfig = File::get(base_path('vite.config.js'));
 
@@ -38,8 +39,8 @@ class CodeSplittingTest extends TestCase
         $this->assertStringContainsString('pages/search.js', $viteConfig);
     }
 
-    /** @test */
-    public function page_specific_entry_points_exist()
+    #[Test]
+    public function page_specific_entry_points_exist(): void
     {
         $entryPoints = [
             'resources/js/pages/homepage.js',
@@ -56,8 +57,8 @@ class CodeSplittingTest extends TestCase
         }
     }
 
-    /** @test */
-    public function vendor_chunks_are_created_in_build()
+    #[Test]
+    public function vendor_chunks_are_created_in_build(): void
     {
         $buildManifest = $this->getBuildManifest();
 
@@ -81,8 +82,8 @@ class CodeSplittingTest extends TestCase
         );
     }
 
-    /** @test */
-    public function route_based_chunks_are_created()
+    #[Test]
+    public function route_based_chunks_are_created(): void
     {
         $buildManifest = $this->getBuildManifest();
 
@@ -115,8 +116,8 @@ class CodeSplittingTest extends TestCase
         }
     }
 
-    /** @test */
-    public function javascript_bundles_are_within_size_limits()
+    #[Test]
+    public function javascript_bundles_are_within_size_limits(): void
     {
         $buildDir = public_path('build/js');
 
@@ -159,8 +160,8 @@ class CodeSplittingTest extends TestCase
         echo sprintf("Total: %s KB\n\n", round($totalSize / 1024, 2));
     }
 
-    /** @test */
-    public function css_bundles_are_within_size_limits()
+    #[Test]
+    public function css_bundles_are_within_size_limits(): void
     {
         $buildDir = public_path('build/css');
 
@@ -203,8 +204,8 @@ class CodeSplittingTest extends TestCase
         echo sprintf("Total: %s KB\n\n", round($totalSize / 1024, 2));
     }
 
-    /** @test */
-    public function lazy_loading_components_are_not_in_main_bundle()
+    #[Test]
+    public function lazy_loading_components_are_not_in_main_bundle(): void
     {
         $buildManifest = $this->getBuildManifest();
 
@@ -252,8 +253,8 @@ class CodeSplittingTest extends TestCase
         $this->assertTrue(true, 'Lazy loading structure verified');
     }
 
-    /** @test */
-    public function build_generates_proper_chunk_file_names()
+    #[Test]
+    public function build_generates_proper_chunk_file_names(): void
     {
         $buildManifest = $this->getBuildManifest();
 
@@ -288,8 +289,8 @@ class CodeSplittingTest extends TestCase
         }
     }
 
-    /** @test */
-    public function alpine_js_is_in_separate_vendor_chunk()
+    #[Test]
+    public function alpine_js_is_in_separate_vendor_chunk(): void
     {
         $buildManifest = $this->getBuildManifest();
 

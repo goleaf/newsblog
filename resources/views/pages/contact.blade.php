@@ -22,8 +22,9 @@
                                     </div>
                                 @endif
 
-                                <form method="POST" action="{{ route('page.contact.submit') }}" class="space-y-6">
+                                <form method="POST" action="{{ route('page.contact.submit') }}" class="space-y-6" aria-describedby="contact-form-hint">
                                     @csrf
+                                    <p id="contact-form-hint" class="text-sm text-gray-500 dark:text-gray-400">Fields marked * are required.</p>
 
                                     <div>
                                         <label for="name" class="block text-sm font-medium mb-2">
@@ -34,9 +35,10 @@
                                                name="name" 
                                                value="{{ old('name') }}"
                                                required
+                                               aria-describedby="name-error"
                                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
                                         @error('name')
-                                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                            <p id="name-error" class="mt-1 text-sm text-red-600 dark:text-red-400" role="alert" aria-live="polite">{{ $message }}</p>
                                         @enderror
                                     </div>
 
@@ -49,9 +51,10 @@
                                                name="email" 
                                                value="{{ old('email') }}"
                                                required
+                                               aria-describedby="email-error"
                                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
                                         @error('email')
-                                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                            <p id="email-error" class="mt-1 text-sm text-red-600 dark:text-red-400" role="alert" aria-live="polite">{{ $message }}</p>
                                         @enderror
                                     </div>
 
@@ -64,9 +67,10 @@
                                                name="subject" 
                                                value="{{ old('subject') }}"
                                                required
+                                               aria-describedby="subject-error"
                                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
                                         @error('subject')
-                                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                            <p id="subject-error" class="mt-1 text-sm text-red-600 dark:text-red-400" role="alert" aria-live="polite">{{ $message }}</p>
                                         @enderror
                                     </div>
 
@@ -78,9 +82,10 @@
                                                   name="message" 
                                                   rows="6"
                                                   required
+                                                  aria-describedby="message-error"
                                                   class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">{{ old('message') }}</textarea>
                                         @error('message')
-                                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                            <p id="message-error" class="mt-1 text-sm text-red-600 dark:text-red-400" role="alert" aria-live="polite">{{ $message }}</p>
                                         @enderror
                                     </div>
 

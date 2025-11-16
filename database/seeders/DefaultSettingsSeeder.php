@@ -44,15 +44,7 @@ class DefaultSettingsSeeder extends Seeder
             ['key' => 'allowed_file_types', 'value' => 'jpg,jpeg,png,gif,webp,pdf', 'group' => 'media'],
             ['key' => 'image_quality', 'value' => '85', 'group' => 'media'],
 
-            // Reading settings
-            ['key' => 'reading_words_per_minute', 'value' => '200', 'group' => 'reading'],
-            ['key' => 'show_reading_time', 'value' => '1', 'group' => 'reading'],
-            ['key' => 'show_related_posts', 'value' => '1', 'group' => 'reading'],
-
-            // Appearance settings
-            ['key' => 'theme_color', 'value' => '#3b82f6', 'group' => 'appearance'],
-            ['key' => 'dark_mode_enabled', 'value' => '1', 'group' => 'appearance'],
-            ['key' => 'footer_text', 'value' => '© '.date('Y').' '.config('app.name').'. All rights reserved.', 'group' => 'appearance'],
+            // (Only core groups are seeded here: General, SEO, Social, Email, Comments, Media)
         ];
 
         foreach ($defaultSettings as $setting) {

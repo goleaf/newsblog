@@ -8,6 +8,7 @@ use App\Models\Tag;
 use App\Models\User;
 use App\Services\AdvancedSearchService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class AdvancedSearchServiceTest extends TestCase
@@ -29,7 +30,7 @@ class AdvancedSearchServiceTest extends TestCase
         $this->category = Category::factory()->create(['name' => 'Technology']);
     }
 
-    /** @test */
+    #[Test]
     public function it_searches_posts_by_query(): void
     {
         Post::factory()->published()->create([
@@ -50,7 +51,7 @@ class AdvancedSearchServiceTest extends TestCase
         $this->assertEquals('Laravel Testing Guide', $results->first()->title);
     }
 
-    /** @test */
+    #[Test]
     public function it_filters_posts_by_date_range(): void
     {
         // Requirement 39.1: Date range filtering
@@ -77,7 +78,7 @@ class AdvancedSearchServiceTest extends TestCase
         $this->assertEquals('Recent Post', $results->first()->title);
     }
 
-    /** @test */
+    #[Test]
     public function it_includes_end_date_in_date_range_filter(): void
     {
         // Test that posts published on the end date are included
@@ -99,7 +100,7 @@ class AdvancedSearchServiceTest extends TestCase
         $this->assertEquals('End Date Post', $results->first()->title);
     }
 
-    /** @test */
+    #[Test]
     public function it_filters_posts_by_author(): void
     {
         // Requirement 39.2: Author filter
@@ -124,7 +125,7 @@ class AdvancedSearchServiceTest extends TestCase
         $this->assertEquals('Post by Author 1', $results->first()->title);
     }
 
-    /** @test */
+    #[Test]
     public function it_filters_posts_by_category_including_subcategories(): void
     {
         // Requirement 39.3: Category filter with subcategory inclusion
@@ -171,7 +172,7 @@ class AdvancedSearchServiceTest extends TestCase
         $this->assertFalse($results->contains('title', 'Other Category Post'));
     }
 
-    /** @test */
+    #[Test]
     public function it_filters_posts_by_multiple_tags_with_and_logic(): void
     {
         // Requirement 39.4: Tag multi-select filter with AND logic
@@ -209,7 +210,7 @@ class AdvancedSearchServiceTest extends TestCase
         $this->assertFalse($results->contains('title', 'Post with only Laravel'));
     }
 
-    /** @test */
+    #[Test]
     public function it_combines_multiple_filters_with_and_logic(): void
     {
         // Requirement 39.4: Multiple filters combined with AND logic
@@ -249,7 +250,7 @@ class AdvancedSearchServiceTest extends TestCase
         $this->assertEquals('Matching Post', $results->first()->title);
     }
 
-    /** @test */
+    #[Test]
     public function it_highlights_matching_terms_in_results(): void
     {
         Post::factory()->published()->create([
@@ -265,7 +266,7 @@ class AdvancedSearchServiceTest extends TestCase
         $this->assertStringContainsString('<mark class="search-highlight">Laravel</mark>', $results->first()->highlighted_excerpt);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_authors_with_published_posts(): void
     {
         // Requirement 39.2: Display dropdown of all authors with published posts
@@ -289,7 +290,7 @@ class AdvancedSearchServiceTest extends TestCase
         $this->assertEquals('Active Author', $authors->first()->name);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_tags_with_posts(): void
     {
         $tagWithPosts = Tag::factory()->create(['name' => 'Active Tag']);
@@ -307,7 +308,7 @@ class AdvancedSearchServiceTest extends TestCase
         $this->assertEquals('Active Tag', $tags->first()->name);
     }
 
-    /** @test */
+    #[Test]
     public function it_counts_active_filters(): void
     {
         // Requirement 39.5: Display active filter count
@@ -327,7 +328,7 @@ class AdvancedSearchServiceTest extends TestCase
         ]));
     }
 
-    /** @test */
+    #[Test]
     public function it_counts_total_results_without_pagination(): void
     {
         Post::factory()->published()->count(25)->create([
@@ -341,7 +342,7 @@ class AdvancedSearchServiceTest extends TestCase
         $this->assertEquals(25, $count);
     }
 
-    /** @test */
+    #[Test]
     public function it_searches_in_title_content_and_excerpt(): void
     {
         Post::factory()->published()->create([
@@ -408,7 +409,7 @@ class AdvancedSearchServiceTest extends TestCase
         $this->assertEquals('Testing Guide', $results->get(2)->title);
     }
 
-    /** @test */
+    #[Test]
     public function it_only_returns_published_posts(): void
     {
         Post::factory()->published()->create([
@@ -437,7 +438,7 @@ class AdvancedSearchServiceTest extends TestCase
         $this->assertEquals('Published Post', $results->first()->title);
     }
 
-    /** @test */
+    #[Test]
     public function it_eager_loads_relationships(): void
     {
         Post::factory()->published()->create([
@@ -454,7 +455,7 @@ class AdvancedSearchServiceTest extends TestCase
         $this->assertTrue($results->first()->relationLoaded('tags'));
     }
 
-    /** @test */
+    #[Test]
     public function it_paginates_results(): void
     {
         Post::factory()->published()->count(20)->create([
@@ -470,7 +471,7 @@ class AdvancedSearchServiceTest extends TestCase
         $this->assertEquals(2, $results->lastPage());
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_empty_query_with_filters(): void
     {
         Post::factory()->published()->count(5)->create([
@@ -483,7 +484,7 @@ class AdvancedSearchServiceTest extends TestCase
         $this->assertCount(5, $results);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_invalid_category_id_gracefully(): void
     {
         Post::factory()->published()->create([
@@ -497,7 +498,7 @@ class AdvancedSearchServiceTest extends TestCase
         $this->assertCount(0, $results);
     }
 
-    /** @test */
+    #[Test]
     public function it_escapes_html_in_highlighted_text(): void
     {
         Post::factory()->published()->create([

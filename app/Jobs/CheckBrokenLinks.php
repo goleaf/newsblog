@@ -11,6 +11,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 
 class CheckBrokenLinks implements ShouldQueue
 {
@@ -94,17 +95,25 @@ class CheckBrokenLinks implements ShouldQueue
             ]);
         }
 
+        $attributes = [
+            'status' => $status,
+            'response_code' => $code,
+            'checked_at' => now(),
+            // Persist error message when we hit exceptions (timeouts, DNS, etc.)
+            'error_message' => $error,
+        ];
+
+        // Sync legacy columns only if present in current schema
+        if (Schema::hasColumn('broken_links', 'status_code')) {
+            $attributes['status_code'] = $code;
+        }
+        if (Schema::hasColumn('broken_links', 'last_checked_at')) {
+            $attributes['last_checked_at'] = now();
+        }
+
         BrokenLink::query()->updateOrCreate(
             ['post_id' => $postId, 'url' => $url],
-            [
-                'status' => $status,
-                'response_code' => $code,
-                'status_code' => $code, // keep legacy column in sync for older schemas
-                'checked_at' => now(),
-                'last_checked_at' => now(), // keep legacy column in sync for older schemas
-                // Persist error message when we hit exceptions (timeouts, DNS, etc.)
-                'error_message' => $error,
-            ]
+            $attributes
         );
     }
 }

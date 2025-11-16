@@ -13,14 +13,15 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Queue;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class EmailNotificationTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function it_sends_comment_approved_notification_to_post_author()
+    #[Test]
+    public function it_sends_comment_approved_notification_to_post_author(): void
     {
         Mail::fake();
 
@@ -43,8 +44,8 @@ class EmailNotificationTest extends TestCase
         });
     }
 
-    /** @test */
-    public function it_queues_comment_approved_notification_job()
+    #[Test]
+    public function it_queues_comment_approved_notification_job(): void
     {
         Queue::fake();
 
@@ -63,8 +64,8 @@ class EmailNotificationTest extends TestCase
         });
     }
 
-    /** @test */
-    public function it_sends_welcome_email_on_user_registration()
+    #[Test]
+    public function it_sends_welcome_email_on_user_registration(): void
     {
         Mail::fake();
 
@@ -79,8 +80,8 @@ class EmailNotificationTest extends TestCase
         });
     }
 
-    /** @test */
-    public function it_dispatches_welcome_email_job_on_registered_event()
+    #[Test]
+    public function it_dispatches_welcome_email_job_on_registered_event(): void
     {
         Mail::fake();
 
@@ -101,8 +102,8 @@ class EmailNotificationTest extends TestCase
         });
     }
 
-    /** @test */
-    public function comment_approved_mail_contains_correct_content()
+    #[Test]
+    public function comment_approved_mail_contains_correct_content(): void
     {
         $author = User::factory()->create(['name' => 'John Doe']);
         $post = Post::factory()->published()->create([
@@ -125,8 +126,8 @@ class EmailNotificationTest extends TestCase
         $mailable->assertSeeInHtml('Comment Approved');
     }
 
-    /** @test */
-    public function welcome_mail_contains_correct_content()
+    #[Test]
+    public function welcome_mail_contains_correct_content(): void
     {
         $user = User::factory()->create(['name' => 'Alice Johnson']);
 
@@ -138,8 +139,8 @@ class EmailNotificationTest extends TestCase
         $mailable->assertSeeInHtml('Start Exploring');
     }
 
-    /** @test */
-    public function comment_approved_mail_has_correct_subject()
+    #[Test]
+    public function comment_approved_mail_has_correct_subject(): void
     {
         $comment = Comment::factory()->create();
         $mailable = new CommentApprovedMail($comment);
@@ -147,8 +148,8 @@ class EmailNotificationTest extends TestCase
         $this->assertEquals('Your comment has been approved', $mailable->envelope()->subject);
     }
 
-    /** @test */
-    public function welcome_mail_has_correct_subject()
+    #[Test]
+    public function welcome_mail_has_correct_subject(): void
     {
         $user = User::factory()->create();
         $mailable = new WelcomeMail($user);
@@ -156,8 +157,8 @@ class EmailNotificationTest extends TestCase
         $this->assertStringContainsString('Welcome to', $mailable->envelope()->subject);
     }
 
-    /** @test */
-    public function comment_approved_notification_job_handles_execution()
+    #[Test]
+    public function comment_approved_notification_job_handles_execution(): void
     {
         Mail::fake();
 
@@ -174,8 +175,8 @@ class EmailNotificationTest extends TestCase
         Mail::assertSent(CommentApprovedMail::class);
     }
 
-    /** @test */
-    public function welcome_email_job_handles_execution()
+    #[Test]
+    public function welcome_email_job_handles_execution(): void
     {
         Mail::fake();
 
@@ -187,8 +188,8 @@ class EmailNotificationTest extends TestCase
         Mail::assertSent(WelcomeMail::class);
     }
 
-    /** @test */
-    public function all_email_notifications_are_queued()
+    #[Test]
+    public function all_email_notifications_are_queued(): void
     {
         $this->assertTrue(in_array('Illuminate\Contracts\Queue\ShouldQueue', class_implements(SendCommentApprovedNotification::class)));
         $this->assertTrue(in_array('Illuminate\Contracts\Queue\ShouldQueue', class_implements(SendWelcomeEmail::class)));

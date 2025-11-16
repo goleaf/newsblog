@@ -7,6 +7,7 @@ use App\Models\Post;
 use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class PostFilteringTest extends TestCase
@@ -28,7 +29,7 @@ class PostFilteringTest extends TestCase
         $this->tag = Tag::factory()->create(['name' => 'Laravel']);
     }
 
-    /** @test */
+    #[Test]
     public function it_displays_posts_in_category_with_default_sorting(): void
     {
         // Create posts with different dates and view counts
@@ -52,7 +53,7 @@ class PostFilteringTest extends TestCase
         $response->assertSeeInOrder(['Latest Post', 'Older Post']); // Latest first by default
     }
 
-    /** @test */
+    #[Test]
     public function it_sorts_posts_by_popularity(): void
     {
         // Requirement 26.2: Sort by Popular (view count)
@@ -74,7 +75,7 @@ class PostFilteringTest extends TestCase
         $response->assertSeeInOrder(['Most Popular', 'Less Popular']);
     }
 
-    /** @test */
+    #[Test]
     public function it_sorts_posts_by_oldest(): void
     {
         // Requirement 26.3: Sort by Oldest
@@ -96,7 +97,7 @@ class PostFilteringTest extends TestCase
         $response->assertSeeInOrder(['Oldest Post', 'Newest Post']);
     }
 
-    /** @test */
+    #[Test]
     public function it_filters_posts_by_today(): void
     {
         // Requirement 26.4: Date filter - Today
@@ -119,7 +120,7 @@ class PostFilteringTest extends TestCase
         $response->assertDontSee('Yesterday Post');
     }
 
-    /** @test */
+    #[Test]
     public function it_filters_posts_by_this_week(): void
     {
         // Requirement 26.4: Date filter - This Week
@@ -142,7 +143,7 @@ class PostFilteringTest extends TestCase
         $response->assertDontSee('Last Month Post');
     }
 
-    /** @test */
+    #[Test]
     public function it_filters_posts_by_this_month(): void
     {
         // Requirement 26.4: Date filter - This Month
@@ -165,7 +166,7 @@ class PostFilteringTest extends TestCase
         $response->assertDontSee('Last Year Post');
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_json_for_ajax_requests(): void
     {
         // Requirement 26.1: AJAX-based filtering without page reload
@@ -180,7 +181,7 @@ class PostFilteringTest extends TestCase
         $response->assertJsonStructure(['html', 'pagination']);
     }
 
-    /** @test */
+    #[Test]
     public function it_persists_filters_in_url_parameters(): void
     {
         // Requirement 26.5: URL parameter persistence for shareability
@@ -200,7 +201,7 @@ class PostFilteringTest extends TestCase
         $this->assertEquals('week', request()->query('date_filter'));
     }
 
-    /** @test */
+    #[Test]
     public function it_filters_and_sorts_posts_on_tag_pages(): void
     {
         // Test that filtering works on tag pages too
@@ -224,7 +225,7 @@ class PostFilteringTest extends TestCase
         $response->assertSeeInOrder(['Popular Tagged Post', 'Less Popular Tagged Post']);
     }
 
-    /** @test */
+    #[Test]
     public function it_combines_sort_and_date_filters(): void
     {
         // Test combining multiple filters

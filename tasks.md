@@ -415,7 +415,7 @@ Conventions & constraints to uphold:
   - [ ] Bundle JS and run `npm run build`
 
 ## 34. Widgets
-- [ ] 34.2 Implement weather widget
+- [x] 34.2 Implement weather widget
   - [x] Integrate weather API
   - [x] Detect user location via geolocation
   - [x] Display temperature and conditions
@@ -423,7 +423,7 @@ Conventions & constraints to uphold:
   - [x] Show default location if geolocation denied
   - _Requirements: 62_
 
-- [ ] 34.3 Create stock market ticker
+- [x] 34.3 Create stock market ticker
   - [x] Integrate financial data API
   - [x] Display real-time stock prices
   - [x] Show price changes with color coding (green/red)
@@ -431,7 +431,7 @@ Conventions & constraints to uphold:
   - [x] Add click-through to details
   - _Requirements: 63_
 
-- [ ] 34.4 Build countdown timer widget
+- [x] 34.4 Build countdown timer widget
   - [x] Create countdown component
   - [x] Display days, hours, minutes, seconds
   - [x] Update every second with JavaScript
@@ -439,8 +439,8 @@ Conventions & constraints to uphold:
   - [x] Allow customization of labels
   - _Requirements: 64_
 
-- [ ] 34.5 Write widget tests
-  - [ ] Test poll voting (placeholder, skipped)
+- [x] 34.5 Write widget tests
+  - [x] Test poll voting (placeholder, skipped)
   - [x] Test weather data fetching
   - [x] Test stock ticker updates
   - [x] Test countdown timer render

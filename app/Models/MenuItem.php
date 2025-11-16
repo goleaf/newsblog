@@ -3,6 +3,9 @@
 namespace App\Models;
 
 use App\Enums\MenuItemType;
+use App\Models\Category;
+use App\Models\Page;
+use App\Models\Tag;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -47,6 +50,38 @@ class MenuItem extends Model
     {
         return $this->hasMany(MenuItem::class, 'parent_id')->orderBy('order');
     }
-}
 
+    /**
+     * Resolve URL dynamically for typed items when not explicitly set.
+     */
+    public function getUrlAttribute($value): ?string
+    {
+        if (! empty($value)) {
+            return $value;
+        }
+
+        if ($this->type === MenuItemType::Page && $this->reference_id) {
+            $page = Page::query()->select(['id', 'slug', 'parent_id'])->with('parent')->find($this->reference_id);
+            if ($page) {
+                return route('page.show', $page->slug_path);
+            }
+        }
+
+        if ($this->type === MenuItemType::Category && $this->reference_id) {
+            $cat = Category::query()->select(['id', 'slug'])->find($this->reference_id);
+            if ($cat) {
+                return route('category.show', $cat->slug);
+            }
+        }
+
+        if ($this->type === MenuItemType::Tag && $this->reference_id) {
+            $tag = Tag::query()->select(['id', 'slug'])->find($this->reference_id);
+            if ($tag) {
+                return route('tag.show', $tag->slug);
+            }
+        }
+
+        return null;
+    }
+}
 

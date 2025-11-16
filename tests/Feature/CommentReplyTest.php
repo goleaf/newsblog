@@ -8,6 +8,7 @@ use App\Models\Post;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Queue;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class CommentReplyTest extends TestCase
@@ -26,8 +27,8 @@ class CommentReplyTest extends TestCase
         $this->post = Post::factory()->published()->create(['user_id' => $this->user->id]);
     }
 
-    /** @test */
-    public function it_can_create_a_reply_to_a_comment()
+    #[Test]
+    public function it_can_create_a_reply_to_a_comment(): void
     {
         // Create a parent comment
         $parentComment = Comment::factory()->create([
@@ -59,8 +60,8 @@ class CommentReplyTest extends TestCase
         ]);
     }
 
-    /** @test */
-    public function it_dispatches_notification_job_when_reply_is_created()
+    #[Test]
+    public function it_dispatches_notification_job_when_reply_is_created(): void
     {
         Queue::fake();
 
@@ -83,8 +84,8 @@ class CommentReplyTest extends TestCase
         Queue::assertPushed(SendCommentReplyNotification::class);
     }
 
-    /** @test */
-    public function it_does_not_dispatch_notification_for_spam_replies()
+    #[Test]
+    public function it_does_not_dispatch_notification_for_spam_replies(): void
     {
         Queue::fake();
 
@@ -108,8 +109,8 @@ class CommentReplyTest extends TestCase
         Queue::assertNotPushed(SendCommentReplyNotification::class);
     }
 
-    /** @test */
-    public function it_calculates_comment_depth_correctly()
+    #[Test]
+    public function it_calculates_comment_depth_correctly(): void
     {
         $level1 = Comment::factory()->create([
             'post_id' => $this->post->id,
@@ -131,8 +132,8 @@ class CommentReplyTest extends TestCase
         $this->assertEquals(2, $level3->depth());
     }
 
-    /** @test */
-    public function it_prevents_nesting_beyond_3_levels()
+    #[Test]
+    public function it_prevents_nesting_beyond_3_levels(): void
     {
         // Level 1 - depth 0
         $level1 = Comment::factory()->create([
@@ -158,8 +159,8 @@ class CommentReplyTest extends TestCase
         $this->assertFalse($level3->canReply());
     }
 
-    /** @test */
-    public function it_loads_nested_comments_correctly()
+    #[Test]
+    public function it_loads_nested_comments_correctly(): void
     {
         $parentComment = Comment::factory()->create([
             'post_id' => $this->post->id,
@@ -192,8 +193,8 @@ class CommentReplyTest extends TestCase
         $this->assertCount(0, $reply2->replies);
     }
 
-    /** @test */
-    public function it_displays_nested_comments_on_post_page()
+    #[Test]
+    public function it_displays_nested_comments_on_post_page(): void
     {
         $parentComment = Comment::factory()->create([
             'post_id' => $this->post->id,
@@ -221,8 +222,8 @@ class CommentReplyTest extends TestCase
         $response->assertSee('Replying to Parent Author');
     }
 
-    /** @test */
-    public function it_shows_reply_button_only_for_comments_that_can_reply()
+    #[Test]
+    public function it_shows_reply_button_only_for_comments_that_can_reply(): void
     {
         // Level 1 - depth 0
         $level1 = Comment::factory()->create([

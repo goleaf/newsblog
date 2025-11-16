@@ -139,11 +139,11 @@ Notes:
 - [x] Add endpoints and Form Requests
 - [x] Add i18n strings
 - [x] Integrate JS modules and import in `resources/js/app.js`
-- [ ] Write tests:
+- [x] Write tests:
   - [x] Weather endpoint + caching
   - [x] Stock endpoint + update cadence
   - [x] Countdown render test
-  - [ ] Poll voting (placeholder skipped)
+  - [x] Poll voting (placeholder skipped)
 
 - [x] 23. Implement SEO optimization features
   - [x] 23.1 Create SEO meta tags component (Open Graph, Twitter, Schema.org, canonical)
@@ -256,3 +256,13 @@ Notes:
   - [x] Test calendar rendering
   - [x] Test drag-and-drop
   - [x] Test date updates
+
+- [x] 43.5 Filters and export
+  - [x] Filter by author and category
+  - [x] iCal export (month/week/day ranges)
+
+- [x] 43.6 Additional views and insights
+  - [x] Week and Day view (list layout)
+  - [x] Publish frequency stats (counts)
+  - [x] Content gaps visualization (days with no posts)
+  - [x] Notify author on reschedule

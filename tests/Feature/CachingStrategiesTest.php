@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Services\CacheService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 /**
@@ -28,8 +29,8 @@ class CachingStrategiesTest extends TestCase
         Cache::flush();
     }
 
-    /** @test */
-    public function homepage_view_is_cached_for_10_minutes()
+    #[Test]
+    public function homepage_view_is_cached_for_10_minutes(): void
     {
         // Arrange
         $user = User::factory()->create();
@@ -51,8 +52,8 @@ class CachingStrategiesTest extends TestCase
         $this->assertEquals($response1->getContent(), $response2->getContent());
     }
 
-    /** @test */
-    public function homepage_cache_is_not_used_for_paginated_requests()
+    #[Test]
+    public function homepage_cache_is_not_used_for_paginated_requests(): void
     {
         // Arrange
         $user = User::factory()->create();
@@ -68,8 +69,8 @@ class CachingStrategiesTest extends TestCase
         $response->assertOk();
     }
 
-    /** @test */
-    public function homepage_cache_is_not_used_for_sorted_requests()
+    #[Test]
+    public function homepage_cache_is_not_used_for_sorted_requests(): void
     {
         // Arrange
         $user = User::factory()->create();
@@ -85,8 +86,8 @@ class CachingStrategiesTest extends TestCase
         $response->assertOk();
     }
 
-    /** @test */
-    public function category_data_is_cached()
+    #[Test]
+    public function category_data_is_cached(): void
     {
         // Arrange
         $user = User::factory()->create();
@@ -110,8 +111,8 @@ class CachingStrategiesTest extends TestCase
         $this->assertTrue(Cache::has($queryCacheKey));
     }
 
-    /** @test */
-    public function category_query_cache_varies_by_filters()
+    #[Test]
+    public function category_query_cache_varies_by_filters(): void
     {
         // Arrange
         $user = User::factory()->create();
@@ -137,8 +138,8 @@ class CachingStrategiesTest extends TestCase
         $this->assertFalse(Cache::has($cacheKey2));
     }
 
-    /** @test */
-    public function post_view_is_cached_for_30_minutes()
+    #[Test]
+    public function post_view_is_cached_for_30_minutes(): void
     {
         // Arrange
         $user = User::factory()->create();
@@ -161,8 +162,8 @@ class CachingStrategiesTest extends TestCase
         $this->assertEquals($response1->getContent(), $response2->getContent());
     }
 
-    /** @test */
-    public function post_view_is_not_cached_for_authenticated_users()
+    #[Test]
+    public function post_view_is_not_cached_for_authenticated_users(): void
     {
         // Arrange
         $user = User::factory()->create();
@@ -178,8 +179,8 @@ class CachingStrategiesTest extends TestCase
         $this->assertFalse(Cache::has($cacheKey));
     }
 
-    /** @test */
-    public function tag_data_is_cached()
+    #[Test]
+    public function tag_data_is_cached(): void
     {
         // Arrange
         $user = User::factory()->create();
@@ -204,8 +205,8 @@ class CachingStrategiesTest extends TestCase
         $this->assertTrue(Cache::has($queryCacheKey));
     }
 
-    /** @test */
-    public function homepage_cache_is_invalidated_when_post_is_created()
+    #[Test]
+    public function homepage_cache_is_invalidated_when_post_is_created(): void
     {
         // Arrange
         $user = User::factory()->create();
@@ -223,8 +224,8 @@ class CachingStrategiesTest extends TestCase
         $this->assertFalse(Cache::has('view.home'));
     }
 
-    /** @test */
-    public function category_cache_is_invalidated_when_post_is_updated()
+    #[Test]
+    public function category_cache_is_invalidated_when_post_is_updated(): void
     {
         // Arrange
         $user = User::factory()->create();
@@ -244,8 +245,8 @@ class CachingStrategiesTest extends TestCase
         $this->assertTrue(Cache::has($cacheKey));
     }
 
-    /** @test */
-    public function post_cache_is_invalidated_when_post_is_updated()
+    #[Test]
+    public function post_cache_is_invalidated_when_post_is_updated(): void
     {
         // Arrange
         $user = User::factory()->create();
@@ -264,8 +265,8 @@ class CachingStrategiesTest extends TestCase
         $this->assertFalse(Cache::has($cacheKey));
     }
 
-    /** @test */
-    public function category_cache_is_invalidated_when_category_is_updated()
+    #[Test]
+    public function category_cache_is_invalidated_when_category_is_updated(): void
     {
         // Arrange
         $user = User::factory()->create();
@@ -284,8 +285,8 @@ class CachingStrategiesTest extends TestCase
         $this->assertFalse(Cache::has($cacheKey));
     }
 
-    /** @test */
-    public function tag_cache_is_invalidated_when_tag_is_updated()
+    #[Test]
+    public function tag_cache_is_invalidated_when_tag_is_updated(): void
     {
         // Arrange
         $user = User::factory()->create();
@@ -306,8 +307,8 @@ class CachingStrategiesTest extends TestCase
         $this->assertFalse(Cache::has($cacheKey));
     }
 
-    /** @test */
-    public function query_results_are_cached()
+    #[Test]
+    public function query_results_are_cached(): void
     {
         // Arrange
         $user = User::factory()->create();
@@ -331,8 +332,8 @@ class CachingStrategiesTest extends TestCase
         $this->assertEquals($posts1->count(), $posts2->count());
     }
 
-    /** @test */
-    public function related_posts_are_cached()
+    #[Test]
+    public function related_posts_are_cached(): void
     {
         // Arrange
         $user = User::factory()->create();
@@ -348,8 +349,8 @@ class CachingStrategiesTest extends TestCase
         $this->assertTrue(Cache::has($cacheKey));
     }
 
-    /** @test */
-    public function series_navigation_is_cached()
+    #[Test]
+    public function series_navigation_is_cached(): void
     {
         // Arrange
         $user = User::factory()->create();
@@ -364,8 +365,8 @@ class CachingStrategiesTest extends TestCase
         $this->assertTrue(Cache::has($cacheKey));
     }
 
-    /** @test */
-    public function cache_service_can_invalidate_homepage()
+    #[Test]
+    public function cache_service_can_invalidate_homepage(): void
     {
         // Arrange
         $user = User::factory()->create();

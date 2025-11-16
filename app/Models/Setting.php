@@ -25,8 +25,6 @@ class Setting extends Model
         'email' => 'Email',
         'comments' => 'Comments',
         'media' => 'Media',
-        'reading' => 'Reading',
-        'appearance' => 'Appearance',
     ];
 
     protected $fillable = [

@@ -26,7 +26,12 @@ class WidgetService
             default => 10,
         };
 
-        return Cache::remember("widget.{$widget->id}", now()->addMinutes($ttlMinutes), fn () => $this->renderWidget($widget));
+        // If the widget is not persisted (no ID), avoid caching to prevent collisions on key "widget."
+        if ($widget->getKey() === null) {
+            return $this->renderWidget($widget);
+        }
+
+        return Cache::remember("widget.{$widget->id}", now()->addMinutes($ttlMinutes), fn (): string => $this->renderWidget($widget));
     }
 
     public function renderArea(string $slug): string

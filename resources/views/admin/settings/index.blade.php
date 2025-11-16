@@ -247,67 +247,7 @@
                                             </div>
                                         @endif
 
-                                        @if($groupKey === 'reading')
-                                            <div>
-                                                <label class="block text-sm font-medium mb-2">Words Per Minute</label>
-                                                <input type="number" 
-                                                       name="settings[reading_words_per_minute]" 
-                                                       value="{{ $groupSettings['reading_words_per_minute'] ?? 200 }}"
-                                                       min="100"
-                                                       max="300"
-                                                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700">
-                                            </div>
-
-                                            <div>
-                                                <label class="flex items-center">
-                                                    <input type="checkbox" 
-                                                           name="settings[show_reading_time]" 
-                                                           value="1"
-                                                           {{ ($groupSettings['show_reading_time'] ?? '1') == '1' ? 'checked' : '' }}
-                                                           class="rounded border-gray-300 dark:border-gray-600">
-                                                    <span class="ml-2 text-sm">Show Reading Time</span>
-                                                </label>
-                                            </div>
-
-                                            <div>
-                                                <label class="flex items-center">
-                                                    <input type="checkbox" 
-                                                           name="settings[show_related_posts]" 
-                                                           value="1"
-                                                           {{ ($groupSettings['show_related_posts'] ?? '1') == '1' ? 'checked' : '' }}
-                                                           class="rounded border-gray-300 dark:border-gray-600">
-                                                    <span class="ml-2 text-sm">Show Related Posts</span>
-                                                </label>
-                                            </div>
-                                        @endif
-
-                                        @if($groupKey === 'appearance')
-                                            <div>
-                                                <label class="block text-sm font-medium mb-2">Theme Color</label>
-                                                <input type="color" 
-                                                       name="settings[theme_color]" 
-                                                       value="{{ $groupSettings['theme_color'] ?? '#3b82f6' }}"
-                                                       class="h-10 w-20 border border-gray-300 dark:border-gray-600 rounded-lg">
-                                            </div>
-
-                                            <div>
-                                                <label class="flex items-center">
-                                                    <input type="checkbox" 
-                                                           name="settings[dark_mode_enabled]" 
-                                                           value="1"
-                                                           {{ ($groupSettings['dark_mode_enabled'] ?? '1') == '1' ? 'checked' : '' }}
-                                                           class="rounded border-gray-300 dark:border-gray-600">
-                                                    <span class="ml-2 text-sm">Enable Dark Mode</span>
-                                                </label>
-                                            </div>
-
-                                            <div>
-                                                <label class="block text-sm font-medium mb-2">Footer Text</label>
-                                                <textarea name="settings[footer_text]" 
-                                                          rows="3"
-                                                          class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700">{{ $groupSettings['footer_text'] ?? '' }}</textarea>
-                                            </div>
-                                        @endif
+                                        
                                     </div>
 
                                     <div class="flex justify-between items-center pt-6 border-t border-gray-200 dark:border-gray-700">
