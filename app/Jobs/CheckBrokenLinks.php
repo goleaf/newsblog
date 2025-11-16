@@ -17,6 +17,7 @@ class CheckBrokenLinks implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public int $timeout = 120;
+
     public int $tries = 1;
 
     public function handle(): void
@@ -45,8 +46,6 @@ class CheckBrokenLinks implements ShouldQueue
     }
 
     /**
-     * @param string $html
-     * @param string|null $appHost
      * @return array<int, string>
      */
     protected function extractExternalLinks(string $html, ?string $appHost): array
@@ -54,7 +53,7 @@ class CheckBrokenLinks implements ShouldQueue
         $urls = [];
         if (preg_match_all('/href=["\']([^"\']+)["\']/i', $html, $matches)) {
             foreach ($matches[1] as $href) {
-                if (!str_starts_with($href, 'http://') && !str_starts_with($href, 'https://')) {
+                if (! str_starts_with($href, 'http://') && ! str_starts_with($href, 'https://')) {
                     continue;
                 }
                 $host = parse_url($href, PHP_URL_HOST);
@@ -72,6 +71,7 @@ class CheckBrokenLinks implements ShouldQueue
     {
         $status = 'ok';
         $code = null;
+        $error = null;
 
         try {
             $response = Http::timeout(10)
@@ -90,6 +90,7 @@ class CheckBrokenLinks implements ShouldQueue
         } catch (\Throwable $e) {
             $status = 'broken';
             $code = null;
+            $error = $e->getMessage();
             Log::warning('Broken link check failed', [
                 'url' => $url,
                 'post_id' => $postId,
@@ -103,6 +104,8 @@ class CheckBrokenLinks implements ShouldQueue
                 'status' => $status,
                 'response_code' => $code,
                 'checked_at' => now(),
+                // Persist error message when we hit exceptions (timeouts, DNS, etc.)
+                'error_message' => $error,
             ]
         );
     }

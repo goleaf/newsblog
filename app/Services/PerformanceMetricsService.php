@@ -7,9 +7,9 @@ use Illuminate\Support\Facades\Log;
 
 class PerformanceMetricsService
 {
-    private const SLOW_QUERY_THRESHOLD = 100; // milliseconds
+    private const DEFAULT_SLOW_QUERY_THRESHOLD = 100; // milliseconds
 
-    private const MEMORY_ALERT_THRESHOLD = 80; // percent
+    private const DEFAULT_MEMORY_ALERT_THRESHOLD = 80; // percent
 
     /**
      * Track page load time and optional per-request stats.
@@ -96,12 +96,13 @@ class PerformanceMetricsService
      */
     public function logSlowQuery(string $sql, float $time, array $bindings = []): void
     {
-        if ($time >= self::SLOW_QUERY_THRESHOLD) {
+        $threshold = (int) (config('performance.thresholds.slow_query_ms') ?? self::DEFAULT_SLOW_QUERY_THRESHOLD);
+        if ($time >= $threshold) {
             Log::channel('daily')->warning('Slow query detected', [
                 'sql' => $sql,
                 'time' => $time,
                 'bindings' => $bindings,
-                'threshold' => self::SLOW_QUERY_THRESHOLD,
+                'threshold' => $threshold,
             ]);
 
             // Store in cache for dashboard
@@ -193,7 +194,8 @@ class PerformanceMetricsService
         $memoryLimit = $this->getMemoryLimit();
         $percentage = $memoryLimit > 0 ? round(($memoryUsage / $memoryLimit) * 100, 2) : 0;
 
-        $alert = $percentage >= self::MEMORY_ALERT_THRESHOLD;
+        $thresholdPercent = (int) (config('performance.thresholds.memory_alert_percent') ?? self::DEFAULT_MEMORY_ALERT_THRESHOLD);
+        $alert = $percentage >= $thresholdPercent;
 
         if ($alert) {
             Log::channel('daily')->warning('High memory usage detected', [
@@ -261,5 +263,38 @@ class PerformanceMetricsService
             'cache_stats' => $this->getCacheStats(),
             'memory' => $this->getMemoryUsage(),
         ];
+    }
+
+    /**
+     * Get average query count per hour for the last 24 hours.
+     */
+    public function getAverageQueryCount(): array
+    {
+        $hours = [];
+        $now = now();
+
+        for ($i = 0; $i < 24; $i++) {
+            $hour = $now->copy()->subHours($i);
+            $key = 'performance.page_loads.'.$hour->format('Y-m-d-H');
+            $data = Cache::get($key, []);
+
+            if (! empty($data)) {
+                $counts = array_values(array_filter(array_map(
+                    fn ($row) => $row['query_count'] ?? null,
+                    $data
+                ), fn ($v) => $v !== null));
+
+                if (! empty($counts)) {
+                    $avg = array_sum($counts) / count($counts);
+                    $hours[] = [
+                        'hour' => $hour->format('Y-m-d H:00'),
+                        'average' => round($avg, 2),
+                        'count' => count($counts),
+                    ];
+                }
+            }
+        }
+
+        return array_reverse($hours);
     }
 }

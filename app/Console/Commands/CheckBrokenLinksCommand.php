@@ -12,7 +12,7 @@ class CheckBrokenLinksCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'links:check-broken';
+    protected $signature = 'links:check';
 
     /**
      * The console command description.

@@ -31,22 +31,6 @@ class TrackPerformance
 
         $loadTime = (microtime(true) - $startTime) * 1000; // Convert to milliseconds
 
-        // Track page load time and per-request stats
-        $route = $request->route()?->getName() ?? $request->path();
-        $this->performanceMetrics->trackPageLoad($route, $loadTime, $queryCount, $peakMemoryBytes);
-
-        // Alert on very slow pages (>3 seconds)
-        if ($loadTime > 3000) {
-            \Illuminate\Support\Facades\Log::channel('performance')->warning('Very slow page load detected', [
-                'route' => $route,
-                'load_time_ms' => round($loadTime, 2),
-                'url' => $request->fullUrl(),
-                'method' => $request->method(),
-                'user_id' => auth()->id(),
-                'ip' => $request->ip(),
-            ]);
-        }
-
         // Collect per-request database query count (best-effort)
         $queryCount = 0;
         try {
@@ -58,6 +42,24 @@ class TrackPerformance
 
         // Capture peak memory usage for the request
         $peakMemoryBytes = function_exists('memory_get_peak_usage') ? memory_get_peak_usage(true) : 0;
+
+        // Track page load time and per-request stats
+        $route = $request->route()?->getName() ?? $request->path();
+        $this->performanceMetrics->trackPageLoad($route, $loadTime, $queryCount, $peakMemoryBytes);
+
+        // Alert on very slow pages (>3 seconds)
+        $slowRequestThreshold = (int) (config('performance.thresholds.slow_request_ms') ?? 3000);
+        if ($loadTime > $slowRequestThreshold) {
+            \Illuminate\Support\Facades\Log::channel('performance')->warning('Very slow page load detected', [
+                'route' => $route,
+                'load_time_ms' => round($loadTime, 2),
+                'url' => $request->fullUrl(),
+                'method' => $request->method(),
+                'user_id' => auth()->id(),
+                'ip' => $request->ip(),
+                'threshold_ms' => $slowRequestThreshold,
+            ]);
+        }
 
         // Add performance header for debugging (only in non-production)
         if (! app()->isProduction()) {

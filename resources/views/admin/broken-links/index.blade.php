@@ -18,11 +18,11 @@
             <!-- Statistics -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <div class="text-sm text-gray-600 dark:text-gray-400">Pending</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">Broken</div>
                     <div class="text-3xl font-bold text-red-600">{{ $stats['total_pending'] }}</div>
                 </div>
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <div class="text-sm text-gray-600 dark:text-gray-400">Fixed</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">OK</div>
                     <div class="text-3xl font-bold text-green-600">{{ $stats['total_fixed'] }}</div>
                 </div>
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">

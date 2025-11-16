@@ -136,4 +136,19 @@ class PerformanceMetricsServiceTest extends TestCase
         $this->assertEquals(60.0, $last['average_mb']);
         $this->assertEquals(2, $last['count']);
     }
+
+    public function test_query_count_trend_from_page_loads(): void
+    {
+        // Track page loads with query counts
+        $this->service->trackPageLoad('home', 100.0, 5, null);
+        $this->service->trackPageLoad('home', 100.0, 15, null);
+
+        $trend = $this->service->getAverageQueryCount();
+
+        $this->assertNotEmpty($trend);
+        $last = end($trend);
+        $this->assertArrayHasKey('average', $last);
+        $this->assertEquals(10.0, $last['average']);
+        $this->assertEquals(2, $last['count']);
+    }
 }

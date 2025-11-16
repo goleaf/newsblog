@@ -16,6 +16,7 @@ class BrokenLink extends Model
         'status',
         'checked_at',
         'response_code',
+        'error_message',
     ];
 
     protected function casts(): array
@@ -32,6 +33,7 @@ class BrokenLink extends Model
 
     /**
      * Scope: pending items (currently broken).
+     * Using 'pending' in UI maps to DB value 'broken'.
      */
     public function scopePending($query)
     {

@@ -89,7 +89,8 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Feedback::class, FeedbackPolicy::class);
 
         // Track slow queries for performance monitoring without overhead
-        \Illuminate\Support\Facades\DB::whenQueryingForLongerThan(100, function ($connection, $event) {
+        $slowQueryMs = (int) (config('performance.thresholds.slow_query_ms') ?? 100);
+        \Illuminate\Support\Facades\DB::whenQueryingForLongerThan($slowQueryMs, function ($connection, $event) {
             $performanceMetrics = app(\App\Services\PerformanceMetricsService::class);
             $performanceMetrics->logSlowQuery(
                 $event->sql,

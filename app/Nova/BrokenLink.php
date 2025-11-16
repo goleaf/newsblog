@@ -4,13 +4,12 @@ namespace App\Nova;
 
 use App\Nova\Actions\FixBrokenLink;
 use App\Nova\Actions\IgnoreBrokenLink;
-use Illuminate\Http\Request;
+use App\Nova\Filters\BrokenLinkStatus;
 use Laravel\Nova\Fields\BelongsTo;
-use Laravel\Nova\Fields\Boolean;
+use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
-use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
 class BrokenLink extends Resource
@@ -44,6 +43,11 @@ class BrokenLink extends Resource
             new IgnoreBrokenLink,
         ];
     }
+
+    public function filters(NovaRequest $request): array
+    {
+        return [
+            new BrokenLinkStatus,
+        ];
+    }
 }
-
-
