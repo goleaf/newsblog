@@ -12,9 +12,9 @@ class PerformanceMetricsService
     private const MEMORY_ALERT_THRESHOLD = 80; // percent
 
     /**
-     * Track page load time
+     * Track page load time and optional per-request stats.
      */
-    public function trackPageLoad(string $route, float $loadTime): void
+    public function trackPageLoad(string $route, float $loadTime, ?int $queryCount = null, ?int $memoryPeakBytes = null): void
     {
         $key = 'performance.page_loads.'.date('Y-m-d-H');
 
@@ -22,6 +22,8 @@ class PerformanceMetricsService
         $data[] = [
             'route' => $route,
             'load_time' => $loadTime,
+            'query_count' => $queryCount,
+            'memory_peak' => $memoryPeakBytes,
             'timestamp' => now()->toIso8601String(),
         ];
 
@@ -48,6 +50,41 @@ class PerformanceMetricsService
                     'average' => round(array_sum($loadTimes) / count($loadTimes), 2),
                     'count' => count($loadTimes),
                 ];
+            }
+        }
+
+        return array_reverse($hours);
+    }
+
+    /**
+     * Get average memory peak (in MB) per hour for the last 24 hours.
+     * Uses the memory_peak values captured by the middleware.
+     */
+    public function getAverageMemoryUsage(): array
+    {
+        $hours = [];
+        $now = now();
+
+        for ($i = 0; $i < 24; $i++) {
+            $hour = $now->copy()->subHours($i);
+            $key = 'performance.page_loads.'.$hour->format('Y-m-d-H');
+            $data = Cache::get($key, []);
+
+            if (! empty($data)) {
+                $peaks = array_values(array_filter(array_map(
+                    fn ($row) => $row['memory_peak'] ?? null,
+                    $data
+                ), fn ($v) => $v !== null));
+
+                if (! empty($peaks)) {
+                    $avgBytes = array_sum($peaks) / count($peaks);
+                    $avgMb = $avgBytes / (1024 * 1024);
+                    $hours[] = [
+                        'hour' => $hour->format('Y-m-d H:00'),
+                        'average_mb' => round($avgMb, 2),
+                        'count' => count($peaks),
+                    ];
+                }
             }
         }
 

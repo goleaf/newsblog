@@ -116,10 +116,10 @@ class CategoryController extends Controller
         // Only cache first page without filters for better hit rate
         if ($page == 1 && empty($dateFilter) && $sort === 'latest') {
             $posts = $this->cacheService->cacheCategoryPage($category->id, $filters, function () use ($query) {
-                return $query->paginate(15)->withQueryString();
+                return $query->paginate(12)->withQueryString();
             });
         } else {
-            $posts = $query->paginate(15)->withQueryString();
+            $posts = $query->paginate(12)->withQueryString();
         }
 
         // Generate breadcrumbs

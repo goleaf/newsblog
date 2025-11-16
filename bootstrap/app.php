@@ -14,8 +14,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // Use Redis-backed throttling for sliding window behavior
-        $middleware->throttleWithRedis();
+        // Use Redis-backed throttling for sliding window behavior in non-testing environments
+        // Fallback to default cache-based throttling during tests to avoid Redis dependency
+        if (! app()->environment('testing') && class_exists('Redis')) {
+            $middleware->throttleWithRedis();
+        }
 
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,

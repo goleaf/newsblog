@@ -3,10 +3,12 @@
 namespace App\Nova;
 
 use App\Nova\Filters\DateRange;
+use App\Nova\Filters\MissingAltText;
 use App\Nova\Filters\PostAuthor;
 use App\Nova\Filters\PostCategory;
 use App\Nova\Filters\PostFeatured;
 use App\Nova\Filters\PostStatus;
+use App\Services\AltTextValidator;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsTo;
@@ -22,8 +24,6 @@ use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Textarea;
 use Laravel\Nova\Fields\Trix;
 use Laravel\Nova\Http\Requests\NovaRequest;
-use App\Nova\Filters\MissingAltText;
-use App\Services\AltTextValidator;
 
 class Post extends Resource
 {
@@ -285,6 +285,7 @@ class Post extends Resource
                 }
                 /** @var AltTextValidator $validator */
                 $validator = app(AltTextValidator::class);
+
                 return $validator->scanHtml($content)->totalImages;
             })->onlyOnIndex()->sortable(),
 
@@ -295,6 +296,7 @@ class Post extends Resource
                 }
                 /** @var AltTextValidator $validator */
                 $validator = app(AltTextValidator::class);
+
                 return $validator->scanHtml($content)->missingAltCount;
             })->onlyOnIndex()->sortable(),
 
@@ -356,7 +358,9 @@ class Post extends Resource
      */
     public function lenses(NovaRequest $request): array
     {
-        return [];
+        return [
+            new \App\Nova\Lenses\PostsMissingAltText,
+        ];
     }
 
     /**
@@ -375,6 +379,7 @@ class Post extends Resource
             new Actions\FeaturePosts,
             new Actions\ExportPosts,
             new Actions\ViewRevisionHistory,
+            new Actions\FillMissingAltText,
         ];
     }
 }

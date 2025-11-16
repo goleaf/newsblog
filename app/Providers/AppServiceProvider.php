@@ -33,6 +33,7 @@ use App\Services\SearchAnalyticsService;
 use App\Services\SearchIndexService;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
@@ -87,17 +88,24 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(ActivityLog::class, ActivityLogPolicy::class);
         Gate::policy(Feedback::class, FeedbackPolicy::class);
 
-        // Track slow queries for performance monitoring
-        if (config('app.debug')) {
-            \Illuminate\Support\Facades\DB::listen(function ($query) {
-                $performanceMetrics = app(\App\Services\PerformanceMetricsService::class);
-                $performanceMetrics->logSlowQuery(
-                    $query->sql,
-                    $query->time,
-                    $query->bindings
-                );
-            });
-        }
+        // Track slow queries for performance monitoring without overhead
+        \Illuminate\Support\Facades\DB::whenQueryingForLongerThan(100, function ($connection, $event) {
+            $performanceMetrics = app(\App\Services\PerformanceMetricsService::class);
+            $performanceMetrics->logSlowQuery(
+                $event->sql,
+                $event->time,
+                $event->bindings
+            );
+        });
+
+        // Track cache hits/misses
+        Event::listen(\Illuminate\Cache\Events\CacheHit::class, function () {
+            app(\App\Services\PerformanceMetricsService::class)->trackCacheHit(true);
+        });
+
+        Event::listen(\Illuminate\Cache\Events\CacheMissed::class, function () {
+            app(\App\Services\PerformanceMetricsService::class)->trackCacheHit(false);
+        });
 
         // Share breadcrumbs with all views
         View::composer('*', function ($view) {

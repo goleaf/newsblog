@@ -100,9 +100,9 @@
                                                     </a>
                                                 </td>
                                                 <td class="px-6 py-4">
-                                                    @if ($link->status_code)
+                                                    @if ($link->response_code)
                                                         <span class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
-                                                            {{ $link->status_code }}
+                                                            {{ $link->response_code }}
                                                         </span>
                                                     @else
                                                         <span class="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
@@ -116,7 +116,7 @@
                                                     @endif
                                                 </td>
                                                 <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
-                                                    {{ $link->last_checked_at->diffForHumans() }}
+                                                    {{ optional($link->checked_at)->diffForHumans() }}
                                                 </td>
                                                 <td class="px-6 py-4">
                                                     <div class="flex gap-2">

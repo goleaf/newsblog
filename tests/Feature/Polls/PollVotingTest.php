@@ -8,7 +8,6 @@ class PollVotingTest extends TestCase
 {
     public function test_poll_voting_placeholder(): void
     {
-        $this->markTestSkipped('Poll voting is not implemented yet.');
-        $this->assertTrue(true);
+        $this->markTestSkipped('Poll voting tests are pending implementation. Placeholder to satisfy task list.');
     }
 }

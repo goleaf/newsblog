@@ -26,6 +26,10 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans text-gray-900 dark:text-gray-100 antialiased transition-colors duration-200">
+        <!-- Skip to Main Content -->
+        <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded-md">
+            {{ __('a11y.skip_to_main') }}
+        </a>
         <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100 dark:bg-gray-900">
             <div class="flex items-center justify-between w-full max-w-md px-6">
                 <a href="/">
@@ -34,9 +38,9 @@
                 <x-ui.dark-mode-toggle />
             </div>
 
-            <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
+            <main id="main-content" role="main" tabindex="-1" class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
                 {{ $slot }}
-            </div>
+            </main>
         </div>
 
         <!-- Cookie Consent Banner -->

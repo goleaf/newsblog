@@ -121,4 +121,19 @@ class PerformanceMetricsServiceTest extends TestCase
         $this->assertArrayHasKey('cache_stats', $metrics);
         $this->assertArrayHasKey('memory', $metrics);
     }
+
+    public function test_memory_usage_trend_from_page_loads(): void
+    {
+        // Track page loads with memory peaks
+        $this->service->trackPageLoad('home', 120.0, 5, 50 * 1024 * 1024); // 50MB
+        $this->service->trackPageLoad('home', 180.0, 8, 70 * 1024 * 1024); // 70MB
+
+        $trend = $this->service->getAverageMemoryUsage();
+
+        $this->assertNotEmpty($trend);
+        $last = end($trend);
+        $this->assertArrayHasKey('average_mb', $last);
+        $this->assertEquals(60.0, $last['average_mb']);
+        $this->assertEquals(2, $last['count']);
+    }
 }

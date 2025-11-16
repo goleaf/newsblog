@@ -232,27 +232,27 @@ Notes:
 
 ## 43. Content Calendar
 
-- [ ] 43.1 Build calendar view component
+- [x] 43.1 Build calendar view component
   - [x] Create monthly calendar grid
   - [x] Display posts on their dates
   - [x] Color-code by status (published, scheduled, draft)
   - [x] Add month navigation
   - _Requirements: 40_
 
-- [ ] 43.2 Implement drag-and-drop scheduling
+- [x] 43.2 Implement drag-and-drop scheduling
   - [x] Allow dragging posts to different dates
   - [x] Update scheduled_at or published_at
-  - [ ] Show confirmation on drop
+  - [x] Show confirmation on drop
   - [x] Validate date changes
   - _Requirements: 40_
 
-- [ ] 43.3 Add calendar sidebar
+- [x] 43.3 Add calendar sidebar
   - [x] Show posts for selected date
   - [x] Display post details
   - [x] Add quick edit options
   - _Requirements: 40_
 
-- [ ] 43.4 Write content calendar tests
-  - [ ] Test calendar rendering
-  - [ ] Test drag-and-drop
-  - [ ] Test date updates
+- [x] 43.4 Write content calendar tests
+  - [x] Test calendar rendering
+  - [x] Test drag-and-drop
+  - [x] Test date updates

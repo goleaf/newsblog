@@ -5,6 +5,15 @@
     x-init="posts = {{ $initialPosts->toJson() }}"
     class="space-y-6"
 >
+    <!-- Screen reader live region for dynamic updates -->
+    <div class="sr-only" aria-live="polite" aria-atomic="true">
+        <template x-if="loading">
+            <span>Loading more articles…</span>
+        </template>
+        <template x-if="!hasMore && !loading && posts.length > 0">
+            <span>End of results reached.</span>
+        </template>
+    </div>
     <!-- Posts Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <template x-for="post in posts" :key="post.id">
@@ -54,12 +63,12 @@
     </div>
     
     <!-- Loading Indicator -->
-    <div x-show="loading" class="flex justify-center py-8">
+    <div x-show="loading" class="flex justify-center py-8" role="status" aria-live="polite">
         <x-ui.loading-spinner size="lg" />
     </div>
     
     <!-- Error Message -->
-    <div x-show="error" class="flex flex-col items-center justify-center py-8">
+    <div x-show="error" class="flex flex-col items-center justify-center py-8" role="alert" aria-live="assertive">
         <x-ui.error-message 
             x-bind:message="error"
             class="mb-4"

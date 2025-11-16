@@ -18,17 +18,24 @@ class MediaFactory extends Factory
         $filename = $this->faker->unique()->lexify('image_????????').'.jpg';
 
         return [
-            'filename' => $filename,
-            'path' => 'public/media/'.$filename,
+            'user_id' => User::query()->inRandomOrder()->value('id') ?? User::factory(),
+            'file_name' => $filename,
+            'file_path' => 'media/'.$filename,
+            'file_type' => 'image',
+            'file_size' => $this->faker->numberBetween(10_000, 5_000_000),
             'mime_type' => 'image/jpeg',
-            'size' => $this->faker->numberBetween(10_000, 5_000_000),
-            'alt_text' => $this->faker->sentence(4),
+            'alt_text' => $this->faker->optional()->sentence(4),
+            'title' => $this->faker->optional()->sentence(3),
             'caption' => $this->faker->optional()->sentence(8),
             'metadata' => [
-                'width' => $this->faker->numberBetween(320, 3840),
-                'height' => $this->faker->numberBetween(240, 2160),
+                'variants' => [
+                    'thumbnail' => [
+                        'path' => 'media/variants/'.str_replace('.jpg', '_thumbnail.jpg', $filename),
+                        'width' => 320,
+                        'height' => 240,
+                    ],
+                ],
             ],
-            'user_id' => User::query()->inRandomOrder()->value('id'),
         ];
     }
 }

@@ -33,6 +33,8 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
             return [
                 MenuSection::dashboard(\App\Nova\Dashboards\Main::class)
                     ->icon('chart-bar'),
+                MenuSection::dashboard(\App\Nova\Dashboards\Performance::class)
+                    ->icon('chart-bar'),
 
                 MenuSection::make('Content', [
                     MenuItem::resource(\App\Nova\Post::class),

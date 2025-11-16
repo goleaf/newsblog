@@ -5,15 +5,17 @@
         <!-- Name -->
         <div>
             <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
-            <x-input-error :messages="$errors->get('name')" class="mt-2" />
+            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" aria-describedby="register-name-hint register-name-error" />
+            <p id="register-name-hint" class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ __('Your public display name') }}</p>
+            <x-input-error id="register-name-error" :messages="$errors->get('name')" class="mt-2" />
         </div>
 
         <!-- Email Address -->
         <div class="mt-4">
             <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" aria-describedby="register-email-hint register-email-error" />
+            <p id="register-email-hint" class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ __('We will send a verification email') }}</p>
+            <x-input-error id="register-email-error" :messages="$errors->get('email')" class="mt-2" />
         </div>
 
         <!-- Role (hidden, defaults to user for public registration) -->
@@ -26,9 +28,9 @@
             <x-text-input id="password" class="block mt-1 w-full"
                             type="password"
                             name="password"
-                            required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+                            required autocomplete="new-password" aria-describedby="register-password-hint register-password-error" />
+            <p id="register-password-hint" class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ __('Use at least 8 characters') }}</p>
+            <x-input-error id="register-password-error" :messages="$errors->get('password')" class="mt-2" />
         </div>
 
         <!-- Confirm Password -->
@@ -37,9 +39,9 @@
 
             <x-text-input id="password_confirmation" class="block mt-1 w-full"
                             type="password"
-                            name="password_confirmation" required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
+                            name="password_confirmation" required autocomplete="new-password" aria-describedby="register-password-confirmation-hint register-password-confirmation-error" />
+            <p id="register-password-confirmation-hint" class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ __('Re-enter the same password') }}</p>
+            <x-input-error id="register-password-confirmation-error" :messages="$errors->get('password_confirmation')" class="mt-2" />
         </div>
 
         <div class="flex items-center justify-end mt-4">

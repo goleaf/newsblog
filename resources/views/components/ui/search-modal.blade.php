@@ -135,6 +135,10 @@
                         placeholder="Search articles, series, topics..."
                         class="flex-1 ml-4 bg-transparent border-0 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-0 text-lg"
                         id="search-modal-title"
+                        role="combobox"
+                        aria-autocomplete="list"
+                        :aria-expanded="(results.length > 0).toString()"
+                        aria-controls="search-results"
                     />
                     <button 
                         @click="open = false"
@@ -173,13 +177,19 @@
 
             {{-- Search Results --}}
             <div class="max-h-96 overflow-y-auto">
+                <!-- Screen reader live status for result count -->
+                <div class="sr-only" aria-live="polite" aria-atomic="true">
+                    <span x-show="query.length >= 2 && !loading" x-text="results.length + ' results'"></span>
+                </div>
                 {{-- Results List --}}
-                <div x-show="results.length > 0" class="py-2">
+                <div x-show="results.length > 0" class="py-2" id="search-results" role="listbox">
                     <template x-for="(result, index) in results" :key="result.id">
                         <a 
                             :href="result.url"
                             class="block px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                             :class="{ 'bg-gray-50 dark:bg-gray-700': selectedIndex === index }"
+                            role="option"
+                            :aria-selected="(selectedIndex === index).toString()"
                         >
                             <div class="flex items-start gap-4">
                                 {{-- Thumbnail --}}

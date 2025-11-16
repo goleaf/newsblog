@@ -156,6 +156,30 @@ class WidgetController extends Controller
                     'content' => ['type' => 'textarea', 'label' => 'HTML Content', 'default' => ''],
                 ],
             ],
+            'weather' => [
+                'name' => 'Weather',
+                'description' => 'Display current weather for user or default location',
+                'settings' => [
+                    'lat' => ['type' => 'number', 'label' => 'Default Latitude', 'default' => (float) config('services.weather.default_location.lat', 51.5074)],
+                    'lon' => ['type' => 'number', 'label' => 'Default Longitude', 'default' => (float) config('services.weather.default_location.lon', -0.1278)],
+                    'label' => ['type' => 'text', 'label' => 'Default Label', 'default' => (string) config('services.weather.default_location.label', 'London')],
+                ],
+            ],
+            'stock-ticker' => [
+                'name' => 'Stock Ticker',
+                'description' => 'Display real-time stock prices (refresh every 60s)',
+                'settings' => [
+                    'symbols' => ['type' => 'text', 'label' => 'Symbols (comma-separated)', 'default' => 'AAPL,MSFT,GOOG'],
+                ],
+            ],
+            'countdown' => [
+                'name' => 'Countdown',
+                'description' => 'Display a countdown timer to a target date/time',
+                'settings' => [
+                    // ISO 8601 datetime preferred (e.g. 2025-01-01T00:00:00Z)
+                    'target' => ['type' => 'text', 'label' => 'Target (ISO 8601 datetime)', 'default' => now()->addDays(7)->toIso8601String()],
+                ],
+            ],
         ];
     }
 }

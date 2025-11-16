@@ -12,7 +12,7 @@ class BrokenLinkController extends Controller
     {
         $brokenLinks = BrokenLink::with('post')
             ->pending()
-            ->orderBy('last_checked_at', 'desc')
+            ->orderByDesc('checked_at')
             ->paginate(20);
 
         $stats = [

@@ -74,6 +74,16 @@
                 </div>
             </article>
 
+            <!-- Print Footer (print-only) -->
+            <div class="mt-6 print-only">
+                <hr style="border: 0; border-top: 1px solid #ccc; margin: 16px 0;">
+                <div style="font-size: 12pt; color: #000;">
+                    <div><strong>{{ config('app.name') }}</strong></div>
+                    <div>{{ url()->current() }}</div>
+                    <div>Printed on: {{ now()->format('Y-m-d H:i') }}</div>
+                </div>
+            </div>
+
             <!-- Series Navigation -->
             @if(!empty($seriesData))
                 <div class="mt-8 space-y-6">

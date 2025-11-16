@@ -31,9 +31,9 @@ class TrackPerformance
 
         $loadTime = (microtime(true) - $startTime) * 1000; // Convert to milliseconds
 
-        // Track page load time
+        // Track page load time and per-request stats
         $route = $request->route()?->getName() ?? $request->path();
-        $this->performanceMetrics->trackPageLoad($route, $loadTime);
+        $this->performanceMetrics->trackPageLoad($route, $loadTime, $queryCount, $peakMemoryBytes);
 
         // Alert on very slow pages (>3 seconds)
         if ($loadTime > 3000) {

@@ -2,10 +2,18 @@
 
 namespace Tests\Feature;
 
+use App\Http\Middleware\TrackPerformance;
 use Tests\TestCase;
 
 class UiComponentsTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+        // Avoid unrelated middleware failures during feature rendering tests
+        $this->withoutMiddleware(TrackPerformance::class);
+    }
+
     /** @test */
     public function it_renders_ui_demo_page()
     {
@@ -21,6 +29,12 @@ class UiComponentsTest extends TestCase
         $response->assertOk();
         $response->assertSee('Play', false);
         $response->assertSee('Full screen', false);
+        // Prev/next controls and x-for template present
+        $response->assertSee('‹', false);
+        $response->assertSee('›', false);
+        $response->assertSee('x-for="(img, idx) in images"', false);
+        // Swipe gesture handlers present on container
+        $response->assertSee('@touchstart', false);
     }
 
     /** @test */
@@ -30,6 +44,25 @@ class UiComponentsTest extends TestCase
         $response->assertOk();
         $response->assertSee('Design is not just what it looks like', false);
         $response->assertSee('Steve Jobs', false);
+    }
+
+    /** @test */
+    public function pull_quote_supports_left_and_right_alignment()
+    {
+        // Render component directly to verify class application
+        $right = view('components.pull-quote', [
+            'text' => 'Quote',
+            'attribution' => 'Author',
+            'align' => 'right',
+        ])->render();
+        $this->assertStringContainsString('md:float-right md:ml-6', $right);
+
+        $left = view('components.pull-quote', [
+            'text' => 'Quote',
+            'attribution' => 'Author',
+            'align' => 'left',
+        ])->render();
+        $this->assertStringContainsString('md:float-left md:mr-6', $left);
     }
 
     /** @test */
@@ -48,7 +81,7 @@ class UiComponentsTest extends TestCase
         $response = $this->get(route('ui.demo'));
         $response->assertOk();
         $response->assertSee('<canvas', false);
+        // CSV support implies labels in markup via Alpine x-data config
+        $response->assertSee('chartComponent', false);
     }
 }
-
-

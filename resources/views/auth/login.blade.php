@@ -8,8 +8,9 @@
         <!-- Email Address -->
         <div>
             <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" aria-describedby="login-email-hint login-email-error" />
+            <p id="login-email-hint" class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ __('Enter the email associated with your account') }}</p>
+            <x-input-error id="login-email-error" :messages="$errors->get('email')" class="mt-2" />
         </div>
 
         <!-- Password -->
@@ -19,9 +20,9 @@
             <x-text-input id="password" class="block mt-1 w-full"
                             type="password"
                             name="password"
-                            required autocomplete="current-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+                            required autocomplete="current-password" aria-describedby="login-password-hint login-password-error" />
+            <p id="login-password-hint" class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ __('Enter your password to sign in') }}</p>
+            <x-input-error id="login-password-error" :messages="$errors->get('password')" class="mt-2" />
         </div>
 
         <!-- Remember Me -->

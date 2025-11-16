@@ -94,7 +94,8 @@
         {{-- Modals will be inserted here dynamically --}}
     </div>
 
-    {{-- Page-Specific Scripts (Code Splitting) --}}
+    {{-- Core App JS + Page-Specific Scripts (Code Splitting) --}}
+    @vite(['resources/js/app.js'])
     @stack('page-scripts')
     
     {{-- Additional Scripts --}}

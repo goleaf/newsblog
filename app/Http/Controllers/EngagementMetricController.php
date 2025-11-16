@@ -39,6 +39,29 @@ class EngagementMetricController extends Controller
             'session_id' => $sessionId,
         ]);
 
+        // In some environments (e.g., tests with array sessions), the session ID
+        // may change between rapid subsequent requests. If no record exists yet,
+        // try to find a recent metric for the same visitor fingerprint and reuse it
+        // instead of creating a duplicate.
+        if (! $metric->exists) {
+            $fingerprintQuery = EngagementMetric::query()
+                ->where('post_id', $validated['post_id'])
+                ->latest('id');
+
+            // Prefer authenticated user if available
+            if (auth()->id()) {
+                $fingerprintQuery->where('user_id', auth()->id());
+            } else {
+                $fingerprintQuery->where('ip_address', $request->ip())
+                    ->where('user_agent', $request->userAgent());
+            }
+
+            $existing = $fingerprintQuery->first();
+            if ($existing) {
+                $metric = $existing; // Reuse existing record, preserving its session_id
+            }
+        }
+
         // Update metrics (only update if value is provided and greater than current)
         if (isset($validated['time_on_page']) && $validated['time_on_page'] > $metric->time_on_page) {
             $metric->time_on_page = $validated['time_on_page'];
