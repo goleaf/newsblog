@@ -14,6 +14,10 @@ use App\Http\Controllers\UiDemoController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
+// Editor's Picks ordering (no auth per project rules)
+Route::get('/editors-picks', [\App\Http\Controllers\EditorsPicksController::class, 'index'])->name('editors-picks.index');
+Route::post('/editors-picks/order', [\App\Http\Controllers\EditorsPicksController::class, 'updateOrder'])->name('editors-picks.order');
+
 // Offline fallback page (for PWA)
 Route::view('/offline', 'offline')->name('offline');
 

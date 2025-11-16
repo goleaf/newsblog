@@ -14,7 +14,7 @@
             <div class="text-sm text-gray-700 dark:text-gray-300">
                 <span x-text="label()"></span>
             </div>
-            <a :href="url" target="_blank" rel="noopener" class="text-primary-600 hover:text-primary-700 text-sm">
+            <a href="{{ $url }}" :href="url" target="_blank" rel="noopener" class="text-primary-600 hover:text-primary-700 text-sm">
                 <span x-text="$t('social.open')">Open</span>
             </a>
         </div>

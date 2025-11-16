@@ -203,5 +203,18 @@
     "Page": "Page",
     "Category": "Category",
     "Tag": "Tag",
-    "a11y.skip_to_main": "Skip to main content"
+    "a11y.skip_to_main": "Skip to main content",
+    "Editor's Picks Ordering": "Editor's Picks Ordering",
+    "Drag to reorder. Only published posts are listed. Top 6 are shown on the homepage.": "Drag to reorder. Only published posts are listed. Top 6 are shown on the homepage.",
+    "Save Order": "Save Order",
+    "Editor's picks updated": "Editor's picks updated",
+    "The order list is required.": "The order list is required.",
+    "The order must be an array of post IDs.": "The order must be an array of post IDs.",
+    "Each item in the order must be a valid ID.": "Each item in the order must be a valid ID.",
+    "Duplicate posts are not allowed in the order.": "Duplicate posts are not allowed in the order.",
+    "Menu Items": "Menu Items",
+    "Menu Items (table view)": "Menu Items (table view)",
+    "Children": "Children",
+    "Drag to reorder items. Use the nested list to manage children.": "Drag to reorder items. Use the nested list to manage children.",
+    "Nest items inside their parent to build hierarchical menus.": "Nest items inside their parent to build hierarchical menus."
 }
