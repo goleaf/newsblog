@@ -25,7 +25,24 @@ Route::view('/offline', 'offline')->name('offline');
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap.index');
 Route::get('/robots.txt', [RobotsController::class, 'index'])->name('robots.txt');
 Route::get('/post/{slug}', [PublicPostController::class, 'show'])->name('post.show');
+
+// Article routes (alias for posts)
+Route::get('/articles', [\App\Http\Controllers\ArticleController::class, 'index'])->name('articles.index');
+Route::get('/articles/{article:slug}', [\App\Http\Controllers\ArticleController::class, 'show'])->name('articles.show');
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/articles/create', [\App\Http\Controllers\ArticleController::class, 'create'])->name('articles.create');
+    Route::post('/articles', [\App\Http\Controllers\ArticleController::class, 'store'])->name('articles.store');
+    Route::get('/articles/{article}/edit', [\App\Http\Controllers\ArticleController::class, 'edit'])->name('articles.edit');
+    Route::put('/articles/{article}', [\App\Http\Controllers\ArticleController::class, 'update'])->name('articles.update');
+    Route::delete('/articles/{article}', [\App\Http\Controllers\ArticleController::class, 'destroy'])->name('articles.destroy');
+    Route::post('/articles/{article}/publish', [\App\Http\Controllers\ArticleController::class, 'publish'])->name('articles.publish');
+    Route::post('/articles/{article}/unpublish', [\App\Http\Controllers\ArticleController::class, 'unpublish'])->name('articles.unpublish');
+});
+
+Route::get('/categories', [\App\Http\Controllers\CategoryController::class, 'index'])->name('categories.index');
 Route::get('/category/{slug}', [\App\Http\Controllers\CategoryController::class, 'show'])->name('category.show');
+Route::get('/tags', [\App\Http\Controllers\TagController::class, 'index'])->name('tags.index');
 Route::get('/tag/{slug}', [\App\Http\Controllers\TagController::class, 'show'])->name('tag.show');
 Route::get('/series', [\App\Http\Controllers\SeriesController::class, 'index'])->name('series.index');
 Route::get('/series/{slug}', [\App\Http\Controllers\SeriesController::class, 'show'])->name('series.show');
@@ -104,11 +121,16 @@ Route::get('/privacy-settings', function () {
 Route::post('/gdpr/accept-consent', [\App\Http\Controllers\GdprController::class, 'acceptConsent'])->name('gdpr.accept-consent');
 Route::post('/gdpr/decline-consent', [\App\Http\Controllers\GdprController::class, 'declineConsent'])->name('gdpr.decline-consent');
 
+// Public profile routes
+Route::get('/users/{user}', [ProfileController::class, 'showPublic'])->name('users.show');
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::patch('/profile/preferences', [ProfileController::class, 'updatePreferences'])->name('profile.preferences.update');
     Route::patch('/profile/email-preferences', [ProfileController::class, 'updateEmailPreferences'])->name('profile.email-preferences');
+    Route::post('/profile/avatar', [ProfileController::class, 'uploadAvatar'])->name('profile.avatar.upload');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // (auth-specific features continue below)
@@ -156,6 +178,9 @@ Route::middleware(['auth', 'role:admin,editor'])->prefix('admin')->name('admin.'
     Route::get('/analytics', [\App\Http\Controllers\Admin\AnalyticsController::class, 'index'])->name('analytics');
     Route::get('/search', [AdminSearchController::class, 'index'])->name('search');
     Route::get('/search/analytics', [AdminSearchController::class, 'analytics'])->name('search.analytics');
+
+    // Category management routes
+    Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class);
 
     // Performance monitoring
     Route::get('/performance', [\App\Http\Controllers\Admin\PerformanceController::class, 'index'])->name('performance');

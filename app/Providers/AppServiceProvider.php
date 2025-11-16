@@ -77,6 +77,7 @@ class AppServiceProvider extends ServiceProvider
 
         // Register authorization policies
         Gate::policy(Post::class, PostPolicy::class);
+        Gate::policy(\App\Models\Article::class, \App\Policies\ArticlePolicy::class);
         Gate::policy(User::class, UserPolicy::class);
         Gate::policy(Category::class, CategoryPolicy::class);
         Gate::policy(Tag::class, TagPolicy::class);

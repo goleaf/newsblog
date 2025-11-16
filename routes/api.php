@@ -20,6 +20,7 @@ Route::prefix('v1')->middleware(['throttle:api'])->group(function () {
     Route::get('/categories', [\App\Http\Controllers\Api\CategoryController::class, 'index']);
     Route::get('/categories/{id}/articles', [\App\Http\Controllers\Api\CategoryController::class, 'articles']);
     Route::get('/tags', [\App\Http\Controllers\Api\TagController::class, 'index']);
+    Route::get('/tags/search', [\App\Http\Controllers\Api\TagController::class, 'search']);
     Route::get('/tags/{id}/articles', [\App\Http\Controllers\Api\TagController::class, 'articles']);
     Route::get('/comments', [\App\Http\Controllers\Api\CommentController::class, 'index']);
 

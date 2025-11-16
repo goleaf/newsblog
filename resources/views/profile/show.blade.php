@@ -23,16 +23,78 @@
                             class="w-32 h-32 rounded-full border-4 border-white dark:border-gray-800 shadow-lg"
                         >
                         <div class="mt-4 sm:mt-0 sm:ml-6 text-center sm:text-left flex-1">
-                            <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                                {{ $user->name }}
-                            </h1>
-                            <p class="text-gray-600 dark:text-gray-400">
-                                {{ ucfirst($user->role) }}
-                            </p>
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                                        {{ $user->name }}
+                                    </h1>
+                                    <p class="text-gray-600 dark:text-gray-400">
+                                        {{ ucfirst($user->role->value) }}
+                                    </p>
+                                </div>
+                                @if(!$isOwnProfile && auth()->check())
+                                    <button 
+                                        type="button"
+                                        class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest transition ease-in-out duration-150 {{ $isFollowing ? 'bg-gray-600 hover:bg-gray-700' : 'bg-blue-600 hover:bg-blue-700' }}"
+                                    >
+                                        {{ $isFollowing ? 'Following' : 'Follow' }}
+                                    </button>
+                                @endif
+                            </div>
                             @if($user->bio)
                                 <p class="mt-2 text-gray-700 dark:text-gray-300">
                                     {{ $user->bio }}
                                 </p>
+                            @endif
+                            
+                            <!-- Additional Profile Info -->
+                            @if($user->profile)
+                                <div class="mt-3 flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-400">
+                                    @if($user->profile->location && ($user->preferences->preferences['show_location'] ?? true))
+                                        <div class="flex items-center">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            </svg>
+                                            {{ $user->profile->location }}
+                                        </div>
+                                    @endif
+                                    @if($user->profile->website)
+                                        <a href="{{ $user->profile->website }}" target="_blank" rel="noopener noreferrer" class="flex items-center hover:text-blue-600 dark:hover:text-blue-400">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                                            </svg>
+                                            {{ parse_url($user->profile->website, PHP_URL_HOST) }}
+                                        </a>
+                                    @endif
+                                </div>
+                                
+                                <!-- Social Links -->
+                                @if($user->profile->social_links && count(array_filter($user->profile->social_links)))
+                                    <div class="mt-3 flex gap-3">
+                                        @if(!empty($user->profile->social_links['twitter']))
+                                            <a href="https://twitter.com/{{ $user->profile->social_links['twitter'] }}" target="_blank" rel="noopener noreferrer" class="text-gray-600 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400">
+                                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                                                </svg>
+                                            </a>
+                                        @endif
+                                        @if(!empty($user->profile->social_links['github']))
+                                            <a href="https://github.com/{{ $user->profile->social_links['github'] }}" target="_blank" rel="noopener noreferrer" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100">
+                                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                                    <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd" />
+                                                </svg>
+                                            </a>
+                                        @endif
+                                        @if(!empty($user->profile->social_links['linkedin']))
+                                            <a href="{{ $user->profile->social_links['linkedin'] }}" target="_blank" rel="noopener noreferrer" class="text-gray-600 dark:text-gray-400 hover:text-blue-700 dark:hover:text-blue-500">
+                                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                                                </svg>
+                                            </a>
+                                        @endif
+                                    </div>
+                                @endif
                             @endif
                         </div>
                     </div>
@@ -40,9 +102,25 @@
             </div>
 
             <!-- Stats Grid -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 text-center">
                     <div class="text-3xl font-bold text-blue-600 dark:text-blue-400">
+                        {{ $stats['followers_count'] }}
+                    </div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                        Followers
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 text-center">
+                    <div class="text-3xl font-bold text-indigo-600 dark:text-indigo-400">
+                        {{ $stats['following_count'] }}
+                    </div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                        Following
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 text-center">
+                    <div class="text-3xl font-bold text-teal-600 dark:text-teal-400">
                         {{ $stats['total_bookmarks'] }}
                     </div>
                     <div class="text-sm text-gray-600 dark:text-gray-400 mt-1">

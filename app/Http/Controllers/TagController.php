@@ -16,6 +16,32 @@ class TagController extends Controller
     ) {}
 
     /**
+     * Display a listing of all tags.
+     */
+    public function index(Request $request): \Illuminate\Contracts\View\View
+    {
+        // Cache tag list for 30 minutes
+        $tags = $this->cacheService->remember(
+            'tags.index',
+            CacheService::TTL_LONG,
+            function () {
+                return Tag::withCount(['posts' => function ($q) {
+                    $q->published();
+                }])
+                    ->having('posts_count', '>', 0)
+                    ->orderByDesc('posts_count')
+                    ->get();
+            }
+        );
+
+        // Generate breadcrumbs
+        $breadcrumbs = $this->breadcrumbService->generate($request);
+        $breadcrumbStructuredData = $this->breadcrumbService->generateStructuredData($breadcrumbs);
+
+        return view('tags.index', compact('tags', 'breadcrumbs', 'breadcrumbStructuredData'));
+    }
+
+    /**
      * Display the tag page with posts.
      */
     public function show(ShowTagRequest $request)

@@ -46,4 +46,24 @@ class TagController extends Controller
             ],
         ]);
     }
+
+    public function search(): JsonResponse
+    {
+        $query = request('q', '');
+
+        if (strlen($query) < 2) {
+            return response()->json([]);
+        }
+
+        $tags = Tag::where('name', 'like', '%'.$query.'%')
+            ->withCount(['posts' => function ($q) {
+                $q->published();
+            }])
+            ->having('posts_count', '>', 0)
+            ->orderByDesc('posts_count')
+            ->limit(10)
+            ->get(['id', 'name', 'slug']);
+
+        return response()->json($tags);
+    }
 }

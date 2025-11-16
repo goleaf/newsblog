@@ -25,6 +25,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \App\Http\Middleware\RoleMiddleware::class,
             'security.headers' => \App\Http\Middleware\SecurityHeaders::class,
             'page.cache' => \App\Http\Middleware\PageCache::class,
+            'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         ]);
 
         $middleware->remove(\Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance::class);

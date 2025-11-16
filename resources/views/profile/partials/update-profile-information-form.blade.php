@@ -82,6 +82,92 @@
             <x-input-label for="email" :value="__('Email')" />
             <x-text-input id="email" name="email" type="email" class="mt-1 block w-full" :value="old('email', $user->email)" required autocomplete="username" />
             <x-input-error class="mt-2" :messages="$errors->get('email')" />
+        </div>
+
+        <!-- Website -->
+        <div>
+            <x-input-label for="website" :value="__('Website')" />
+            <x-text-input 
+                id="website" 
+                name="website" 
+                type="url" 
+                class="mt-1 block w-full" 
+                :value="old('website', $user->profile->website ?? '')" 
+                placeholder="https://example.com"
+            />
+            <x-input-error class="mt-2" :messages="$errors->get('website')" />
+        </div>
+
+        <!-- Location -->
+        <div>
+            <x-input-label for="location" :value="__('Location')" />
+            <x-text-input 
+                id="location" 
+                name="location" 
+                type="text" 
+                class="mt-1 block w-full" 
+                :value="old('location', $user->profile->location ?? '')" 
+                placeholder="City, Country"
+            />
+            <x-input-error class="mt-2" :messages="$errors->get('location')" />
+        </div>
+
+        <!-- Social Links -->
+        <div class="space-y-4">
+            <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Social Links') }}</h3>
+            
+            <div>
+                <x-input-label for="twitter" :value="__('Twitter/X Username')" />
+                <div class="mt-1 flex rounded-md shadow-sm">
+                    <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 text-sm">
+                        @
+                    </span>
+                    <x-text-input 
+                        id="twitter" 
+                        name="social_links[twitter]" 
+                        type="text" 
+                        class="flex-1 rounded-none rounded-r-md" 
+                        :value="old('social_links.twitter', $user->profile->social_links['twitter'] ?? '')" 
+                        placeholder="username"
+                    />
+                </div>
+                <x-input-error class="mt-2" :messages="$errors->get('social_links.twitter')" />
+            </div>
+
+            <div>
+                <x-input-label for="github" :value="__('GitHub Username')" />
+                <div class="mt-1 flex rounded-md shadow-sm">
+                    <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 text-sm">
+                        github.com/
+                    </span>
+                    <x-text-input 
+                        id="github" 
+                        name="social_links[github]" 
+                        type="text" 
+                        class="flex-1 rounded-none rounded-r-md" 
+                        :value="old('social_links.github', $user->profile->social_links['github'] ?? '')" 
+                        placeholder="username"
+                    />
+                </div>
+                <x-input-error class="mt-2" :messages="$errors->get('social_links.github')" />
+            </div>
+
+            <div>
+                <x-input-label for="linkedin" :value="__('LinkedIn URL')" />
+                <x-text-input 
+                    id="linkedin" 
+                    name="social_links[linkedin]" 
+                    type="url" 
+                    class="mt-1 block w-full" 
+                    :value="old('social_links.linkedin', $user->profile->social_links['linkedin'] ?? '')" 
+                    placeholder="https://linkedin.com/in/username"
+                />
+                <x-input-error class="mt-2" :messages="$errors->get('social_links.linkedin')" />
+            </div>
+        </div>
+
+        <div class="hidden">
+            <x-input-label for="email_hidden" :value="__('Email')" />
 
             @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
                 <div>

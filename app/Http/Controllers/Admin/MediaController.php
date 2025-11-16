@@ -8,13 +8,13 @@ use App\Http\Requests\IndexMediaRequest;
 use App\Http\Requests\SearchMediaRequest;
 use App\Http\Requests\StoreMediaRequest;
 use App\Models\Media;
-use App\Services\ImageProcessingService;
+use App\Services\MediaService;
 use Illuminate\Http\JsonResponse;
 
 class MediaController extends Controller
 {
     public function __construct(
-        protected ImageProcessingService $imageProcessingService,
+        protected MediaService $mediaService,
     ) {}
 
     /**
@@ -63,18 +63,15 @@ class MediaController extends Controller
         /** @var \Illuminate\Http\UploadedFile $file */
         $file = $validated['file'];
 
-        $media = $this->imageProcessingService->upload($file, (int) $validated['user_id']);
-
-        // Optionally update alt_text and caption if provided
-        if (! empty($validated['alt_text'] ?? null) || ! empty($validated['caption'] ?? null)) {
-            $media->update([
-                'alt_text' => $validated['alt_text'] ?? $media->alt_text,
-                'caption' => $validated['caption'] ?? $media->caption,
-            ]);
-        }
+        $media = $this->mediaService->upload(
+            file: $file,
+            userId: $validated['user_id'] ?? $request->user()?->id,
+            altText: $validated['alt_text'] ?? null,
+            caption: $validated['caption'] ?? null
+        );
 
         return response()->json([
-            'data' => $media->fresh(),
+            'data' => $media,
             'message' => __('Media uploaded successfully.'),
         ], 201);
     }
@@ -84,8 +81,7 @@ class MediaController extends Controller
      */
     public function destroy(DestroyMediaRequest $request, Media $media): JsonResponse
     {
-        $this->imageProcessingService->deleteMedia($media);
-        $media->delete();
+        $this->mediaService->delete($media);
 
         return response()->json([
             'message' => __('Media deleted successfully.'),

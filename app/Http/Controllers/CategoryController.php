@@ -17,6 +17,42 @@ class CategoryController extends Controller
     ) {}
 
     /**
+     * Display a listing of all categories with hierarchical structure.
+     */
+    public function index(Request $request): \Illuminate\Contracts\View\View
+    {
+        // Cache category list for 30 minutes
+        $categories = $this->cacheService->remember(
+            'categories.index',
+            CacheService::TTL_LONG,
+            function () {
+                return Category::active()
+                    ->parent()
+                    ->with([
+                        'children' => function ($query) {
+                            $query->active()
+                                ->withCount(['posts' => function ($q) {
+                                    $q->published();
+                                }])
+                                ->ordered();
+                        },
+                    ])
+                    ->withCount(['posts' => function ($q) {
+                        $q->published();
+                    }])
+                    ->ordered()
+                    ->get();
+            }
+        );
+
+        // Generate breadcrumbs
+        $breadcrumbs = $this->breadcrumbService->generate($request);
+        $breadcrumbStructuredData = $this->breadcrumbService->generateStructuredData($breadcrumbs);
+
+        return view('categories.index', compact('categories', 'breadcrumbs', 'breadcrumbStructuredData'));
+    }
+
+    /**
      * Display the category page with posts.
      */
     public function show(ShowCategoryRequest $request)

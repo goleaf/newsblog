@@ -12,7 +12,11 @@ class UserPreferences extends Model
 
     protected $fillable = [
         'user_id',
-        'preferences',
+        'email_notifications',
+        'push_notifications',
+        'theme',
+        'language',
+        'data',
     ];
 
     /**
@@ -21,8 +25,26 @@ class UserPreferences extends Model
     protected function casts(): array
     {
         return [
-            'preferences' => 'array',
+            'email_notifications' => 'boolean',
+            'push_notifications' => 'boolean',
+            'data' => 'array',
         ];
+    }
+
+    /**
+     * Get preferences data (alias for data column).
+     */
+    public function getPreferencesAttribute(): array
+    {
+        return $this->data ?? [];
+    }
+
+    /**
+     * Set preferences data (alias for data column).
+     */
+    public function setPreferencesAttribute(array $value): void
+    {
+        $this->data = $value;
     }
 
     public function user(): BelongsTo
