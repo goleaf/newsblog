@@ -27,6 +27,7 @@ class SpamDetectionServiceTest extends TestCase
         $content = 'Check out http://example.com and http://test.com and http://spam.com and http://more.com';
 
         $this->assertTrue($this->spamDetectionService->hasExcessiveLinks($content));
+        $this->assertTrue($this->spamDetectionService->checkLinkCount($content));
     }
 
     public function test_allows_content_with_acceptable_links(): void
@@ -34,6 +35,7 @@ class SpamDetectionServiceTest extends TestCase
         $content = 'Check out http://example.com and http://test.com';
 
         $this->assertFalse($this->spamDetectionService->hasExcessiveLinks($content));
+        $this->assertFalse($this->spamDetectionService->checkLinkCount($content));
     }
 
     public function test_detects_quick_submission(): void
@@ -41,6 +43,7 @@ class SpamDetectionServiceTest extends TestCase
         $context = ['time_on_page' => 2];
 
         $this->assertTrue($this->spamDetectionService->isSubmittedTooQuickly($context));
+        $this->assertTrue($this->spamDetectionService->checkSubmissionSpeed($context));
     }
 
     public function test_allows_normal_submission_speed(): void
@@ -48,6 +51,7 @@ class SpamDetectionServiceTest extends TestCase
         $context = ['time_on_page' => 5];
 
         $this->assertFalse($this->spamDetectionService->isSubmittedTooQuickly($context));
+        $this->assertFalse($this->spamDetectionService->checkSubmissionSpeed($context));
     }
 
     public function test_detects_blacklisted_keywords_with_exact_match(): void
@@ -55,6 +59,7 @@ class SpamDetectionServiceTest extends TestCase
         $content = 'Buy viagra now!';
 
         $this->assertTrue($this->spamDetectionService->containsBlacklistedWords($content));
+        $this->assertTrue($this->spamDetectionService->checkBlacklist($content));
     }
 
     public function test_detects_blacklisted_keywords_with_fuzzy_match(): void
@@ -78,6 +83,7 @@ class SpamDetectionServiceTest extends TestCase
         $content = 'This is a legitimate comment about the article.';
 
         $this->assertFalse($this->spamDetectionService->containsBlacklistedWords($content));
+        $this->assertFalse($this->spamDetectionService->checkBlacklist($content));
     }
 
     public function test_can_set_fuzzy_threshold(): void
@@ -164,5 +170,14 @@ class SpamDetectionServiceTest extends TestCase
 
         $this->assertTrue($this->spamDetectionService->isSubmittedTooQuickly(['time_on_page' => 4]));
         $this->assertFalse($this->spamDetectionService->isSubmittedTooQuickly(['time_on_page' => 6]));
+    }
+
+    public function test_block_ip_uses_rate_limiting(): void
+    {
+        $ip = '192.0.2.1';
+
+        $this->assertFalse($this->spamDetectionService->blockIp($ip, 2, 60));
+        $this->assertFalse($this->spamDetectionService->blockIp($ip, 2, 60));
+        $this->assertTrue($this->spamDetectionService->blockIp($ip, 2, 60));
     }
 }

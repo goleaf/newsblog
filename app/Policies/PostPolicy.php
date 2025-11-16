@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Enums\UserRole;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
@@ -15,7 +16,7 @@ class PostPolicy
      */
     public function viewAny(User $user): bool
     {
-        return in_array($user->role, ['admin', 'editor', 'author']);
+        return in_array($user->role, [UserRole::Admin, UserRole::Editor, UserRole::Author]);
     }
 
     /**
@@ -29,7 +30,7 @@ class PostPolicy
         }
 
         // Admin, editor, and author can view drafts/unpublished posts
-        if ($user && in_array($user->role, ['admin', 'editor', 'author'])) {
+        if ($user && in_array($user->role, [UserRole::Admin, UserRole::Editor, UserRole::Author])) {
             return true;
         }
 
@@ -41,7 +42,7 @@ class PostPolicy
      */
     public function create(User $user): bool
     {
-        return in_array($user->role, ['admin', 'editor', 'author']);
+        return in_array($user->role, [UserRole::Admin, UserRole::Editor, UserRole::Author]);
     }
 
     /**
@@ -50,12 +51,12 @@ class PostPolicy
     public function update(User $user, Post $post): bool
     {
         // Admin and editor can update any post
-        if (in_array($user->role, ['admin', 'editor'])) {
+        if (in_array($user->role, [UserRole::Admin, UserRole::Editor])) {
             return true;
         }
 
         // Authors can only update their own posts
-        if ($user->role === 'author') {
+        if ($user->role === UserRole::Author) {
             return $user->id === $post->user_id;
         }
 
@@ -68,12 +69,12 @@ class PostPolicy
     public function delete(User $user, Post $post): bool
     {
         // Admin and editor can delete any post
-        if (in_array($user->role, ['admin', 'editor'])) {
+        if (in_array($user->role, [UserRole::Admin, UserRole::Editor])) {
             return true;
         }
 
         // Authors can only delete their own posts
-        if ($user->role === 'author') {
+        if ($user->role === UserRole::Author) {
             return $user->id === $post->user_id;
         }
 

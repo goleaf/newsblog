@@ -63,7 +63,7 @@ class ExportPosts extends Action
                 $post->slug,
                 $post->user?->name ?? 'N/A',
                 $post->category?->name ?? 'N/A',
-                ucfirst($post->status),
+                ucfirst($post->status->value),
                 $post->is_featured ? 'Yes' : 'No',
                 $post->is_trending ? 'Yes' : 'No',
                 $post->view_count,

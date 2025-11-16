@@ -80,3 +80,4 @@ class ModelResolutionTest extends TestCase
     }
 }
 
+

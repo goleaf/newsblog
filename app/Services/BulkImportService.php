@@ -362,85 +362,95 @@ class BulkImportService
             // Bulk insert posts
             if (! empty($postsToInsert)) {
                 // Disable model events for bulk operations
-                Post::withoutEvents(function () use ($postsToInsert, $tagPivotData, $categoryPivotData) {
-                    // For SQLite, temporarily disable FK checks during bulk insert to avoid
-                    // false positives when inserting many rows in a transaction.
-                    $driver = DB::getDriverName();
-                    $sqliteFkWasDisabled = false;
-                    if ($driver === 'sqlite') {
-                        try {
-                            DB::statement('PRAGMA foreign_keys = OFF');
-                            $sqliteFkWasDisabled = true;
-                        } catch (\Throwable $e) {
-                            // noop; continue
-                        }
-                    }
-
-                    DB::table('posts')->insert($postsToInsert);
-
-                    // Get the IDs of inserted posts by their slugs (reliable and memory efficient)
-                    $slugs = array_column($postsToInsert, 'slug');
-
-                    $insertedPosts = DB::table('posts')
-                        ->whereIn('slug', $slugs)
-                        ->pluck('id', 'slug')
-                        ->toArray();
-
-                    // Build pivot table data
-                    $pivotInserts = [];
-                    foreach ($tagPivotData as $pivot) {
-                        $postIndex = $pivot['post_index'];
-                        $slug = $postsToInsert[$postIndex]['slug'];
-
-                        if (isset($insertedPosts[$slug])) {
-                            $postId = $insertedPosts[$slug];
-
-                            foreach ($pivot['tag_ids'] as $tagId) {
-                                $pivotInserts[] = [
-                                    'post_id' => $postId,
-                                    'tag_id' => $tagId,
-                                ];
+                try {
+                    Post::withoutEvents(function () use ($postsToInsert, $tagPivotData, $categoryPivotData) {
+                        // For SQLite, temporarily disable FK checks during bulk insert to avoid
+                        // false positives when inserting many rows in a transaction.
+                        $driver = DB::getDriverName();
+                        $sqliteFkWasDisabled = false;
+                        if ($driver === 'sqlite') {
+                            try {
+                                DB::statement('PRAGMA foreign_keys = OFF');
+                                $sqliteFkWasDisabled = true;
+                            } catch (\Throwable $e) {
+                                // noop; continue
                             }
                         }
-                    }
 
-                    // Bulk insert pivot relationships
-                    if (! empty($pivotInserts)) {
-                        DB::table('post_tag')->insert($pivotInserts);
-                    }
+                        DB::table('posts')->insert($postsToInsert);
 
-                    // Build and insert category pivot rows (category_post)
-                    $categoryInserts = [];
-                    foreach ($categoryPivotData as $pivot) {
-                        $postIndex = $pivot['post_index'];
-                        $slug = $postsToInsert[$postIndex]['slug'];
+                        // Get the IDs of inserted posts by their slugs (reliable and memory efficient)
+                        $slugs = array_column($postsToInsert, 'slug');
 
-                        if (isset($insertedPosts[$slug])) {
-                            $postId = $insertedPosts[$slug];
+                        $insertedPosts = DB::table('posts')
+                            ->whereIn('slug', $slugs)
+                            ->pluck('id', 'slug')
+                            ->toArray();
 
-                            foreach ($pivot['category_ids'] as $categoryId) {
-                                $categoryInserts[] = [
-                                    'post_id' => $postId,
-                                    'category_id' => $categoryId,
-                                    'created_at' => now(),
-                                    'updated_at' => now(),
-                                ];
+                        // Build pivot table data
+                        $pivotInserts = [];
+                        foreach ($tagPivotData as $pivot) {
+                            $postIndex = $pivot['post_index'];
+                            $slug = $postsToInsert[$postIndex]['slug'];
+
+                            if (isset($insertedPosts[$slug])) {
+                                $postId = $insertedPosts[$slug];
+
+                                foreach ($pivot['tag_ids'] as $tagId) {
+                                    $pivotInserts[] = [
+                                        'post_id' => $postId,
+                                        'tag_id' => $tagId,
+                                    ];
+                                }
                             }
                         }
-                    }
 
-                    if (! empty($categoryInserts)) {
-                        DB::table('category_post')->insert($categoryInserts);
-                    }
-
-                    if ($sqliteFkWasDisabled) {
-                        try {
-                            DB::statement('PRAGMA foreign_keys = ON');
-                        } catch (\Throwable $e) {
-                            // noop
+                        // Bulk insert pivot relationships
+                        if (! empty($pivotInserts)) {
+                            DB::table('post_tag')->insert($pivotInserts);
                         }
-                    }
-                });
+
+                        // Build and insert category pivot rows (category_post)
+                        $categoryInserts = [];
+                        foreach ($categoryPivotData as $pivot) {
+                            $postIndex = $pivot['post_index'];
+                            $slug = $postsToInsert[$postIndex]['slug'];
+
+                            if (isset($insertedPosts[$slug])) {
+                                $postId = $insertedPosts[$slug];
+
+                                foreach ($pivot['category_ids'] as $categoryId) {
+                                    $categoryInserts[] = [
+                                        'post_id' => $postId,
+                                        'category_id' => $categoryId,
+                                        'created_at' => now(),
+                                        'updated_at' => now(),
+                                    ];
+                                }
+                            }
+                        }
+
+                        if (! empty($categoryInserts)) {
+                            DB::table('category_post')->insert($categoryInserts);
+                        }
+
+                        if ($sqliteFkWasDisabled) {
+                            try {
+                                DB::statement('PRAGMA foreign_keys = ON');
+                            } catch (\Throwable $e) {
+                                // noop
+                            }
+                        }
+                    });
+                } catch (\Exception $e) {
+                    Log::channel('import')->error('Bulk insert failed', [
+                        'error' => $e->getMessage(),
+                        'trace' => $e->getTraceAsString(),
+                        'posts_count' => count($postsToInsert),
+                        'first_post' => $postsToInsert[0] ?? null,
+                    ]);
+                    throw $e;
+                }
 
                 $this->stats['posts_created'] += count($postsToInsert);
             }
@@ -567,6 +577,19 @@ class BulkImportService
                 $primaryCategoryId = $resolved[0];
                 $extraCategoryIds = array_values(array_unique(array_slice($resolved, 1)));
             }
+        }
+
+        // Skip posts without categories (category_id is required)
+        if ($primaryCategoryId === null) {
+            Log::channel('import')->warning('Post skipped - no valid categories', [
+                'title' => $row['title'],
+                'categories_from_csv' => $row['categories'] ?? null,
+                'parsed_category_slugs' => $categories,
+                'category_cache_size' => count($this->categoryCache),
+                'sample_cache_keys' => array_slice(array_keys($this->categoryCache), 0, 5),
+            ]);
+
+            return null;
         }
 
         // Generate content if enabled

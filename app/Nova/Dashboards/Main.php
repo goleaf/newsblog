@@ -2,6 +2,8 @@
 
 namespace App\Nova\Dashboards;
 
+use App\Nova\Metrics\PendingComments;
+use App\Nova\Metrics\PopularPosts;
 use App\Nova\Metrics\PostsByCategory;
 use App\Nova\Metrics\PostsByStatus;
 use App\Nova\Metrics\PostsPerDay;
@@ -29,16 +31,20 @@ class Main extends Dashboard
     {
         return [
             // Value metrics - showing key statistics
-            (new TotalPosts)->width('1/3'),
-            (new TotalUsers)->width('1/3'),
-            (new TotalViews)->width('1/3'),
+            (new TotalPosts)->width('1/4'),
+            (new TotalUsers)->width('1/4'),
+            (new TotalViews)->width('1/4'),
+            (new PendingComments)->width('1/4'),
 
             // Trend metric - showing posts over time
             (new PostsPerDay)->width('full'),
 
+            // Table metric - showing popular posts
+            (new PopularPosts)->width('1/2'),
+
             // Partition metrics - showing distribution
             (new PostsByStatus)->width('1/2'),
-            (new PostsByCategory)->width('1/2'),
+            (new PostsByCategory)->width('full'),
         ];
     }
 

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Enums\PostStatus;
 use App\Models\Category;
 use App\Models\Post;
 use App\Models\Tag;
@@ -186,7 +187,7 @@ class PostServiceTest extends TestCase
             'scheduled_at' => $scheduledAt,
         ]);
 
-        $this->assertEquals('scheduled', $post->status);
+        $this->assertEquals(PostStatus::Scheduled, $post->status);
         $this->assertNotNull($post->scheduled_at);
         $this->assertNull($post->published_at);
     }
@@ -204,7 +205,7 @@ class PostServiceTest extends TestCase
 
         $publishedPost = $this->postService->publishPost($post);
 
-        $this->assertEquals('published', $publishedPost->status);
+        $this->assertEquals(PostStatus::Published, $publishedPost->status);
         $this->assertNotNull($publishedPost->published_at);
         $this->assertNull($publishedPost->scheduled_at);
     }
@@ -217,13 +218,13 @@ class PostServiceTest extends TestCase
         $post = Post::factory()->create([
             'user_id' => $user->id,
             'category_id' => $category->id,
-            'status' => 'draft',
+            'status' => PostStatus::Draft,
         ]);
 
         $scheduledAt = now()->addDays(2);
         $scheduledPost = $this->postService->schedulePost($post, $scheduledAt);
 
-        $this->assertEquals('scheduled', $scheduledPost->status);
+        $this->assertEquals(PostStatus::Scheduled, $scheduledPost->status);
         $this->assertNotNull($scheduledPost->scheduled_at);
         $this->assertNull($scheduledPost->published_at);
     }
@@ -257,7 +258,7 @@ class PostServiceTest extends TestCase
 
         $unpublishedPost = $this->postService->unpublishPost($post);
 
-        $this->assertEquals('draft', $unpublishedPost->status);
+        $this->assertEquals(PostStatus::Draft, $unpublishedPost->status);
         $this->assertNull($unpublishedPost->published_at);
     }
 
@@ -269,12 +270,12 @@ class PostServiceTest extends TestCase
         $post = Post::factory()->create([
             'user_id' => $user->id,
             'category_id' => $category->id,
-            'status' => 'published',
+            'status' => PostStatus::Published,
         ]);
 
         $archivedPost = $this->postService->archivePost($post);
 
-        $this->assertEquals('archived', $archivedPost->status);
+        $this->assertEquals(PostStatus::Archived, $archivedPost->status);
     }
 
     public function test_gets_posts_ready_to_publish(): void
@@ -325,7 +326,7 @@ class PostServiceTest extends TestCase
         $count = $this->postService->publishScheduledPosts();
 
         $this->assertEquals(2, $count);
-        $this->assertEquals(2, Post::where('status', 'published')->count());
+        $this->assertEquals(2, Post::where('status', PostStatus::Published)->count());
     }
 
     public function test_duplicates_post_with_unique_slug(): void
@@ -346,7 +347,7 @@ class PostServiceTest extends TestCase
 
         $this->assertEquals('Original Post (Copy)', $duplicatedPost->title);
         $this->assertEquals('original-post-copy', $duplicatedPost->slug);
-        $this->assertEquals('draft', $duplicatedPost->status);
+        $this->assertEquals(PostStatus::Draft, $duplicatedPost->status);
         $this->assertEquals(0, $duplicatedPost->view_count);
         $this->assertNull($duplicatedPost->published_at);
     }
@@ -371,8 +372,8 @@ class PostServiceTest extends TestCase
         $count = $this->postService->bulkUpdateStatus([$post1->id, $post2->id], 'published');
 
         $this->assertEquals(2, $count);
-        $this->assertEquals('published', $post1->fresh()->status);
-        $this->assertEquals('published', $post2->fresh()->status);
+        $this->assertEquals(PostStatus::Published, $post1->fresh()->status);
+        $this->assertEquals(PostStatus::Published, $post2->fresh()->status);
     }
 
     public function test_gets_post_statistics(): void
@@ -829,7 +830,7 @@ class PostServiceTest extends TestCase
         $relatedPosts = $this->postService->getRelatedPosts($post1, 4);
 
         foreach ($relatedPosts as $relatedPost) {
-            $this->assertEquals('published', $relatedPost->status);
+            $this->assertEquals(PostStatus::Published, $relatedPost->status);
             $this->assertNotNull($relatedPost->published_at);
         }
     }

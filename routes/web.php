@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\MediaController as AdminMediaController;
 use App\Http\Controllers\Admin\SearchController as AdminSearchController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\HomeController;
@@ -33,6 +34,23 @@ Route::post('/engagement/track', [\App\Http\Controllers\EngagementMetricControll
 Route::post('/comments', [CommentController::class, 'store'])
     ->middleware('throttle:comments')
     ->name('comments.store');
+
+Route::post('/comments/reply', [CommentController::class, 'reply'])
+    ->middleware('throttle:comments')
+    ->name('comments.reply');
+
+Route::middleware(['auth', 'role:admin,editor'])->group(function () {
+    Route::post('/comments/{comment}/approve', [CommentController::class, 'approve'])
+        ->name('comments.approve');
+
+    Route::post('/comments/{comment}/reject', [CommentController::class, 'reject'])
+        ->name('comments.reject');
+});
+
+Route::middleware('auth')->group(function () {
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])
+        ->name('comments.destroy');
+});
 
 // Newsletter routes
 Route::post('/newsletter/subscribe', [\App\Http\Controllers\NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
@@ -165,6 +183,12 @@ Route::middleware(['auth', 'role:admin,editor'])->prefix('admin')->name('admin.'
     // Monitoring routes
     Route::get('/monitoring', [\App\Http\Controllers\Admin\MonitoringController::class, 'index'])->name('monitoring.index');
     Route::post('/monitoring/reset', [\App\Http\Controllers\Admin\MonitoringController::class, 'reset'])->name('monitoring.reset');
+
+    // Media library routes
+    Route::get('/media', [AdminMediaController::class, 'index'])->name('media.index');
+    Route::post('/media', [AdminMediaController::class, 'store'])->name('media.store');
+    Route::delete('/media/{media}', [AdminMediaController::class, 'destroy'])->name('media.destroy');
+    Route::get('/media/search', [AdminMediaController::class, 'search'])->name('media.search');
 });
 
 require __DIR__.'/auth.php';

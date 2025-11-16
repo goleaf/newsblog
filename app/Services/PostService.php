@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\PostStatus;
 use App\Models\Post;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
@@ -117,18 +118,18 @@ class PostService
                 : $data['scheduled_at'];
 
             if ($scheduledAt->isFuture()) {
-                $data['status'] = 'scheduled';
+                $data['status'] = PostStatus::Scheduled;
                 // Clear published_at for scheduled posts
                 $data['published_at'] = null;
-            } elseif ($scheduledAt->isPast() && (! $post || $post->status === 'scheduled')) {
+            } elseif ($scheduledAt->isPast() && (! $post || $post->status === PostStatus::Scheduled)) {
                 // If scheduled time is in the past and post is scheduled, publish it
-                $data['status'] = 'published';
+                $data['status'] = PostStatus::Published;
                 $data['published_at'] = $scheduledAt;
             }
         }
 
         // If status is being set to published and no published_at, set it to now
-        if (isset($data['status']) && $data['status'] === 'published') {
+        if (isset($data['status']) && $data['status'] === PostStatus::Published) {
             if (empty($data['published_at']) && (! $post || ! $post->published_at)) {
                 $data['published_at'] = now();
             }
@@ -139,7 +140,7 @@ class PostService
         }
 
         // If status is being set to draft or archived, clear published_at and scheduled_at
-        if (isset($data['status']) && in_array($data['status'], ['draft', 'archived'])) {
+        if (isset($data['status']) && in_array($data['status'], [PostStatus::Draft, PostStatus::Archived], true)) {
             if (! isset($data['published_at'])) {
                 $data['published_at'] = null;
             }
@@ -157,7 +158,7 @@ class PostService
     public function publishPost(Post $post): Post
     {
         $post->update([
-            'status' => 'published',
+            'status' => PostStatus::Published,
             'published_at' => now(),
             'scheduled_at' => null,
         ]);
@@ -177,7 +178,7 @@ class PostService
         }
 
         $post->update([
-            'status' => 'scheduled',
+            'status' => PostStatus::Scheduled,
             'scheduled_at' => $scheduledAt,
             'published_at' => null,
         ]);
@@ -191,7 +192,7 @@ class PostService
     public function unpublishPost(Post $post): Post
     {
         $post->update([
-            'status' => 'draft',
+            'status' => PostStatus::Draft,
             'published_at' => null,
             'scheduled_at' => null,
         ]);
@@ -205,7 +206,7 @@ class PostService
     public function archivePost(Post $post): Post
     {
         $post->update([
-            'status' => 'archived',
+            'status' => PostStatus::Archived,
         ]);
 
         return $post->fresh();
@@ -216,7 +217,7 @@ class PostService
      */
     public function getPostsReadyToPublish(): \Illuminate\Database\Eloquent\Collection
     {
-        return Post::where('status', 'scheduled')
+        return Post::where('status', PostStatus::Scheduled)
             ->where('scheduled_at', '<=', now())
             ->get();
     }
@@ -231,7 +232,7 @@ class PostService
 
         foreach ($posts as $post) {
             $post->update([
-                'status' => 'published',
+                'status' => PostStatus::Published,
                 'published_at' => $post->scheduled_at ?? now(),
             ]);
             $count++;
@@ -248,7 +249,7 @@ class PostService
         $newPost = $post->replicate();
         $newPost->title = $post->title.' (Copy)';
         $newPost->slug = $this->generateUniqueSlug($newPost->title);
-        $newPost->status = 'draft';
+        $newPost->status = PostStatus::Draft;
         $newPost->published_at = null;
         $newPost->scheduled_at = null;
         $newPost->view_count = 0;
@@ -268,10 +269,10 @@ class PostService
         $data = ['status' => $status];
 
         // Set appropriate timestamps based on status
-        if ($status === 'published') {
+        if ($status === PostStatus::Published) {
             $data['published_at'] = now();
             $data['scheduled_at'] = null;
-        } elseif (in_array($status, ['draft', 'archived'])) {
+        } elseif (in_array($status, [PostStatus::Draft, PostStatus::Archived], true)) {
             $data['published_at'] = null;
             $data['scheduled_at'] = null;
         }

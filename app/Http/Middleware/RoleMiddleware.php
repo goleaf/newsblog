@@ -21,7 +21,10 @@ class RoleMiddleware
 
         $user = auth()->user();
 
-        if (! in_array($user->role, $roles)) {
+        // Convert enum to string value for comparison with route parameters
+        $userRole = $user->role instanceof \BackedEnum ? $user->role->value : $user->role;
+
+        if (! in_array($userRole, $roles)) {
             abort(403, 'You do not have permission to access this resource.');
         }
 

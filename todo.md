@@ -1,0 +1,67 @@
+- **High priority**
+  - Fresh migrate the database (`php artisan migrate:fresh --seed --no-interaction`).
+  - Ensure an import user (ID 1) exists for assigning posts.
+  - Import 1000 articles with categories and tags from the CSV using the artisan command.
+  - Quickly verify counts and relationships (posts, categories, tags, pivots).
+
+## Project TODOs
+
+- **3. Core content models**
+  - [x] 3.1 Create `Category` model with hierarchical structure
+  - [x] 3.3 Create `Post` model with comprehensive fields
+  - [x] 3.4 Create pivot tables for relationships
+    - [x] Ensure `category_post` pivot table exists with `post_id`, `category_id`, timestamps, and unique index on (`post_id`, `category_id`).
+    - [x] Ensure `post_tag` pivot table exists with `post_id`, `tag_id`, composite primary key and supporting indexes.
+  - [x] 3.5 Create model factories and seeders
+    - [x] Ensure factories exist for `User`, `Category`, `Tag`, and `Post`.
+    - [x] Create a seeder that uses these factories to generate 10 categories, 50 tags, and 100 posts with realistic relationships.
+  - [ ] 3.6 Write model relationship tests
+    - [ ] Add tests for `Category` parent / child relationships and scopes.
+    - [ ] Add tests for `Post` `belongsToMany` relationships with `Category` and `Tag`.
+    - [ ] Add tests for key `Post` model scopes (published, featured, trending, scheduled, filters).
+
+- **5. Set up Laravel Nova admin panel**
+  - [x] 5.1 Create Nova resources for core models
+    - [x] Create PostResource with fields and filters
+    - [x] Create CategoryResource with parent selector
+    - [x] Create TagResource
+    - [x] Create UserResource with role management
+    - [x] Create MediaResource with preview
+  - [x] 5.2 Add Nova actions for post management
+    - [x] Create PublishPost action
+    - [x] Create SchedulePost action
+    - [x] Create ArchivePost action
+    - [x] Create BulkPublish action
+  - [x] 5.3 Create Nova dashboard with metrics
+    - [x] Add TotalPosts metric card
+    - [x] Add PostsPerDay trend metric
+    - [x] Add PendingComments value metric
+    - [x] Add PopularPosts table
+  - [x] 5.4 Customize Nova appearance
+    - [x] Configure branding (logo, colors)
+    - [x] Customize navigation menu
+    - [x] Add custom CSS for admin panel
+
+- **6. Implement post management functionality**
+  - [x] 6.1 Create PostService for business logic
+    - [x] Implement create method with slug generation
+    - [x] Implement update method
+    - [x] Add publish method with timestamp
+    - [x] Add schedule method with validation
+    - [x] Implement calculateReadingTime method
+  - [x] 6.2 Create PostObserver for automatic actions
+    - [x] Implement creating event for slug generation
+    - [x] Add saving event for reading time calculation
+    - [x] Implement published event for notifications
+    - [x] Add deleted event for cleanup
+  - [x] 6.3 Add post scopes to Post model
+    - [x] Create scopePublished for filtering published posts
+    - [x] Add scopeFeatured for featured posts
+    - [x] Create scopeBreaking for breaking news
+    - [x] Add scopeScheduled for scheduled posts
+    - [x] Implement scopePopular ordered by view_count
+  - [x] 6.4 Write post management tests
+    - [x] Test post creation with relationships
+    - [x] Test slug generation and uniqueness
+    - [x] Test reading time calculation
+    - [x] Test post publishing workflow

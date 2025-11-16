@@ -343,6 +343,10 @@ class Post extends Resource
     public function actions(NovaRequest $request): array
     {
         return [
+            new Actions\PublishPost,
+            new Actions\SchedulePost,
+            new Actions\ArchivePost,
+            new Actions\BulkPublish,
             new Actions\PublishPosts,
             new Actions\FeaturePosts,
             new Actions\ExportPosts,

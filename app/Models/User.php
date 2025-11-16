@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\UserRole;
+use App\Enums\UserStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -49,6 +51,8 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'email_preferences' => 'array',
+            'role' => UserRole::class,
+            'status' => UserStatus::class,
         ];
     }
 
@@ -138,37 +142,37 @@ class User extends Authenticatable
 
     public function scopeActive($query)
     {
-        return $query->where('status', 'active');
+        return $query->where('status', UserStatus::Active);
     }
 
     public function scopeAdmins($query)
     {
-        return $query->where('role', 'admin');
+        return $query->where('role', UserRole::Admin);
     }
 
     public function scopeEditors($query)
     {
-        return $query->where('role', 'editor');
+        return $query->where('role', UserRole::Editor);
     }
 
     public function scopeAuthors($query)
     {
-        return $query->where('role', 'author');
+        return $query->where('role', UserRole::Author);
     }
 
-    public function isAdmin()
+    public function isAdmin(): bool
     {
-        return $this->role === 'admin';
+        return $this->role === UserRole::Admin;
     }
 
-    public function isEditor()
+    public function isEditor(): bool
     {
-        return $this->role === 'editor';
+        return $this->role === UserRole::Editor;
     }
 
-    public function isAuthor()
+    public function isAuthor(): bool
     {
-        return $this->role === 'author';
+        return $this->role === UserRole::Author;
     }
 
     public function getFullNameAttribute()

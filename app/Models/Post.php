@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\PostStatus;
 use App\Services\SearchIndexService;
 use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -26,6 +27,9 @@ class Post extends Model
         'status',
         'is_featured',
         'is_trending',
+        'is_breaking',
+        'is_sponsored',
+        'is_editors_pick',
         'view_count',
         'published_at',
         'scheduled_at',
@@ -35,12 +39,24 @@ class Post extends Model
         'meta_keywords',
     ];
 
-    protected $casts = [
-        'is_featured' => 'boolean',
-        'is_trending' => 'boolean',
-        'published_at' => 'datetime',
-        'scheduled_at' => 'datetime',
-    ];
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'status' => PostStatus::class,
+            'is_featured' => 'boolean',
+            'is_trending' => 'boolean',
+            'is_breaking' => 'boolean',
+            'is_sponsored' => 'boolean',
+            'is_editors_pick' => 'boolean',
+            'published_at' => 'datetime',
+            'scheduled_at' => 'datetime',
+        ];
+    }
 
     public function user()
     {
@@ -111,13 +127,18 @@ class Post extends Model
 
     public function scopePublished($query)
     {
-        return $query->where('status', 'published')
+        return $query->where('status', PostStatus::Published)
             ->where('published_at', '<=', now());
     }
 
     public function scopeFeatured($query)
     {
         return $query->where('is_featured', true);
+    }
+
+    public function scopeBreaking($query)
+    {
+        return $query->where('is_breaking', true);
     }
 
     public function scopeTrending($query)
@@ -127,7 +148,7 @@ class Post extends Model
 
     public function scopeScheduled($query)
     {
-        return $query->where('status', 'scheduled')
+        return $query->where('status', PostStatus::Scheduled)
             ->where('scheduled_at', '>', now());
     }
 
@@ -195,7 +216,7 @@ class Post extends Model
 
     public function isPublished()
     {
-        return $this->status === 'published' && $this->published_at <= now();
+        return $this->status === PostStatus::Published && $this->published_at <= now();
     }
 
     public function canBeEditedBy($user)

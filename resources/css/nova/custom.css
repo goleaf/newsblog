@@ -1,0 +1,82 @@
+/**
+ * Custom CSS for Laravel Nova Admin Panel
+ * TechNewsHub Admin Customizations
+ */
+
+/* Custom sidebar styling */
+.nova-sidebar {
+    background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+}
+
+/* Custom header styling */
+.nova-header {
+    border-bottom: 2px solid rgba(59, 130, 246, 0.1);
+}
+
+/* Custom button styling */
+.btn-primary {
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+/* Custom card styling */
+.card {
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.2s ease-in-out;
+}
+
+.card:hover {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Custom metric card styling */
+.metric-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+}
+
+/* Custom table row hover effect */
+.table-row:hover {
+    background-color: #f1f5f9;
+}
+
+/* Custom navigation menu item styling */
+.menu-item:hover {
+    background-color: rgba(59, 130, 246, 0.1);
+    border-left: 3px solid #3b82f6;
+}
+
+/* Custom dashboard styling */
+.dashboard-card {
+    border-left: 4px solid #3b82f6;
+}
+
+/* Custom badge styling */
+.badge {
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+}
+
+/* Custom loading spinner */
+.spinner {
+    border-color: #3b82f6;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .card {
+        background-color: #1e293b;
+        border-color: #334155;
+    }
+
+    .metric-card {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    }
+}
+
+

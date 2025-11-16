@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Media;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Interfaces\ImageInterface;
 use Intervention\Image\Laravel\Facades\Image;
 
 class ImageProcessingService
@@ -19,6 +20,14 @@ class ImageProcessingService
      * Process an uploaded image file
      */
     public function processUpload(UploadedFile $file, int $userId): Media
+    {
+        return $this->upload($file, $userId);
+    }
+
+    /**
+     * Upload an image with validation and optimization
+     */
+    public function upload(UploadedFile $file, int $userId): Media
     {
         // Validate file
         $this->validateFile($file);
@@ -88,17 +97,20 @@ class ImageProcessingService
             // Resize maintaining aspect ratio
             $image->scale(width: $width, height: $height);
 
+            // Optimize image before saving
+            $optimizedImage = $this->optimize($image);
+
             // Compress with 85% quality
             $variantFilename = "{$baseFilename}_{$name}.jpg";
             $variantPath = Storage::disk('public')->path("{$basePath}/{$variantFilename}");
 
             // Save as JPEG with 85% quality
-            $image->toJpeg(quality: 85)->save($variantPath);
+            $optimizedImage->toJpeg(quality: 85)->save($variantPath);
 
             // Generate WebP version
             $webpFilename = "{$baseFilename}_{$name}.webp";
             $webpPath = Storage::disk('public')->path("{$basePath}/{$webpFilename}");
-            $image->toWebp(quality: 85)->save($webpPath);
+            $this->convertToWebP($variantPath, $webpPath);
 
             $variants[$name] = [
                 'path' => "{$basePath}/{$variantFilename}",
@@ -109,6 +121,30 @@ class ImageProcessingService
         }
 
         return $variants;
+    }
+
+    /**
+     * Optimize image for compression
+     */
+    private function optimize(ImageInterface $image, int $quality = 85): ImageInterface
+    {
+        // For now, optimization is handled via encoder quality when saving.
+        // This method exists as a dedicated extension point for further compression tweaks.
+
+        return $image;
+    }
+
+    /**
+     * Convert image to WebP with JPEG fallback
+     */
+    private function convertToWebP(string $sourcePath, string $destinationPath, int $quality = 85): void
+    {
+        try {
+            $image = Image::read($sourcePath);
+            $image->toWebp(quality: $quality)->save($destinationPath);
+        } catch (\Throwable) {
+            // Fallback: keep the JPEG variant only if WebP conversion fails.
+        }
     }
 
     /**

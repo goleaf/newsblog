@@ -3,10 +3,14 @@
 namespace App\Providers;
 
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
+use Laravel\Nova\Menu\Menu;
+use Laravel\Nova\Menu\MenuItem;
+use Laravel\Nova\Menu\MenuSection;
 use Laravel\Nova\Nova;
 use Laravel\Nova\NovaApplicationServiceProvider;
 
@@ -20,6 +24,40 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         parent::boot();
 
         Nova::globalSearchDebounce(500);
+
+        // Add custom CSS for Nova admin panel
+        Nova::style('nova-custom', asset('css/nova/custom.css'));
+
+        // Customize the main navigation menu
+        Nova::mainMenu(function (Request $request) {
+            return [
+                MenuSection::dashboard(\App\Nova\Dashboards\Main::class)
+                    ->icon('chart-bar'),
+
+                MenuSection::make('Content', [
+                    MenuItem::resource(\App\Nova\Post::class),
+                    MenuItem::resource(\App\Nova\Category::class),
+                    MenuItem::resource(\App\Nova\Tag::class),
+                    MenuItem::resource(\App\Nova\Comment::class),
+                ])->icon('document-text')->collapsable(),
+
+                MenuSection::make('Media & Files', [
+                    MenuItem::resource(\App\Nova\Media::class),
+                ])->icon('photo')->collapsable(),
+
+                MenuSection::make('Users & Settings', [
+                    MenuItem::resource(\App\Nova\User::class),
+                ])->icon('user-group')->collapsable(),
+
+                MenuSection::make('System Tools', [
+                    MenuItem::link('System Health', '/tools/system-health')
+                        ->icon('server'),
+                ])->icon('cog')->collapsable()
+                    ->canSee(function ($request) {
+                        return in_array($request->user()?->role, ['admin'], true);
+                    }),
+            ];
+        });
 
         // Handle deprecation notices for old admin URLs
         Nova::serving(function ($event) {

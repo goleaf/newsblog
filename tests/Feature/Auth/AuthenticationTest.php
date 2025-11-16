@@ -30,6 +30,23 @@ class AuthenticationTest extends TestCase
         $response->assertRedirect(route('dashboard', absolute: false));
     }
 
+    public function test_session_is_regenerated_on_successful_login(): void
+    {
+        $user = User::factory()->create();
+
+        $this->get('/login');
+        $oldId = session()->getId();
+
+        $response = $this->post('/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ]);
+
+        $response->assertRedirect(route('dashboard', absolute: false));
+        $this->assertAuthenticated();
+        $this->assertNotSame($oldId, session()->getId());
+    }
+
     public function test_users_can_not_authenticate_with_invalid_password(): void
     {
         $user = User::factory()->create();
@@ -50,5 +67,19 @@ class AuthenticationTest extends TestCase
 
         $this->assertGuest();
         $response->assertRedirect('/');
+    }
+
+    public function test_session_is_invalidated_on_logout(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user);
+        $oldId = session()->getId();
+
+        $response = $this->post('/logout');
+
+        $this->assertGuest();
+        $response->assertRedirect('/');
+        $this->assertNotSame($oldId, session()->getId());
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\RateLimiter;
 
 class SpamDetectionService
 {
@@ -50,23 +51,28 @@ class SpamDetectionService
     public function isSpam(string $content, array $context = []): bool
     {
         // Check link count
-        if ($this->hasExcessiveLinks($content)) {
+        if ($this->checkLinkCount($content)) {
             return true;
         }
 
         // Check submission speed
-        if ($this->isSubmittedTooQuickly($context)) {
+        if ($this->checkSubmissionSpeed($context)) {
             return true;
         }
 
         // Check blacklisted keywords
-        if ($this->containsBlacklistedWords($content)) {
+        if ($this->checkBlacklist($content)) {
             return true;
         }
 
         // Check honeypot field
         if ($this->honeypotFilled($context)) {
             return true;
+        }
+
+        // Optionally record attempts per IP for future blocking
+        if (! empty($context['ip'] ?? null)) {
+            $this->blockIp($context['ip']);
         }
 
         return false;
@@ -84,6 +90,14 @@ class SpamDetectionService
     }
 
     /**
+     * Wrapper for link count check (max 3 links by default).
+     */
+    public function checkLinkCount(string $content): bool
+    {
+        return $this->hasExcessiveLinks($content);
+    }
+
+    /**
      * Check if the submission was made too quickly after page load.
      */
     public function isSubmittedTooQuickly(array $context): bool
@@ -93,6 +107,14 @@ class SpamDetectionService
         }
 
         return $context['time_on_page'] < $this->minSubmissionTime;
+    }
+
+    /**
+     * Wrapper for submission speed check.
+     */
+    public function checkSubmissionSpeed(array $context): bool
+    {
+        return $this->isSubmittedTooQuickly($context);
     }
 
     /**
@@ -153,6 +175,14 @@ class SpamDetectionService
         }
 
         return ! empty($matchedKeywords);
+    }
+
+    /**
+     * Wrapper for blacklist keyword check.
+     */
+    public function checkBlacklist(string $content): bool
+    {
+        return $this->containsBlacklistedWords($content);
     }
 
     /**
@@ -227,5 +257,30 @@ class SpamDetectionService
         $this->minSubmissionTime = $seconds;
 
         return $this;
+    }
+
+    /**
+     * Rate-limit and optionally block an IP submitting potential spam.
+     *
+     * @param  int  $maxAttempts  Maximum allowed attempts within the decay window.
+     * @param  int  $decaySeconds  Number of seconds until attempts are cleared.
+     */
+    public function blockIp(string $ip, int $maxAttempts = 5, int $decaySeconds = 60): bool
+    {
+        $key = sprintf('comment-spam:%s', $ip);
+
+        if (RateLimiter::tooManyAttempts($key, $maxAttempts)) {
+            Log::warning('Spam detection: IP blocked due to too many attempts', [
+                'ip' => $ip,
+                'max_attempts' => $maxAttempts,
+                'decay_seconds' => $decaySeconds,
+            ]);
+
+            return true;
+        }
+
+        RateLimiter::hit($key, $decaySeconds);
+
+        return false;
     }
 }
