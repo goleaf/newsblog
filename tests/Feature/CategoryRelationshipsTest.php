@@ -101,4 +101,48 @@ class CategoryRelationshipsTest extends TestCase
 
         $this->assertSame(2, $category->getPostsCount());
     }
+
+    public function test_category_hierarchical_structure_allows_multiple_levels(): void
+    {
+        $root = Category::factory()->create(['parent_id' => null, 'name' => 'Root']);
+        $level1 = Category::factory()->create(['parent_id' => $root->id, 'name' => 'Level 1']);
+        $level2 = Category::factory()->create(['parent_id' => $level1->id, 'name' => 'Level 2']);
+
+        $this->assertNull($root->parent_id);
+        $this->assertEquals($root->id, $level1->parent_id);
+        $this->assertEquals($level1->id, $level2->parent_id);
+
+        $this->assertTrue($level2->parent->is($level1));
+        $this->assertTrue($level1->parent->is($root));
+        $this->assertCount(1, $root->children);
+        $this->assertCount(1, $level1->children);
+    }
+
+    public function test_category_children_are_ordered_by_display_order(): void
+    {
+        $parent = Category::factory()->create(['parent_id' => null]);
+
+        $child3 = Category::factory()->create([
+            'parent_id' => $parent->id,
+            'name' => 'Third',
+            'display_order' => 3,
+        ]);
+        $child1 = Category::factory()->create([
+            'parent_id' => $parent->id,
+            'name' => 'First',
+            'display_order' => 1,
+        ]);
+        $child2 = Category::factory()->create([
+            'parent_id' => $parent->id,
+            'name' => 'Second',
+            'display_order' => 2,
+        ]);
+
+        $orderedChildren = $parent->children()->get();
+
+        $this->assertEquals(
+            [$child1->id, $child2->id, $child3->id],
+            $orderedChildren->pluck('id')->all()
+        );
+    }
 }

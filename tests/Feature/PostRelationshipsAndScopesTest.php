@@ -83,6 +83,36 @@ class PostRelationshipsAndScopesTest extends TestCase
         $this->assertFalse($trendingResults->contains('id', $featured->id));
     }
 
+    public function test_breaking_scope_filters_by_is_breaking_flag(): void
+    {
+        $breakingPost = Post::factory()->create(['is_breaking' => true]);
+        $regularPost = Post::factory()->create(['is_breaking' => false]);
+
+        $breakingResults = Post::breaking()->get();
+
+        $this->assertTrue($breakingResults->contains('id', $breakingPost->id));
+        $this->assertFalse($breakingResults->contains('id', $regularPost->id));
+    }
+
+    public function test_post_scopes_for_sponsored_and_editors_pick(): void
+    {
+        $sponsoredPost = Post::factory()->create(['is_sponsored' => true]);
+        $editorsPickPost = Post::factory()->create(['is_editors_pick' => true]);
+        $regularPost = Post::factory()->create([
+            'is_sponsored' => false,
+            'is_editors_pick' => false,
+        ]);
+
+        $sponsoredResults = Post::query()->where('is_sponsored', true)->get();
+        $editorsPickResults = Post::query()->where('is_editors_pick', true)->get();
+
+        $this->assertTrue($sponsoredResults->contains('id', $sponsoredPost->id));
+        $this->assertFalse($sponsoredResults->contains('id', $regularPost->id));
+
+        $this->assertTrue($editorsPickResults->contains('id', $editorsPickPost->id));
+        $this->assertFalse($editorsPickResults->contains('id', $regularPost->id));
+    }
+
     public function test_scheduled_scope_filters_by_status_and_scheduled_at(): void
     {
         $scheduledPost = Post::factory()->create([

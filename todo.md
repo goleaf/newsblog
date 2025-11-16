@@ -8,6 +8,7 @@
 
 - **3. Core content models**
   - [x] 3.1 Create `Category` model with hierarchical structure
+  - [x] 3.2 Create `Tag` model with description field
   - [x] 3.3 Create `Post` model with comprehensive fields
   - [x] 3.4 Create pivot tables for relationships
     - [x] Ensure `category_post` pivot table exists with `post_id`, `category_id`, timestamps, and unique index on (`post_id`, `category_id`).
@@ -15,10 +16,11 @@
   - [x] 3.5 Create model factories and seeders
     - [x] Ensure factories exist for `User`, `Category`, `Tag`, and `Post`.
     - [x] Create a seeder that uses these factories to generate 10 categories, 50 tags, and 100 posts with realistic relationships.
-  - [ ] 3.6 Write model relationship tests
-    - [ ] Add tests for `Category` parent / child relationships and scopes.
-    - [ ] Add tests for `Post` `belongsToMany` relationships with `Category` and `Tag`.
-    - [ ] Add tests for key `Post` model scopes (published, featured, trending, scheduled, filters).
+  - [x] 3.6 Write model relationship tests
+    - [x] Add tests for `Category` parent / child relationships and scopes.
+    - [x] Add tests for `Post` `belongsToMany` relationships with `Category` and `Tag`.
+    - [x] Add tests for key `Post` model scopes (published, featured, trending, scheduled, breaking, sponsored, editors_pick, filters).
+    - [x] Add tests for `Tag` model relationships and description field.
 
 - **5. Set up Laravel Nova admin panel**
   - [x] 5.1 Create Nova resources for core models
