@@ -2,8 +2,10 @@
     x-data="{ 
         show: false,
         init() {
-            // Check if consent has been given
-            const consent = this.getCookie('gdpr_consent');
+            // Prefer localStorage; fallback to cookie
+            const lsConsent = localStorage.getItem('gdpr_consent');
+            const cookieConsent = this.getCookie('gdpr_consent');
+            const consent = lsConsent || cookieConsent;
             if (!consent) {
                 this.show = true;
             }
@@ -14,6 +16,7 @@
             if (parts.length === 2) return parts.pop().split(';').shift();
         },
         accept() {
+            localStorage.setItem('gdpr_consent', 'accepted');
             fetch('{{ route('gdpr.accept-consent') }}', {
                 method: 'POST',
                 headers: {
@@ -25,6 +28,7 @@
             });
         },
         decline() {
+            localStorage.setItem('gdpr_consent', 'declined');
             fetch('{{ route('gdpr.decline-consent') }}', {
                 method: 'POST',
                 headers: {

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Mail\AccountDeletionConfirmation;
 use App\Models\Bookmark;
 use App\Models\Comment;
 use App\Models\Post;
@@ -9,6 +10,7 @@ use App\Models\Reaction;
 use App\Models\User;
 use App\Services\GdprService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class GdprComplianceTest extends TestCase
@@ -138,6 +140,26 @@ class GdprComplianceTest extends TestCase
             ->assertSessionHasErrors('confirm_deletion');
     }
 
+    public function test_account_deletion_sends_confirmation_email(): void
+    {
+        Mail::fake();
+
+        $user = User::factory()->create([
+            'password' => bcrypt('password123'),
+            'email' => 'jane@example.com',
+        ]);
+
+        $this->actingAs($user)
+            ->delete(route('gdpr.delete-account'), [
+                'password' => 'password123',
+                'confirm_deletion' => '1',
+            ])->assertRedirect();
+
+        Mail::assertSent(AccountDeletionConfirmation::class, function ($mail) use ($user) {
+            return $mail->hasTo('jane@example.com') && $mail->user->is($user);
+        });
+    }
+
     public function test_gdpr_service_exports_all_user_data(): void
     {
         $user = User::factory()->create();
@@ -233,5 +255,23 @@ class GdprComplianceTest extends TestCase
 
         $response->assertStatus(200)
             ->assertViewIs('gdpr.privacy-policy');
+    }
+
+    public function test_user_model_export_method_returns_expected_structure(): void
+    {
+        $user = User::factory()->create();
+        Post::factory()->create(['user_id' => $user->id]);
+        Comment::factory()->create(['user_id' => $user->id]);
+
+        $data = $user->exportData();
+
+        $this->assertIsArray($data);
+        $this->assertArrayHasKey('user', $data);
+        $this->assertArrayHasKey('posts', $data);
+        $this->assertArrayHasKey('comments', $data);
+        $this->assertArrayHasKey('bookmarks', $data);
+        $this->assertArrayHasKey('reactions', $data);
+        $this->assertArrayHasKey('media', $data);
+        $this->assertEquals($user->id, $data['user']['id']);
     }
 }

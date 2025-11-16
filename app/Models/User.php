@@ -15,6 +15,17 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     /**
+     * Export all related data for GDPR.
+     */
+    public function exportData(): array
+    {
+        /** @var \App\Services\GdprService $gdpr */
+        $gdpr = app(\App\Services\GdprService::class);
+
+        return $gdpr->exportUserData($this);
+    }
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var list<string>

@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\DeleteAccountRequest;
+use App\Mail\AccountDeletionConfirmation;
 use App\Services\GdprService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class GdprController extends Controller
 {
@@ -80,14 +83,13 @@ class GdprController extends Controller
     /**
      * Delete user account
      */
-    public function deleteAccount(Request $request)
+    public function deleteAccount(DeleteAccountRequest $request)
     {
-        $request->validate([
-            'password' => 'required|current_password',
-            'confirm_deletion' => 'required|accepted',
-        ]);
-
         $user = Auth::user();
+
+        // Send confirmation email before anonymization
+        $originalEmail = $user->email;
+        Mail::to($originalEmail)->send(new AccountDeletionConfirmation($user));
 
         // Log out the user
         Auth::logout();
