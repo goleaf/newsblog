@@ -127,7 +127,7 @@ This implementation plan breaks down the complete platform features into discret
   - Recommendation model
   - _Requirements: 12.1, 12.5_
 
-- [ ] 4. Create enums for type safety
+- [-] 4. Create enums for type safety
   - ArticleStatus enum (draft, published, archived)
   - UserRole enum (reader, author, moderator, admin) with permission checks
   - CommentStatus enum (pending, approved, rejected, flagged)

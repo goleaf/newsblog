@@ -6,8 +6,9 @@ enum CommentStatus: string
 {
     case Pending = 'pending';
     case Approved = 'approved';
-    case Spam = 'spam';
     case Rejected = 'rejected';
+    case Flagged = 'flagged';
+    case Spam = 'spam';
 
     /**
      * Get all status values as an array for Nova filters.
@@ -19,8 +20,9 @@ enum CommentStatus: string
         return [
             'Pending' => self::Pending->value,
             'Approved' => self::Approved->value,
-            'Spam' => self::Spam->value,
             'Rejected' => self::Rejected->value,
+            'Flagged' => self::Flagged->value,
+            'Spam' => self::Spam->value,
         ];
     }
 
@@ -32,8 +34,9 @@ enum CommentStatus: string
         return match ($this) {
             self::Pending => 'Pending',
             self::Approved => 'Approved',
-            self::Spam => 'Spam',
             self::Rejected => 'Rejected',
+            self::Flagged => 'Flagged',
+            self::Spam => 'Spam',
         };
     }
 }
