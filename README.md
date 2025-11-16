@@ -78,6 +78,10 @@ TechNewsHub is a comprehensive content management system designed for technology
 - ✅ **Phase 4 Complete**: Performance optimization (v0.3.1)
   - ✅ Asset optimization with Vite
   - ✅ Image lazy loading
+
+## Roadmap
+
+For the full OpenSpec‑driven roadmap and change tracking, see docs/ROADMAP.md. Each phase is scaffolded as an OpenSpec change (proposal, tasks, specs) and validates via `openspec validate <id> --strict`.
   - ✅ Critical CSS generation
   - ✅ Cache headers middleware
   - ✅ Comprehensive caching strategy

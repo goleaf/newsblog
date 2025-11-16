@@ -14,9 +14,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // Use Redis-backed throttling for sliding window behavior in non-testing environments
-        // Fallback to default cache-based throttling during tests to avoid Redis dependency
-        if (! app()->environment('testing') && class_exists('Redis')) {
+        // Use Redis-backed throttling for sliding window behavior when the Redis
+        // PHP extension is available. Avoid using helpers that resolve the
+        // container (config / env) this early in the bootstrap lifecycle.
+        if (class_exists('Redis')) {
             $middleware->throttleWithRedis();
         }
 

@@ -1,0 +1,318 @@
+## Implementation Plan (Phased Checklist)
+
+- [ ] Phase 1: Foundation and Core Infrastructure
+  - [ ] 1. Set up project structure and core configuration
+    - Create Laravel 12 project with PHP 8.4
+    - Configure environment files for development, staging, and production
+    - Set up database connections (MySQL, Redis)
+    - Configure file storage (local, S3, CloudFront)
+    - Install and configure Laravel Sanctum for API authentication
+    - Install and configure Laravel Scout with Meilisearch
+    - Set up Laravel Pint for code formatting
+    - Requirements: 16.1, 16.2, 16.3
+  - [ ] 2. Create database schema and migrations
+  - [ ] 2.1 Create core content tables
+    - Migration for articles table with indexes
+    - Migration for categories table with hierarchical support
+    - Migration for tags table
+    - Migration for article_tag pivot table
+    - Requirements: 1.3, 1.5
+  - [ ] 2.2 Create user and authentication tables
+    - Migration for users table with role enum
+    - Migration for user_profiles table
+    - Migration for user_preferences table
+    - Migration for social_accounts table
+    - Migration for password_reset_tokens table
+    - Requirements: 2.1, 2.2, 3.1, 3.2
+  - [ ] 2.3 Create engagement and interaction tables
+    - Migration for comments table with threading support
+    - Migration for comment_reactions table
+    - Migration for comment_flags table
+    - Migration for bookmarks table
+    - Migration for reading_lists table
+    - Migration for reading_list_items table
+    - Requirements: 5.1, 5.2, 5.3, 10.1, 10.2
+  - [ ] 2.4 Create analytics and tracking tables
+    - Migration for article_views table with indexes
+    - Migration for traffic_sources table
+    - Migration for search_logs table
+    - Migration for user_reading_history table
+    - Requirements: 8.1, 8.2, 6.1
+  - [ ] 2.5 Create social and notification tables
+    - Migration for follows table
+    - Migration for activities table
+    - Migration for social_shares table
+    - Migration for notification_preferences table
+    - Requirements: 11.4, 11.5, 13.1, 13.3
+  - [ ] 2.6 Create newsletter and moderation tables
+    - Migration for newsletter_subscribers table
+    - Migration for newsletters table
+    - Migration for newsletter_sends table
+    - Migration for moderation_queue table
+    - Migration for user_reputation table
+    - Migration for moderation_actions table
+    - Requirements: 7.1, 7.2, 14.1, 14.2, 14.3
+  - [ ] 2.7 Create recommendation tables
+    - Migration for article_similarities table
+    - Migration for recommendations table
+    - Requirements: 12.1, 12.2, 12.5
+  - [ ] 3. Create Eloquent models with relationships
+  - [ ] 3.1 Create Article model
+    - Define Article model with casts and attributes
+    - Implement relationships (author, category, tags, comments, views, bookmarks)
+    - Add scopes (published, popular, trending)
+    - Implement reading time accessor
+    - Configure soft deletes
+    - Requirements: 1.3, 4.1
+  - [ ] 3.2 Create User model
+    - Define User model with authentication traits
+    - Implement relationships (articles, comments, bookmarks, followers, following, profile, preferences)
+    - Add helper methods (isFollowing, hasBookmarked)
+    - Configure password hashing
+    - Requirements: 2.1, 2.2, 3.1
+  - [ ] 3.3 Create Comment model
+    - Define Comment model with threading support
+    - Implement relationships (article, user, parent, replies, reactions)
+    - Add scopes (approved, topLevel)
+    - Configure soft deletes
+    - Requirements: 5.1, 5.2
+  - [ ] 3.4 Create supporting models
+    - Category model with hierarchical relationships
+    - Tag model
+    - UserProfile model
+    - UserPreferences model
+    - Bookmark model
+    - ReadingList model
+    - Requirements: 1.5, 3.1, 3.2, 10.1, 10.2
+  - [ ] 3.5 Create analytics and tracking models
+    - ArticleView model
+    - TrafficSource model
+    - SearchLog model
+    - UserReadingHistory model
+    - Requirements: 8.1, 8.2, 6.1, 12.2
+  - [ ] 3.6 Create social and notification models
+    - Follow model
+    - Activity model
+    - SocialShare model
+    - NotificationPreferences model
+    - Requirements: 11.4, 11.5, 13.3
+  - [ ] 3.7 Create newsletter and moderation models
+    - NewsletterSubscriber model
+    - Newsletter model
+    - NewsletterSend model
+    - ModerationQueue model
+    - UserReputation model
+    - ModerationAction model
+    - Requirements: 7.1, 7.2, 14.1, 14.2
+  - [ ] 3.8 Create recommendation models
+    - ArticleSimilarity model
+    - Recommendation model
+    - Requirements: 12.1, 12.5
+  - [ ] 4. Create enums for type safety
+    - ArticleStatus enum (draft, published, archived)
+    - UserRole enum (reader, author, moderator, admin) with permission checks
+    - CommentStatus enum (pending, approved, rejected, flagged)
+    - NotificationType enum
+    - ModerationReason enum
+    - Requirements: 1.3, 2.1, 5.4, 14.2
+
+- [ ] Phase 2: Authentication and User Management
+  - [ ] 5. Implement user authentication system
+  - [ ] 5.1 Create authentication controllers
+    - RegisterController with email verification
+    - LoginController with rate limiting
+    - PasswordResetController
+    - EmailVerificationController
+    - Requirements: 2.1, 2.2, 2.3, 16.4
+  - [ ] 5.2 Create authentication form requests
+    - RegisterRequest with password validation rules
+    - LoginRequest with rate limiting
+    - PasswordResetRequest
+    - UpdatePasswordRequest
+    - Requirements: 2.1, 16.1
+  - [ ] 5.3 Create authentication views
+    - Registration form with validation feedback
+    - Login form with remember me option
+    - Password reset request form
+    - Password reset form
+    - Email verification notice
+    - Requirements: 2.1, 2.2, 17.1, 18.1
+  - [ ] 5.4 Implement OAuth social authentication
+    - Install and configure Laravel Socialite
+    - Create SocialAuthController
+    - Implement Google OAuth flow
+    - Implement GitHub OAuth flow
+    - Implement Twitter OAuth flow
+    - Create or link user accounts from social profiles
+    - Requirements: 2.4, 11.1
+  - [ ] 5.5 Create authentication middleware
+    - Custom authentication checks
+    - Role-based access control middleware
+    - Email verification middleware
+    - Requirements: 2.5, 16.3
+  - [ ] 6. Implement user profile management
+  - [ ] 6.1 Create ProfileController
+    - Show profile page
+    - Edit profile form
+    - Update profile action
+    - Upload and process avatar images
+    - Requirements: 3.1, 3.2, 3.3
+  - [ ] 6.2 Create profile form requests
+    - UpdateProfileRequest with validation
+    - UpdatePreferencesRequest
+    - UploadAvatarRequest with image validation
+    - Requirements: 3.1, 3.2
+  - [ ] 6.3 Create profile views
+    - Public profile page showing articles and activity
+    - Edit profile form with avatar upload
+    - Preferences management page
+    - Privacy settings interface
+    - Requirements: 3.1, 3.2, 3.4, 3.5, 17.1, 18.1
+  - [ ] 6.4 Create avatar upload service
+    - Image validation and processing
+    - Resize to 200x200 pixels
+    - Optimize file size
+    - Upload to S3 with CDN URL
+    - Delete old avatar on update
+    - Requirements: 3.3, 15.1
+  - [ ] 7. Implement user authorization with policies
+  - [ ] 7.1 Create ArticlePolicy
+    - viewAny, view, create, update, delete, publish methods
+    - Role-based permission checks
+    - Requirements: 1.3, 1.4, 16.3
+  - [ ] 7.2 Create CommentPolicy
+    - create, update, delete, moderate methods
+    - Owner and moderator checks
+    - Requirements: 5.1, 5.5, 14.2
+  - [ ] 7.3 Create UserPolicy
+    - view, update, delete methods
+    - Self and admin checks
+    - Requirements: 3.1, 16.3
+  - [ ] 7.4 Register policies in AuthServiceProvider
+    - Map models to policies
+    - Configure gate definitions
+    - Requirements: 16.3
+
+- [ ] Phase 3: Content Management System
+  - [ ] 8. Implement article management
+  - [ ] 8.1 Create ArticleController
+    - Index with pagination; show with view tracking; create/store/edit/update/destroy; publish/unpublish
+    - Requirements: 1.1, 1.2, 1.3, 1.4
+  - [ ] 8.2 Create article form requests
+    - StoreArticleRequest; UpdateArticleRequest; slug generation; featured image validation
+    - Requirements: 1.3, 19.4
+  - [ ] 8.3 Create ArticleService
+    - Create/update/publish; notifications; reading time; image processing; cache invalidation
+    - Requirements: 1.3, 1.4, 4.1
+  - [ ] 8.4 Create article views
+    - List/detail; editor forms; preview; reading progress
+    - Requirements: 1.1, 1.2, 4.1, 4.2, 17.1, 18.1
+  - [ ] 8.5 Integrate rich text editor (TipTap or similar)
+    - Code highlighting; image upload; markdown; preview
+    - Requirements: 1.2, 4.4
+  - [ ] 8.6 Implement article view tracking (middleware + storage)
+    - Unique/total views; reading time; scroll depth; UA/referrer; session dedupe
+    - Requirements: 4.3, 8.1, 8.2
+  - [ ] 9. Implement category management (controller + views + admin CRUD)
+    - Requirements: 1.5, 17.1, 18.1
+  - [ ] 10. Implement tag management (controller + views + autocomplete)
+    - Requirements: 1.3, 17.1
+  - [ ] 11. Implement media management (controller + service)
+    - Validation, optimization, responsive variants, S3/CDN
+    - Requirements: 1.2, 3.3, 15.1, 15.2
+
+- [ ] Phase 4: Comment System and Moderation
+  - [ ] 12. Implement comment system (controller, requests, service, views)
+    - Threading; create/update/delete/reply
+    - Requirements: 5.1, 5.2
+  - [ ] 12.5 Comment reactions (controller + views)
+    - Requirements: 5.3, 17.1
+  - [ ] 13. Content moderation (service + controller + views)
+    - AutoModerationService; queue; review UI; bulk actions; bans; reputation; flagging
+    - Requirements: 5.4, 14.1, 14.2, 14.3
+
+- [ ] Phase 5: Search and Discovery
+  - [ ] 14. Full‑text search (Scout + Meilisearch)
+    - Searchable Article model; ranking; synonyms; analytics; controllers; views
+    - Requirements: 6.1, 6.2, 6.3, 6.5, 8.1
+  - [ ] 15. Article filtering and sorting (FilterService + UI)
+    - Category/author/tags/date/reading time; sorting options
+    - Requirements: 6.2, 17.1, 18.1
+
+- [ ] Phase 6: Bookmarking and Reading Lists
+  - [ ] 16. Bookmarking (controller + views)
+    - Toggle/list/read state/notes
+    - Requirements: 10.1, 10.3, 10.5, 17.1, 18.1
+  - [ ] 17. Reading lists (controller + views + sharing)
+    - CRUD; add/remove/reorder; share tokens; privacy; counts
+    - Requirements: 10.2, 10.4, 17.1, 18.1
+
+- [ ] Phase 7: Social Features and Engagement
+  - [ ] 18. Social sharing (controller + components)
+    - Share buttons; counts; URLs; native share
+    - Requirements: 11.1, 11.2, 17.1
+  - [ ] 19. Following system (controller + views)
+    - Follow/unfollow; followers/following; suggestions
+    - Requirements: 11.4, 17.1, 18.1
+  - [ ] 20. Activity feed (service + controller + views)
+    - Record/aggregate/filter/paginate
+    - Requirements: 11.5, 17.1, 18.1
+
+- [ ] Phase 8: Notification System
+  - [ ] 21. Notifications (classes + controller + views + jobs)
+    - Reply, follower, author article, reaction, mention; preferences; grouping; queuing
+    - Requirements: 13.1, 13.2, 13.3, 13.5, 17.1, 18.1
+
+- [ ] Phase 9: Newsletter System
+  - [ ] 22–23. Subscription, generation/sending, tracking, scheduling, admin UI
+    - Double opt‑in; templates; batch sends; engagement tracking; scheduling
+    - Requirements: 7.1–7.5, 8.1, 17.1
+
+- [ ] Phase 10: Analytics and Reporting
+  - [ ] 24. Analytics (service + controller + views + jobs + caching)
+    - Article/user/traffic metrics; dashboards; exports
+    - Requirements: 8.1, 8.2, 8.3, 8.4, 8.5, 15.1
+
+- [ ] Phase 11: Recommendation Engine
+  - [ ] 25. Recommendations (service + jobs + controller + views + tracking)
+    - Content‑based & collaborative; similarities; CTR tracking; A/B testing
+    - Requirements: 12.1, 12.2, 12.4, 12.5, 17.1, 18.1
+
+- [ ] Phase 12: RESTful API
+  - [ ] 26–29. Sanctum, tokens, rate limits, endpoints, resources, docs
+    - Articles, categories, comments, users, bookmarks, search; OpenAPI
+    - Requirements: 9.1–9.4
+
+- [ ] Phase 13: Performance Optimization
+  - [ ] 30–33. Caching strategy, DB optimization, queues, assets/CDN
+    - Redis, fragment caching, invalidation, indexes, eager loading, Horizon, Vite, images, CDN
+    - Requirements: 15.1–15.4, 20.4
+
+- [ ] Phase 14: Security Implementation
+  - [ ] 34–36. Passwords, sessions/CSRF/rate limits/headers, sanitization, GDPR
+    - Requirements: 16.1–16.5
+
+- [ ] Phase 15: Mobile Responsiveness and Accessibility
+  - [ ] 37–38. Responsive layouts/components, keyboard navigation, ARIA, color contrast, screen readers
+    - Requirements: 17.1–17.5, 18.1–18.5
+
+- [ ] Phase 16: SEO Optimization
+  - [ ] 39. Semantic HTML, sitemaps, meta tags, URLs, structured data, robots.txt
+    - Requirements: 19.1–19.5
+
+- [ ] Phase 17: Admin Dashboard and Monitoring
+  - [ ] 40–44. Admin dashboard, logging/monitoring, settings, job monitoring, performance/health
+    - Requirements: 20.1–20.5, 17.1, 18.1
+
+- [ ] Phase 18: Deployment and Infrastructure
+  - [ ] 45–48. Docker, Nginx, envs, CI/CD, scripts, backups, monitoring/alerts
+    - Requirements: 15.1, 16.1–16.2, 20.5
+
+- [ ] Phase 19: Testing and Quality Assurance
+  - [ ] 49–54. Unit/feature/API/performance/security/accessibility tests; caching effectiveness
+    - Requirements: per domain above
+
+- [ ] Phase 20: Documentation and Launch Preparation
+  - [ ] 55–57. User/dev docs, final QA, prod optimization, monitoring, launch checklist, load/security tests
+    - Requirements: all features
+

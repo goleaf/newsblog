@@ -41,6 +41,7 @@ Route::prefix('v1')->middleware(['throttle:api'])->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/posts/{postId}/reactions', [PostInteractionController::class, 'react']);
         Route::post('/posts/{postId}/bookmark', [PostInteractionController::class, 'bookmark']);
+        Route::post('/comments/{commentId}/reactions', [\App\Http\Controllers\Api\CommentReactionController::class, 'react']);
     });
 
     // Admin endpoints
