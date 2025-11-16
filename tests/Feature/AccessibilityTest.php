@@ -2,10 +2,21 @@
 
 namespace Tests\Feature;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Config;
 use Tests\TestCase;
 
 class AccessibilityTest extends TestCase
 {
+    use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        Config::set('database.default', 'sqlite');
+        Config::set('database.connections.sqlite.database', ':memory:');
+    }
+
     public function test_homepage_contains_landmarks_and_skip_link(): void
     {
         $response = $this->get(route('home'));
@@ -20,5 +31,3 @@ class AccessibilityTest extends TestCase
         $response->assertSee('role="contentinfo"', false);
     }
 }
-
-

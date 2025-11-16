@@ -3,7 +3,6 @@
 namespace Tests\Feature\Frontend;
 
 use App\Mail\ContactMessageReceived;
-use App\Models\ContactMessage;
 use App\Models\Page;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
@@ -12,6 +11,42 @@ use Tests\TestCase;
 class StaticPagesTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->withoutMiddleware();
+
+        // Ensure Vite manifest contains print.css to avoid exceptions in tests
+        $buildDir = public_path('build');
+        if (! is_dir($buildDir)) {
+            mkdir($buildDir, 0777, true);
+        }
+        $manifestPath = $buildDir.'/manifest.json';
+        $manifest = [
+            'resources/css/print.css' => [
+                'file' => 'assets/print.css',
+                'src' => 'resources/css/print.css',
+                'isEntry' => false,
+            ],
+            'resources/css/app.css' => [
+                'file' => 'assets/app.css',
+                'src' => 'resources/css/app.css',
+                'isEntry' => true,
+            ],
+            'resources/css/critical.css' => [
+                'file' => 'assets/critical.css',
+                'src' => 'resources/css/critical.css',
+                'isEntry' => true,
+            ],
+            'resources/js/app.js' => [
+                'file' => 'assets/app.js',
+                'src' => 'resources/js/app.js',
+                'isEntry' => true,
+            ],
+        ];
+        file_put_contents($manifestPath, json_encode($manifest));
+    }
 
     public function test_default_page_displays(): void
     {
@@ -91,5 +126,3 @@ class StaticPagesTest extends TestCase
         $response->assertSee('Parent Page');
     }
 }
-
-

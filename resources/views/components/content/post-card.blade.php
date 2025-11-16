@@ -69,28 +69,45 @@
                 </div>
             </div>
         </a>
-    @elseif(!$showImage && ($post->is_featured || $post->is_trending))
-        {{-- Show badges when no image --}}
-        <div class="p-3 flex gap-2">
-            @if($post->is_featured)
-                <x-content.post-badge type="featured" />
-            @endif
-            
-            @if($post->is_trending)
-                <x-content.post-badge type="trending" />
-            @endif
-
-            @if($post->is_sponsored)
-                <x-content.post-badge type="sponsored" />
-            @endif
-
-            @if($post->is_editors_pick)
-                <x-content.post-badge type="editors-pick" />
-            @endif
-        </div>
+    @else
+        {{-- Badges when no image --}}
+        @if(!$post->featured_image_url)
+            <div class="p-3 flex gap-2">
+                @if($post->is_featured)
+                    <x-content.post-badge type="featured" />
+                @endif
+                @if($post->is_trending)
+                    <x-content.post-badge type="trending" />
+                @endif
+                @if($post->is_sponsored)
+                    <x-content.post-badge type="sponsored" />
+                @endif
+                @if($post->is_editors_pick)
+                    <x-content.post-badge type="editors-pick" />
+                @endif
+            </div>
+        @endif
     @endif
     
     <div class="flex-1 p-4 flex flex-col">
+        {{-- Badges when no image --}}
+        @if(!$post->featured_image_url)
+            <div class="mb-2 flex gap-2">
+                @if($post->is_featured)
+                    <x-content.post-badge type="featured" />
+                @endif
+                @if($post->is_trending)
+                    <x-content.post-badge type="trending" />
+                @endif
+                @if($post->is_sponsored)
+                    <x-content.post-badge type="sponsored" />
+                @endif
+                @if($post->is_editors_pick)
+                    <x-content.post-badge type="editors-pick" />
+                @endif
+            </div>
+        @endif
+
         {{-- Category Badge --}}
         @if($post->category)
             <div class="mb-2">

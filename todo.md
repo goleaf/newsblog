@@ -111,9 +111,39 @@ Notes:
 - Access control via `NovaServiceProvider::gate()` (roles: admin, editor, author).
 - Main dashboard registered as `App\Nova\Dashboards\Main`.
 
+## 46. Menu Builder (Priority)
+
+- [x] Data layer:
+  - `Menu` + `MenuItem` models with enums and relationships
+  - Migrations with location/type/order/parent_id and FKs
+  - Factories for tests
+- [x] Rendering:
+  - `<x-menu>` component (header/footer/mobile)
+  - Unlimited nesting, active state, mobile toggle
+- [ ] Nova UI:
+  - Menu + MenuItem resources
+  - Drag-and-drop ordering (follow-up resource tool)
+- [ ] Tests:
+  - Creation, ordering, nesting feature tests
+  - Run minimal test filter
+
 # TODO: Related Posts Algorithm
 
 ## Priority: High
+
+## Widgets (Priority)
+
+- [x] Weather widget (API, geolocation, cache 30m, fallback)
+- [x] Stock ticker (API, color-coded, update 60s, links)
+- [x] Countdown widget (labels customizable, per-second updates)
+- [x] Add endpoints and Form Requests
+- [x] Add i18n strings
+- [x] Integrate JS modules and import in `resources/js/app.js`
+- [ ] Write tests:
+  - [x] Weather endpoint + caching
+  - [x] Stock endpoint + update cadence
+  - [x] Countdown render test
+  - [ ] Poll voting (placeholder skipped)
 
 - [x] 23. Implement SEO optimization features
   - [x] 23.1 Create SEO meta tags component (Open Graph, Twitter, Schema.org, canonical)

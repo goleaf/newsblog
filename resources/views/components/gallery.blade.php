@@ -39,10 +39,12 @@
         <div class="absolute bottom-0 left-0 right-0 flex items-center justify-between p-2 bg-gradient-to-t from-black/40 to-transparent text-white text-xs">
             <div x-text="counterText()"></div>
             <div class="flex items-center gap-2">
-                <button type="button" @click="toggleAutoplay()" class="px-2 py-1 rounded bg-white/70 text-gray-900"
-                    x-text="autoplaying ? $t('gallery.pause') : $t('gallery.play')"></button>
-                <button type="button" @click="toggleFullscreen()" class="px-2 py-1 rounded bg-white/70 text-gray-900"
-                    x-text="$t('gallery.fullscreen')"></button>
+                <button type="button" @click="toggleAutoplay()" class="px-2 py-1 rounded bg-white/70 text-gray-900">
+                    <span x-text="autoplaying ? $t('gallery.pause') : $t('gallery.play')">Play</span>
+                </button>
+                <button type="button" @click="toggleFullscreen()" class="px-2 py-1 rounded bg-white/70 text-gray-900">
+                    <span x-text="$t('gallery.fullscreen')">Full screen</span>
+                </button>
             </div>
         </div>
 

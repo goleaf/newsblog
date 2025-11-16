@@ -13,6 +13,12 @@ export default {
                 async handleDrop(event, date) {
                     if (!this.draggedPostId) return;
 
+                    // Optional confirmation
+                    if (!confirm(window?.i18n?.calendar_confirm_reschedule || 'Move post to this date?')) {
+                        this.draggedPostId = null;
+                        return;
+                    }
+
                     try {
                         const response = await fetch(`/admin/calendar/posts/${this.draggedPostId}/update-date`, {
                             method: 'POST',

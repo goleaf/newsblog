@@ -10,6 +10,9 @@ class WeatherControllerTest extends TestCase
 {
     public function test_weather_endpoint_returns_data_and_caches(): void
     {
+        $this->withoutMiddleware(\Illuminate\Routing\Middleware\ThrottleRequests::class);
+        $this->withoutMiddleware(\Illuminate\Routing\Middleware\ThrottleRequestsWithRedis::class);
+
         Cache::flush();
 
         Http::fake([
@@ -33,5 +36,3 @@ class WeatherControllerTest extends TestCase
         $res2->assertOk();
     }
 }
-
-

@@ -1,4 +1,6 @@
 @extends('layouts.app')
+@php($header = '')
+@php($footer = '')
 
 @section('content')
 <div class="container mx-auto px-4 py-8">

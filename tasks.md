@@ -1,3 +1,31 @@
+## Task 42 — Infinite scroll and pagination
+
+- [x] 42.1 Implement infinite scroll component
+  - [x] Detect scroll position (200px from bottom)
+  - [x] Load next page via AJAX
+  - [x] Append posts with fade-in animation
+  - [x] Update URL with pushState
+  - _Requirements: 27_
+
+- [x] 42.2 Add loading states
+  - [x] Show loading spinner during fetch
+  - [x] Display skeleton screens
+  - [x] Show "End of content" message
+  - [x] Handle loading errors gracefully
+  - _Requirements: 27, 72_
+
+- [x] 42.3 Implement traditional pagination fallback
+  - [x] Add pagination links for no-JS users
+  - [x] Ensure SEO-friendly URLs
+  - [x] Maintain current page state
+  - _Requirements: 27_
+
+- [x] 42.4 Write infinite scroll tests
+  - [x] Test scroll detection
+  - [x] Test AJAX loading
+  - [x] Test URL updates
+  - [x] Test end of content
+
 # Work Plan: Analytics & Reporting
 
 - [x] Inventory existing analytics (models, controllers, views, tests)
@@ -17,6 +45,35 @@
 - [ ] npm run build
 
 # Phase 5: User Features & Engagement
+
+## 46. Implement menu builder
+
+- [x] 46.1 Create Menu and MenuItem models
+  - [x] Generate migrations for menus and menu_items
+  - [x] Add location field (header, footer, mobile)
+  - [x] Add type field (link, page, category, tag)
+  - [x] Add order, parent_id fields
+  - _Requirements: 29_
+
+- [ ] 46.2 Build menu management UI in Nova
+  - [x] Create basic Menu and MenuItem Nova resources
+  - [ ] Implement drag-and-drop ordering
+  - [x] Add item type selector
+  - [x] Support nested menu items
+  - [x] Allow CSS class and target configuration
+  - _Requirements: 29_
+
+- [ ] 46.3 Create menu rendering component
+  - [x] Build menu component for each location
+  - [x] Support unlimited nesting
+  - [x] Add active state highlighting
+  - [x] Implement mobile menu toggle
+  - _Requirements: 29_
+
+- [ ] 46.4 Write menu builder tests
+  - [ ] Test menu creation
+  - [ ] Test item ordering
+  - [ ] Test nested menus
 
 ## 35. Implement additional UI enhancements
 
@@ -356,6 +413,37 @@ Conventions & constraints to uphold:
   - [ ] Add demo route/controller/view
   - [ ] i18n strings in `lang/en.json`
   - [ ] Bundle JS and run `npm run build`
+
+## 34. Widgets
+- [ ] 34.2 Implement weather widget
+  - [x] Integrate weather API
+  - [x] Detect user location via geolocation
+  - [x] Display temperature and conditions
+  - [x] Cache results for 30 minutes
+  - [x] Show default location if geolocation denied
+  - _Requirements: 62_
+
+- [ ] 34.3 Create stock market ticker
+  - [x] Integrate financial data API
+  - [x] Display real-time stock prices
+  - [x] Show price changes with color coding (green/red)
+  - [x] Update every 60 seconds
+  - [x] Add click-through to details
+  - _Requirements: 63_
+
+- [ ] 34.4 Build countdown timer widget
+  - [x] Create countdown component
+  - [x] Display days, hours, minutes, seconds
+  - [x] Update every second with JavaScript
+  - [x] Show completion message at zero
+  - [x] Allow customization of labels
+  - _Requirements: 64_
+
+- [ ] 34.5 Write widget tests
+  - [ ] Test poll voting (placeholder, skipped)
+  - [x] Test weather data fetching
+  - [x] Test stock ticker updates
+  - [x] Test countdown timer render
 
 ## 43. Content Calendar
 - [ ] 43.1 Build calendar view component

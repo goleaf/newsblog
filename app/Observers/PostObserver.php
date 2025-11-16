@@ -5,8 +5,8 @@ namespace App\Observers;
 use App\Enums\PostStatus;
 use App\Jobs\SendPostPublishedNotification;
 use App\Models\Post;
-use App\Services\CacheService;
 use App\Services\AltTextValidator;
+use App\Services\CacheService;
 use App\Services\NotificationService;
 use App\Services\PostService;
 use App\Services\SearchIndexService;
@@ -45,9 +45,6 @@ class PostObserver
 
             // Accessibility: alt text validation on images within content (allow save with warnings)
             $report = $this->altTextValidator->scanHtml($post->content);
-            // Attach transient attribute for Nova/resource computed fields
-            $post->setAttribute('alt_text_validation', $report->toArray());
-
             if ($report->missingAltCount > 0) {
                 // Best-effort user feedback via session warning
                 if (function_exists('session')) {

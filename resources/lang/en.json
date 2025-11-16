@@ -1,4 +1,19 @@
 {
+    "validation.post_id.required": "The post is required.",
+    "validation.post_id.integer": "The post identifier must be an integer.",
+    "validation.post_id.exists": "The selected post does not exist.",
+    "validation.time_on_page.integer": "Time on page must be a whole number of seconds.",
+    "validation.time_on_page.min": "Time on page cannot be negative.",
+    "validation.scroll_depth.integer": "Scroll depth must be an integer.",
+    "validation.scroll_depth.min": "Scroll depth cannot be negative.",
+    "validation.scroll_depth.max": "Scroll depth cannot exceed 100%.",
+    "validation.search_log_id.required": "Search log is required.",
+    "validation.search_log_id.integer": "Search log identifier must be an integer.",
+    "validation.search_log_id.exists": "The selected search log does not exist.",
+    "validation.position.required": "Position is required.",
+    "validation.position.integer": "Position must be an integer.",
+    "validation.position.min": "Position cannot be negative.",
+
     "messages.contact.thanks": "Thank you for your message. We will get back to you soon!",
     "mail.contact.subject": "New contact message: :subject",
     "mail.contact.no_subject": "No subject",
@@ -19,5 +34,3 @@
     "home.empty_latest_action": "Back to homepage",
     "infinite_scroll.error_generic": "Failed to load more posts. Please try again."
 }
-
-

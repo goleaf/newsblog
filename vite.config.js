@@ -10,6 +10,7 @@ export default defineConfig({
                 'resources/css/critical.css',
                 'resources/css/critical-home.css',
                 'resources/css/critical-article.css',
+                'resources/css/print.css',
                 'resources/js/app.js',
                 // Page-specific entry points for code splitting
                 'resources/js/pages/homepage.js',

@@ -15,7 +15,7 @@
                 <span x-text="label()"></span>
             </div>
             <a :href="url" target="_blank" rel="noopener" class="text-primary-600 hover:text-primary-700 text-sm">
-                <span x-text="$t('social.open')"></span>
+                <span x-text="$t('social.open')">Open</span>
             </a>
         </div>
         <p class="mt-2 text-gray-500 dark:text-gray-400 truncate" x-text="url"></p>

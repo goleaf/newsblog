@@ -19,7 +19,6 @@ class UiComponentsTest extends TestCase
     {
         $response = $this->get(route('ui.demo'));
         $response->assertOk();
-        $response->assertSee('<x-gallery', false); // blade components render server-side; verify key UI text instead
         $response->assertSee('Play', false);
         $response->assertSee('Full screen', false);
     }
@@ -38,8 +37,9 @@ class UiComponentsTest extends TestCase
     {
         $response = $this->get(route('ui.demo'));
         $response->assertOk();
-        $response->assertSee('Twitter/X post', false);
+        // Server renders placeholder card with link; runtime text is hydrated via Alpine
         $response->assertSee('Open', false);
+        $response->assertSee('twitter.com/jack/status/20', false);
     }
 
     /** @test */

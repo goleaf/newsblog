@@ -99,7 +99,7 @@ class ContentCalendarTest extends TestCase
 
         $response->assertOk()->assertJsonFragment(['success' => true]);
         $post->refresh();
-        $this->assertEquals('scheduled', $post->status);
+        $this->assertEquals('scheduled', $post->status->value);
         $this->assertNotNull($post->scheduled_at);
         $this->assertEquals($newDate, $post->scheduled_at->toDateString());
         // Defaults to 09:00 time for drafts

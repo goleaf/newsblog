@@ -22,6 +22,9 @@ import { initWeatherWidgets } from './widgets/weather';
 import { initStockTickerWidgets } from './widgets/stock';
 import { initCountdownWidgets } from './widgets/countdown';
 
+// Ensure print stylesheet is included in manifest for tests/build
+import '../css/print.css';
+
 window.Alpine = Alpine;
 
 // Register global stores (available on all pages)

@@ -15,6 +15,8 @@ use Laravel\Nova\Fields\Textarea;
 use Laravel\Nova\Fields\Trix;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Panel;
+use App\Nova\Actions\PageMoveDown;
+use App\Nova\Actions\PageMoveUp;
 
 class Page extends Resource
 {
@@ -265,6 +267,9 @@ class Page extends Resource
      */
     public function actions(NovaRequest $request): array
     {
-        return [];
+        return [
+            (new PageMoveUp())->onlyOnIndex(),
+            (new PageMoveDown())->onlyOnIndex(),
+        ];
     }
 }

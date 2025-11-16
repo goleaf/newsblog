@@ -32,8 +32,10 @@
     
     {{-- Additional Styles --}}
     @stack('styles')
-    {{-- Print styles --}}
-    <link rel="stylesheet" href="{{ Vite::asset('resources/css/print.css') }}" media="print">
+    {{-- Print styles (guard when manifest is unavailable in test runs) --}}
+    @if(file_exists(public_path('build/manifest.json')))
+        <link rel="stylesheet" href="{{ Vite::asset('resources/css/print.css') }}" media="print">
+    @endif
     
     {{-- PWA Manifest and theme color --}}
     <link rel="manifest" href="/manifest.webmanifest">

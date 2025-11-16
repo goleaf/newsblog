@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Calendar\GetPostsForDateRequest;
 use App\Http\Requests\Admin\Calendar\ShowCalendarRequest;
 use App\Http\Requests\Admin\Calendar\UpdatePostDateRequest;
+use App\Enums\PostStatus;
 use App\Models\Post;
 use Carbon\Carbon;
 
@@ -86,13 +87,13 @@ class ContentCalendarController extends Controller
         $newDate = Carbon::parse($validated['date']);
 
         // Determine which field to update based on post status
-        if ($post->status === 'scheduled') {
+        if ($post->status === PostStatus::Scheduled) {
             // Update scheduled_at for scheduled posts
             $post->scheduled_at = $newDate->setTime(
                 $post->scheduled_at?->hour ?? 9,
                 $post->scheduled_at?->minute ?? 0
             );
-        } elseif ($post->status === 'published') {
+        } elseif ($post->status === PostStatus::Published) {
             // Update published_at for published posts
             $post->published_at = $newDate->setTime(
                 $post->published_at?->hour ?? 9,
@@ -101,7 +102,7 @@ class ContentCalendarController extends Controller
         } else {
             // For draft posts, set scheduled_at and change status to scheduled
             $post->scheduled_at = $newDate->setTime(9, 0);
-            $post->status = 'scheduled';
+            $post->status = PostStatus::Scheduled;
         }
 
         $post->save();

@@ -1,0 +1,723 @@
+# Implementation Plan
+
+This implementation plan breaks down the complete platform features into discrete, manageable coding tasks. Each task builds incrementally on previous work, ensuring a systematic approach to building the full-featured technology news platform.
+
+## Phase 1: Foundation and Core Infrastructure
+
+- [ ] 1. Set up project structure and core configuration
+  - Create Laravel 12 project with PHP 8.4
+  - Configure environment files for development, staging, and production
+  - Set up database connections (MySQL, Redis)
+  - Configure file storage (local, S3, CloudFront)
+  - Install and configure Laravel Sanctum for API authentication
+  - Install and configure Laravel Scout with Meilisearch
+  - Set up Laravel Pint for code formatting
+  - _Requirements: 16.1, 16.2, 16.3_
+
+- [ ] 2. Create database schema and migrations
+- [ ] 2.1 Create core content tables
+  - Migration for articles table with indexes
+  - Migration for categories table with hierarchical support
+  - Migration for tags table
+  - Migration for article_tag pivot table
+  - _Requirements: 1.3, 1.5_
+
+- [ ] 2.2 Create user and authentication tables
+  - Migration for users table with role enum
+  - Migration for user_profiles table
+  - Migration for user_preferences table
+  - Migration for social_accounts table
+  - Migration for password_reset_tokens table
+  - _Requirements: 2.1, 2.2, 3.1, 3.2_
+
+- [ ] 2.3 Create engagement and interaction tables
+  - Migration for comments table with threading support
+  - Migration for comment_reactions table
+  - Migration for comment_flags table
+  - Migration for bookmarks table
+  - Migration for reading_lists table
+  - Migration for reading_list_items table
+  - _Requirements: 5.1, 5.2, 5.3, 10.1, 10.2_
+
+- [ ] 2.4 Create analytics and tracking tables
+  - Migration for article_views table with indexes
+  - Migration for traffic_sources table
+  - Migration for search_logs table
+  - Migration for user_reading_history table
+  - _Requirements: 8.1, 8.2, 6.1_
+
+- [ ] 2.5 Create social and notification tables
+  - Migration for follows table
+  - Migration for activities table
+  - Migration for social_shares table
+  - Migration for notification_preferences table
+  - _Requirements: 11.4, 11.5, 13.1, 13.3_
+
+- [ ] 2.6 Create newsletter and moderation tables
+  - Migration for newsletter_subscribers table
+  - Migration for newsletters table
+  - Migration for newsletter_sends table
+  - Migration for moderation_queue table
+  - Migration for user_reputation table
+  - Migration for moderation_actions table
+  - _Requirements: 7.1, 7.2, 14.1, 14.2, 14.3_
+
+- [ ] 2.7 Create recommendation tables
+  - Migration for article_similarities table
+  - Migration for recommendations table
+  - _Requirements: 12.1, 12.2, 12.5_
+
+- [ ] 3. Create Eloquent models with relationships
+- [ ] 3.1 Create Article model
+  - Define Article model with casts and attributes
+  - Implement relationships (author, category, tags, comments, views, bookmarks)
+  - Add scopes (published, popular, trending)
+  - Implement reading time accessor
+  - Configure soft deletes
+  - _Requirements: 1.3, 4.1_
+
+- [ ] 3.2 Create User model
+  - Define User model with authentication traits
+  - Implement relationships (articles, comments, bookmarks, followers, following, profile, preferences)
+  - Add helper methods (isFollowing, hasBookmarked)
+  - Configure password hashing
+  - _Requirements: 2.1, 2.2, 3.1_
+
+- [ ] 3.3 Create Comment model
+  - Define Comment model with threading support
+  - Implement relationships (article, user, parent, replies, reactions)
+  - Add scopes (approved, topLevel)
+  - Configure soft deletes
+  - _Requirements: 5.1, 5.2_
+
+- [ ] 3.4 Create supporting models
+  - Category model with hierarchical relationships
+  - Tag model
+  - UserProfile model
+  - UserPreferences model
+  - Bookmark model
+  - ReadingList model
+  - _Requirements: 1.5, 3.1, 3.2, 10.1, 10.2_
+
+- [ ] 3.5 Create analytics and tracking models
+  - ArticleView model
+  - TrafficSource model
+  - SearchLog model
+  - UserReadingHistory model
+  - _Requirements: 8.1, 8.2, 6.1, 12.2_
+
+- [ ] 3.6 Create social and notification models
+  - Follow model
+  - Activity model
+  - SocialShare model
+  - NotificationPreferences model
+  - _Requirements: 11.4, 11.5, 13.3_
+
+- [ ] 3.7 Create newsletter and moderation models
+  - NewsletterSubscriber model
+  - Newsletter model
+  - NewsletterSend model
+  - ModerationQueue model
+  - UserReputation model
+  - ModerationAction model
+  - _Requirements: 7.1, 7.2, 14.1, 14.2_
+
+- [ ] 3.8 Create recommendation models
+  - ArticleSimilarity model
+  - Recommendation model
+  - _Requirements: 12.1, 12.5_
+
+- [ ] 4. Create enums for type safety
+  - ArticleStatus enum (draft, published, archived)
+  - UserRole enum (reader, author, moderator, admin) with permission checks
+  - CommentStatus enum (pending, approved, rejected, flagged)
+  - NotificationType enum
+  - ModerationReason enum
+  - _Requirements: 1.3, 2.1, 5.4, 14.2_
+
+
+## Phase 2: Authentication and User Management
+
+- [ ] 5. Implement user authentication system
+- [ ] 5.1 Create authentication controllers
+  - RegisterController with email verification
+  - LoginController with rate limiting
+  - PasswordResetController
+  - EmailVerificationController
+  - _Requirements: 2.1, 2.2, 2.3, 16.4_
+
+- [ ] 5.2 Create authentication form requests
+  - RegisterRequest with password validation rules
+  - LoginRequest with rate limiting
+  - PasswordResetRequest
+  - UpdatePasswordRequest
+  - _Requirements: 2.1, 16.1_
+
+- [ ] 5.3 Create authentication views
+  - Registration form with validation feedback
+  - Login form with remember me option
+  - Password reset request form
+  - Password reset form
+  - Email verification notice
+  - _Requirements: 2.1, 2.2, 17.1, 18.1_
+
+- [ ] 5.4 Implement OAuth social authentication
+  - Install and configure Laravel Socialite
+  - Create SocialAuthController
+  - Implement Google OAuth flow
+  - Implement GitHub OAuth flow
+  - Implement Twitter OAuth flow
+  - Create or link user accounts from social profiles
+  - _Requirements: 2.4, 11.1_
+
+- [ ] 5.5 Create authentication middleware
+  - Custom authentication checks
+  - Role-based access control middleware
+  - Email verification middleware
+  - _Requirements: 2.5, 16.3_
+
+- [ ] 6. Implement user profile management
+- [ ] 6.1 Create ProfileController
+  - Show profile page
+  - Edit profile form
+  - Update profile action
+  - Upload and process avatar images
+  - _Requirements: 3.1, 3.2, 3.3_
+
+- [ ] 6.2 Create profile form requests
+  - UpdateProfileRequest with validation
+  - UpdatePreferencesRequest
+  - UploadAvatarRequest with image validation
+  - _Requirements: 3.1, 3.2_
+
+- [ ] 6.3 Create profile views
+  - Public profile page showing articles and activity
+  - Edit profile form with avatar upload
+  - Preferences management page
+  - Privacy settings interface
+  - _Requirements: 3.1, 3.2, 3.4, 3.5, 17.1, 18.1_
+
+- [ ] 6.4 Create avatar upload service
+  - Image validation and processing
+  - Resize to 200x200 pixels
+  - Optimize file size
+  - Upload to S3 with CDN URL
+  - Delete old avatar on update
+  - _Requirements: 3.3, 15.1_
+
+- [ ] 7. Implement user authorization with policies
+- [ ] 7.1 Create ArticlePolicy
+  - viewAny, view, create, update, delete, publish methods
+  - Role-based permission checks
+  - _Requirements: 1.3, 1.4, 16.3_
+
+- [ ] 7.2 Create CommentPolicy
+  - create, update, delete, moderate methods
+  - Owner and moderator checks
+  - _Requirements: 5.1, 5.5, 14.2_
+
+- [ ] 7.3 Create UserPolicy
+  - view, update, delete methods
+  - Self and admin checks
+  - _Requirements: 3.1, 16.3_
+
+- [ ] 7.4 Register policies in AuthServiceProvider
+  - Map models to policies
+  - Configure gate definitions
+  - _Requirements: 16.3_
+
+## Phase 3: Content Management System
+
+- [ ] 8. Implement article management
+- [ ] 8.1 Create ArticleController
+  - Index method with pagination
+  - Show method with view tracking
+  - Create method (form display)
+  - Store method with validation
+  - Edit method (form display)
+  - Update method with validation
+  - Destroy method with soft delete
+  - Publish/unpublish actions
+  - _Requirements: 1.1, 1.2, 1.3, 1.4_
+
+- [ ] 8.2 Create article form requests
+  - StoreArticleRequest with comprehensive validation
+  - UpdateArticleRequest
+  - Auto-generate slug from title
+  - Validate featured image upload
+  - _Requirements: 1.3, 19.4_
+
+- [ ] 8.3 Create ArticleService for business logic
+  - Create article with author assignment
+  - Update article with cache invalidation
+  - Publish article with notifications
+  - Calculate reading time
+  - Process and store featured image
+  - _Requirements: 1.3, 1.4, 4.1_
+
+- [ ] 8.4 Create article views
+  - Article list page with filters and pagination
+  - Article detail page with reading progress
+  - Article create/edit form with rich text editor
+  - Article preview functionality
+  - _Requirements: 1.1, 1.2, 4.1, 4.2, 17.1, 18.1_
+
+- [ ] 8.5 Integrate rich text editor
+  - Install and configure TipTap or similar
+  - Code syntax highlighting support
+  - Image upload within editor
+  - Markdown support
+  - Preview mode
+  - _Requirements: 1.2, 4.4_
+
+- [ ] 8.6 Implement article view tracking
+  - Create ViewTrackingMiddleware
+  - Track unique and total views
+  - Record reading time and scroll depth
+  - Store user agent and referrer
+  - Prevent duplicate tracking within session
+  - _Requirements: 4.3, 8.1, 8.2_
+
+- [ ] 9. Implement category management
+- [ ] 9.1 Create CategoryController
+  - Index method with hierarchical display
+  - Show method with category articles
+  - Admin CRUD operations
+  - _Requirements: 1.5_
+
+- [ ] 9.2 Create category views
+  - Category list page
+  - Category detail page with articles
+  - Admin category management interface
+  - _Requirements: 1.5, 17.1, 18.1_
+
+- [ ] 10. Implement tag management
+- [ ] 10.1 Create TagController
+  - Index method showing all tags
+  - Show method with tagged articles
+  - Auto-create tags from article form
+  - _Requirements: 1.3_
+
+- [ ] 10.2 Create tag views
+  - Tag cloud component
+  - Tag detail page with articles
+  - Tag input component with autocomplete
+  - _Requirements: 1.3, 17.1_
+
+- [ ] 11. Implement media management
+- [ ] 11.1 Create MediaController
+  - Upload endpoint for images
+  - Delete endpoint for images
+  - List user's uploaded media
+  - _Requirements: 1.2, 3.3_
+
+- [ ] 11.2 Create MediaService
+  - Image validation (type, size, dimensions)
+  - Image optimization and compression
+  - Generate responsive image variants
+  - Upload to S3 with CDN URLs
+  - Delete from S3
+  - _Requirements: 1.2, 15.1, 15.2_
+
+
+## Phase 4: Comment System and Moderation
+
+- [ ] 12. Implement comment system
+- [ ] 12.1 Create CommentController
+  - Store method for creating comments
+  - Update method for editing comments
+  - Destroy method for deleting comments
+  - Reply method for threaded comments
+  - _Requirements: 5.1, 5.2_
+
+- [ ] 12.2 Create comment form requests
+  - StoreCommentRequest with content validation
+  - UpdateCommentRequest
+  - Validate parent_id for threading
+  - _Requirements: 5.1_
+
+- [ ] 12.3 Create CommentService
+  - Create comment with auto-moderation check
+  - Update comment
+  - Delete comment (soft delete)
+  - Notify parent comment author on reply
+  - _Requirements: 5.1, 5.2, 13.1_
+
+- [ ] 12.4 Create comment views
+  - Comment list component with threading
+  - Comment form component
+  - Comment edit form
+  - Reply button and form
+  - _Requirements: 5.1, 5.2, 17.1, 18.1_
+
+- [ ] 12.5 Implement comment reactions
+  - Create CommentReactionController
+  - Store/toggle reaction (like, helpful, insightful)
+  - Display reaction counts
+  - Highlight user's reactions
+  - _Requirements: 5.3_
+
+- [ ] 12.6 Create comment reaction views
+  - Reaction buttons component
+  - Reaction count display
+  - User reaction indicators
+  - _Requirements: 5.3, 17.1_
+
+- [ ] 13. Implement content moderation
+- [ ] 13.1 Create AutoModerationService
+  - Check for prohibited words/phrases
+  - Detect spam patterns
+  - Check user reputation
+  - Flag suspicious content
+  - _Requirements: 5.4, 14.1_
+
+- [ ] 13.2 Create ModerationController
+  - Queue listing with filters
+  - Review interface
+  - Approve/reject/delete actions
+  - Bulk moderation actions
+  - User ban functionality
+  - _Requirements: 14.1, 14.2, 14.3_
+
+- [ ] 13.3 Create moderation views
+  - Moderation queue dashboard
+  - Comment review interface with context
+  - User history sidebar
+  - Bulk action controls
+  - Moderator notes form
+  - _Requirements: 14.1, 14.2, 17.1, 18.1_
+
+- [ ] 13.4 Implement user reputation system
+  - Calculate reputation scores
+  - Update trust levels
+  - Track moderation history
+  - Auto-approve trusted users
+  - _Requirements: 14.1, 14.2_
+
+- [ ] 13.5 Create comment flagging system
+  - Flag comment endpoint
+  - Flag reasons (spam, offensive, off-topic)
+  - Track flag submissions
+  - Notify moderators of flagged content
+  - _Requirements: 5.4, 14.1_
+
+## Phase 5: Search and Discovery
+
+- [ ] 14. Implement full-text search
+- [ ] 14.1 Configure Laravel Scout
+  - Set up Meilisearch connection
+  - Configure searchable attributes
+  - Define ranking rules
+  - Set up synonyms
+  - _Requirements: 6.1, 6.2_
+
+- [ ] 14.2 Make Article model searchable
+  - Implement toSearchableArray method
+  - Index title, content, excerpt, author, category, tags
+  - Configure search settings
+  - _Requirements: 6.1_
+
+- [ ] 14.3 Create SearchController
+  - Search endpoint with query parameter
+  - Filter by category, author, tags, date range
+  - Pagination of results
+  - Highlight matched terms
+  - Log search queries
+  - _Requirements: 6.1, 6.2, 6.3, 6.5_
+
+- [ ] 14.4 Create search views
+  - Search form with autocomplete
+  - Search results page with filters
+  - Highlighted search terms in results
+  - Filter sidebar (category, author, date, tags)
+  - Empty state for no results
+  - _Requirements: 6.1, 6.2, 6.3, 17.1, 18.1_
+
+- [ ] 14.5 Implement search analytics
+  - Track search queries
+  - Record results count
+  - Track clicked results
+  - Generate search insights
+  - _Requirements: 6.1, 8.1_
+
+- [ ] 15. Implement article filtering and sorting
+- [ ] 15.1 Create FilterService
+  - Filter by category
+  - Filter by author
+  - Filter by tags
+  - Filter by date range
+  - Filter by reading time
+  - _Requirements: 6.2_
+
+- [ ] 15.2 Add sorting options
+  - Sort by relevance (search)
+  - Sort by date (newest/oldest)
+  - Sort by popularity (views)
+  - Sort by engagement (comments, shares)
+  - _Requirements: 6.2_
+
+- [ ] 15.3 Create filter UI components
+  - Category filter dropdown
+  - Author filter dropdown
+  - Tag filter with multi-select
+  - Date range picker
+  - Reading time slider
+  - Sort dropdown
+  - _Requirements: 6.2, 17.1, 18.1_
+
+## Phase 6: Bookmarking and Reading Lists
+
+- [ ] 16. Implement bookmarking system
+- [ ] 16.1 Create BookmarkController
+  - Toggle bookmark endpoint
+  - List user's bookmarks
+  - Mark as read/unread
+  - Add notes to bookmark
+  - Remove bookmark
+  - _Requirements: 10.1, 10.3, 10.5_
+
+- [ ] 16.2 Create bookmark views
+  - Bookmark button component
+  - Bookmarks list page
+  - Bookmark card with article preview
+  - Read/unread toggle
+  - Notes textarea
+  - _Requirements: 10.1, 10.3, 17.1, 18.1_
+
+- [ ] 17. Implement reading lists
+- [ ] 17.1 Create ReadingListController
+  - Create reading list
+  - Update reading list
+  - Delete reading list
+  - Add article to list
+  - Remove article from list
+  - Reorder articles in list
+  - Share reading list
+  - _Requirements: 10.2, 10.4_
+
+- [ ] 17.2 Create reading list views
+  - Reading lists overview page
+  - Create/edit reading list form
+  - Reading list detail page with articles
+  - Drag-and-drop reordering interface
+  - Share settings (public, unlisted, private)
+  - Shareable link display
+  - _Requirements: 10.2, 10.4, 17.1, 18.1_
+
+- [ ] 17.3 Implement reading list sharing
+  - Generate unique share tokens
+  - Public reading list view
+  - Privacy controls
+  - View count tracking
+  - _Requirements: 10.4_
+
+
+## Phase 7: Social Features and Engagement
+
+- [ ] 18. Implement social sharing
+- [ ] 18.1 Create SocialShareController
+  - Track share events
+  - Increment share counters
+  - Generate share URLs for platforms
+  - _Requirements: 11.1, 11.2_
+
+- [ ] 18.2 Create social share components
+  - Share buttons for Twitter, Facebook, LinkedIn, Reddit
+  - Copy link button
+  - Share count display
+  - Native share API integration (mobile)
+  - _Requirements: 11.1, 17.1_
+
+- [ ] 18.3 Implement Open Graph meta tags
+  - Generate OG tags for articles
+  - Include title, description, image, URL
+  - Add Twitter Card meta tags
+  - Dynamic meta tag generation
+  - _Requirements: 11.3, 19.2_
+
+- [ ] 19. Implement user following system
+- [ ] 19.1 Create FollowController
+  - Follow user endpoint
+  - Unfollow user endpoint
+  - List followers
+  - List following
+  - Check follow status
+  - _Requirements: 11.4_
+
+- [ ] 19.2 Create follow views
+  - Follow/unfollow button component
+  - Followers list page
+  - Following list page
+  - Follow suggestions
+  - _Requirements: 11.4, 17.1, 18.1_
+
+- [ ] 20. Implement activity feed
+- [ ] 20.1 Create ActivityService
+  - Record user activities (publish, comment, bookmark, follow)
+  - Generate activity feed for user
+  - Filter by activity type
+  - Aggregate similar activities
+  - _Requirements: 11.5_
+
+- [ ] 20.2 Create ActivityController
+  - User activity feed endpoint
+  - Following activity feed endpoint
+  - Activity detail view
+  - _Requirements: 11.5_
+
+- [ ] 20.3 Create activity feed views
+  - Activity feed page
+  - Activity item components
+  - Activity filters
+  - Load more pagination
+  - _Requirements: 11.5, 17.1, 18.1_
+
+## Phase 8: Notification System
+
+- [ ] 21. Implement notification system
+- [ ] 21.1 Create notification classes
+  - CommentReplyNotification
+  - NewFollowerNotification
+  - AuthorNewArticleNotification
+  - CommentReactionNotification
+  - MentionNotification
+  - _Requirements: 13.1, 13.2_
+
+- [ ] 21.2 Create NotificationController
+  - List notifications endpoint
+  - Mark as read endpoint
+  - Mark all as read endpoint
+  - Delete notification endpoint
+  - Notification preferences endpoint
+  - _Requirements: 13.2, 13.3_
+
+- [ ] 21.3 Create notification views
+  - Notification dropdown component
+  - Notification list page
+  - Notification item components
+  - Unread indicator
+  - Notification preferences page
+  - _Requirements: 13.2, 13.3, 17.1, 18.1_
+
+- [ ] 21.4 Implement notification preferences
+  - Email notification toggles
+  - In-app notification toggles
+  - Notification frequency settings
+  - Digest options
+  - _Requirements: 13.3_
+
+- [ ] 21.5 Implement notification grouping
+  - Group similar notifications
+  - Display aggregated counts
+  - Expand to show individual notifications
+  - _Requirements: 13.5_
+
+- [ ] 21.6 Create notification jobs
+  - SendEmailNotificationJob
+  - SendBatchNotificationsJob
+  - Queue notification sending
+  - _Requirements: 13.1_
+
+## Phase 9: Newsletter System
+
+- [ ] 22. Implement newsletter subscription
+- [ ] 22.1 Create NewsletterController
+  - Subscribe endpoint with double opt-in
+  - Unsubscribe endpoint
+  - Confirm subscription endpoint
+  - Update preferences endpoint
+  - _Requirements: 7.1, 7.2, 7.4_
+
+- [ ] 22.2 Create newsletter subscription views
+  - Subscription form component
+  - Subscription confirmation page
+  - Unsubscribe page
+  - Preference management page
+  - _Requirements: 7.1, 7.4, 17.1, 18.1_
+
+- [ ] 23. Implement newsletter generation and sending
+- [ ] 23.1 Create NewsletterService
+  - Generate newsletter content
+  - Select top articles by engagement
+  - Build HTML email template
+  - Personalize content per subscriber
+  - _Requirements: 7.3_
+
+- [ ] 23.2 Create newsletter email templates
+  - Responsive HTML email layout
+  - Article preview cards
+  - Header and footer
+  - Unsubscribe link
+  - Tracking pixels
+  - _Requirements: 7.3, 17.1_
+
+- [ ] 23.3 Create SendNewsletterJob
+  - Batch newsletter sending
+  - Track delivery status
+  - Handle failures and retries
+  - Rate limiting for email provider
+  - _Requirements: 7.5_
+
+- [ ] 23.4 Create newsletter tracking
+  - Track email opens via pixel
+  - Track link clicks via unique URLs
+  - Record open and click timestamps
+  - Generate engagement reports
+  - _Requirements: 7.5_
+
+- [ ] 23.5 Create newsletter scheduling
+  - Schedule command for daily/weekly/monthly
+  - Respect subscriber frequency preferences
+  - Queue newsletter generation
+  - Send time optimization
+  - _Requirements: 7.3, 7.4_
+
+- [ ] 23.6 Create newsletter admin interface
+  - Newsletter list page
+  - Newsletter preview
+  - Manual send trigger
+  - Performance metrics dashboard
+  - Subscriber management
+  - _Requirements: 7.5, 8.1_
+
+## Phase 10: Analytics and Reporting
+
+- [ ] 24. Implement analytics tracking
+- [ ] 24.1 Create AnalyticsService
+  - Calculate article metrics (views, reading time, engagement)
+  - Calculate user metrics (DAU, MAU, retention)
+  - Calculate traffic metrics (sources, devices, locations)
+  - Aggregate daily/weekly/monthly stats
+  - _Requirements: 8.1, 8.2_
+
+- [ ] 24.2 Create AnalyticsController
+  - Dashboard overview endpoint
+  - Article performance endpoint
+  - Traffic sources endpoint
+  - User engagement endpoint
+  - Export data endpoint
+  - _Requirements: 8.1, 8.2, 8.5_
+
+- [ ] 24.3 Create analytics views
+  - Analytics dashboard with charts
+  - Article performance table
+  - Traffic sources visualization
+  - User engagement graphs
+  - Date range selector
+  - Export button
+  - _Requirements: 8.1, 8.2, 8.3, 8.4, 17.1, 18.1_
+
+- [ ] 24.4 Implement analytics caching
+  - Cache daily metrics
+  - Cache article metrics
+  - Cache dashboard data
+  - Invalidate on data updates
+  - _Requirements: 8.1, 15.1_
+
+- [ ] 24.5 Create analytics jobs
+  - CalculateDailyMetricsJob
+  - AggregateWeeklyStatsJob
+  - GenerateMonthlyReportJob
+  - CleanOldAnalyticsDataJob
+  - _Requirements: 8.1_
+

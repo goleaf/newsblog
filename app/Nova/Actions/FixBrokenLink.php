@@ -5,13 +5,13 @@ namespace App\Nova\Actions;
 use App\Models\BrokenLink;
 use App\Models\Post;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Collection;
 use Laravel\Nova\Actions\Action;
 use Laravel\Nova\Fields\ActionFields;
 use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Http\Requests\NovaRequest;
 
 class FixBrokenLink extends Action
 {
@@ -29,7 +29,7 @@ class FixBrokenLink extends Action
         /** @var BrokenLink $broken */
         foreach ($models as $broken) {
             $post = Post::find($broken->post_id);
-            if (!$post) {
+            if (! $post) {
                 continue;
             }
             $original = $broken->url;
@@ -50,7 +50,7 @@ class FixBrokenLink extends Action
         return Action::message('Links updated.');
     }
 
-    public function fields(): array
+    public function fields(NovaRequest $request): array
     {
         return [
             Text::make('New URL', 'new_url')
@@ -59,5 +59,3 @@ class FixBrokenLink extends Action
         ];
     }
 }
-
-

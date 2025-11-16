@@ -1438,3 +1438,1566 @@ try {
 }
 ```
 
+
+## Testing Strategy
+
+### Testing Pyramid
+
+```
+                    /\
+                   /  \
+                  / E2E \          (Few - Critical user flows)
+                 /______\
+                /        \
+               /  Feature \        (Many - API endpoints, user actions)
+              /____________\
+             /              \
+            /   Unit Tests   \    (Most - Models, services, helpers)
+           /__________________\
+```
+
+### Unit Tests
+
+**Model Tests:**
+
+```php
+// tests/Unit/Models/ArticleTest.php
+class ArticleTest extends TestCase
+{
+    use RefreshDatabase;
+    
+    public function test_article_belongs_to_author(): void
+    {
+        $article = Article::factory()->create();
+        
+        $this->assertInstanceOf(User::class, $article->author);
+    }
+    
+    public function test_article_calculates_reading_time(): void
+    {
+        $article = Article::factory()->create([
+            'content' => str_repeat('word ', 400) // 400 words
+        ]);
+        
+        $this->assertEquals(2, $article->reading_time); // 400 words / 200 wpm = 2 minutes
+    }
+    
+    public function test_published_scope_only_returns_published_articles(): void
+    {
+        Article::factory()->count(3)->create(['status' => ArticleStatus::Published]);
+        Article::factory()->count(2)->create(['status' => ArticleStatus::Draft]);
+        
+        $publishedCount = Article::published()->count();
+        
+        $this->assertEquals(3, $publishedCount);
+    }
+}
+
+// tests/Unit/Services/RecommendationServiceTest.php
+class RecommendationServiceTest extends TestCase
+{
+    use RefreshDatabase;
+    
+    public function test_generates_content_based_recommendations(): void
+    {
+        $user = User::factory()->create();
+        $category = Category::factory()->create();
+        
+        // User reads articles in a specific category
+        $readArticles = Article::factory()->count(3)->create(['category_id' => $category->id]);
+        foreach ($readArticles as $article) {
+            UserReadingHistory::create([
+                'user_id' => $user->id,
+                'article_id' => $article->id,
+                'engagement_score' => 0.8,
+            ]);
+        }
+        
+        // Create similar articles
+        $similarArticles = Article::factory()->count(5)->create(['category_id' => $category->id]);
+        
+        $service = new RecommendationService();
+        $recommendations = $service->generateRecommendations($user, 5);
+        
+        $this->assertCount(5, $recommendations);
+        $this->assertTrue($recommendations->pluck('category_id')->every(fn($id) => $id === $category->id));
+    }
+}
+```
+
+### Feature Tests
+
+**Article Management Tests:**
+
+```php
+// tests/Feature/ArticleManagementTest.php
+class ArticleManagementTest extends TestCase
+{
+    use RefreshDatabase;
+    
+    public function test_author_can_create_article(): void
+    {
+        $author = User::factory()->create(['role' => UserRole::Author]);
+        $category = Category::factory()->create();
+        
+        $response = $this->actingAs($author)->post(route('articles.store'), [
+            'title' => 'Test Article',
+            'excerpt' => 'This is a test excerpt',
+            'content' => str_repeat('Test content. ', 50),
+            'category_id' => $category->id,
+            'status' => ArticleStatus::Published->value,
+        ]);
+        
+        $response->assertRedirect();
+        $this->assertDatabaseHas('articles', [
+            'title' => 'Test Article',
+            'author_id' => $author->id,
+        ]);
+    }
+    
+    public function test_reader_cannot_create_article(): void
+    {
+        $reader = User::factory()->create(['role' => UserRole::Reader]);
+        $category = Category::factory()->create();
+        
+        $response = $this->actingAs($reader)->post(route('articles.store'), [
+            'title' => 'Test Article',
+            'excerpt' => 'This is a test excerpt',
+            'content' => str_repeat('Test content. ', 50),
+            'category_id' => $category->id,
+        ]);
+        
+        $response->assertForbidden();
+    }
+    
+    public function test_article_view_is_tracked(): void
+    {
+        $article = Article::factory()->create(['status' => ArticleStatus::Published]);
+        
+        $response = $this->get(route('articles.show', $article->slug));
+        
+        $response->assertOk();
+        $this->assertDatabaseHas('article_views', [
+            'article_id' => $article->id,
+        ]);
+    }
+}
+
+// tests/Feature/CommentSystemTest.php
+class CommentSystemTest extends TestCase
+{
+    use RefreshDatabase;
+    
+    public function test_authenticated_user_can_comment(): void
+    {
+        $user = User::factory()->create();
+        $article = Article::factory()->create(['status' => ArticleStatus::Published]);
+        
+        $response = $this->actingAs($user)->post(route('comments.store', $article), [
+            'content' => 'This is a great article!',
+        ]);
+        
+        $response->assertRedirect();
+        $this->assertDatabaseHas('comments', [
+            'article_id' => $article->id,
+            'user_id' => $user->id,
+            'content' => 'This is a great article!',
+        ]);
+    }
+    
+    public function test_comment_with_prohibited_words_is_flagged(): void
+    {
+        $user = User::factory()->create();
+        $article = Article::factory()->create(['status' => ArticleStatus::Published]);
+        
+        $response = $this->actingAs($user)->post(route('comments.store', $article), [
+            'content' => 'Buy cheap products at example.com',
+        ]);
+        
+        $response->assertRedirect();
+        $this->assertDatabaseHas('comments', [
+            'article_id' => $article->id,
+            'status' => CommentStatus::Flagged->value,
+        ]);
+    }
+    
+    public function test_user_can_reply_to_comment(): void
+    {
+        $user = User::factory()->create();
+        $article = Article::factory()->create(['status' => ArticleStatus::Published]);
+        $parentComment = Comment::factory()->create([
+            'article_id' => $article->id,
+            'status' => CommentStatus::Approved,
+        ]);
+        
+        $response = $this->actingAs($user)->post(route('comments.store', $article), [
+            'content' => 'I agree with this comment!',
+            'parent_id' => $parentComment->id,
+        ]);
+        
+        $response->assertRedirect();
+        $this->assertDatabaseHas('comments', [
+            'article_id' => $article->id,
+            'parent_id' => $parentComment->id,
+            'content' => 'I agree with this comment!',
+        ]);
+    }
+}
+```
+
+### API Tests
+
+```php
+// tests/Feature/Api/ArticleApiTest.php
+class ArticleApiTest extends TestCase
+{
+    use RefreshDatabase;
+    
+    public function test_can_list_articles(): void
+    {
+        Article::factory()->count(15)->create(['status' => ArticleStatus::Published]);
+        
+        $response = $this->getJson('/api/v1/articles');
+        
+        $response->assertOk()
+                 ->assertJsonStructure([
+                     'data' => [
+                         '*' => ['id', 'title', 'slug', 'excerpt', 'author', 'category', 'published_at']
+                     ],
+                     'meta' => ['current_page', 'total', 'per_page'],
+                     'links' => ['first', 'last', 'prev', 'next']
+                 ]);
+    }
+    
+    public function test_can_create_article_with_valid_token(): void
+    {
+        $author = User::factory()->create(['role' => UserRole::Author]);
+        $token = $author->createToken('test-token')->plainTextToken;
+        $category = Category::factory()->create();
+        
+        $response = $this->withToken($token)->postJson('/api/v1/articles', [
+            'title' => 'API Test Article',
+            'excerpt' => 'Test excerpt',
+            'content' => str_repeat('Test content. ', 50),
+            'category_id' => $category->id,
+            'status' => ArticleStatus::Published->value,
+        ]);
+        
+        $response->assertCreated()
+                 ->assertJsonStructure(['data' => ['id', 'title', 'slug']]);
+    }
+    
+    public function test_rate_limiting_works(): void
+    {
+        $user = User::factory()->create();
+        $token = $user->createToken('test-token')->plainTextToken;
+        
+        // Make 61 requests (rate limit is 60 per minute)
+        for ($i = 0; $i < 61; $i++) {
+            $response = $this->withToken($token)->getJson('/api/v1/articles');
+        }
+        
+        $response->assertStatus(429); // Too Many Requests
+    }
+}
+```
+
+### Performance Tests
+
+```php
+// tests/Performance/ArticleLoadTest.php
+class ArticleLoadTest extends TestCase
+{
+    use RefreshDatabase;
+    
+    public function test_article_page_loads_within_acceptable_time(): void
+    {
+        $article = Article::factory()
+            ->has(Comment::factory()->count(50))
+            ->create(['status' => ArticleStatus::Published]);
+        
+        $startTime = microtime(true);
+        
+        $response = $this->get(route('articles.show', $article->slug));
+        
+        $endTime = microtime(true);
+        $loadTime = ($endTime - $startTime) * 1000; // Convert to milliseconds
+        
+        $response->assertOk();
+        $this->assertLessThan(500, $loadTime, "Page load time exceeded 500ms: {$loadTime}ms");
+    }
+    
+    public function test_search_performs_efficiently(): void
+    {
+        Article::factory()->count(1000)->create(['status' => ArticleStatus::Published]);
+        
+        $startTime = microtime(true);
+        
+        $response = $this->get(route('search', ['q' => 'test']));
+        
+        $endTime = microtime(true);
+        $searchTime = ($endTime - $startTime) * 1000;
+        
+        $response->assertOk();
+        $this->assertLessThan(1000, $searchTime, "Search time exceeded 1000ms: {$searchTime}ms");
+    }
+}
+```
+
+### Test Coverage Goals
+
+- **Unit Tests**: 80%+ coverage for models, services, and helpers
+- **Feature Tests**: 100% coverage for critical user flows
+- **API Tests**: 100% coverage for all API endpoints
+- **Performance Tests**: Key pages and operations
+
+### Continuous Integration
+
+```yaml
+# .github/workflows/tests.yml
+name: Tests
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: testing
+        ports:
+          - 3306:3306
+      
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.4
+          extensions: mbstring, pdo_mysql, redis
+      
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress
+      
+      - name: Run tests
+        run: php artisan test --parallel --coverage
+        env:
+          DB_CONNECTION: mysql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_DATABASE: testing
+          DB_USERNAME: root
+          DB_PASSWORD: password
+```
+
+
+## Performance Optimization
+
+### Caching Strategy
+
+**Multi-Layer Caching:**
+
+```php
+// 1. Application Cache (Redis)
+Cache::remember('popular_articles', 3600, function () {
+    return Article::published()
+        ->popular(7)
+        ->limit(10)
+        ->get();
+});
+
+// 2. Query Result Cache
+$articles = Article::published()
+    ->with(['author', 'category', 'tags'])
+    ->remember(900) // Cache for 15 minutes
+    ->paginate(15);
+
+// 3. Model Cache
+class Article extends Model
+{
+    protected static function booted(): void
+    {
+        static::updated(function ($article) {
+            Cache::forget("article:{$article->id}");
+            Cache::forget("article:slug:{$article->slug}");
+        });
+    }
+    
+    public static function findCached(int $id): ?self
+    {
+        return Cache::remember(
+            "article:{$id}",
+            3600,
+            fn() => self::with(['author', 'category', 'tags'])->find($id)
+        );
+    }
+}
+
+// 4. Fragment Caching in Blade
+@cache('sidebar.popular', 3600)
+    <div class="popular-articles">
+        @foreach($popularArticles as $article)
+            <x-article-card :article="$article" />
+        @endforeach
+    </div>
+@endcache
+
+// 5. HTTP Cache Headers
+Route::get('/articles/{article:slug}', function (Article $article) {
+    return response()
+        ->view('articles.show', compact('article'))
+        ->header('Cache-Control', 'public, max-age=3600')
+        ->header('ETag', md5($article->updated_at));
+});
+```
+
+**Cache Invalidation Strategy:**
+
+```php
+// Event-based cache invalidation
+class ArticlePublished
+{
+    public function __construct(public Article $article) {}
+}
+
+class InvalidateArticleCache
+{
+    public function handle(ArticlePublished $event): void
+    {
+        $article = $event->article;
+        
+        // Invalidate specific article caches
+        Cache::forget("article:{$article->id}");
+        Cache::forget("article:slug:{$article->slug}");
+        
+        // Invalidate list caches
+        Cache::forget('popular_articles');
+        Cache::forget("category:{$article->category_id}:articles");
+        Cache::forget('homepage_articles');
+        
+        // Invalidate author cache
+        Cache::forget("author:{$article->author_id}:articles");
+    }
+}
+```
+
+### Database Optimization
+
+**Indexing Strategy:**
+
+```php
+// Migration with proper indexes
+Schema::create('articles', function (Blueprint $table) {
+    $table->id();
+    $table->string('title');
+    $table->string('slug')->unique();
+    $table->text('excerpt');
+    $table->longText('content');
+    $table->foreignId('author_id')->constrained('users')->onDelete('cascade');
+    $table->foreignId('category_id')->constrained()->onDelete('restrict');
+    $table->enum('status', ['draft', 'published', 'archived'])->default('draft');
+    $table->timestamp('published_at')->nullable();
+    $table->integer('reading_time');
+    $table->bigInteger('view_count')->default(0);
+    $table->timestamps();
+    $table->softDeletes();
+    
+    // Composite indexes for common queries
+    $table->index(['status', 'published_at']); // For published articles list
+    $table->index(['author_id', 'status']); // For author's articles
+    $table->index(['category_id', 'published_at']); // For category pages
+    $table->index('view_count'); // For popular articles
+});
+
+// Full-text search index
+Schema::table('articles', function (Blueprint $table) {
+    $table->fullText(['title', 'excerpt', 'content']);
+});
+```
+
+**Query Optimization:**
+
+```php
+// Bad: N+1 query problem
+$articles = Article::all();
+foreach ($articles as $article) {
+    echo $article->author->name; // Triggers a query for each article
+}
+
+// Good: Eager loading
+$articles = Article::with('author')->get();
+foreach ($articles as $article) {
+    echo $article->author->name; // No additional queries
+}
+
+// Better: Eager loading with constraints
+$articles = Article::with([
+    'author:id,name,avatar',
+    'category:id,name,slug',
+    'tags:id,name',
+    'comments' => fn($q) => $q->approved()->limit(5)
+])->published()->paginate(15);
+
+// Best: Selective loading based on need
+$articles = Article::select(['id', 'title', 'slug', 'excerpt', 'author_id', 'published_at'])
+    ->with('author:id,name')
+    ->published()
+    ->paginate(15);
+```
+
+**Database Connection Pooling:**
+
+```php
+// config/database.php
+'mysql' => [
+    'driver' => 'mysql',
+    'host' => env('DB_HOST', '127.0.0.1'),
+    'port' => env('DB_PORT', '3306'),
+    'database' => env('DB_DATABASE', 'forge'),
+    'username' => env('DB_USERNAME', 'forge'),
+    'password' => env('DB_PASSWORD', ''),
+    'charset' => 'utf8mb4',
+    'collation' => 'utf8mb4_unicode_ci',
+    'prefix' => '',
+    'strict' => true,
+    'engine' => 'InnoDB',
+    'options' => [
+        PDO::ATTR_PERSISTENT => true, // Connection pooling
+        PDO::ATTR_EMULATE_PREPARES => false,
+    ],
+],
+```
+
+### Asset Optimization
+
+**Vite Configuration:**
+
+```javascript
+// vite.config.js
+import { defineConfig } from 'vite';
+import laravel from 'laravel-vite-plugin';
+
+export default defineConfig({
+    plugins: [
+        laravel({
+            input: ['resources/css/app.css', 'resources/js/app.js'],
+            refresh: true,
+        }),
+    ],
+    build: {
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    'vendor': ['alpinejs'],
+                    'editor': ['@tiptap/core', '@tiptap/starter-kit'],
+                },
+            },
+        },
+        minify: 'terser',
+        terserOptions: {
+            compress: {
+                drop_console: true,
+            },
+        },
+    },
+});
+```
+
+**Image Optimization:**
+
+```php
+// Service for image processing
+class ImageOptimizationService
+{
+    public function optimize(UploadedFile $file): string
+    {
+        $image = Image::make($file);
+        
+        // Resize if too large
+        if ($image->width() > 1920) {
+            $image->resize(1920, null, function ($constraint) {
+                $constraint->aspectRatio();
+                $constraint->upsize();
+            });
+        }
+        
+        // Optimize quality
+        $image->encode('webp', 85);
+        
+        // Generate filename
+        $filename = Str::random(40) . '.webp';
+        $path = "images/{$filename}";
+        
+        // Store to S3 with CDN
+        Storage::disk('s3')->put($path, $image->stream());
+        
+        return Storage::disk('s3')->url($path);
+    }
+    
+    public function generateResponsiveImages(string $path): array
+    {
+        $sizes = [320, 640, 768, 1024, 1920];
+        $variants = [];
+        
+        foreach ($sizes as $size) {
+            $image = Image::make(Storage::disk('s3')->get($path));
+            $image->resize($size, null, function ($constraint) {
+                $constraint->aspectRatio();
+            });
+            
+            $variantPath = str_replace('.webp', "-{$size}w.webp", $path);
+            Storage::disk('s3')->put($variantPath, $image->encode('webp', 85));
+            $variants[$size] = Storage::disk('s3')->url($variantPath);
+        }
+        
+        return $variants;
+    }
+}
+```
+
+### Queue Optimization
+
+**Job Batching:**
+
+```php
+// Batch newsletter sending
+$subscribers = NewsletterSubscriber::active()->get();
+
+$batch = Bus::batch(
+    $subscribers->chunk(100)->map(function ($chunk) use ($newsletter) {
+        return new SendNewsletterBatch($newsletter, $chunk);
+    })
+)->then(function (Batch $batch) {
+    Log::info("Newsletter sent to {$batch->totalJobs} batches");
+})->catch(function (Batch $batch, Throwable $e) {
+    Log::error("Newsletter batch failed: {$e->getMessage()}");
+})->finally(function (Batch $batch) {
+    Cache::forget('newsletter_sending');
+})->dispatch();
+```
+
+**Queue Prioritization:**
+
+```php
+// config/queue.php
+'connections' => [
+    'redis' => [
+        'driver' => 'redis',
+        'connection' => 'default',
+        'queue' => env('REDIS_QUEUE', 'default'),
+        'retry_after' => 90,
+        'block_for' => null,
+    ],
+],
+
+// Dispatch to different queues based on priority
+SendEmailNotification::dispatch($user, $notification)
+    ->onQueue('high'); // Critical notifications
+
+ProcessAnalytics::dispatch($data)
+    ->onQueue('low'); // Background processing
+
+// Worker configuration
+php artisan queue:work --queue=high,default,low
+```
+
+### CDN Integration
+
+```php
+// config/filesystems.php
+'disks' => [
+    's3' => [
+        'driver' => 's3',
+        'key' => env('AWS_ACCESS_KEY_ID'),
+        'secret' => env('AWS_SECRET_ACCESS_KEY'),
+        'region' => env('AWS_DEFAULT_REGION'),
+        'bucket' => env('AWS_BUCKET'),
+        'url' => env('AWS_URL'),
+        'endpoint' => env('AWS_ENDPOINT'),
+        'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
+    ],
+    
+    'cloudfront' => [
+        'driver' => 's3',
+        'key' => env('AWS_ACCESS_KEY_ID'),
+        'secret' => env('AWS_SECRET_ACCESS_KEY'),
+        'region' => env('AWS_DEFAULT_REGION'),
+        'bucket' => env('AWS_BUCKET'),
+        'url' => env('CLOUDFRONT_URL'), // CloudFront distribution URL
+    ],
+],
+
+// Helper for CDN URLs
+function cdn_asset(string $path): string
+{
+    if (app()->environment('production')) {
+        return Storage::disk('cloudfront')->url($path);
+    }
+    
+    return Storage::disk('public')->url($path);
+}
+```
+
+
+## Security Implementation
+
+### Authentication Security
+
+**Password Hashing:**
+
+```php
+// Laravel automatically uses bcrypt with cost factor 12
+// config/hashing.php
+'bcrypt' => [
+    'rounds' => env('BCRYPT_ROUNDS', 12),
+],
+
+// Custom password validation rules
+class PasswordValidationRule implements Rule
+{
+    public function passes($attribute, $value): bool
+    {
+        return strlen($value) >= 8
+            && preg_match('/[a-z]/', $value)
+            && preg_match('/[A-Z]/', $value)
+            && preg_match('/[0-9]/', $value)
+            && preg_match('/[@$!%*#?&]/', $value);
+    }
+    
+    public function message(): string
+    {
+        return 'Password must be at least 8 characters and contain uppercase, lowercase, number, and special character.';
+    }
+}
+```
+
+**Session Security:**
+
+```php
+// config/session.php
+'lifetime' => 120, // 2 hours
+'expire_on_close' => false,
+'encrypt' => true,
+'http_only' => true,
+'same_site' => 'lax',
+'secure' => env('SESSION_SECURE_COOKIE', true), // HTTPS only in production
+```
+
+**CSRF Protection:**
+
+```php
+// Enabled by default in Laravel
+// bootstrap/app.php
+->withMiddleware(function (Middleware $middleware) {
+    $middleware->validateCsrfTokens(except: [
+        'api/*', // API routes use token authentication
+        'webhooks/*', // Webhook endpoints
+    ]);
+})
+```
+
+**Rate Limiting:**
+
+```php
+// bootstrap/app.php
+RateLimiter::for('login', function (Request $request) {
+    return Limit::perMinute(5)->by($request->email . $request->ip())
+        ->response(function () {
+            return response()->json([
+                'error' => 'Too many login attempts. Please try again in 1 minute.'
+            ], 429);
+        });
+});
+
+RateLimiter::for('api', function (Request $request) {
+    return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
+});
+
+// Apply to routes
+Route::middleware('throttle:login')->post('/login', [AuthController::class, 'login']);
+```
+
+### Authorization
+
+**Policies:**
+
+```php
+// app/Policies/ArticlePolicy.php
+class ArticlePolicy
+{
+    public function viewAny(?User $user): bool
+    {
+        return true; // Anyone can view articles list
+    }
+    
+    public function view(?User $user, Article $article): bool
+    {
+        // Published articles are public
+        if ($article->status === ArticleStatus::Published) {
+            return true;
+        }
+        
+        // Drafts only visible to author and admins
+        return $user && ($user->id === $article->author_id || $user->role === UserRole::Admin);
+    }
+    
+    public function create(User $user): bool
+    {
+        return $user->role->can('create_article');
+    }
+    
+    public function update(User $user, Article $article): bool
+    {
+        // Authors can edit their own articles, admins can edit any
+        return $user->id === $article->author_id || $user->role === UserRole::Admin;
+    }
+    
+    public function delete(User $user, Article $article): bool
+    {
+        return $user->id === $article->author_id || $user->role === UserRole::Admin;
+    }
+    
+    public function publish(User $user, Article $article): bool
+    {
+        return $user->id === $article->author_id || $user->role === UserRole::Admin;
+    }
+}
+
+// Usage in controllers
+public function update(UpdateArticleRequest $request, Article $article)
+{
+    $this->authorize('update', $article);
+    
+    $article->update($request->validated());
+    
+    return redirect()->route('articles.show', $article->slug);
+}
+```
+
+### Input Sanitization
+
+**XSS Prevention:**
+
+```php
+// Blade automatically escapes output
+{{ $article->title }} // Safe
+
+// Raw output (use with caution)
+{!! $article->content !!} // Must be sanitized
+
+// HTML Purifier for user-generated content
+use HTMLPurifier;
+use HTMLPurifier_Config;
+
+class ContentSanitizer
+{
+    public function sanitize(string $html): string
+    {
+        $config = HTMLPurifier_Config::createDefault();
+        $config->set('HTML.Allowed', 'p,br,strong,em,u,a[href],ul,ol,li,code,pre,blockquote,h2,h3,h4');
+        $config->set('AutoFormat.RemoveEmpty', true);
+        
+        $purifier = new HTMLPurifier($config);
+        return $purifier->purify($html);
+    }
+}
+
+// Apply to user content
+$comment->content = $this->sanitizer->sanitize($request->content);
+```
+
+**SQL Injection Prevention:**
+
+```php
+// Laravel's query builder and Eloquent automatically prevent SQL injection
+// Always use parameter binding
+
+// Good: Parameterized query
+$articles = Article::where('category_id', $categoryId)->get();
+
+// Good: Named bindings
+$articles = DB::select('SELECT * FROM articles WHERE category_id = :category', [
+    'category' => $categoryId
+]);
+
+// Bad: String concatenation (never do this)
+// $articles = DB::select("SELECT * FROM articles WHERE category_id = {$categoryId}");
+```
+
+### Data Protection
+
+**Encryption:**
+
+```php
+// Encrypt sensitive data
+use Illuminate\Support\Facades\Crypt;
+
+// Store encrypted
+$user->api_secret = Crypt::encryptString($apiSecret);
+$user->save();
+
+// Retrieve decrypted
+$apiSecret = Crypt::decryptString($user->api_secret);
+
+// Model attribute encryption
+class User extends Model
+{
+    protected function casts(): array
+    {
+        return [
+            'api_secret' => 'encrypted',
+            'social_security_number' => 'encrypted',
+        ];
+    }
+}
+```
+
+**GDPR Compliance:**
+
+```php
+// Data export
+class ExportUserDataAction
+{
+    public function execute(User $user): array
+    {
+        return [
+            'profile' => $user->only(['name', 'email', 'created_at']),
+            'articles' => $user->articles()->get(['title', 'published_at']),
+            'comments' => $user->comments()->get(['content', 'created_at']),
+            'bookmarks' => $user->bookmarks()->with('article:id,title')->get(),
+            'reading_history' => $user->readingHistory()->get(),
+        ];
+    }
+}
+
+// Data deletion
+class DeleteUserDataAction
+{
+    public function execute(User $user): void
+    {
+        DB::transaction(function () use ($user) {
+            // Anonymize comments instead of deleting
+            $user->comments()->update([
+                'user_id' => null,
+                'content' => '[deleted]',
+            ]);
+            
+            // Delete personal data
+            $user->bookmarks()->delete();
+            $user->readingHistory()->delete();
+            $user->notifications()->delete();
+            $user->profile()->delete();
+            $user->preferences()->delete();
+            
+            // Soft delete user
+            $user->delete();
+        });
+    }
+}
+```
+
+### Security Headers
+
+```php
+// app/Http/Middleware/SecurityHeaders.php
+class SecurityHeaders
+{
+    public function handle(Request $request, Closure $next): Response
+    {
+        $response = $next($request);
+        
+        $response->headers->set('X-Content-Type-Options', 'nosniff');
+        $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
+        $response->headers->set('X-XSS-Protection', '1; mode=block');
+        $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
+        $response->headers->set('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
+        
+        // Content Security Policy
+        $response->headers->set('Content-Security-Policy', implode('; ', [
+            "default-src 'self'",
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net",
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+            "img-src 'self' data: https:",
+            "font-src 'self' https://fonts.gstatic.com",
+            "connect-src 'self'",
+            "frame-ancestors 'self'",
+        ]));
+        
+        return $response;
+    }
+}
+
+// Register in bootstrap/app.php
+->withMiddleware(function (Middleware $middleware) {
+    $middleware->append(SecurityHeaders::class);
+})
+```
+
+### API Security
+
+**Token Management:**
+
+```php
+// Generate API token with abilities
+$token = $user->createToken('mobile-app', ['read', 'write'])->plainTextToken;
+
+// Verify token abilities in middleware
+Route::middleware(['auth:sanctum', 'ability:write'])->group(function () {
+    Route::post('/articles', [ArticleController::class, 'store']);
+});
+
+// Token expiration
+class ExpireTokensCommand extends Command
+{
+    protected $signature = 'tokens:expire';
+    
+    public function handle(): void
+    {
+        PersonalAccessToken::where('created_at', '<', now()->subDays(30))
+            ->delete();
+        
+        $this->info('Expired tokens deleted.');
+    }
+}
+```
+
+**API Request Validation:**
+
+```php
+// Validate API requests strictly
+class ApiArticleRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return $this->user()->tokenCan('write');
+    }
+    
+    public function rules(): array
+    {
+        return [
+            'title' => ['required', 'string', 'max:255'],
+            'content' => ['required', 'string', 'min:100'],
+            'category_id' => ['required', 'exists:categories,id'],
+        ];
+    }
+    
+    protected function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(
+            response()->json([
+                'error' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422)
+        );
+    }
+}
+```
+
+
+## Deployment and Infrastructure
+
+### Environment Configuration
+
+**Production Environment Variables:**
+
+```env
+APP_NAME="Tech News Platform"
+APP_ENV=production
+APP_KEY=base64:...
+APP_DEBUG=false
+APP_URL=https://technews.example.com
+
+LOG_CHANNEL=stack
+LOG_LEVEL=error
+
+DB_CONNECTION=mysql
+DB_HOST=production-db.example.com
+DB_PORT=3306
+DB_DATABASE=technews_prod
+DB_USERNAME=technews_user
+DB_PASSWORD=...
+
+BROADCAST_DRIVER=redis
+CACHE_DRIVER=redis
+FILESYSTEM_DISK=s3
+QUEUE_CONNECTION=redis
+SESSION_DRIVER=redis
+
+REDIS_HOST=production-redis.example.com
+REDIS_PASSWORD=...
+REDIS_PORT=6379
+
+MAIL_MAILER=ses
+MAIL_FROM_ADDRESS=noreply@technews.example.com
+MAIL_FROM_NAME="${APP_NAME}"
+
+AWS_ACCESS_KEY_ID=...
+AWS_SECRET_ACCESS_KEY=...
+AWS_DEFAULT_REGION=us-east-1
+AWS_BUCKET=technews-media
+CLOUDFRONT_URL=https://cdn.technews.example.com
+
+SCOUT_DRIVER=meilisearch
+MEILISEARCH_HOST=http://meilisearch:7700
+MEILISEARCH_KEY=...
+
+SENTRY_LARAVEL_DSN=...
+```
+
+### Docker Configuration
+
+**Dockerfile:**
+
+```dockerfile
+FROM php:8.4-fpm
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    zip \
+    unzip \
+    libzip-dev \
+    libicu-dev
+
+# Install PHP extensions
+RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip intl opcache
+
+# Install Redis extension
+RUN pecl install redis && docker-php-ext-enable redis
+
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Set working directory
+WORKDIR /var/www
+
+# Copy application files
+COPY . .
+
+# Install dependencies
+RUN composer install --no-dev --optimize-autoloader
+
+# Set permissions
+RUN chown -R www-data:www-data /var/www \
+    && chmod -R 755 /var/www/storage
+
+# Optimize for production
+RUN php artisan config:cache \
+    && php artisan route:cache \
+    && php artisan view:cache
+
+EXPOSE 9000
+
+CMD ["php-fpm"]
+```
+
+**docker-compose.yml (Production):**
+
+```yaml
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: technews-app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+      - ./storage:/var/www/storage
+    networks:
+      - technews-network
+    depends_on:
+      - mysql
+      - redis
+      - meilisearch
+
+  nginx:
+    image: nginx:alpine
+    container_name: technews-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx:/etc/nginx/conf.d
+      - ./docker/ssl:/etc/nginx/ssl
+    networks:
+      - technews-network
+    depends_on:
+      - app
+
+  mysql:
+    image: mysql:8.0
+    container_name: technews-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_USER: ${DB_USERNAME}
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - technews-network
+    command: --default-authentication-plugin=mysql_native_password
+
+  redis:
+    image: redis:7-alpine
+    container_name: technews-redis
+    restart: unless-stopped
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis-data:/data
+    networks:
+      - technews-network
+
+  meilisearch:
+    image: getmeili/meilisearch:latest
+    container_name: technews-meilisearch
+    restart: unless-stopped
+    environment:
+      MEILI_MASTER_KEY: ${MEILISEARCH_KEY}
+    volumes:
+      - meilisearch-data:/meili_data
+    networks:
+      - technews-network
+
+  queue-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: technews-queue
+    restart: unless-stopped
+    command: php artisan queue:work --sleep=3 --tries=3 --max-time=3600
+    volumes:
+      - ./:/var/www
+    networks:
+      - technews-network
+    depends_on:
+      - app
+      - redis
+
+  scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: technews-scheduler
+    restart: unless-stopped
+    command: php artisan schedule:work
+    volumes:
+      - ./:/var/www
+    networks:
+      - technews-network
+    depends_on:
+      - app
+
+networks:
+  technews-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
+  redis-data:
+  meilisearch-data:
+```
+
+### Nginx Configuration
+
+```nginx
+# docker/nginx/default.conf
+server {
+    listen 80;
+    listen [::]:80;
+    server_name technews.example.com;
+    return 301 https://$server_name$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+    server_name technews.example.com;
+    root /var/www/public;
+
+    index index.php;
+
+    # SSL Configuration
+    ssl_certificate /etc/nginx/ssl/cert.pem;
+    ssl_certificate_key /etc/nginx/ssl/key.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+    ssl_prefer_server_ciphers on;
+
+    # Security Headers
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+
+    # Gzip Compression
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_types text/plain text/css text/xml text/javascript application/x-javascript application/xml+rss application/json;
+
+    # Client body size
+    client_max_body_size 20M;
+
+    # Cache static assets
+    location ~* \.(jpg|jpeg|png|gif|ico|css|js|svg|woff|woff2|ttf|eot)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        fastcgi_pass app:9000;
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        include fastcgi_params;
+        fastcgi_hide_header X-Powered-By;
+    }
+
+    location ~ /\.(?!well-known).* {
+        deny all;
+    }
+}
+```
+
+### CI/CD Pipeline
+
+**GitHub Actions Workflow:**
+
+```yaml
+# .github/workflows/deploy.yml
+name: Deploy to Production
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: testing
+        ports:
+          - 3306:3306
+      
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.4
+          extensions: mbstring, pdo_mysql, redis
+      
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress
+      
+      - name: Run tests
+        run: php artisan test --parallel
+        env:
+          DB_CONNECTION: mysql
+          DB_HOST: 127.0.0.1
+          DB_DATABASE: testing
+          DB_USERNAME: root
+          DB_PASSWORD: password
+      
+      - name: Run Pint
+        run: vendor/bin/pint --test
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Deploy to production
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.PRODUCTION_HOST }}
+          username: ${{ secrets.PRODUCTION_USER }}
+          key: ${{ secrets.PRODUCTION_SSH_KEY }}
+          script: |
+            cd /var/www/technews
+            git pull origin main
+            composer install --no-dev --optimize-autoloader
+            php artisan migrate --force
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
+            php artisan queue:restart
+            npm run build
+```
+
+### Monitoring and Logging
+
+**Application Monitoring:**
+
+```php
+// config/logging.php - Production logging
+'channels' => [
+    'stack' => [
+        'driver' => 'stack',
+        'channels' => ['daily', 'sentry'],
+    ],
+    
+    'sentry' => [
+        'driver' => 'sentry',
+        'level' => 'error',
+    ],
+],
+
+// Performance monitoring
+class PerformanceMonitor
+{
+    public function trackPageLoad(Request $request, Response $response, float $duration): void
+    {
+        if ($duration > 1000) { // More than 1 second
+            Log::warning('Slow page load', [
+                'url' => $request->fullUrl(),
+                'duration' => $duration,
+                'memory' => memory_get_peak_usage(true),
+            ]);
+        }
+        
+        // Send to monitoring service
+        if (app()->bound('metrics')) {
+            app('metrics')->timing('page.load', $duration, [
+                'route' => $request->route()?->getName(),
+                'method' => $request->method(),
+            ]);
+        }
+    }
+}
+```
+
+**Health Check Endpoint:**
+
+```php
+// routes/web.php
+Route::get('/health', function () {
+    $checks = [
+        'database' => false,
+        'redis' => false,
+        'storage' => false,
+        'queue' => false,
+    ];
+    
+    try {
+        DB::connection()->getPdo();
+        $checks['database'] = true;
+    } catch (\Exception $e) {
+        Log::error('Database health check failed', ['error' => $e->getMessage()]);
+    }
+    
+    try {
+        Redis::ping();
+        $checks['redis'] = true;
+    } catch (\Exception $e) {
+        Log::error('Redis health check failed', ['error' => $e->getMessage()]);
+    }
+    
+    try {
+        Storage::disk('s3')->exists('health-check.txt');
+        $checks['storage'] = true;
+    } catch (\Exception $e) {
+        Log::error('Storage health check failed', ['error' => $e->getMessage()]);
+    }
+    
+    $checks['queue'] = Cache::has('queue:heartbeat');
+    
+    $healthy = !in_array(false, $checks, true);
+    
+    return response()->json([
+        'status' => $healthy ? 'healthy' : 'unhealthy',
+        'checks' => $checks,
+        'timestamp' => now()->toIso8601String(),
+    ], $healthy ? 200 : 503);
+});
+```
+
+### Backup Strategy
+
+```php
+// app/Console/Commands/BackupDatabase.php
+class BackupDatabase extends Command
+{
+    protected $signature = 'backup:database';
+    
+    public function handle(): void
+    {
+        $filename = 'backup-' . now()->format('Y-m-d-H-i-s') . '.sql';
+        $path = storage_path("backups/{$filename}");
+        
+        // Create backup
+        $command = sprintf(
+            'mysqldump -h%s -u%s -p%s %s > %s',
+            config('database.connections.mysql.host'),
+            config('database.connections.mysql.username'),
+            config('database.connections.mysql.password'),
+            config('database.connections.mysql.database'),
+            $path
+        );
+        
+        exec($command);
+        
+        // Upload to S3
+        Storage::disk('s3')->put("backups/{$filename}", file_get_contents($path));
+        
+        // Delete local copy
+        unlink($path);
+        
+        // Delete old backups (keep last 30 days)
+        $oldBackups = Storage::disk('s3')->files('backups');
+        foreach ($oldBackups as $backup) {
+            $date = Carbon::createFromFormat('Y-m-d-H-i-s', 
+                str_replace(['backup-', '.sql'], '', basename($backup))
+            );
+            
+            if ($date->lt(now()->subDays(30))) {
+                Storage::disk('s3')->delete($backup);
+            }
+        }
+        
+        $this->info("Database backup created: {$filename}");
+    }
+}
+
+// Schedule in routes/console.php
+Schedule::command('backup:database')->daily()->at('02:00');
+```
+
