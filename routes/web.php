@@ -6,11 +6,11 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PostController as PublicPostController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RobotsController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SitemapController;
-use App\Http\Controllers\RobotsController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UiDemoController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -118,8 +118,10 @@ Route::post('/bookmarks/toggle', [\App\Http\Controllers\BookmarkController::clas
     ->middleware('throttle:120,1')
     ->name('bookmarks.toggle');
 
-// Page routes
-Route::get('/page/{slug}', [\App\Http\Controllers\PageController::class, 'show'])->name('page.show');
+// Page routes (supports nested slugs via slugPath)
+Route::get('/page/{slugPath}', [\App\Http\Controllers\PageController::class, 'show'])
+    ->where('slugPath', '.*')
+    ->name('page.show');
 Route::post('/page/contact', [\App\Http\Controllers\PageController::class, 'submitContact'])
     ->middleware('throttle:comments')
     ->name('page.contact.submit');
@@ -163,6 +165,7 @@ Route::middleware(['auth', 'role:admin,editor'])->prefix('admin')->name('admin.'
     Route::get('/calendar', [\App\Http\Controllers\Admin\ContentCalendarController::class, 'index'])->name('calendar.index');
     Route::get('/calendar/posts', [\App\Http\Controllers\Admin\ContentCalendarController::class, 'getPostsForDate'])->name('calendar.posts');
     Route::post('/calendar/posts/{post}/update-date', [\App\Http\Controllers\Admin\ContentCalendarController::class, 'updatePostDate'])->name('calendar.posts.update-date');
+    Route::get('/calendar/export.ics', [\App\Http\Controllers\Admin\ContentCalendarController::class, 'exportIcs'])->name('calendar.export');
 
     // Widget Management routes
     Route::get('/widgets', [\App\Http\Controllers\Admin\WidgetController::class, 'index'])->name('widgets.index');

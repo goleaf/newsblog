@@ -157,13 +157,13 @@ class BreadcrumbService
      */
     private function generatePageBreadcrumbs(Request $request, array $breadcrumbs): array
     {
-        $slug = $request->route('slug');
+        $slugPath = $request->route('slugPath') ?? $request->route('slug');
 
-        if (! $slug) {
+        if (! $slugPath) {
             return $breadcrumbs;
         }
 
-        $page = Page::where('slug', $slug)->with('parent')->first();
+        $page = Page::findByPath($slugPath);
 
         if (! $page) {
             return $breadcrumbs;
@@ -228,7 +228,7 @@ class BreadcrumbService
         while ($current) {
             array_unshift($hierarchy, [
                 'title' => $this->truncateTitle($current->title),
-                'url' => route('page.show', $current->slug),
+                'url' => route('page.show', $current->slug_path),
             ]);
             $current = $current->parent;
         }

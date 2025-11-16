@@ -192,4 +192,73 @@ class ContentCalendarControllerTest extends TestCase
         $this->assertEquals(12, $date->month);
         $this->assertEquals(2024, $date->year);
     }
+
+    public function test_calendar_filters_by_author_and_category(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $editor = User::factory()->create(['role' => 'editor']);
+        $catA = \App\Models\Category::factory()->create(['name' => 'A']);
+        $catB = \App\Models\Category::factory()->create(['name' => 'B']);
+
+        // Post by admin in Category A (should be included when filtering)
+        \App\Models\Post::factory()->create([
+            'user_id' => $admin->id,
+            'category_id' => $catA->id,
+            'status' => 'published',
+            'published_at' => now(),
+        ]);
+
+        // Post by editor in Category B (should be excluded when filtering)
+        \App\Models\Post::factory()->create([
+            'user_id' => $editor->id,
+            'category_id' => $catB->id,
+            'status' => 'scheduled',
+            'scheduled_at' => now()->addDay(),
+        ]);
+
+        $response = $this->actingAs($admin)->get(route('admin.calendar.index', [
+            'author' => $admin->id,
+            'category' => $catA->id,
+        ]));
+
+        $response->assertStatus(200);
+        $postsGrouped = $response->viewData('posts');
+        $all = $postsGrouped->flatten(1);
+        $this->assertTrue($all->every(fn ($p) => (int) $p->user_id === (int) $admin->id && (int) $p->category_id === (int) $catA->id));
+    }
+
+    public function test_calendar_ical_export_includes_posts_and_respects_filters(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $author = User::factory()->create(['role' => 'author']);
+        $cat = \App\Models\Category::factory()->create();
+
+        $included = \App\Models\Post::factory()->create([
+            'user_id' => $author->id,
+            'category_id' => $cat->id,
+            'status' => 'scheduled',
+            'scheduled_at' => now()->addDay()->setTime(10, 0),
+            'title' => 'Include This Post',
+        ]);
+
+        $excluded = \App\Models\Post::factory()->create([
+            'user_id' => $admin->id,
+            'category_id' => $cat->id,
+            'status' => 'published',
+            'published_at' => now()->setTime(9, 0),
+            'title' => 'Do Not Include',
+        ]);
+
+        $response = $this->actingAs($admin)->get(route('admin.calendar.export', [
+            'month' => now()->format('m'),
+            'year' => now()->format('Y'),
+            'author' => $author->id,
+        ]));
+
+        $response->assertStatus(200);
+        $response->assertHeader('Content-Type', 'text/calendar; charset=utf-8');
+        $ics = $response->getContent();
+        $this->assertStringContainsString('SUMMARY:Include This Post', $ics);
+        $this->assertStringNotContainsString('SUMMARY:Do Not Include', $ics);
+    }
 }

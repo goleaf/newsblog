@@ -27,26 +27,61 @@
             <div class="overflow-hidden bg-white shadow-sm dark:bg-gray-800 sm:rounded-lg">
                 <div class="p-6">
                     <!-- Calendar Navigation -->
-                    <div class="mb-6 flex items-center justify-between">
+                    <div class="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                         <div class="flex items-center gap-4">
-                            <a href="{{ route('admin.calendar.index', ['month' => $date->copy()->subMonth()->month, 'year' => $date->copy()->subMonth()->year]) }}"
+                            <a href="{{ route('admin.calendar.index', ['month' => $date->copy()->subMonth()->month, 'year' => $date->copy()->subMonth()->year, 'author' => request('author'), 'category' => request('category')]) }}"
                                class="rounded-md bg-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
                                 &larr; {{ __('Previous') }}
                             </a>
                             <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
                                 {{ $date->format('F Y') }}
                             </h3>
-                            <a href="{{ route('admin.calendar.index', ['month' => $date->copy()->addMonth()->month, 'year' => $date->copy()->addMonth()->year]) }}"
+                            <a href="{{ route('admin.calendar.index', ['month' => $date->copy()->addMonth()->month, 'year' => $date->copy()->addMonth()->year, 'author' => request('author'), 'category' => request('category')]) }}"
                                class="rounded-md bg-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
                                 {{ __('Next') }} &rarr;
                             </a>
                         </div>
-                        <div>
-                            <input type="month"
-                                   id="monthPicker"
-                                   value="{{ $date->format('Y-m') }}"
-                                   class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
-                                   onchange="window.location.href = '{{ route('admin.calendar.index') }}?month=' + this.value.split('-')[1] + '&year=' + this.value.split('-')[0]">
+                        <div class="flex flex-col gap-3 md:flex-row md:items-center md:gap-4">
+                            <form id="calendarFilters" method="GET" action="{{ route('admin.calendar.index') }}" class="flex flex-col items-stretch gap-3 md:flex-row md:items-center">
+                                <input type="hidden" name="month" value="{{ $date->format('m') }}">
+                                <input type="hidden" name="year" value="{{ $date->format('Y') }}">
+
+                                <label class="text-sm text-gray-700 dark:text-gray-300">
+                                    <span class="sr-only">{{ __('Author') }}</span>
+                                    <select name="author" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">
+                                        <option value="">{{ __('All Authors') }}</option>
+                                        @foreach($authors as $author)
+                                            <option value="{{ $author->id }}" {{ (string) $authorId === (string) $author->id ? 'selected' : '' }}>{{ $author->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </label>
+
+                                <label class="text-sm text-gray-700 dark:text-gray-300">
+                                    <span class="sr-only">{{ __('Category') }}</span>
+                                    <select name="category" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">
+                                        <option value="">{{ __('All Categories') }}</option>
+                                        @foreach($categories as $cat)
+                                            <option value="{{ $cat->id }}" {{ (string) $categoryId === (string) $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </label>
+
+                                <button type="submit" class="rounded-md bg-indigo-600 px-3 py-2 text-white hover:bg-indigo-700">{{ __('Apply') }}</button>
+                                <a href="{{ route('admin.calendar.index', ['month' => $date->format('m'), 'year' => $date->format('Y')]) }}" class="rounded-md bg-gray-200 px-3 py-2 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600">{{ __('Clear') }}</a>
+                            </form>
+
+                            <div class="flex items-center gap-3">
+                                <input type="month"
+                                       id="monthPicker"
+                                       value="{{ $date->format('Y-m') }}"
+                                       class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+                                       onchange="(function(){const v=document.getElementById('monthPicker').value.split('-'); const params=new URLSearchParams(window.location.search); params.set('month', v[1]); params.set('year', v[0]); window.location.href='{{ route('admin.calendar.index') }}' + '?' + params.toString();})()">
+
+                                <a href="{{ route('admin.calendar.export', ['month' => $date->format('m'), 'year' => $date->format('Y'), 'author' => request('author'), 'category' => request('category')]) }}"
+                                   class="rounded-md bg-emerald-600 px-3 py-2 text-white hover:bg-emerald-700">
+                                    {{ __('Export iCal') }}
+                                </a>
+                            </div>
                         </div>
                     </div>
 

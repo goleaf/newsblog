@@ -22,9 +22,9 @@ class Page extends Model
         'parent_id',
     ];
 
-    public function getUrlAttribute()
+    public function getUrlAttribute(): string
     {
-        return route('page.show', $this->slug);
+        return route('page.show', $this->slug_path);
     }
 
     public function scopeActive($query)
@@ -45,6 +45,19 @@ class Page extends Model
     public function children()
     {
         return $this->hasMany(Page::class, 'parent_id')->ordered();
+    }
+
+    public function getSlugPathAttribute(): string
+    {
+        $segments = [];
+        $current = $this;
+        // Build path from root to current
+        while ($current) {
+            array_unshift($segments, $current->slug);
+            $current = $current->parent;
+        }
+
+        return implode('/', $segments);
     }
 
     public function getAvailableTemplates(): array
@@ -94,5 +107,50 @@ class Page extends Model
             // Regenerate sitemap when page is deleted
             \Illuminate\Support\Facades\App::make(\App\Services\SitemapService::class)->regenerateIfNeeded();
         });
+    }
+
+    /**
+     * Resolve a page by its nested slug path (e.g., "parent/child").
+     */
+    public static function findByPath(string $path): ?self
+    {
+        $segments = array_values(array_filter(explode('/', $path)));
+        if (empty($segments)) {
+            return null;
+        }
+
+        $leafSlug = array_pop($segments);
+
+        // Candidates with matching leaf slug and published status
+        $candidates = static::query()
+            ->where('slug', $leafSlug)
+            ->where('status', 'published')
+            ->get();
+
+        foreach ($candidates as $candidate) {
+            // Build ancestor slug chain for the candidate
+            $ancestorSegments = [];
+            $parent = $candidate->parent;
+            while ($parent) {
+                array_unshift($ancestorSegments, $parent->slug);
+                $parent = $parent->parent;
+            }
+
+            if ($ancestorSegments === $segments) {
+                return $candidate;
+            }
+        }
+
+        // If no parent path is provided, prefer a top-level candidate
+        if (count($segments) === 0) {
+            $top = $candidates->firstWhere('parent_id', null);
+            if ($top) {
+                return $top;
+            }
+
+            return $candidates->first();
+        }
+
+        return null;
     }
 }

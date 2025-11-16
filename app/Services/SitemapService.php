@@ -109,12 +109,12 @@ class SitemapService
         // Add pages (only if route exists)
         if (\Illuminate\Support\Facades\Route::has('page.show')) {
             Page::active()
-                ->select(['slug', 'updated_at'])
+                ->select(['id', 'slug', 'updated_at', 'parent_id'])
                 ->orderBy('updated_at', 'desc')
                 ->get()
                 ->each(function ($page) use (&$urls) {
                     $urls[] = [
-                        'loc' => route('page.show', $page->slug),
+                        'loc' => route('page.show', $page->slug_path),
                         'lastmod' => $page->updated_at->toIso8601String(),
                         'changefreq' => 'monthly',
                         'priority' => '0.5',

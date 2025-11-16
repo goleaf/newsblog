@@ -216,5 +216,14 @@
     "Menu Items (table view)": "Menu Items (table view)",
     "Children": "Children",
     "Drag to reorder items. Use the nested list to manage children.": "Drag to reorder items. Use the nested list to manage children.",
-    "Nest items inside their parent to build hierarchical menus.": "Nest items inside their parent to build hierarchical menus."
+    "Nest items inside their parent to build hierarchical menus.": "Nest items inside their parent to build hierarchical menus.",
+    
+    "messages.contact.thanks": "Thanks for contacting us. We'll get back to you soon.",
+    "validation.custom.contact.name_required": "Please enter your name.",
+    "validation.custom.contact.email_required": "Please enter your email address.",
+    "validation.custom.contact.email_email": "Please enter a valid email address.",
+    "validation.custom.contact.subject_max": "Subject may not be greater than 255 characters.",
+    "validation.custom.contact.message_required": "Please enter your message.",
+    "mail.contact.subject": "New contact message: :subject",
+    "mail.contact.no_subject": "(no subject)"
 }

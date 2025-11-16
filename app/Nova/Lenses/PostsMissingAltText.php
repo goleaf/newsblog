@@ -9,7 +9,7 @@ use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
-use Laravel\Nova\Http\Requests\LensRequest;
+use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Lenses\Lens;
 
 class PostsMissingAltText extends Lens
@@ -19,7 +19,7 @@ class PostsMissingAltText extends Lens
      *
      * @return array<int, \Laravel\Nova\Fields\Field>
      */
-    public function fields(LensRequest $request): array
+    public function fields(NovaRequest $request): array
     {
         return [
             ID::make('ID', 'id')->sortable(),
@@ -52,7 +52,7 @@ class PostsMissingAltText extends Lens
      *
      * @return array<int, \Laravel\Nova\Card>
      */
-    public function cards(LensRequest $request): array
+    public function cards(NovaRequest $request): array
     {
         return [];
     }
@@ -62,7 +62,7 @@ class PostsMissingAltText extends Lens
      *
      * @return array<int, \Laravel\Nova\Filters\Filter>
      */
-    public function filters(LensRequest $request): array
+    public function filters(NovaRequest $request): array
     {
         return [];
     }
@@ -72,7 +72,7 @@ class PostsMissingAltText extends Lens
      *
      * @return array<int, \Laravel\Nova\Actions\Action>
      */
-    public function actions(LensRequest $request): array
+    public function actions(NovaRequest $request): array
     {
         return [
             new \App\Nova\Actions\FillMissingAltText,
@@ -82,7 +82,7 @@ class PostsMissingAltText extends Lens
     /**
      * Build the query for the lens.
      */
-    public static function query(LensRequest $request, $query): Builder
+    public static function query(NovaRequest $request, $query): Builder
     {
         /** @var AltTextValidator $validator */
         $validator = app(AltTextValidator::class);

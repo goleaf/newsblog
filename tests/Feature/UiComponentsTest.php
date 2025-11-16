@@ -2,17 +2,11 @@
 
 namespace Tests\Feature;
 
-use App\Http\Middleware\TrackPerformance;
 use Tests\TestCase;
 
 class UiComponentsTest extends TestCase
 {
-    protected function setUp(): void
-    {
-        parent::setUp();
-        // Avoid unrelated middleware failures during feature rendering tests
-        $this->withoutMiddleware(TrackPerformance::class);
-    }
+    // No middleware overrides
 
     /** @test */
     public function it_renders_ui_demo_page()

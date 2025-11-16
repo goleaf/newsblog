@@ -41,6 +41,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                     MenuItem::resource(\App\Nova\Category::class),
                     MenuItem::resource(\App\Nova\Tag::class),
                     MenuItem::resource(\App\Nova\Comment::class),
+                    MenuItem::link('Page Ordering', '/tools/pages-order'),
                 ])->icon('document-text')->collapsable(),
 
                 MenuSection::make('Media & Files', [
@@ -153,6 +154,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
             new \App\Nova\Tools\SystemHealth,
             new \App\CacheManager\CacheManager,
             new \App\MaintenanceMode\MaintenanceMode,
+            new \App\Nova\Tools\PageOrder,
         ];
     }
 

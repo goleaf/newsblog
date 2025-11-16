@@ -16,6 +16,8 @@ class ShowCalendarRequest extends FormRequest
         return [
             'month' => ['nullable', 'integer', 'between:1,12'],
             'year' => ['nullable', 'integer', 'min:1970', 'max:2100'],
+            'author' => ['nullable', 'integer', 'exists:users,id'],
+            'category' => ['nullable', 'integer', 'exists:categories,id'],
         ];
     }
 
@@ -27,8 +29,7 @@ class ShowCalendarRequest extends FormRequest
             'year.integer' => __('validation.calendar_year_integer'),
             'year.min' => __('validation.calendar_year_min'),
             'year.max' => __('validation.calendar_year_max'),
+            // Default messages for author/category are sufficient; custom keys optional
         ];
     }
 }
-
-

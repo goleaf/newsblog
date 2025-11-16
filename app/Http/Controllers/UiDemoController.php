@@ -10,9 +10,10 @@ class UiDemoController extends Controller
     public function show(UiDemoRequest $request): View
     {
         $galleryImages = [
-            ['src' => '/img/sample1.jpg', 'thumb' => '/img/sample1.jpg', 'alt' => 'Sample 1'],
-            ['src' => '/img/sample2.jpg', 'thumb' => '/img/sample2.jpg', 'alt' => 'Sample 2'],
-            ['src' => '/img/sample3.jpg', 'thumb' => '/img/sample3.jpg', 'alt' => 'Sample 3'],
+            // Use an existing asset to avoid missing files during e2e runs
+            ['src' => '/img/nova-logo.svg', 'thumb' => '/img/nova-logo.svg', 'alt' => 'Sample 1'],
+            ['src' => '/img/nova-logo.svg', 'thumb' => '/img/nova-logo.svg', 'alt' => 'Sample 2'],
+            ['src' => '/img/nova-logo.svg', 'thumb' => '/img/nova-logo.svg', 'alt' => 'Sample 3'],
         ];
 
         $chartCsv = "label,value\nA,10\nB,20\nC,15\nD,30";
@@ -23,5 +24,3 @@ class UiDemoController extends Controller
         ]);
     }
 }
-
-

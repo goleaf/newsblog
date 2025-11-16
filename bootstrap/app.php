@@ -67,8 +67,8 @@ return Application::configure(basePath: dirname(__DIR__))
             ->at('03:00')
             ->description('Clean up old read notifications');
 
-        // Check for broken links weekly
-        $schedule->job(new \App\Jobs\CheckBrokenLinks)->weekly();
+        // Check for broken links weekly (spec requires running the command)
+        $schedule->command('links:check')->weekly();
 
         // Nova performance monitoring every 5 minutes
         $schedule->command('nova:monitor-performance --period=hour')

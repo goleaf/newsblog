@@ -91,6 +91,7 @@
     x-cloak
     @keydown.window="handleKeydown($event)"
     class="fixed inset-0 z-50 overflow-y-auto"
+    x-trap.noscroll="open"
     role="dialog"
     aria-modal="true"
     aria-labelledby="search-modal-title"
@@ -121,6 +122,7 @@
             x-transition:leave-end="opacity-0 scale-95"
             class="w-full max-w-3xl bg-white dark:bg-gray-800 rounded-xl shadow-2xl overflow-hidden"
         >
+            <h2 id="search-modal-title" class="sr-only">Search</h2>
             {{-- Search Input --}}
             <div class="relative border-b border-gray-200 dark:border-gray-700">
                 <div class="flex items-center px-6 py-4">
@@ -134,7 +136,8 @@
                         type="text"
                         placeholder="Search articles, series, topics..."
                         class="flex-1 ml-4 bg-transparent border-0 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-0 text-lg"
-                        id="search-modal-title"
+                        id="search-input"
+                        aria-label="Search"
                         role="combobox"
                         aria-autocomplete="list"
                         :aria-expanded="(results.length > 0).toString()"

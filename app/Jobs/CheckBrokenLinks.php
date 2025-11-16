@@ -26,10 +26,7 @@ class CheckBrokenLinks implements ShouldQueue
         $appHost = parse_url($appUrl ?? '', PHP_URL_HOST);
 
         Post::query()
-            ->where('status', 'published')
-            ->when(true, function ($q) {
-                $q->whereNotNull('published_at');
-            })
+            ->published()
             ->orderByDesc('published_at')
             ->chunkById(100, function ($posts) use ($appHost) {
                 foreach ($posts as $post) {
