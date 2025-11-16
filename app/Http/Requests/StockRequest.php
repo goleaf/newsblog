@@ -29,3 +29,4 @@ class StockRequest extends FormRequest
 }
 
 
+

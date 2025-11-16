@@ -3,7 +3,7 @@ const { test, expect } = require('@playwright/test');
 
 test.describe('UI Enhancements', () => {
   test('"/" opens search modal and "Esc" closes it', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/ui-demo');
     await page.keyboard.press('/');
     const searchInput = page.locator('input#search-modal-title');
     await expect(searchInput).toBeVisible();
@@ -12,14 +12,14 @@ test.describe('UI Enhancements', () => {
   });
 
   test('"?" opens shortcuts help modal', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/ui-demo');
     await page.keyboard.press('?');
     await expect(page.getByRole('dialog', { name: 'QR code' })).toBeHidden();
     await expect(page.getByRole('dialog')).toBeVisible();
   });
 
   test('N/P navigate pagination when present', async ({ page }) => {
-    await page.goto('/?page=1');
+    await page.goto('/ui-demo?page=1');
     // If there is pagination, pressing N should navigate (best-effort)
     await page.keyboard.press('N');
     // Can't guarantee next exists; just assert no error
@@ -41,14 +41,14 @@ test.describe('UI Enhancements', () => {
   });
 
   test('Print CSS linked with media=print', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/ui-demo');
     const hasPrintLink = await page.locator('link[rel="stylesheet"][media="print"]').count();
     expect(hasPrintLink).toBeGreaterThan(0);
   });
 
   test('QR code modal scaffold appears and allows download click (without generation)', async ({ page }) => {
-    // Navigate to an article page sample if available; fallback to home
-    await page.goto('/');
+    // Navigate to demo page (safe without DB); on article pages the QR button is present
+    await page.goto('/ui-demo');
     // Try opening search to find an article quickly, else skip button check by scanning floating actions presence
     // Open shortcuts to ensure no conflicts
     await page.keyboard.press('Escape');
@@ -71,4 +71,3 @@ test.describe('UI Enhancements', () => {
     }
   });
 });
-

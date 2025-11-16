@@ -38,3 +38,4 @@ class CacheHitRatio extends Trend
 }
 
 
+

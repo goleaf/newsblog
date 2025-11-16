@@ -37,3 +37,4 @@ class SampleContentSeeder extends Seeder
         });
     }
 }
+

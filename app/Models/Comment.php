@@ -56,6 +56,14 @@ class Comment extends Model
         return $this->hasMany(Comment::class, 'parent_id')->where('status', CommentStatusEnum::Approved);
     }
 
+    /**
+     * Reactions on this comment.
+     */
+    public function reactions()
+    {
+        return $this->hasMany(CommentReaction::class);
+    }
+
     public function scopeApproved($query)
     {
         return $query->where('status', CommentStatusEnum::Approved);
@@ -74,6 +82,11 @@ class Comment extends Model
     public function scopeRecent($query)
     {
         return $query->orderBy('created_at', 'desc');
+    }
+
+    public function scopeTopLevel($query)
+    {
+        return $query->whereNull('parent_id');
     }
 
     public function scopeForPost($query, $postId)

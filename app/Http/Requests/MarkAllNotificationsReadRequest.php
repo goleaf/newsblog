@@ -27,3 +27,4 @@ class MarkAllNotificationsReadRequest extends FormRequest
         return [];
     }
 }
+

@@ -102,3 +102,4 @@ Alpine.data('galleryComponent', createGalleryComponent);
 export default createGalleryComponent;
 
 
+

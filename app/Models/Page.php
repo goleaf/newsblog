@@ -24,7 +24,7 @@ class Page extends Model
 
     public function getUrlAttribute(): string
     {
-        return route('page.show', $this->slug_path);
+        return url('/page/'.$this->slug_path);
     }
 
     public function scopeActive($query)

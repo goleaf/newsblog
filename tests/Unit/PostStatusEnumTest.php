@@ -15,3 +15,4 @@ class PostStatusEnumTest extends TestCase
         $this->assertSame('archived', PostStatus::Archived->value);
     }
 }
+

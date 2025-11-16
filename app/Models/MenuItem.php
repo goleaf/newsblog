@@ -3,9 +3,6 @@
 namespace App\Models;
 
 use App\Enums\MenuItemType;
-use App\Models\Category;
-use App\Models\Page;
-use App\Models\Tag;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -63,7 +60,7 @@ class MenuItem extends Model
         if ($this->type === MenuItemType::Page && $this->reference_id) {
             $page = Page::query()->select(['id', 'slug', 'parent_id'])->with('parent')->find($this->reference_id);
             if ($page) {
-                return route('page.show', $page->slug_path);
+                return url('/page/'.$page->slug_path);
             }
         }
 
@@ -84,4 +81,3 @@ class MenuItem extends Model
         return null;
     }
 }
-

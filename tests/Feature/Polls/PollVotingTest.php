@@ -11,3 +11,4 @@ class PollVotingTest extends TestCase
         $this->markTestSkipped('Poll voting tests are pending implementation. Placeholder to satisfy task list.');
     }
 }
+

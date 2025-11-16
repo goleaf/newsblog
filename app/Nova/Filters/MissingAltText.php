@@ -62,3 +62,4 @@ class MissingAltText extends BooleanFilter
 }
 
 
+

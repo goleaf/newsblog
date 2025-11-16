@@ -309,3 +309,4 @@ class LayoutComponentsTest extends TestCase
         $this->assertStringContainsString(':class="getHeaderClasses', $headerContent);
     }
 }
+

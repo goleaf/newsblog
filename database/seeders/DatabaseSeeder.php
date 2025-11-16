@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
         // Keep seeding minimal for import flows to avoid duplicate sample content.
         $this->call([
             AdminUserSeeder::class,
+            DefaultPagesSeeder::class,
         ]);
     }
 }

@@ -27,3 +27,4 @@ class DeleteNotificationRequest extends FormRequest
         return [];
     }
 }
+

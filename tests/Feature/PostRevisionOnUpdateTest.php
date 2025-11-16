@@ -43,3 +43,4 @@ class PostRevisionOnUpdateTest extends TestCase
         $this->assertEquals('Before excerpt', $latest->excerpt);
     }
 }
+

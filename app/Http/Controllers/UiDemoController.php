@@ -24,3 +24,4 @@ class UiDemoController extends Controller
         ]);
     }
 }
+

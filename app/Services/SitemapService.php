@@ -114,7 +114,7 @@ class SitemapService
                 ->get()
                 ->each(function ($page) use (&$urls) {
                     $urls[] = [
-                        'loc' => route('page.show', $page->slug_path),
+                        'loc' => url('/page/'.$page->slug_path),
                         'lastmod' => $page->updated_at->toIso8601String(),
                         'changefreq' => 'monthly',
                         'priority' => '0.5',

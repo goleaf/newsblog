@@ -241,3 +241,4 @@ class UserRoleTest extends TestCase
         $this->assertTrue($user->isAdmin());
     }
 }
+

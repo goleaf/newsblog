@@ -70,3 +70,4 @@ class WeatherController extends Controller
 }
 
 
+

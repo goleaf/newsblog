@@ -45,3 +45,4 @@ class AveragePageLoad extends Trend
 }
 
 
+

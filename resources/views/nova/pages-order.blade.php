@@ -30,7 +30,7 @@
                 </div>
 
                 <div class="flex items-center gap-2">
-                    <a href="{{ route('page.show', $page->slug_path) }}" target="_blank" class="px-3 py-1 text-sm text-blue-600 dark:text-blue-400 hover:underline">View</a>
+                    <a href="{{ url('/page/'.$page->slug_path) }}" target="_blank" class="px-3 py-1 text-sm text-blue-600 dark:text-blue-400 hover:underline">View</a>
                     <a href="{{ route('admin.pages.edit', $page) }}" class="px-3 py-1 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded transition">Edit</a>
                 </div>
             </div>
@@ -76,4 +76,3 @@
         });
     </script>
 </div>
-

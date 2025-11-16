@@ -35,3 +35,4 @@ class IgnoreBrokenLink extends Action
         return Action::message('Links ignored.');
     }
 }
+

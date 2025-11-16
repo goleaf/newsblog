@@ -60,3 +60,4 @@ class ContactMessageTest extends TestCase
         $this->assertEquals('replied', $message->fresh()->status);
     }
 }
+

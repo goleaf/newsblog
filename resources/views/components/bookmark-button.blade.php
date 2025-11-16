@@ -59,6 +59,7 @@ $iconSize = $sizeClasses[$size] ?? $sizeClasses['md'];
         type="button"
         @click="toggle"
         :title="tooltip"
+        :aria-label="tooltip"
         :aria-pressed="bookmarked.toString()"
         class="bookmark-button inline-flex items-center justify-center p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
     >

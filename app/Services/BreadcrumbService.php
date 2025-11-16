@@ -228,7 +228,7 @@ class BreadcrumbService
         while ($current) {
             array_unshift($hierarchy, [
                 'title' => $this->truncateTitle($current->title),
-                'url' => route('page.show', $current->slug_path),
+                'url' => url('/page/'.$current->slug_path),
             ]);
             $current = $current->parent;
         }

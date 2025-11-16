@@ -41,7 +41,10 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                     MenuItem::resource(\App\Nova\Category::class),
                     MenuItem::resource(\App\Nova\Tag::class),
                     MenuItem::resource(\App\Nova\Comment::class),
-                    MenuItem::link('Page Ordering', '/tools/pages-order'),
+                    MenuItem::link('Page Ordering', '/tools/pages-order')
+                        ->canSee(function ($request) {
+                            return in_array($request->user()?->role, ['admin', 'editor'], true);
+                        }),
                 ])->icon('document-text')->collapsable(),
 
                 MenuSection::make('Media & Files', [
@@ -110,6 +113,17 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                 Route::get('/tools/system-health', function () {
                     return Inertia::render('SystemHealth');
                 })->name('nova.tools.system-health');
+
+                // Page Ordering tool route (Blade view)
+                Route::get('/tools/pages-order', function () {
+                    // Only admin/editor can access
+                    $user = request()->user();
+                    if (! $user || ! in_array($user->role, ['admin', 'editor'], true)) {
+                        abort(403);
+                    }
+
+                    return app(\App\Nova\Tools\PageOrder::class)->render(request());
+                })->name('nova.tools.pages-order');
             });
     }
 

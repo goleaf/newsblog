@@ -115,3 +115,4 @@ Alpine.data('chartComponent', createChartComponent);
 export default createChartComponent;
 
 
+

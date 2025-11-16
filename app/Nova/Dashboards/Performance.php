@@ -42,3 +42,4 @@ class Performance extends Dashboard
         return 'performance';
     }
 }
+

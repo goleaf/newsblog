@@ -30,3 +30,4 @@ window.generateQRCode = async (selector, text, options = {}) => {
 };
 
 
+

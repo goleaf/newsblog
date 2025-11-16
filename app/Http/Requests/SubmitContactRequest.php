@@ -16,7 +16,7 @@ class SubmitContactRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255'],
-            'subject' => ['nullable', 'string', 'max:255'],
+            'subject' => ['required', 'string', 'max:255'],
             'message' => ['required', 'string', 'max:5000'],
         ];
     }
@@ -32,5 +32,4 @@ class SubmitContactRequest extends FormRequest
         ];
     }
 }
-
 

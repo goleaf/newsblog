@@ -21,11 +21,20 @@
                 <x-navigation.logo />
             </div>
 
-            {{-- Desktop Navigation --}}
-            <x-navigation.main-nav class="hidden lg:flex" />
+    {{-- Desktop Navigation --}}
+    <x-navigation.main-nav class="hidden lg:flex" />
 
-            {{-- Header Actions --}}
-            <x-navigation.header-actions />
+    {{-- Header Actions --}}
+    <x-navigation.header-actions />
+
+    {{-- Accessible Search Landmark (SR-only) --}}
+    <div class="sr-only">
+        <form role="search" method="GET" action="{{ route('search') }}">
+            <label for="header-search" class="sr-only">{{ __('Search') }}</label>
+            <input id="header-search" type="search" name="q" aria-label="Search articles">
+            <button type="submit">{{ __('Search') }}</button>
+        </form>
+    </div>
         </div>
     </div>
 

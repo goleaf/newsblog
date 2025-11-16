@@ -121,6 +121,14 @@ class User extends Authenticatable
         return $this->hasMany(Post::class);
     }
 
+    /**
+     * Alias for posts to match spec terminology.
+     */
+    public function articles()
+    {
+        return $this->posts();
+    }
+
     public function comments()
     {
         return $this->hasMany(Comment::class);
@@ -144,6 +152,59 @@ class User extends Authenticatable
     public function reactions()
     {
         return $this->hasMany(Reaction::class);
+    }
+
+    /**
+     * User profile (optional one-to-one).
+     */
+    public function profile()
+    {
+        return $this->hasOne(UserProfile::class);
+    }
+
+    /**
+     * User preferences (optional one-to-one).
+     */
+    public function preferences()
+    {
+        return $this->hasOne(UserPreferences::class);
+    }
+
+    /**
+     * Users following this user.
+     */
+    public function followers()
+    {
+        return $this->hasMany(Follow::class, 'followed_id');
+    }
+
+    /**
+     * Users that this user follows.
+     */
+    public function following()
+    {
+        return $this->hasMany(Follow::class, 'follower_id');
+    }
+
+    /**
+     * Check if the user is following the given user.
+     */
+    public function isFollowing(User $user): bool
+    {
+        return Follow::query()
+            ->where('follower_id', $this->id)
+            ->where('followed_id', $user->id)
+            ->exists();
+    }
+
+    /**
+     * Check if the user has bookmarked the given post.
+     */
+    public function hasBookmarked(Post $post): bool
+    {
+        return $this->bookmarks()
+            ->where('post_id', $post->id)
+            ->exists();
     }
 
     public function notifications()

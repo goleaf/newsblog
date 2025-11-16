@@ -88,25 +88,28 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(ActivityLog::class, ActivityLogPolicy::class);
         Gate::policy(Feedback::class, FeedbackPolicy::class);
 
-        // Track slow queries for performance monitoring without overhead
-        $slowQueryMs = (int) (config('performance.thresholds.slow_query_ms') ?? 100);
-        \Illuminate\Support\Facades\DB::whenQueryingForLongerThan($slowQueryMs, function ($connection, $event) {
-            $performanceMetrics = app(\App\Services\PerformanceMetricsService::class);
-            $performanceMetrics->logSlowQuery(
-                $event->sql,
-                $event->time,
-                $event->bindings
-            );
-        });
+        // Performance listeners (skip during console + tests to avoid migration issues)
+        if (! app()->runningInConsole() && ! app()->runningUnitTests()) {
+            // Track slow queries for performance monitoring without overhead
+            $slowQueryMs = (int) (config('performance.thresholds.slow_query_ms') ?? 100);
+            \Illuminate\Support\Facades\DB::whenQueryingForLongerThan($slowQueryMs, function ($connection, $event) {
+                $performanceMetrics = app(\App\Services\PerformanceMetricsService::class);
+                $performanceMetrics->logSlowQuery(
+                    $event->sql,
+                    $event->time,
+                    $event->bindings
+                );
+            });
 
-        // Track cache hits/misses
-        Event::listen(\Illuminate\Cache\Events\CacheHit::class, function () {
-            app(\App\Services\PerformanceMetricsService::class)->trackCacheHit(true);
-        });
+            // Track cache hits/misses
+            Event::listen(\Illuminate\Cache\Events\CacheHit::class, function () {
+                app(\App\Services\PerformanceMetricsService::class)->trackCacheHit(true);
+            });
 
-        Event::listen(\Illuminate\Cache\Events\CacheMissed::class, function () {
-            app(\App\Services\PerformanceMetricsService::class)->trackCacheHit(false);
-        });
+            Event::listen(\Illuminate\Cache\Events\CacheMissed::class, function () {
+                app(\App\Services\PerformanceMetricsService::class)->trackCacheHit(false);
+            });
+        }
 
         // Share breadcrumbs with all views
         View::composer('*', function ($view) {

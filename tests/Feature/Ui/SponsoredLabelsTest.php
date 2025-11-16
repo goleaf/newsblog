@@ -37,3 +37,4 @@ class SponsoredLabelsTest extends TestCase
         $response->assertSee('Sponsored', false);
     }
 }
+

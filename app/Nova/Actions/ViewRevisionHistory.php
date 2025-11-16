@@ -29,3 +29,4 @@ class ViewRevisionHistory extends Action
         return Action::redirect($url);
     }
 }
+
