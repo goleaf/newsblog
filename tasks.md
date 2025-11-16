@@ -7,6 +7,32 @@
   - [x] 23.4 Add robots.txt generation (dynamic route; allow all; include sitemap URL)
   - [ ] 23.5 Write SEO tests (robots.txt added; meta/sitemap tests verified)
 
+- [x] 26. Implement security measures
+  - [x] 26.1 Add rate limiting middleware
+    - [x] Implement login rate limiting (5 attempts/minute)
+    - [x] Add comment submission rate limiting (3/minute)
+    - [x] Create API rate limiting (60/minute public, 120/minute auth)
+    - [x] Use sliding window algorithm
+  - [x] 26.2 Configure security headers
+    - [x] Add X-Frame-Options header
+    - [x] Set X-Content-Type-Options header
+    - [x] Configure Content-Security-Policy
+    - [x] Add Referrer-Policy header
+    - [x] Set Permissions-Policy header
+  - [x] 26.3 Implement CSRF protection
+    - [x] Ensure CSRF tokens on all forms
+    - [x] Add CSRF middleware to routes
+    - [x] Handle CSRF token refresh
+  - [x] 26.4 Add input sanitization
+    - [x] Implement HTML sanitization for user content
+    - [x] Escape all output with Blade {{ }}
+    - [x] Validate and sanitize file uploads
+  - [x] 26.5 Write security tests
+    - [x] Test rate limiting enforcement
+    - [x] Test CSRF protection
+    - [x] Test XSS prevention
+    - [x] Test file upload validation
+
 - [x] 14. Implement bookmark system
 - [x] 14.1 Create Bookmark model and migration
   - Implemented anonymous bookmarks with `reader_token` + `post_id`, timestamps, composite unique index.

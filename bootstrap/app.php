@@ -14,6 +14,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Use Redis-backed throttling for sliding window behavior
+        $middleware->throttleWithRedis();
+
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
             'security.headers' => \App\Http\Middleware\SecurityHeaders::class,
@@ -22,6 +25,8 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->remove(\Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance::class);
         $middleware->prepend(\App\Http\Middleware\MaintenanceModeBypass::class);
+        // Validate CSRF tokens on web requests
+        $middleware->validateCsrfTokens();
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
         $middleware->append(\App\Http\Middleware\TrackPerformance::class);
         $middleware->append(\App\Http\Middleware\SetCacheHeaders::class);

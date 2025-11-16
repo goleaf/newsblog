@@ -31,7 +31,7 @@
         "app/cache-manager": "@dev",
         "app/maintenance-mode": "@dev",
         "app/system-health": "@dev",
-        "ezyang/htmlpurifier": "^4.19",
+        "ezyang/htmlpurifier": "^4.17",
         "intervention/image-laravel": "^1.5",
         "knuckleswtf/scribe": "^5.5",
         "laravel/framework": "^12.0",

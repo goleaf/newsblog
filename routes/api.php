@@ -11,10 +11,10 @@ use Illuminate\Support\Facades\Route;
 Route::get('/nova-api/system-health', [SystemHealthController::class, 'index'])
     ->name('nova.system-health');
 
-Route::prefix('v1')->middleware(['throttle:60,1'])->group(function () {
+Route::prefix('v1')->middleware(['throttle:api'])->group(function () {
     // Public endpoints
-    Route::get('/posts', [PostController::class, 'index'])->middleware('throttle:100,1');
-    Route::get('/posts/{slug}', [PostController::class, 'show'])->middleware('throttle:100,1');
+    Route::get('/posts', [PostController::class, 'index']);
+    Route::get('/posts/{slug}', [PostController::class, 'show']);
 
     // Media Library (public, no auth)
     Route::get('/media', [MediaController::class, 'index'])->name('api.media.index');

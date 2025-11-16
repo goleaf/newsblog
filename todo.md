@@ -1,3 +1,34 @@
+## Security Measures (Priority)
+
+- [x] 26.1 Rate limiting middleware
+  - [x] Login limiting 5/min (`throttle:login`)
+  - [x] Comment submissions 3/min (`throttle:comments`)
+  - [x] API limiting 60/min public, 120/min auth (`throttle:api`)
+  - [x] Sliding window via Redis (`throttleWithRedis`)
+
+- [x] 26.2 Security headers
+  - [x] X-Frame-Options
+  - [x] X-Content-Type-Options
+  - [x] Content-Security-Policy (nonce-based)
+  - [x] Referrer-Policy
+  - [x] Permissions-Policy
+
+- [x] 26.3 CSRF protection
+  - [x] Tokens on all forms (`@csrf`)
+  - [x] CSRF middleware enabled globally
+  - [x] Token refresh handled by framework session flow
+
+- [x] 26.4 Input sanitization
+  - [x] Sanitize user HTML content (SimpleSanitizer)
+  - [x] Escape output with Blade `{{ }}`
+  - [x] Validate uploads (image mime + size)
+
+- [x] 26.5 Security tests
+  - [x] Rate limiting
+  - [x] CSRF protection
+  - [x] XSS prevention
+  - [x] File upload validation
+
 - [x] 14.1 Create Bookmark model and migration
   - Added `bookmarks` table with `reader_token`, `post_id`, timestamps, and unique composite index.
   - Created `App\Models\Bookmark` with relation to `Post`.

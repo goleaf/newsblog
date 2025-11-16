@@ -112,6 +112,33 @@ class AppServiceProvider extends ServiceProvider
         // Register category menu view composer
         View::composer('components.navigation.category-menu', \App\View\Composers\CategoryMenuComposer::class);
 
+        // API rate limiting (sliding window)
+        RateLimiter::for('api', function (Request $request): Limit {
+            $key = $request->user()?->id ? 'user:'.$request->user()->id : 'ip:'.$request->ip();
+            $limit = $request->user() ? 120 : 60; // 120/min for authenticated, 60/min for public
+
+            return Limit::perMinute($limit)
+                ->by($key)
+                ->response(function (Request $request, array $headers) {
+                    Log::warning('Rate limit exceeded for API', [
+                        'ip' => $request->ip(),
+                        'user_id' => $request->user()?->id,
+                        'path' => $request->path(),
+                        'user_agent' => $request->userAgent(),
+                    ]);
+
+                    if ($request->expectsJson()) {
+                        return response()->json([
+                            'message' => 'Too many requests. Please try again later.',
+                        ], 429, $headers);
+                    }
+
+                    return response()->view('errors.429', [
+                        'retry_after' => $headers['Retry-After'] ?? 60,
+                    ], 429, $headers);
+                });
+        });
+
         RateLimiter::for('login', function (Request $request): Limit {
             return Limit::perMinute(5)
                 ->by($request->input('email').$request->ip())
