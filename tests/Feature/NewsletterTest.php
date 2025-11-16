@@ -281,6 +281,18 @@ class NewsletterTest extends TestCase
         $this->assertStringNotContainsString('pending@example.com', $response->getContent());
     }
 
+    public function test_admin_can_view_newsletter_sends(): void
+    {
+        $admin = \App\Models\User::factory()->create(['role' => 'admin']);
+
+        // Ensure route works and view renders even with no sends
+        $response = $this->actingAs($admin)->get(route('admin.newsletters.sends'));
+
+        $response->assertOk();
+        $response->assertViewIs('admin.newsletters.sends');
+        $response->assertViewHas('sends');
+    }
+
     public function test_verification_token_expires_after_seven_days(): void
     {
         $newsletter = Newsletter::factory()->create([

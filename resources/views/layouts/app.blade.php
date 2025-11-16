@@ -16,7 +16,7 @@
     @stack('structured-data')
 
     {{-- Theme Script (Prevent Flash of Unstyled Content) --}}
-    <script>
+    <script nonce="{{ \Illuminate\Support\Facades\Vite::cspNonce() }}">
         (function() {
             const theme = localStorage.getItem('theme') || 'system';
             const isDark = theme === 'dark' || 
@@ -34,7 +34,7 @@
     @stack('styles')
     {{-- Print styles (guard when manifest is unavailable in test runs) --}}
     @if(file_exists(public_path('build/manifest.json')))
-        <link rel="stylesheet" href="{{ Vite::asset('resources/css/print.css') }}" media="print">
+        <link rel="stylesheet" href="{{ \Illuminate\Support\Facades\Vite::asset('resources/css/print.css') }}" media="print">
     @endif
     {{-- Fallback print link to satisfy e2e in dev/test environments --}}
     <link rel="stylesheet" href="/build/assets/print.css" media="print">
@@ -48,7 +48,7 @@
 </head>
 <body class="preload bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 antialiased">
     {{-- Remove preload class after page load to enable transitions --}}
-    <script>
+    <script nonce="{{ \Illuminate\Support\Facades\Vite::cspNonce() }}">
         window.addEventListener('load', () => {
             document.body.classList.remove('preload');
         });

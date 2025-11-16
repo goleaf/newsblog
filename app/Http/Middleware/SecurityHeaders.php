@@ -33,18 +33,54 @@ class SecurityHeaders
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
 
         // Content Security Policy using Vite nonce for scripts and styles
-        // Allow self for all; disallow inline except for nonce-bound assets
+        // In local/testing, relax policy to support Vite dev server, HMR (ws), and Alpine.
         $nonce = Vite::cspNonce();
+        $env = config('app.env');
+        $isLocalOrTesting = in_array($env, ['local', 'development', 'testing'], true);
+
+        $scriptSrc = ["'self'", "'nonce-{$nonce}'"];
+        $styleSrc = ["'self'", "'nonce-{$nonce}'"];
+        $connectSrc = ["'self'"];
+        $imgSrc = ["'self'", 'data:'];
+        $fontSrc = ["'self'", 'data:'];
+
+        if ($isLocalOrTesting) {
+            // Allow Vite dev server and HMR
+            $viteHosts = [
+                'http://127.0.0.1:5173',
+                'ws://127.0.0.1:5173',
+                'https://newsblog.test:5173',
+                'wss://newsblog.test:5173',
+            ];
+
+            $scriptSrc = array_merge($scriptSrc, ["'unsafe-inline'", "'unsafe-eval'"], ['http://127.0.0.1:5173', 'https://newsblog.test:5173']);
+            $styleSrc = array_merge($styleSrc, ["'unsafe-inline'"], ['http://127.0.0.1:5173', 'https://newsblog.test:5173']);
+            $connectSrc = array_merge($connectSrc, $viteHosts);
+
+            // Allow common CDN script/style sources used in dev/admin pages
+            $scriptSrc = array_merge($scriptSrc, [
+                'https://cdn.jsdelivr.net',
+                'https://unpkg.com',
+                'https://cdnjs.cloudflare.com',
+            ]);
+            $styleSrc = array_merge($styleSrc, [
+                'https://fonts.bunny.net',
+            ]);
+        } else {
+            // Alpine may require 'unsafe-eval' for expression parsing
+            $scriptSrc[] = "'unsafe-eval'";
+        }
+
         $csp = implode('; ', [
             "default-src 'self'",
             "base-uri 'self'",
             $cspFrameAncestors,
-            "img-src 'self' data:",
-            "font-src 'self'",
+            'img-src '.implode(' ', $imgSrc),
+            'font-src '.implode(' ', $fontSrc),
             "object-src 'none'",
-            "connect-src 'self'",
-            "script-src 'self' 'nonce-{$nonce}'",
-            "style-src 'self' 'nonce-{$nonce}'",
+            'connect-src '.implode(' ', $connectSrc),
+            'script-src '.implode(' ', array_unique($scriptSrc)),
+            'style-src '.implode(' ', array_unique($styleSrc)),
             "frame-src 'self'",
             "form-action 'self'",
         ]);
@@ -54,7 +90,7 @@ class SecurityHeaders
         );
 
         // Restrict browser features
-        $response->headers->set('Permissions-Policy', "geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()");
+        $response->headers->set('Permissions-Policy', 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()');
 
         // Force HTTPS in production
         if (config('app.env') === 'production') {

@@ -159,6 +159,9 @@
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-GETapi-v1-users--user--following">
                                 <a href="#endpoints-GETapi-v1-users--user--following">GET api/v1/users/{user}/following</a>
                             </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-v1-users-suggestions">
+                                <a href="#endpoints-GETapi-v1-users-suggestions">GET api/v1/users/suggestions</a>
+                            </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-GETapi-v1-activity-me">
                                 <a href="#endpoints-GETapi-v1-activity-me">GET api/v1/activity/me</a>
                             </li>
@@ -226,6 +229,46 @@
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="posts-DELETEapi-v1-articles--post_id-">
                                 <a href="#posts-DELETEapi-v1-articles--post_id-">Delete Post (auth)</a>
+                            </li>
+                                                                        </ul>
+                            </ul>
+                    <ul id="tocify-header-reading-lists" class="tocify-header">
+                <li class="tocify-item level-1" data-unique="reading-lists">
+                    <a href="#reading-lists">Reading Lists</a>
+                </li>
+                                    <ul id="tocify-subheader-reading-lists" class="tocify-subheader">
+                                                    <li class="tocify-item level-2" data-unique="reading-lists-GETapi-v1-reading-lists">
+                                <a href="#reading-lists-GETapi-v1-reading-lists">List reading lists for the authenticated user.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="reading-lists-POSTapi-v1-reading-lists">
+                                <a href="#reading-lists-POSTapi-v1-reading-lists">Create a new reading list.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="reading-lists-GETapi-v1-reading-lists--collection_id-">
+                                <a href="#reading-lists-GETapi-v1-reading-lists--collection_id-">Show a reading list (owner or public).</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="reading-lists-PUTapi-v1-reading-lists--collection_id-">
+                                <a href="#reading-lists-PUTapi-v1-reading-lists--collection_id-">Update a reading list.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="reading-lists-DELETEapi-v1-reading-lists--collection_id-">
+                                <a href="#reading-lists-DELETEapi-v1-reading-lists--collection_id-">Delete a reading list.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="reading-lists-POSTapi-v1-reading-lists--collection_id--items">
+                                <a href="#reading-lists-POSTapi-v1-reading-lists--collection_id--items">Add an item (post) to a reading list.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="reading-lists-DELETEapi-v1-reading-lists--collection_id--items--bookmark_id-">
+                                <a href="#reading-lists-DELETEapi-v1-reading-lists--collection_id--items--bookmark_id-">Remove an item from a reading list.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="reading-lists-POSTapi-v1-reading-lists--collection_id--reorder">
+                                <a href="#reading-lists-POSTapi-v1-reading-lists--collection_id--reorder">Reorder items in a reading list.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="reading-lists-POSTapi-v1-reading-lists--collection_id--share">
+                                <a href="#reading-lists-POSTapi-v1-reading-lists--collection_id--share">Generate a share link for a reading list.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="reading-lists-DELETEapi-v1-reading-lists--collection_id--share">
+                                <a href="#reading-lists-DELETEapi-v1-reading-lists--collection_id--share">Revoke share link for a reading list.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="reading-lists-GETapi-v1-reading-lists-shared--token-">
+                                <a href="#reading-lists-GETapi-v1-reading-lists-shared--token-">View a shared reading list (public).</a>
                             </li>
                                                                         </ul>
                             </ul>
@@ -783,13 +826,13 @@ fetch(url, {
 content-type: application/json
 x-ratelimit-limit: 60
 x-ratelimit-remaining: 59
-x-page-load-time: 9221.97ms
+x-page-load-time: 9174.78ms
 x-db-query-count: 2
 x-memory-peak: 48758784
 x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
-content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039;; object-src &#039;none&#039;; connect-src &#039;self&#039;; script-src &#039;self&#039; &#039;nonce-2es3l6njVrfKhPVcJRRP221WNkA77ifA7D77vZjl&#039;; style-src &#039;self&#039; &#039;nonce-2es3l6njVrfKhPVcJRRP221WNkA77ifA7D77vZjl&#039;; frame-src &#039;self&#039;; form-action &#039;self&#039;
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;nonce-IP5Dtur181zDCPOj08n2O8tw9i3TzBDUTtqTskVm&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;nonce-IP5Dtur181zDCPOj08n2O8tw9i3TzBDUTtqTskVm&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
 permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
 access-control-allow-origin: *
  </code></pre></details>         <pre>
@@ -919,13 +962,13 @@ fetch(url, {
 content-type: application/json
 x-ratelimit-limit: 60
 x-ratelimit-remaining: 58
-x-page-load-time: 28.27ms
+x-page-load-time: 24.42ms
 x-db-query-count: 4
 x-memory-peak: 50855936
 x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
-content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039;; object-src &#039;none&#039;; connect-src &#039;self&#039;; script-src &#039;self&#039; &#039;nonce-4hmAPu6HEhtDXBDMx29YffHWMgi3WTMn3mQWLzJv&#039;; style-src &#039;self&#039; &#039;nonce-4hmAPu6HEhtDXBDMx29YffHWMgi3WTMn3mQWLzJv&#039;; frame-src &#039;self&#039;; form-action &#039;self&#039;
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;nonce-dsAewRKMQn1tUZCZzFcJLXf52Y2FicC4K2LPvJOS&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;nonce-dsAewRKMQn1tUZCZzFcJLXf52Y2FicC4K2LPvJOS&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
 permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
 access-control-allow-origin: *
  </code></pre></details>         <pre>
@@ -1060,13 +1103,13 @@ fetch(url, {
 content-type: application/json
 x-ratelimit-limit: 60
 x-ratelimit-remaining: 57
-x-page-load-time: 11.18ms
+x-page-load-time: 16.18ms
 x-db-query-count: 6
 x-memory-peak: 50855936
 x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
-content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039;; object-src &#039;none&#039;; connect-src &#039;self&#039;; script-src &#039;self&#039; &#039;nonce-LDaXFoIyoxg1ahKFCCm4UC5Rmxr75u02YAXfMp73&#039;; style-src &#039;self&#039; &#039;nonce-LDaXFoIyoxg1ahKFCCm4UC5Rmxr75u02YAXfMp73&#039;; frame-src &#039;self&#039;; form-action &#039;self&#039;
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;nonce-vr8xdfR4s2SO67zj9B0ICrAMOUYFIMpapTItuoqh&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;nonce-vr8xdfR4s2SO67zj9B0ICrAMOUYFIMpapTItuoqh&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
 permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
 access-control-allow-origin: *
  </code></pre></details>         <pre>
@@ -1209,13 +1252,13 @@ fetch(url, {
 content-type: application/json
 x-ratelimit-limit: 60
 x-ratelimit-remaining: 56
-x-page-load-time: 13.43ms
+x-page-load-time: 7.68ms
 x-db-query-count: 7
 x-memory-peak: 50855936
 x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
-content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039;; object-src &#039;none&#039;; connect-src &#039;self&#039;; script-src &#039;self&#039; &#039;nonce-nYxhWdpR4SNnvO1x624OFpLX5DfaiXXfR2sQ4eOJ&#039;; style-src &#039;self&#039; &#039;nonce-nYxhWdpR4SNnvO1x624OFpLX5DfaiXXfR2sQ4eOJ&#039;; frame-src &#039;self&#039;; form-action &#039;self&#039;
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;nonce-kBDJaMqMGlxxspL2GU88MNa4qSZhuRhq9Og2oHh8&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;nonce-kBDJaMqMGlxxspL2GU88MNa4qSZhuRhq9Og2oHh8&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
 permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
 access-control-allow-origin: *
  </code></pre></details>         <pre>
@@ -1350,13 +1393,13 @@ fetch(url, {
 content-type: application/json
 x-ratelimit-limit: 60
 x-ratelimit-remaining: 55
-x-page-load-time: 16.41ms
+x-page-load-time: 9.25ms
 x-db-query-count: 9
 x-memory-peak: 50855936
 x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
-content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039;; object-src &#039;none&#039;; connect-src &#039;self&#039;; script-src &#039;self&#039; &#039;nonce-hxb7BScZ7MU12PrhXIHTIM17Fjs7Qdeli3WBSpKi&#039;; style-src &#039;self&#039; &#039;nonce-hxb7BScZ7MU12PrhXIHTIM17Fjs7Qdeli3WBSpKi&#039;; frame-src &#039;self&#039;; form-action &#039;self&#039;
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;nonce-Mlc4C0Xk8LIWkI0CKGxAjwIkIdk1wzsfsRI9kl6l&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;nonce-Mlc4C0Xk8LIWkI0CKGxAjwIkIdk1wzsfsRI9kl6l&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
 permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
 access-control-allow-origin: *
  </code></pre></details>         <pre>
@@ -1508,13 +1551,13 @@ fetch(url, {
 content-type: application/json
 x-ratelimit-limit: 60
 x-ratelimit-remaining: 54
-x-page-load-time: 22.81ms
+x-page-load-time: 47.31ms
 x-db-query-count: 10
-x-memory-peak: 50855936
+x-memory-peak: 52953088
 x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
-content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039;; object-src &#039;none&#039;; connect-src &#039;self&#039;; script-src &#039;self&#039; &#039;nonce-2vLVNrVo2Iyxdr3x7ZtCZBtxBbdQURLhqAOPVA08&#039;; style-src &#039;self&#039; &#039;nonce-2vLVNrVo2Iyxdr3x7ZtCZBtxBbdQURLhqAOPVA08&#039;; frame-src &#039;self&#039;; form-action &#039;self&#039;
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;nonce-Z2D4Dgf1rJz11C0a67a6s4sORK9kTOon4jbJKMi6&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;nonce-Z2D4Dgf1rJz11C0a67a6s4sORK9kTOon4jbJKMi6&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
 permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
 access-control-allow-origin: *
  </code></pre></details>         <pre>
@@ -1675,13 +1718,13 @@ fetch(url, {
 content-type: application/json
 x-ratelimit-limit: 60
 x-ratelimit-remaining: 53
-x-page-load-time: 24.32ms
+x-page-load-time: 17.48ms
 x-db-query-count: 11
 x-memory-peak: 52953088
 x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
-content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039;; object-src &#039;none&#039;; connect-src &#039;self&#039;; script-src &#039;self&#039; &#039;nonce-JaOh4DaXvVY67rD3FhzQSdh6OKo2BKD5tfoMTNhy&#039;; style-src &#039;self&#039; &#039;nonce-JaOh4DaXvVY67rD3FhzQSdh6OKo2BKD5tfoMTNhy&#039;; frame-src &#039;self&#039;; form-action &#039;self&#039;
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;nonce-FGguI9XVDhXj158XrbgO7oCGXe54S5A7XkQaTVY5&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;nonce-FGguI9XVDhXj158XrbgO7oCGXe54S5A7XkQaTVY5&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
 permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
 access-control-allow-origin: *
  </code></pre></details>         <pre>
@@ -1850,7 +1893,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Accept: application/json" \
     --form "alt_text=b"\
     --form "caption=architecto"\
-    --form "file=@/private/var/folders/22/sjnz0rps36gdzhql_1xlb3q40000gn/T/phpp1erkb295jdu3Is8NSt" </code></pre></div>
+    --form "file=@/private/var/folders/22/sjnz0rps36gdzhql_1xlb3q40000gn/T/phpm0oni0arj0pk6b5YWhS" </code></pre></div>
 
 
 <div class="javascript-example">
@@ -1960,7 +2003,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
                value=""
                data-component="body">
     <br>
-<p>Must be a file. Must be an image. Must not be greater than 10240 kilobytes. Example: <code>/private/var/folders/22/sjnz0rps36gdzhql_1xlb3q40000gn/T/phpp1erkb295jdu3Is8NSt</code></p>
+<p>Must be a file. Must be an image. Must not be greater than 10240 kilobytes. Example: <code>/private/var/folders/22/sjnz0rps36gdzhql_1xlb3q40000gn/T/phpm0oni0arj0pk6b5YWhS</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>alt_text</code></b>&nbsp;&nbsp;
@@ -2181,13 +2224,13 @@ fetch(url, {
 content-type: application/json
 x-ratelimit-limit: 60
 x-ratelimit-remaining: 52
-x-page-load-time: 275.19ms
+x-page-load-time: 259.23ms
 x-db-query-count: 12
 x-memory-peak: 57147392
 x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
-content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039;; object-src &#039;none&#039;; connect-src &#039;self&#039;; script-src &#039;self&#039; &#039;nonce-kkyz89JQxsllBkEuBmpGEVjznn03DFEJVqR4YARQ&#039;; style-src &#039;self&#039; &#039;nonce-kkyz89JQxsllBkEuBmpGEVjznn03DFEJVqR4YARQ&#039;; frame-src &#039;self&#039;; form-action &#039;self&#039;
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;nonce-hvPrFfmwzr2GmtoNFBfn4gbUmF2Bf7uu5GBkrFN4&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;nonce-hvPrFfmwzr2GmtoNFBfn4gbUmF2Bf7uu5GBkrFN4&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
 permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
 access-control-allow-origin: *
  </code></pre></details>         <pre>
@@ -2196,10 +2239,10 @@ access-control-allow-origin: *
     &quot;lat&quot;: -89,
     &quot;lon&quot;: -179,
     &quot;data&quot;: {
-        &quot;temperature&quot;: -42.7,
-        &quot;windspeed&quot;: 13,
+        &quot;temperature&quot;: -42.8,
+        &quot;windspeed&quot;: 13.3,
         &quot;weathercode&quot;: 1,
-        &quot;time&quot;: &quot;2025-11-16T19:00&quot;,
+        &quot;time&quot;: &quot;2025-11-16T19:15&quot;,
         &quot;units&quot;: {
             &quot;temperature&quot;: &quot;&deg;C&quot;,
             &quot;windspeed&quot;: &quot;km/h&quot;
@@ -2363,13 +2406,13 @@ fetch(url, {
 content-type: application/json
 x-ratelimit-limit: 60
 x-ratelimit-remaining: 51
-x-page-load-time: 264.96ms
+x-page-load-time: 304.79ms
 x-db-query-count: 12
 x-memory-peak: 57147392
 x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
-content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039;; object-src &#039;none&#039;; connect-src &#039;self&#039;; script-src &#039;self&#039; &#039;nonce-rimCIK7BCODs5ToDI4QnhQFFCDX7HKArxl23aBpt&#039;; style-src &#039;self&#039; &#039;nonce-rimCIK7BCODs5ToDI4QnhQFFCDX7HKArxl23aBpt&#039;; frame-src &#039;self&#039;; form-action &#039;self&#039;
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;nonce-8CdqZn08RzswA67ATYYNgKmBRGdSlLXbo0B63gQE&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;nonce-8CdqZn08RzswA67ATYYNgKmBRGdSlLXbo0B63gQE&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
 permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
 access-control-allow-origin: *
  </code></pre></details>         <pre>
@@ -2523,13 +2566,13 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-x-page-load-time: 2.92ms
+x-page-load-time: 1.72ms
 x-db-query-count: 12
 x-memory-peak: 57147392
 x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
-content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039;; object-src &#039;none&#039;; connect-src &#039;self&#039;; script-src &#039;self&#039; &#039;nonce-RLS9dYPQ119uOHxQUVZqoj5flb24aj3Sk2iByGSn&#039;; style-src &#039;self&#039; &#039;nonce-RLS9dYPQ119uOHxQUVZqoj5flb24aj3Sk2iByGSn&#039;; frame-src &#039;self&#039;; form-action &#039;self&#039;
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;nonce-oupl0TOvs2gTSlMSdvjNhyVWhwcnHAufmRtjRm6v&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;nonce-oupl0TOvs2gTSlMSdvjNhyVWhwcnHAufmRtjRm6v&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
 permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
 access-control-allow-origin: *
  </code></pre></details>         <pre>
@@ -2657,13 +2700,13 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-x-page-load-time: 1.63ms
+x-page-load-time: 1.41ms
 x-db-query-count: 12
 x-memory-peak: 57147392
 x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
-content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039;; object-src &#039;none&#039;; connect-src &#039;self&#039;; script-src &#039;self&#039; &#039;nonce-jDFj0NqFbluiHiDbIVRo9wZNhEegq5Rpj0GZvcT5&#039;; style-src &#039;self&#039; &#039;nonce-jDFj0NqFbluiHiDbIVRo9wZNhEegq5Rpj0GZvcT5&#039;; frame-src &#039;self&#039;; form-action &#039;self&#039;
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;nonce-ch0VYMS2UYNPxzNWF9pH54dJm0TPXUdJMKEt72XH&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;nonce-ch0VYMS2UYNPxzNWF9pH54dJm0TPXUdJMKEt72XH&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
 permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
 access-control-allow-origin: *
  </code></pre></details>         <pre>
@@ -4089,13 +4132,13 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-x-page-load-time: 2.08ms
+x-page-load-time: 1.51ms
 x-db-query-count: 18
 x-memory-peak: 59244544
 x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
-content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039;; object-src &#039;none&#039;; connect-src &#039;self&#039;; script-src &#039;self&#039; &#039;nonce-G8b1T6RWHTXrZufAJXnPiqMOFIpzWZJzxP3sviEj&#039;; style-src &#039;self&#039; &#039;nonce-G8b1T6RWHTXrZufAJXnPiqMOFIpzWZJzxP3sviEj&#039;; frame-src &#039;self&#039;; form-action &#039;self&#039;
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;nonce-IHggwpJ3SWmNFnPsJM8ZiWqBOldmxghN1TmW9qc6&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;nonce-IHggwpJ3SWmNFnPsJM8ZiWqBOldmxghN1TmW9qc6&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
 permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
 access-control-allow-origin: *
  </code></pre></details>         <pre>
@@ -4236,13 +4279,13 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-x-page-load-time: 3.68ms
+x-page-load-time: 1.17ms
 x-db-query-count: 18
 x-memory-peak: 59244544
 x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
-content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039;; object-src &#039;none&#039;; connect-src &#039;self&#039;; script-src &#039;self&#039; &#039;nonce-ixPcQyHR98RMxU16GJs4RXAvYU2dVhdgYVSdSDpB&#039;; style-src &#039;self&#039; &#039;nonce-ixPcQyHR98RMxU16GJs4RXAvYU2dVhdgYVSdSDpB&#039;; frame-src &#039;self&#039;; form-action &#039;self&#039;
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;nonce-Z8jClXo1eTz9rpcEhfpwHGiVGmj4EFkY3tQ96KKV&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;nonce-Z8jClXo1eTz9rpcEhfpwHGiVGmj4EFkY3tQ96KKV&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
 permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
 access-control-allow-origin: *
  </code></pre></details>         <pre>
@@ -4338,6 +4381,140 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                     </form>
 
+                    <h2 id="endpoints-GETapi-v1-users-suggestions">GET api/v1/users/suggestions</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-GETapi-v1-users-suggestions">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost/api/v1/users/suggestions" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/v1/users/suggestions"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v1-users-suggestions">
+            <blockquote>
+            <p>Example response (401):</p>
+        </blockquote>
+                <details class="annotation">
+            <summary style="cursor: pointer;">
+                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
+            </summary>
+            <pre><code class="language-http">cache-control: no-cache, private
+content-type: application/json
+x-page-load-time: 1.24ms
+x-db-query-count: 18
+x-memory-peak: 59244544
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;nonce-3uVpTlVb6tyCCGD96REAe8DgeXV1DlMk85Q4QMQ8&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;nonce-3uVpTlVb6tyCCGD96REAe8DgeXV1DlMk85Q4QMQ8&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
+permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
+access-control-allow-origin: *
+ </code></pre></details>         <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;Unauthenticated.&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-v1-users-suggestions" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-v1-users-suggestions"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v1-users-suggestions"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v1-users-suggestions" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v1-users-suggestions">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-v1-users-suggestions" data-method="GET"
+      data-path="api/v1/users/suggestions"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v1-users-suggestions', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v1-users-suggestions"
+                    onclick="tryItOut('GETapi-v1-users-suggestions');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v1-users-suggestions"
+                    onclick="cancelTryOut('GETapi-v1-users-suggestions');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v1-users-suggestions"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v1/users/suggestions</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v1-users-suggestions"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v1-users-suggestions"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        </form>
+
                     <h2 id="endpoints-GETapi-v1-activity-me">GET api/v1/activity/me</h2>
 
 <p>
@@ -4383,13 +4560,13 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-x-page-load-time: 4.46ms
+x-page-load-time: 0.67ms
 x-db-query-count: 18
 x-memory-peak: 59244544
 x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
-content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039;; object-src &#039;none&#039;; connect-src &#039;self&#039;; script-src &#039;self&#039; &#039;nonce-kB1cX3JGyY0bGkKZ98E6hyWAg1AaUHtyX9Xx7GrP&#039;; style-src &#039;self&#039; &#039;nonce-kB1cX3JGyY0bGkKZ98E6hyWAg1AaUHtyX9Xx7GrP&#039;; frame-src &#039;self&#039;; form-action &#039;self&#039;
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;nonce-d08Aclh6tSXtezzGoHKpMINU7WtXBVUwLzpFos49&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;nonce-d08Aclh6tSXtezzGoHKpMINU7WtXBVUwLzpFos49&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
 permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
 access-control-allow-origin: *
  </code></pre></details>         <pre>
@@ -4517,13 +4694,13 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-x-page-load-time: 2.18ms
+x-page-load-time: 1.09ms
 x-db-query-count: 18
 x-memory-peak: 59244544
 x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
-content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039;; object-src &#039;none&#039;; connect-src &#039;self&#039;; script-src &#039;self&#039; &#039;nonce-uhUsqZUm32pZyasAdZd7QLBgbvKQwowQMsHbgLmo&#039;; style-src &#039;self&#039; &#039;nonce-uhUsqZUm32pZyasAdZd7QLBgbvKQwowQMsHbgLmo&#039;; frame-src &#039;self&#039;; form-action &#039;self&#039;
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;nonce-rZiXyeLp6cWXmGATsCGyoLs1iKBFwYLfNK6eL5fm&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;nonce-rZiXyeLp6cWXmGATsCGyoLs1iKBFwYLfNK6eL5fm&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
 permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
 access-control-allow-origin: *
  </code></pre></details>         <pre>
@@ -4651,13 +4828,13 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-x-page-load-time: 2.95ms
+x-page-load-time: 0.95ms
 x-db-query-count: 18
 x-memory-peak: 59244544
 x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
-content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039;; object-src &#039;none&#039;; connect-src &#039;self&#039;; script-src &#039;self&#039; &#039;nonce-6bV6LEErK1tvMBGp40IyE5scICcIyiQqBZ1RWrkM&#039;; style-src &#039;self&#039; &#039;nonce-6bV6LEErK1tvMBGp40IyE5scICcIyiQqBZ1RWrkM&#039;; frame-src &#039;self&#039;; form-action &#039;self&#039;
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;nonce-cZJBHzpiJ0Lsayk77Acmz2I9HPG2TatoS8rfYBvQ&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;nonce-cZJBHzpiJ0Lsayk77Acmz2I9HPG2TatoS8rfYBvQ&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
 permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
 access-control-allow-origin: *
  </code></pre></details>         <pre>
@@ -4785,13 +4962,13 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-x-page-load-time: 1.27ms
+x-page-load-time: 1.72ms
 x-db-query-count: 18
 x-memory-peak: 59244544
 x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
-content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039;; object-src &#039;none&#039;; connect-src &#039;self&#039;; script-src &#039;self&#039; &#039;nonce-DNJEaxFqdf5WEmKdkNakbYsUTWZPHsJuoNN7iTu7&#039;; style-src &#039;self&#039; &#039;nonce-DNJEaxFqdf5WEmKdkNakbYsUTWZPHsJuoNN7iTu7&#039;; frame-src &#039;self&#039;; form-action &#039;self&#039;
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;nonce-4H6RLOIyUI36eIjQJUx0z57ZqFeCLeMV8aRNmQkX&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;nonce-4H6RLOIyUI36eIjQJUx0z57ZqFeCLeMV8aRNmQkX&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
 permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
 access-control-allow-origin: *
  </code></pre></details>         <pre>
@@ -5275,13 +5452,13 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-x-page-load-time: 1.7ms
+x-page-load-time: 1.07ms
 x-db-query-count: 20
 x-memory-peak: 59244544
 x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
-content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039;; object-src &#039;none&#039;; connect-src &#039;self&#039;; script-src &#039;self&#039; &#039;nonce-iWAuLbd1gJDjMo4Yao8vztUHh9JXjld7NY5rJH73&#039;; style-src &#039;self&#039; &#039;nonce-iWAuLbd1gJDjMo4Yao8vztUHh9JXjld7NY5rJH73&#039;; frame-src &#039;self&#039;; form-action &#039;self&#039;
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;nonce-P5Cl0BG5zbWK2WWKiXsdUA6SBI8ZZVROmm63NQLr&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;nonce-P5Cl0BG5zbWK2WWKiXsdUA6SBI8ZZVROmm63NQLr&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
 permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
 access-control-allow-origin: *
  </code></pre></details>         <pre>
@@ -5382,7 +5559,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Accept: application/json" \
     --data "{
     \"email_enabled\": true,
-    \"push_enabled\": false,
+    \"push_enabled\": true,
     \"digest_frequency\": \"none\"
 }"
 </code></pre></div>
@@ -5400,7 +5577,7 @@ const headers = {
 
 let body = {
     "email_enabled": true,
-    "push_enabled": false,
+    "push_enabled": true,
     "digest_frequency": "none"
 };
 
@@ -5528,7 +5705,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>false</code></p>
+<p>Example: <code>true</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>digest_frequency</code></b>&nbsp;&nbsp;
@@ -5603,13 +5780,13 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-x-page-load-time: 2.86ms
-x-db-query-count: 20
-x-memory-peak: 59244544
+x-page-load-time: 2.03ms
+x-db-query-count: 30
+x-memory-peak: 61341696
 x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
-content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039;; object-src &#039;none&#039;; connect-src &#039;self&#039;; script-src &#039;self&#039; &#039;nonce-phJIgpoGH0GI6uMYJyji0t56gpDh3l451fcGMsxO&#039;; style-src &#039;self&#039; &#039;nonce-phJIgpoGH0GI6uMYJyji0t56gpDh3l451fcGMsxO&#039;; frame-src &#039;self&#039;; form-action &#039;self&#039;
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;nonce-0aNwXe6JM1VK3H9xNoqGTpgX8sDTmvbgNEi0iOyj&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;nonce-0aNwXe6JM1VK3H9xNoqGTpgX8sDTmvbgNEi0iOyj&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
 permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
 access-control-allow-origin: *
  </code></pre></details>         <pre>
@@ -6520,12 +6697,12 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"content\": \"architecto\",
     \"featured_image\": \"n\",
     \"image_alt_text\": \"g\",
-    \"status\": \"draft\",
-    \"is_featured\": true,
-    \"is_trending\": true,
+    \"status\": \"published\",
+    \"is_featured\": false,
+    \"is_trending\": false,
     \"category_id\": \"architecto\",
-    \"published_at\": \"2025-11-16T19:01:12\",
-    \"scheduled_at\": \"2025-11-16T19:01:12\",
+    \"published_at\": \"2025-11-16T19:22:35\",
+    \"scheduled_at\": \"2025-11-16T19:22:35\",
     \"meta_title\": \"n\",
     \"meta_description\": \"g\",
     \"meta_keywords\": \"z\"
@@ -6550,12 +6727,12 @@ let body = {
     "content": "architecto",
     "featured_image": "n",
     "image_alt_text": "g",
-    "status": "draft",
-    "is_featured": true,
-    "is_trending": true,
+    "status": "published",
+    "is_featured": false,
+    "is_trending": false,
     "category_id": "architecto",
-    "published_at": "2025-11-16T19:01:12",
-    "scheduled_at": "2025-11-16T19:01:12",
+    "published_at": "2025-11-16T19:22:35",
+    "scheduled_at": "2025-11-16T19:22:35",
     "meta_title": "n",
     "meta_description": "g",
     "meta_keywords": "z"
@@ -6722,10 +6899,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="status"                data-endpoint="POSTapi-v1-articles"
-               value="draft"
+               value="published"
                data-component="body">
     <br>
-<p>Example: <code>draft</code></p>
+<p>Example: <code>published</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>draft</code></li> <li><code>published</code></li> <li><code>scheduled</code></li></ul>
         </div>
@@ -6749,7 +6926,7 @@ Must be one of:
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>true</code></p>
+<p>Example: <code>false</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>is_trending</code></b>&nbsp;&nbsp;
@@ -6771,7 +6948,7 @@ Must be one of:
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>true</code></p>
+<p>Example: <code>false</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>category_id</code></b>&nbsp;&nbsp;
@@ -6792,10 +6969,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="published_at"                data-endpoint="POSTapi-v1-articles"
-               value="2025-11-16T19:01:12"
+               value="2025-11-16T19:22:35"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2025-11-16T19:01:12</code></p>
+<p>Must be a valid date. Example: <code>2025-11-16T19:22:35</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>scheduled_at</code></b>&nbsp;&nbsp;
@@ -6804,10 +6981,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="scheduled_at"                data-endpoint="POSTapi-v1-articles"
-               value="2025-11-16T19:01:12"
+               value="2025-11-16T19:22:35"
                data-component="body">
     <br>
-<p>This field is required when <code>status</code> is <code>scheduled</code>. Must be a valid date. Example: <code>2025-11-16T19:01:12</code></p>
+<p>This field is required when <code>status</code> is <code>scheduled</code>. Must be a valid date. Example: <code>2025-11-16T19:22:35</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>meta_title</code></b>&nbsp;&nbsp;
@@ -6870,12 +7047,12 @@ Must be one of:
     \"content\": \"architecto\",
     \"featured_image\": \"n\",
     \"image_alt_text\": \"g\",
-    \"status\": \"published\",
-    \"is_featured\": false,
+    \"status\": \"draft\",
+    \"is_featured\": true,
     \"is_trending\": false,
     \"category_id\": \"architecto\",
-    \"published_at\": \"2025-11-16T19:01:12\",
-    \"scheduled_at\": \"2025-11-16T19:01:12\",
+    \"published_at\": \"2025-11-16T19:22:35\",
+    \"scheduled_at\": \"2025-11-16T19:22:35\",
     \"meta_title\": \"n\",
     \"meta_description\": \"g\",
     \"meta_keywords\": \"z\"
@@ -6900,12 +7077,12 @@ let body = {
     "content": "architecto",
     "featured_image": "n",
     "image_alt_text": "g",
-    "status": "published",
-    "is_featured": false,
+    "status": "draft",
+    "is_featured": true,
     "is_trending": false,
     "category_id": "architecto",
-    "published_at": "2025-11-16T19:01:12",
-    "scheduled_at": "2025-11-16T19:01:12",
+    "published_at": "2025-11-16T19:22:35",
+    "scheduled_at": "2025-11-16T19:22:35",
     "meta_title": "n",
     "meta_description": "g",
     "meta_keywords": "z"
@@ -7085,10 +7262,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="status"                data-endpoint="PUTapi-v1-articles--post_id-"
-               value="published"
+               value="draft"
                data-component="body">
     <br>
-<p>Example: <code>published</code></p>
+<p>Example: <code>draft</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>draft</code></li> <li><code>published</code></li> <li><code>scheduled</code></li></ul>
         </div>
@@ -7112,7 +7289,7 @@ Must be one of:
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>false</code></p>
+<p>Example: <code>true</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>is_trending</code></b>&nbsp;&nbsp;
@@ -7155,10 +7332,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="published_at"                data-endpoint="PUTapi-v1-articles--post_id-"
-               value="2025-11-16T19:01:12"
+               value="2025-11-16T19:22:35"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2025-11-16T19:01:12</code></p>
+<p>Must be a valid date. Example: <code>2025-11-16T19:22:35</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>scheduled_at</code></b>&nbsp;&nbsp;
@@ -7167,10 +7344,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="scheduled_at"                data-endpoint="PUTapi-v1-articles--post_id-"
-               value="2025-11-16T19:01:12"
+               value="2025-11-16T19:22:35"
                data-component="body">
     <br>
-<p>This field is required when <code>status</code> is <code>scheduled</code>. Must be a valid date. Example: <code>2025-11-16T19:01:12</code></p>
+<p>This field is required when <code>status</code> is <code>scheduled</code>. Must be a valid date. Example: <code>2025-11-16T19:22:35</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>meta_title</code></b>&nbsp;&nbsp;
@@ -7333,6 +7510,1617 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                     </form>
 
+                <h1 id="reading-lists">Reading Lists</h1>
+
+    
+
+                                <h2 id="reading-lists-GETapi-v1-reading-lists">List reading lists for the authenticated user.</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+
+
+<span id="example-requests-GETapi-v1-reading-lists">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost/api/v1/reading-lists" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/v1/reading-lists"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v1-reading-lists">
+            <blockquote>
+            <p>Example response (401):</p>
+        </blockquote>
+                <details class="annotation">
+            <summary style="cursor: pointer;">
+                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
+            </summary>
+            <pre><code class="language-http">cache-control: no-cache, private
+content-type: application/json
+x-page-load-time: 0.87ms
+x-db-query-count: 20
+x-memory-peak: 59244544
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;nonce-1Kzs5CmWA0yj88uTSYvdxVjyJbadkuyZwBiHNikf&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;nonce-1Kzs5CmWA0yj88uTSYvdxVjyJbadkuyZwBiHNikf&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
+permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
+access-control-allow-origin: *
+ </code></pre></details>         <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;Unauthenticated.&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-v1-reading-lists" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-v1-reading-lists"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v1-reading-lists"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v1-reading-lists" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v1-reading-lists">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-v1-reading-lists" data-method="GET"
+      data-path="api/v1/reading-lists"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v1-reading-lists', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v1-reading-lists"
+                    onclick="tryItOut('GETapi-v1-reading-lists');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v1-reading-lists"
+                    onclick="cancelTryOut('GETapi-v1-reading-lists');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v1-reading-lists"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v1/reading-lists</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v1-reading-lists"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v1-reading-lists"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        </form>
+
+                    <h2 id="reading-lists-POSTapi-v1-reading-lists">Create a new reading list.</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+
+
+<span id="example-requests-POSTapi-v1-reading-lists">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request POST \
+    "http://localhost/api/v1/reading-lists" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json" \
+    --data "{
+    \"name\": \"b\",
+    \"description\": \"Et animi quos velit et fugiat.\",
+    \"is_public\": true
+}"
+</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/v1/reading-lists"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+let body = {
+    "name": "b",
+    "description": "Et animi quos velit et fugiat.",
+    "is_public": true
+};
+
+fetch(url, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body),
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-POSTapi-v1-reading-lists">
+</span>
+<span id="execution-results-POSTapi-v1-reading-lists" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-POSTapi-v1-reading-lists"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-POSTapi-v1-reading-lists"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-POSTapi-v1-reading-lists" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-POSTapi-v1-reading-lists">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-POSTapi-v1-reading-lists" data-method="POST"
+      data-path="api/v1/reading-lists"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('POSTapi-v1-reading-lists', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-POSTapi-v1-reading-lists"
+                    onclick="tryItOut('POSTapi-v1-reading-lists');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-POSTapi-v1-reading-lists"
+                    onclick="cancelTryOut('POSTapi-v1-reading-lists');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-POSTapi-v1-reading-lists"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-black">POST</small>
+            <b><code>api/v1/reading-lists</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="POSTapi-v1-reading-lists"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="POSTapi-v1-reading-lists"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+        <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>name</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="name"                data-endpoint="POSTapi-v1-reading-lists"
+               value="b"
+               data-component="body">
+    <br>
+<p>Must not be greater than 255 characters. Example: <code>b</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>description</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="description"                data-endpoint="POSTapi-v1-reading-lists"
+               value="Et animi quos velit et fugiat."
+               data-component="body">
+    <br>
+<p>Must not be greater than 1000 characters. Example: <code>Et animi quos velit et fugiat.</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>is_public</code></b>&nbsp;&nbsp;
+<small>boolean</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <label data-endpoint="POSTapi-v1-reading-lists" style="display: none">
+            <input type="radio" name="is_public"
+                   value="true"
+                   data-endpoint="POSTapi-v1-reading-lists"
+                   data-component="body"             >
+            <code>true</code>
+        </label>
+        <label data-endpoint="POSTapi-v1-reading-lists" style="display: none">
+            <input type="radio" name="is_public"
+                   value="false"
+                   data-endpoint="POSTapi-v1-reading-lists"
+                   data-component="body"             >
+            <code>false</code>
+        </label>
+    <br>
+<p>Example: <code>true</code></p>
+        </div>
+        </form>
+
+                    <h2 id="reading-lists-GETapi-v1-reading-lists--collection_id-">Show a reading list (owner or public).</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+
+
+<span id="example-requests-GETapi-v1-reading-lists--collection_id-">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost/api/v1/reading-lists/16" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/v1/reading-lists/16"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v1-reading-lists--collection_id-">
+            <blockquote>
+            <p>Example response (401):</p>
+        </blockquote>
+                <details class="annotation">
+            <summary style="cursor: pointer;">
+                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
+            </summary>
+            <pre><code class="language-http">cache-control: no-cache, private
+content-type: application/json
+x-page-load-time: 1.05ms
+x-db-query-count: 21
+x-memory-peak: 59244544
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;nonce-thoDdt2hUBTI4uEu20vxZfTa2KRJ8899FkEo97DF&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;nonce-thoDdt2hUBTI4uEu20vxZfTa2KRJ8899FkEo97DF&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
+permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
+access-control-allow-origin: *
+ </code></pre></details>         <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;Unauthenticated.&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-v1-reading-lists--collection_id-" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-v1-reading-lists--collection_id-"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v1-reading-lists--collection_id-"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v1-reading-lists--collection_id-" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v1-reading-lists--collection_id-">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-v1-reading-lists--collection_id-" data-method="GET"
+      data-path="api/v1/reading-lists/{collection_id}"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v1-reading-lists--collection_id-', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v1-reading-lists--collection_id-"
+                    onclick="tryItOut('GETapi-v1-reading-lists--collection_id-');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v1-reading-lists--collection_id-"
+                    onclick="cancelTryOut('GETapi-v1-reading-lists--collection_id-');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v1-reading-lists--collection_id-"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v1/reading-lists/{collection_id}</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v1-reading-lists--collection_id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v1-reading-lists--collection_id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>collection_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="collection_id"                data-endpoint="GETapi-v1-reading-lists--collection_id-"
+               value="16"
+               data-component="url">
+    <br>
+<p>The ID of the collection. Example: <code>16</code></p>
+            </div>
+                    </form>
+
+                    <h2 id="reading-lists-PUTapi-v1-reading-lists--collection_id-">Update a reading list.</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+
+
+<span id="example-requests-PUTapi-v1-reading-lists--collection_id-">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request PUT \
+    "http://localhost/api/v1/reading-lists/16" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json" \
+    --data "{
+    \"name\": \"b\",
+    \"description\": \"Et animi quos velit et fugiat.\",
+    \"is_public\": false
+}"
+</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/v1/reading-lists/16"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+let body = {
+    "name": "b",
+    "description": "Et animi quos velit et fugiat.",
+    "is_public": false
+};
+
+fetch(url, {
+    method: "PUT",
+    headers,
+    body: JSON.stringify(body),
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-PUTapi-v1-reading-lists--collection_id-">
+</span>
+<span id="execution-results-PUTapi-v1-reading-lists--collection_id-" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-PUTapi-v1-reading-lists--collection_id-"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-PUTapi-v1-reading-lists--collection_id-"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-PUTapi-v1-reading-lists--collection_id-" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-PUTapi-v1-reading-lists--collection_id-">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-PUTapi-v1-reading-lists--collection_id-" data-method="PUT"
+      data-path="api/v1/reading-lists/{collection_id}"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('PUTapi-v1-reading-lists--collection_id-', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-PUTapi-v1-reading-lists--collection_id-"
+                    onclick="tryItOut('PUTapi-v1-reading-lists--collection_id-');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-PUTapi-v1-reading-lists--collection_id-"
+                    onclick="cancelTryOut('PUTapi-v1-reading-lists--collection_id-');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-PUTapi-v1-reading-lists--collection_id-"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-darkblue">PUT</small>
+            <b><code>api/v1/reading-lists/{collection_id}</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="PUTapi-v1-reading-lists--collection_id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="PUTapi-v1-reading-lists--collection_id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>collection_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="collection_id"                data-endpoint="PUTapi-v1-reading-lists--collection_id-"
+               value="16"
+               data-component="url">
+    <br>
+<p>The ID of the collection. Example: <code>16</code></p>
+            </div>
+                            <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+        <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>name</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="name"                data-endpoint="PUTapi-v1-reading-lists--collection_id-"
+               value="b"
+               data-component="body">
+    <br>
+<p>Must not be greater than 255 characters. Example: <code>b</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>description</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="description"                data-endpoint="PUTapi-v1-reading-lists--collection_id-"
+               value="Et animi quos velit et fugiat."
+               data-component="body">
+    <br>
+<p>Must not be greater than 1000 characters. Example: <code>Et animi quos velit et fugiat.</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>is_public</code></b>&nbsp;&nbsp;
+<small>boolean</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <label data-endpoint="PUTapi-v1-reading-lists--collection_id-" style="display: none">
+            <input type="radio" name="is_public"
+                   value="true"
+                   data-endpoint="PUTapi-v1-reading-lists--collection_id-"
+                   data-component="body"             >
+            <code>true</code>
+        </label>
+        <label data-endpoint="PUTapi-v1-reading-lists--collection_id-" style="display: none">
+            <input type="radio" name="is_public"
+                   value="false"
+                   data-endpoint="PUTapi-v1-reading-lists--collection_id-"
+                   data-component="body"             >
+            <code>false</code>
+        </label>
+    <br>
+<p>Example: <code>false</code></p>
+        </div>
+        </form>
+
+                    <h2 id="reading-lists-DELETEapi-v1-reading-lists--collection_id-">Delete a reading list.</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+
+
+<span id="example-requests-DELETEapi-v1-reading-lists--collection_id-">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request DELETE \
+    "http://localhost/api/v1/reading-lists/16" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/v1/reading-lists/16"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "DELETE",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-DELETEapi-v1-reading-lists--collection_id-">
+</span>
+<span id="execution-results-DELETEapi-v1-reading-lists--collection_id-" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-DELETEapi-v1-reading-lists--collection_id-"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-DELETEapi-v1-reading-lists--collection_id-"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-DELETEapi-v1-reading-lists--collection_id-" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-DELETEapi-v1-reading-lists--collection_id-">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-DELETEapi-v1-reading-lists--collection_id-" data-method="DELETE"
+      data-path="api/v1/reading-lists/{collection_id}"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('DELETEapi-v1-reading-lists--collection_id-', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-DELETEapi-v1-reading-lists--collection_id-"
+                    onclick="tryItOut('DELETEapi-v1-reading-lists--collection_id-');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-DELETEapi-v1-reading-lists--collection_id-"
+                    onclick="cancelTryOut('DELETEapi-v1-reading-lists--collection_id-');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-DELETEapi-v1-reading-lists--collection_id-"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-red">DELETE</small>
+            <b><code>api/v1/reading-lists/{collection_id}</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="DELETEapi-v1-reading-lists--collection_id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="DELETEapi-v1-reading-lists--collection_id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>collection_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="collection_id"                data-endpoint="DELETEapi-v1-reading-lists--collection_id-"
+               value="16"
+               data-component="url">
+    <br>
+<p>The ID of the collection. Example: <code>16</code></p>
+            </div>
+                    </form>
+
+                    <h2 id="reading-lists-POSTapi-v1-reading-lists--collection_id--items">Add an item (post) to a reading list.</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+
+
+<span id="example-requests-POSTapi-v1-reading-lists--collection_id--items">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request POST \
+    "http://localhost/api/v1/reading-lists/16/items" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json" \
+    --data "{
+    \"post_id\": \"architecto\",
+    \"note\": \"n\"
+}"
+</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/v1/reading-lists/16/items"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+let body = {
+    "post_id": "architecto",
+    "note": "n"
+};
+
+fetch(url, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body),
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-POSTapi-v1-reading-lists--collection_id--items">
+</span>
+<span id="execution-results-POSTapi-v1-reading-lists--collection_id--items" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-POSTapi-v1-reading-lists--collection_id--items"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-POSTapi-v1-reading-lists--collection_id--items"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-POSTapi-v1-reading-lists--collection_id--items" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-POSTapi-v1-reading-lists--collection_id--items">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-POSTapi-v1-reading-lists--collection_id--items" data-method="POST"
+      data-path="api/v1/reading-lists/{collection_id}/items"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('POSTapi-v1-reading-lists--collection_id--items', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-POSTapi-v1-reading-lists--collection_id--items"
+                    onclick="tryItOut('POSTapi-v1-reading-lists--collection_id--items');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-POSTapi-v1-reading-lists--collection_id--items"
+                    onclick="cancelTryOut('POSTapi-v1-reading-lists--collection_id--items');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-POSTapi-v1-reading-lists--collection_id--items"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-black">POST</small>
+            <b><code>api/v1/reading-lists/{collection_id}/items</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="POSTapi-v1-reading-lists--collection_id--items"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="POSTapi-v1-reading-lists--collection_id--items"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>collection_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="collection_id"                data-endpoint="POSTapi-v1-reading-lists--collection_id--items"
+               value="16"
+               data-component="url">
+    <br>
+<p>The ID of the collection. Example: <code>16</code></p>
+            </div>
+                            <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+        <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>post_id</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="post_id"                data-endpoint="POSTapi-v1-reading-lists--collection_id--items"
+               value="architecto"
+               data-component="body">
+    <br>
+<p>The <code>id</code> of an existing record in the posts table. Example: <code>architecto</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>note</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="note"                data-endpoint="POSTapi-v1-reading-lists--collection_id--items"
+               value="n"
+               data-component="body">
+    <br>
+<p>Must not be greater than 1000 characters. Example: <code>n</code></p>
+        </div>
+        </form>
+
+                    <h2 id="reading-lists-DELETEapi-v1-reading-lists--collection_id--items--bookmark_id-">Remove an item from a reading list.</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+
+
+<span id="example-requests-DELETEapi-v1-reading-lists--collection_id--items--bookmark_id-">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request DELETE \
+    "http://localhost/api/v1/reading-lists/16/items/16" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/v1/reading-lists/16/items/16"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "DELETE",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-DELETEapi-v1-reading-lists--collection_id--items--bookmark_id-">
+</span>
+<span id="execution-results-DELETEapi-v1-reading-lists--collection_id--items--bookmark_id-" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-DELETEapi-v1-reading-lists--collection_id--items--bookmark_id-"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-DELETEapi-v1-reading-lists--collection_id--items--bookmark_id-"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-DELETEapi-v1-reading-lists--collection_id--items--bookmark_id-" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-DELETEapi-v1-reading-lists--collection_id--items--bookmark_id-">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-DELETEapi-v1-reading-lists--collection_id--items--bookmark_id-" data-method="DELETE"
+      data-path="api/v1/reading-lists/{collection_id}/items/{bookmark_id}"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('DELETEapi-v1-reading-lists--collection_id--items--bookmark_id-', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-DELETEapi-v1-reading-lists--collection_id--items--bookmark_id-"
+                    onclick="tryItOut('DELETEapi-v1-reading-lists--collection_id--items--bookmark_id-');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-DELETEapi-v1-reading-lists--collection_id--items--bookmark_id-"
+                    onclick="cancelTryOut('DELETEapi-v1-reading-lists--collection_id--items--bookmark_id-');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-DELETEapi-v1-reading-lists--collection_id--items--bookmark_id-"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-red">DELETE</small>
+            <b><code>api/v1/reading-lists/{collection_id}/items/{bookmark_id}</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="DELETEapi-v1-reading-lists--collection_id--items--bookmark_id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="DELETEapi-v1-reading-lists--collection_id--items--bookmark_id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>collection_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="collection_id"                data-endpoint="DELETEapi-v1-reading-lists--collection_id--items--bookmark_id-"
+               value="16"
+               data-component="url">
+    <br>
+<p>The ID of the collection. Example: <code>16</code></p>
+            </div>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>bookmark_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="bookmark_id"                data-endpoint="DELETEapi-v1-reading-lists--collection_id--items--bookmark_id-"
+               value="16"
+               data-component="url">
+    <br>
+<p>The ID of the bookmark. Example: <code>16</code></p>
+            </div>
+                    </form>
+
+                    <h2 id="reading-lists-POSTapi-v1-reading-lists--collection_id--reorder">Reorder items in a reading list.</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+
+
+<span id="example-requests-POSTapi-v1-reading-lists--collection_id--reorder">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request POST \
+    "http://localhost/api/v1/reading-lists/16/reorder" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json" \
+    --data "{
+    \"bookmark_ids\": [
+        16
+    ]
+}"
+</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/v1/reading-lists/16/reorder"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+let body = {
+    "bookmark_ids": [
+        16
+    ]
+};
+
+fetch(url, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body),
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-POSTapi-v1-reading-lists--collection_id--reorder">
+</span>
+<span id="execution-results-POSTapi-v1-reading-lists--collection_id--reorder" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-POSTapi-v1-reading-lists--collection_id--reorder"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-POSTapi-v1-reading-lists--collection_id--reorder"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-POSTapi-v1-reading-lists--collection_id--reorder" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-POSTapi-v1-reading-lists--collection_id--reorder">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-POSTapi-v1-reading-lists--collection_id--reorder" data-method="POST"
+      data-path="api/v1/reading-lists/{collection_id}/reorder"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('POSTapi-v1-reading-lists--collection_id--reorder', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-POSTapi-v1-reading-lists--collection_id--reorder"
+                    onclick="tryItOut('POSTapi-v1-reading-lists--collection_id--reorder');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-POSTapi-v1-reading-lists--collection_id--reorder"
+                    onclick="cancelTryOut('POSTapi-v1-reading-lists--collection_id--reorder');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-POSTapi-v1-reading-lists--collection_id--reorder"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-black">POST</small>
+            <b><code>api/v1/reading-lists/{collection_id}/reorder</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="POSTapi-v1-reading-lists--collection_id--reorder"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="POSTapi-v1-reading-lists--collection_id--reorder"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>collection_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="collection_id"                data-endpoint="POSTapi-v1-reading-lists--collection_id--reorder"
+               value="16"
+               data-component="url">
+    <br>
+<p>The ID of the collection. Example: <code>16</code></p>
+            </div>
+                            <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+        <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>bookmark_ids</code></b>&nbsp;&nbsp;
+<small>integer[]</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="bookmark_ids[0]"                data-endpoint="POSTapi-v1-reading-lists--collection_id--reorder"
+               data-component="body">
+        <input type="number" style="display: none"
+               name="bookmark_ids[1]"                data-endpoint="POSTapi-v1-reading-lists--collection_id--reorder"
+               data-component="body">
+    <br>
+<p>The <code>id</code> of an existing record in the bookmarks table.</p>
+        </div>
+        </form>
+
+                    <h2 id="reading-lists-POSTapi-v1-reading-lists--collection_id--share">Generate a share link for a reading list.</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+
+
+<span id="example-requests-POSTapi-v1-reading-lists--collection_id--share">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request POST \
+    "http://localhost/api/v1/reading-lists/16/share" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/v1/reading-lists/16/share"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "POST",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-POSTapi-v1-reading-lists--collection_id--share">
+</span>
+<span id="execution-results-POSTapi-v1-reading-lists--collection_id--share" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-POSTapi-v1-reading-lists--collection_id--share"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-POSTapi-v1-reading-lists--collection_id--share"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-POSTapi-v1-reading-lists--collection_id--share" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-POSTapi-v1-reading-lists--collection_id--share">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-POSTapi-v1-reading-lists--collection_id--share" data-method="POST"
+      data-path="api/v1/reading-lists/{collection_id}/share"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('POSTapi-v1-reading-lists--collection_id--share', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-POSTapi-v1-reading-lists--collection_id--share"
+                    onclick="tryItOut('POSTapi-v1-reading-lists--collection_id--share');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-POSTapi-v1-reading-lists--collection_id--share"
+                    onclick="cancelTryOut('POSTapi-v1-reading-lists--collection_id--share');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-POSTapi-v1-reading-lists--collection_id--share"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-black">POST</small>
+            <b><code>api/v1/reading-lists/{collection_id}/share</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="POSTapi-v1-reading-lists--collection_id--share"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="POSTapi-v1-reading-lists--collection_id--share"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>collection_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="collection_id"                data-endpoint="POSTapi-v1-reading-lists--collection_id--share"
+               value="16"
+               data-component="url">
+    <br>
+<p>The ID of the collection. Example: <code>16</code></p>
+            </div>
+                    </form>
+
+                    <h2 id="reading-lists-DELETEapi-v1-reading-lists--collection_id--share">Revoke share link for a reading list.</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+
+
+<span id="example-requests-DELETEapi-v1-reading-lists--collection_id--share">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request DELETE \
+    "http://localhost/api/v1/reading-lists/16/share" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/v1/reading-lists/16/share"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "DELETE",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-DELETEapi-v1-reading-lists--collection_id--share">
+</span>
+<span id="execution-results-DELETEapi-v1-reading-lists--collection_id--share" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-DELETEapi-v1-reading-lists--collection_id--share"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-DELETEapi-v1-reading-lists--collection_id--share"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-DELETEapi-v1-reading-lists--collection_id--share" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-DELETEapi-v1-reading-lists--collection_id--share">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-DELETEapi-v1-reading-lists--collection_id--share" data-method="DELETE"
+      data-path="api/v1/reading-lists/{collection_id}/share"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('DELETEapi-v1-reading-lists--collection_id--share', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-DELETEapi-v1-reading-lists--collection_id--share"
+                    onclick="tryItOut('DELETEapi-v1-reading-lists--collection_id--share');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-DELETEapi-v1-reading-lists--collection_id--share"
+                    onclick="cancelTryOut('DELETEapi-v1-reading-lists--collection_id--share');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-DELETEapi-v1-reading-lists--collection_id--share"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-red">DELETE</small>
+            <b><code>api/v1/reading-lists/{collection_id}/share</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="DELETEapi-v1-reading-lists--collection_id--share"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="DELETEapi-v1-reading-lists--collection_id--share"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>collection_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="collection_id"                data-endpoint="DELETEapi-v1-reading-lists--collection_id--share"
+               value="16"
+               data-component="url">
+    <br>
+<p>The ID of the collection. Example: <code>16</code></p>
+            </div>
+                    </form>
+
+                    <h2 id="reading-lists-GETapi-v1-reading-lists-shared--token-">View a shared reading list (public).</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-GETapi-v1-reading-lists-shared--token-">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost/api/v1/reading-lists/shared/architecto" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/v1/reading-lists/shared/architecto"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v1-reading-lists-shared--token-">
+            <blockquote>
+            <p>Example response (404):</p>
+        </blockquote>
+                <details class="annotation">
+            <summary style="cursor: pointer;">
+                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
+            </summary>
+            <pre><code class="language-http">cache-control: no-cache, private
+content-type: application/json
+x-ratelimit-limit: 60
+x-ratelimit-remaining: 50
+x-page-load-time: 8.11ms
+x-db-query-count: 30
+x-memory-peak: 59244544
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;nonce-k22HR9VK73oSCnA8zasvmdayyjiIoFZN8b7Vr3iS&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;nonce-k22HR9VK73oSCnA8zasvmdayyjiIoFZN8b7Vr3iS&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
+permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
+access-control-allow-origin: *
+ </code></pre></details>         <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-v1-reading-lists-shared--token-" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-v1-reading-lists-shared--token-"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v1-reading-lists-shared--token-"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v1-reading-lists-shared--token-" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v1-reading-lists-shared--token-">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-v1-reading-lists-shared--token-" data-method="GET"
+      data-path="api/v1/reading-lists/shared/{token}"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v1-reading-lists-shared--token-', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v1-reading-lists-shared--token-"
+                    onclick="tryItOut('GETapi-v1-reading-lists-shared--token-');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v1-reading-lists-shared--token-"
+                    onclick="cancelTryOut('GETapi-v1-reading-lists-shared--token-');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v1-reading-lists-shared--token-"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v1/reading-lists/shared/{token}</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v1-reading-lists-shared--token-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v1-reading-lists-shared--token-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>token</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="token"                data-endpoint="GETapi-v1-reading-lists-shared--token-"
+               value="architecto"
+               data-component="url">
+    <br>
+<p>Example: <code>architecto</code></p>
+            </div>
+                    </form>
+
                 <h1 id="search">Search</h1>
 
     <p>API endpoints for searching posts, tags, and categories.</p>
@@ -7359,7 +9147,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"limit\": 7,
     \"category\": \"z\",
     \"author\": \"m\",
-    \"date_from\": \"2025-11-16T19:01:11\",
+    \"date_from\": \"2025-11-16T19:22:35\",
     \"date_to\": \"2051-12-10\"
 }"
 </code></pre></div>
@@ -7393,7 +9181,7 @@ let body = {
     "limit": 7,
     "category": "z",
     "author": "m",
-    "date_from": "2025-11-16T19:01:11",
+    "date_from": "2025-11-16T19:22:35",
     "date_to": "2051-12-10"
 };
 
@@ -7665,10 +9453,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="date_from"                data-endpoint="GETapi-v1-search"
-               value="2025-11-16T19:01:11"
+               value="2025-11-16T19:22:35"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2025-11-16T19:01:11</code></p>
+<p>Must be a valid date. Example: <code>2025-11-16T19:22:35</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>date_to</code></b>&nbsp;&nbsp;
@@ -7706,7 +9494,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"limit\": 7,
     \"category\": \"z\",
     \"author\": \"m\",
-    \"date_from\": \"2025-11-16T19:01:11\",
+    \"date_from\": \"2025-11-16T19:22:35\",
     \"date_to\": \"2051-12-10\"
 }"
 </code></pre></div>
@@ -7735,7 +9523,7 @@ let body = {
     "limit": 7,
     "category": "z",
     "author": "m",
-    "date_from": "2025-11-16T19:01:11",
+    "date_from": "2025-11-16T19:22:35",
     "date_to": "2051-12-10"
 };
 
@@ -7931,10 +9719,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="date_from"                data-endpoint="GETapi-v1-search-suggestions"
-               value="2025-11-16T19:01:11"
+               value="2025-11-16T19:22:35"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2025-11-16T19:01:11</code></p>
+<p>Must be a valid date. Example: <code>2025-11-16T19:22:35</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>date_to</code></b>&nbsp;&nbsp;

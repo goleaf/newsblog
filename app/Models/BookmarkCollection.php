@@ -16,12 +16,18 @@ class BookmarkCollection extends Model
         'name',
         'description',
         'is_public',
+        'share_token',
         'order',
     ];
 
     protected $casts = [
         'is_public' => 'boolean',
     ];
+
+    public static function generateShareToken(): string
+    {
+        return bin2hex(random_bytes(24));
+    }
 
     public function user(): BelongsTo
     {

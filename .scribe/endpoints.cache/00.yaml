@@ -41,13 +41,13 @@ endpoints:
           content-type: application/json
           x-ratelimit-limit: '60'
           x-ratelimit-remaining: '59'
-          x-page-load-time: 9221.97ms
+          x-page-load-time: 9174.78ms
           x-db-query-count: '2'
           x-memory-peak: '48758784'
           x-content-type-options: nosniff
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
-          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self'; object-src 'none'; connect-src 'self'; script-src 'self' 'nonce-2es3l6njVrfKhPVcJRRP221WNkA77ifA7D77vZjl'; style-src 'self' 'nonce-2es3l6njVrfKhPVcJRRP221WNkA77ifA7D77vZjl'; frame-src 'self'; form-action 'self'"
+          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'nonce-IP5Dtur181zDCPOj08n2O8tw9i3TzBDUTtqTskVm' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'nonce-IP5Dtur181zDCPOj08n2O8tw9i3TzBDUTtqTskVm' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
           permissions-policy: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()'
           access-control-allow-origin: '*'
         description: null
@@ -91,13 +91,13 @@ endpoints:
           content-type: application/json
           x-ratelimit-limit: '60'
           x-ratelimit-remaining: '58'
-          x-page-load-time: 28.27ms
+          x-page-load-time: 24.42ms
           x-db-query-count: '4'
           x-memory-peak: '50855936'
           x-content-type-options: nosniff
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
-          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self'; object-src 'none'; connect-src 'self'; script-src 'self' 'nonce-4hmAPu6HEhtDXBDMx29YffHWMgi3WTMn3mQWLzJv'; style-src 'self' 'nonce-4hmAPu6HEhtDXBDMx29YffHWMgi3WTMn3mQWLzJv'; frame-src 'self'; form-action 'self'"
+          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'nonce-dsAewRKMQn1tUZCZzFcJLXf52Y2FicC4K2LPvJOS' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'nonce-dsAewRKMQn1tUZCZzFcJLXf52Y2FicC4K2LPvJOS' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
           permissions-policy: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()'
           access-control-allow-origin: '*'
         description: null
@@ -156,13 +156,13 @@ endpoints:
           content-type: application/json
           x-ratelimit-limit: '60'
           x-ratelimit-remaining: '57'
-          x-page-load-time: 11.18ms
+          x-page-load-time: 16.18ms
           x-db-query-count: '6'
           x-memory-peak: '50855936'
           x-content-type-options: nosniff
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
-          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self'; object-src 'none'; connect-src 'self'; script-src 'self' 'nonce-LDaXFoIyoxg1ahKFCCm4UC5Rmxr75u02YAXfMp73'; style-src 'self' 'nonce-LDaXFoIyoxg1ahKFCCm4UC5Rmxr75u02YAXfMp73'; frame-src 'self'; form-action 'self'"
+          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'nonce-vr8xdfR4s2SO67zj9B0ICrAMOUYFIMpapTItuoqh' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'nonce-vr8xdfR4s2SO67zj9B0ICrAMOUYFIMpapTItuoqh' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
           permissions-policy: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()'
           access-control-allow-origin: '*'
         description: null
@@ -206,13 +206,13 @@ endpoints:
           content-type: application/json
           x-ratelimit-limit: '60'
           x-ratelimit-remaining: '56'
-          x-page-load-time: 13.43ms
+          x-page-load-time: 7.68ms
           x-db-query-count: '7'
           x-memory-peak: '50855936'
           x-content-type-options: nosniff
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
-          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self'; object-src 'none'; connect-src 'self'; script-src 'self' 'nonce-nYxhWdpR4SNnvO1x624OFpLX5DfaiXXfR2sQ4eOJ'; style-src 'self' 'nonce-nYxhWdpR4SNnvO1x624OFpLX5DfaiXXfR2sQ4eOJ'; frame-src 'self'; form-action 'self'"
+          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'nonce-kBDJaMqMGlxxspL2GU88MNa4qSZhuRhq9Og2oHh8' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'nonce-kBDJaMqMGlxxspL2GU88MNa4qSZhuRhq9Og2oHh8' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
           permissions-policy: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()'
           access-control-allow-origin: '*'
         description: null
@@ -271,13 +271,13 @@ endpoints:
           content-type: application/json
           x-ratelimit-limit: '60'
           x-ratelimit-remaining: '55'
-          x-page-load-time: 16.41ms
+          x-page-load-time: 9.25ms
           x-db-query-count: '9'
           x-memory-peak: '50855936'
           x-content-type-options: nosniff
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
-          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self'; object-src 'none'; connect-src 'self'; script-src 'self' 'nonce-hxb7BScZ7MU12PrhXIHTIM17Fjs7Qdeli3WBSpKi'; style-src 'self' 'nonce-hxb7BScZ7MU12PrhXIHTIM17Fjs7Qdeli3WBSpKi'; frame-src 'self'; form-action 'self'"
+          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'nonce-Mlc4C0Xk8LIWkI0CKGxAjwIkIdk1wzsfsRI9kl6l' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'nonce-Mlc4C0Xk8LIWkI0CKGxAjwIkIdk1wzsfsRI9kl6l' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
           permissions-policy: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()'
           access-control-allow-origin: '*'
         description: null
@@ -333,13 +333,13 @@ endpoints:
           content-type: application/json
           x-ratelimit-limit: '60'
           x-ratelimit-remaining: '54'
-          x-page-load-time: 22.81ms
+          x-page-load-time: 47.31ms
           x-db-query-count: '10'
-          x-memory-peak: '50855936'
+          x-memory-peak: '52953088'
           x-content-type-options: nosniff
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
-          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self'; object-src 'none'; connect-src 'self'; script-src 'self' 'nonce-2vLVNrVo2Iyxdr3x7ZtCZBtxBbdQURLhqAOPVA08'; style-src 'self' 'nonce-2vLVNrVo2Iyxdr3x7ZtCZBtxBbdQURLhqAOPVA08'; frame-src 'self'; form-action 'self'"
+          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'nonce-Z2D4Dgf1rJz11C0a67a6s4sORK9kTOon4jbJKMi6' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'nonce-Z2D4Dgf1rJz11C0a67a6s4sORK9kTOon4jbJKMi6' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
           permissions-policy: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()'
           access-control-allow-origin: '*'
         description: null
@@ -419,13 +419,13 @@ endpoints:
           content-type: application/json
           x-ratelimit-limit: '60'
           x-ratelimit-remaining: '53'
-          x-page-load-time: 24.32ms
+          x-page-load-time: 17.48ms
           x-db-query-count: '11'
           x-memory-peak: '52953088'
           x-content-type-options: nosniff
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
-          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self'; object-src 'none'; connect-src 'self'; script-src 'self' 'nonce-JaOh4DaXvVY67rD3FhzQSdh6OKo2BKD5tfoMTNhy'; style-src 'self' 'nonce-JaOh4DaXvVY67rD3FhzQSdh6OKo2BKD5tfoMTNhy'; frame-src 'self'; form-action 'self'"
+          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'nonce-FGguI9XVDhXj158XrbgO7oCGXe54S5A7XkQaTVY5' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'nonce-FGguI9XVDhXj158XrbgO7oCGXe54S5A7XkQaTVY5' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
           permissions-policy: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()'
           access-control-allow-origin: '*'
         description: null
@@ -608,19 +608,19 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"lat":-89,"lon":-179,"data":{"temperature":-42.7,"windspeed":13,"weathercode":1,"time":"2025-11-16T19:00","units":{"temperature":"\u00b0C","windspeed":"km\/h"},"source":"open-meteo"}}'
+        content: '{"lat":-89,"lon":-179,"data":{"temperature":-42.8,"windspeed":13.3,"weathercode":1,"time":"2025-11-16T19:15","units":{"temperature":"\u00b0C","windspeed":"km\/h"},"source":"open-meteo"}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '60'
           x-ratelimit-remaining: '52'
-          x-page-load-time: 275.19ms
+          x-page-load-time: 259.23ms
           x-db-query-count: '12'
           x-memory-peak: '57147392'
           x-content-type-options: nosniff
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
-          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self'; object-src 'none'; connect-src 'self'; script-src 'self' 'nonce-kkyz89JQxsllBkEuBmpGEVjznn03DFEJVqR4YARQ'; style-src 'self' 'nonce-kkyz89JQxsllBkEuBmpGEVjznn03DFEJVqR4YARQ'; frame-src 'self'; form-action 'self'"
+          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'nonce-hvPrFfmwzr2GmtoNFBfn4gbUmF2Bf7uu5GBkrFN4' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'nonce-hvPrFfmwzr2GmtoNFBfn4gbUmF2Bf7uu5GBkrFN4' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
           permissions-policy: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()'
           access-control-allow-origin: '*'
         description: null
@@ -676,13 +676,13 @@ endpoints:
           content-type: application/json
           x-ratelimit-limit: '60'
           x-ratelimit-remaining: '51'
-          x-page-load-time: 264.96ms
+          x-page-load-time: 304.79ms
           x-db-query-count: '12'
           x-memory-peak: '57147392'
           x-content-type-options: nosniff
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
-          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self'; object-src 'none'; connect-src 'self'; script-src 'self' 'nonce-rimCIK7BCODs5ToDI4QnhQFFCDX7HKArxl23aBpt'; style-src 'self' 'nonce-rimCIK7BCODs5ToDI4QnhQFFCDX7HKArxl23aBpt'; frame-src 'self'; form-action 'self'"
+          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'nonce-8CdqZn08RzswA67ATYYNgKmBRGdSlLXbo0B63gQE' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'nonce-8CdqZn08RzswA67ATYYNgKmBRGdSlLXbo0B63gQE' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
           permissions-policy: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()'
           access-control-allow-origin: '*'
         description: null
@@ -724,13 +724,13 @@ endpoints:
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-page-load-time: 2.92ms
+          x-page-load-time: 1.72ms
           x-db-query-count: '12'
           x-memory-peak: '57147392'
           x-content-type-options: nosniff
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
-          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self'; object-src 'none'; connect-src 'self'; script-src 'self' 'nonce-RLS9dYPQ119uOHxQUVZqoj5flb24aj3Sk2iByGSn'; style-src 'self' 'nonce-RLS9dYPQ119uOHxQUVZqoj5flb24aj3Sk2iByGSn'; frame-src 'self'; form-action 'self'"
+          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'nonce-oupl0TOvs2gTSlMSdvjNhyVWhwcnHAufmRtjRm6v' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'nonce-oupl0TOvs2gTSlMSdvjNhyVWhwcnHAufmRtjRm6v' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
           permissions-policy: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()'
           access-control-allow-origin: '*'
         description: null
@@ -772,13 +772,13 @@ endpoints:
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-page-load-time: 1.63ms
+          x-page-load-time: 1.41ms
           x-db-query-count: '12'
           x-memory-peak: '57147392'
           x-content-type-options: nosniff
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
-          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self'; object-src 'none'; connect-src 'self'; script-src 'self' 'nonce-jDFj0NqFbluiHiDbIVRo9wZNhEegq5Rpj0GZvcT5'; style-src 'self' 'nonce-jDFj0NqFbluiHiDbIVRo9wZNhEegq5Rpj0GZvcT5'; frame-src 'self'; form-action 'self'"
+          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'nonce-ch0VYMS2UYNPxzNWF9pH54dJm0TPXUdJMKEt72XH' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'nonce-ch0VYMS2UYNPxzNWF9pH54dJm0TPXUdJMKEt72XH' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
           permissions-policy: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()'
           access-control-allow-origin: '*'
         description: null
@@ -1349,13 +1349,13 @@ endpoints:
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-page-load-time: 2.08ms
+          x-page-load-time: 1.51ms
           x-db-query-count: '18'
           x-memory-peak: '59244544'
           x-content-type-options: nosniff
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
-          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self'; object-src 'none'; connect-src 'self'; script-src 'self' 'nonce-G8b1T6RWHTXrZufAJXnPiqMOFIpzWZJzxP3sviEj'; style-src 'self' 'nonce-G8b1T6RWHTXrZufAJXnPiqMOFIpzWZJzxP3sviEj'; frame-src 'self'; form-action 'self'"
+          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'nonce-IHggwpJ3SWmNFnPsJM8ZiWqBOldmxghN1TmW9qc6' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'nonce-IHggwpJ3SWmNFnPsJM8ZiWqBOldmxghN1TmW9qc6' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
           permissions-policy: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()'
           access-control-allow-origin: '*'
         description: null
@@ -1409,13 +1409,61 @@ endpoints:
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-page-load-time: 3.68ms
+          x-page-load-time: 1.17ms
           x-db-query-count: '18'
           x-memory-peak: '59244544'
           x-content-type-options: nosniff
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
-          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self'; object-src 'none'; connect-src 'self'; script-src 'self' 'nonce-ixPcQyHR98RMxU16GJs4RXAvYU2dVhdgYVSdSDpB'; style-src 'self' 'nonce-ixPcQyHR98RMxU16GJs4RXAvYU2dVhdgYVSdSDpB'; frame-src 'self'; form-action 'self'"
+          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'nonce-Z8jClXo1eTz9rpcEhfpwHGiVGmj4EFkY3tQ96KKV' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'nonce-Z8jClXo1eTz9rpcEhfpwHGiVGmj4EFkY3tQ96KKV' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
+          permissions-policy: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()'
+          access-control-allow-origin: '*'
+        description: null
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v1/users/suggestions
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"message":"Unauthenticated."}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          x-page-load-time: 1.24ms
+          x-db-query-count: '18'
+          x-memory-peak: '59244544'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'nonce-3uVpTlVb6tyCCGD96REAe8DgeXV1DlMk85Q4QMQ8' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'nonce-3uVpTlVb6tyCCGD96REAe8DgeXV1DlMk85Q4QMQ8' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
           permissions-policy: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()'
           access-control-allow-origin: '*'
         description: null
@@ -1457,13 +1505,13 @@ endpoints:
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-page-load-time: 4.46ms
+          x-page-load-time: 0.67ms
           x-db-query-count: '18'
           x-memory-peak: '59244544'
           x-content-type-options: nosniff
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
-          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self'; object-src 'none'; connect-src 'self'; script-src 'self' 'nonce-kB1cX3JGyY0bGkKZ98E6hyWAg1AaUHtyX9Xx7GrP'; style-src 'self' 'nonce-kB1cX3JGyY0bGkKZ98E6hyWAg1AaUHtyX9Xx7GrP'; frame-src 'self'; form-action 'self'"
+          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'nonce-d08Aclh6tSXtezzGoHKpMINU7WtXBVUwLzpFos49' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'nonce-d08Aclh6tSXtezzGoHKpMINU7WtXBVUwLzpFos49' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
           permissions-policy: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()'
           access-control-allow-origin: '*'
         description: null
@@ -1505,13 +1553,13 @@ endpoints:
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-page-load-time: 2.18ms
+          x-page-load-time: 1.09ms
           x-db-query-count: '18'
           x-memory-peak: '59244544'
           x-content-type-options: nosniff
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
-          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self'; object-src 'none'; connect-src 'self'; script-src 'self' 'nonce-uhUsqZUm32pZyasAdZd7QLBgbvKQwowQMsHbgLmo'; style-src 'self' 'nonce-uhUsqZUm32pZyasAdZd7QLBgbvKQwowQMsHbgLmo'; frame-src 'self'; form-action 'self'"
+          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'nonce-rZiXyeLp6cWXmGATsCGyoLs1iKBFwYLfNK6eL5fm' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'nonce-rZiXyeLp6cWXmGATsCGyoLs1iKBFwYLfNK6eL5fm' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
           permissions-policy: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()'
           access-control-allow-origin: '*'
         description: null
@@ -1553,13 +1601,13 @@ endpoints:
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-page-load-time: 2.95ms
+          x-page-load-time: 0.95ms
           x-db-query-count: '18'
           x-memory-peak: '59244544'
           x-content-type-options: nosniff
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
-          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self'; object-src 'none'; connect-src 'self'; script-src 'self' 'nonce-6bV6LEErK1tvMBGp40IyE5scICcIyiQqBZ1RWrkM'; style-src 'self' 'nonce-6bV6LEErK1tvMBGp40IyE5scICcIyiQqBZ1RWrkM'; frame-src 'self'; form-action 'self'"
+          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'nonce-cZJBHzpiJ0Lsayk77Acmz2I9HPG2TatoS8rfYBvQ' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'nonce-cZJBHzpiJ0Lsayk77Acmz2I9HPG2TatoS8rfYBvQ' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
           permissions-policy: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()'
           access-control-allow-origin: '*'
         description: null
@@ -1601,13 +1649,13 @@ endpoints:
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-page-load-time: 1.27ms
+          x-page-load-time: 1.72ms
           x-db-query-count: '18'
           x-memory-peak: '59244544'
           x-content-type-options: nosniff
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
-          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self'; object-src 'none'; connect-src 'self'; script-src 'self' 'nonce-DNJEaxFqdf5WEmKdkNakbYsUTWZPHsJuoNN7iTu7'; style-src 'self' 'nonce-DNJEaxFqdf5WEmKdkNakbYsUTWZPHsJuoNN7iTu7'; frame-src 'self'; form-action 'self'"
+          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'nonce-4H6RLOIyUI36eIjQJUx0z57ZqFeCLeMV8aRNmQkX' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'nonce-4H6RLOIyUI36eIjQJUx0z57ZqFeCLeMV8aRNmQkX' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
           permissions-policy: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()'
           access-control-allow-origin: '*'
         description: null
@@ -1766,13 +1814,13 @@ endpoints:
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-page-load-time: 1.7ms
+          x-page-load-time: 1.07ms
           x-db-query-count: '20'
           x-memory-peak: '59244544'
           x-content-type-options: nosniff
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
-          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self'; object-src 'none'; connect-src 'self'; script-src 'self' 'nonce-iWAuLbd1gJDjMo4Yao8vztUHh9JXjld7NY5rJH73'; style-src 'self' 'nonce-iWAuLbd1gJDjMo4Yao8vztUHh9JXjld7NY5rJH73'; frame-src 'self'; form-action 'self'"
+          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'nonce-P5Cl0BG5zbWK2WWKiXsdUA6SBI8ZZVROmm63NQLr' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'nonce-P5Cl0BG5zbWK2WWKiXsdUA6SBI8ZZVROmm63NQLr' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
           permissions-policy: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()'
           access-control-allow-origin: '*'
         description: null
@@ -1820,7 +1868,7 @@ endpoints:
         name: push_enabled
         description: ''
         required: false
-        example: false
+        example: true
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -1853,7 +1901,7 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       email_enabled: true
-      push_enabled: false
+      push_enabled: true
       digest_frequency: none
     fileParameters: []
     responses: []
@@ -1895,13 +1943,13 @@ endpoints:
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-page-load-time: 2.86ms
-          x-db-query-count: '20'
-          x-memory-peak: '59244544'
+          x-page-load-time: 2.03ms
+          x-db-query-count: '30'
+          x-memory-peak: '61341696'
           x-content-type-options: nosniff
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
-          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self'; object-src 'none'; connect-src 'self'; script-src 'self' 'nonce-phJIgpoGH0GI6uMYJyji0t56gpDh3l451fcGMsxO'; style-src 'self' 'nonce-phJIgpoGH0GI6uMYJyji0t56gpDh3l451fcGMsxO'; frame-src 'self'; form-action 'self'"
+          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'nonce-0aNwXe6JM1VK3H9xNoqGTpgX8sDTmvbgNEi0iOyj' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'nonce-0aNwXe6JM1VK3H9xNoqGTpgX8sDTmvbgNEi0iOyj' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
           permissions-policy: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()'
           access-control-allow-origin: '*'
         description: null

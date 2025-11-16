@@ -282,7 +282,7 @@ endpoints:
         name: status
         description: ''
         required: true
-        example: draft
+        example: published
         type: string
         enumValues:
           - draft
@@ -296,7 +296,7 @@ endpoints:
         name: is_featured
         description: ''
         required: false
-        example: true
+        example: false
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -307,7 +307,7 @@ endpoints:
         name: is_trending
         description: ''
         required: false
-        example: true
+        example: false
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -329,7 +329,7 @@ endpoints:
         name: published_at
         description: 'Must be a valid date.'
         required: false
-        example: '2025-11-16T19:01:12'
+        example: '2025-11-16T19:22:35'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -340,7 +340,7 @@ endpoints:
         name: scheduled_at
         description: 'This field is required when <code>status</code> is <code>scheduled</code>. Must be a valid date.'
         required: false
-        example: '2025-11-16T19:01:12'
+        example: '2025-11-16T19:22:35'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -386,12 +386,12 @@ endpoints:
       content: architecto
       featured_image: 'n'
       image_alt_text: g
-      status: draft
-      is_featured: true
-      is_trending: true
+      status: published
+      is_featured: false
+      is_trending: false
       category_id: architecto
-      published_at: '2025-11-16T19:01:12'
-      scheduled_at: '2025-11-16T19:01:12'
+      published_at: '2025-11-16T19:22:35'
+      scheduled_at: '2025-11-16T19:22:35'
       meta_title: 'n'
       meta_description: g
       meta_keywords: z
@@ -510,7 +510,7 @@ endpoints:
         name: status
         description: ''
         required: true
-        example: published
+        example: draft
         type: string
         enumValues:
           - draft
@@ -524,7 +524,7 @@ endpoints:
         name: is_featured
         description: ''
         required: false
-        example: false
+        example: true
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -557,7 +557,7 @@ endpoints:
         name: published_at
         description: 'Must be a valid date.'
         required: false
-        example: '2025-11-16T19:01:12'
+        example: '2025-11-16T19:22:35'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -568,7 +568,7 @@ endpoints:
         name: scheduled_at
         description: 'This field is required when <code>status</code> is <code>scheduled</code>. Must be a valid date.'
         required: false
-        example: '2025-11-16T19:01:12'
+        example: '2025-11-16T19:22:35'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -614,12 +614,12 @@ endpoints:
       content: architecto
       featured_image: 'n'
       image_alt_text: g
-      status: published
-      is_featured: false
+      status: draft
+      is_featured: true
       is_trending: false
       category_id: architecto
-      published_at: '2025-11-16T19:01:12'
-      scheduled_at: '2025-11-16T19:01:12'
+      published_at: '2025-11-16T19:22:35'
+      scheduled_at: '2025-11-16T19:22:35'
       meta_title: 'n'
       meta_description: g
       meta_keywords: z

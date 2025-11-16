@@ -66,7 +66,21 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'role:admin,editor'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/newsletters', [\App\Http\Controllers\Admin\NewsletterController::class, 'index'])->name('newsletters.index');
     Route::get('/newsletters/export', [\App\Http\Controllers\Admin\NewsletterController::class, 'export'])->name('newsletters.export');
+    Route::get('/newsletters/sends', [\App\Http\Controllers\Admin\NewsletterController::class, 'sends'])->name('newsletters.sends');
+    Route::get('/newsletters/sends/{send}', [\App\Http\Controllers\Admin\NewsletterController::class, 'showSend'])->name('newsletters.sends.show');
 });
+
+// Public shared reading list view
+Route::get('/lists/s/{token}', function (string $token) {
+    $collection = \App\Models\BookmarkCollection::where('share_token', $token)
+        ->with(['bookmarks.post' => function ($q) {
+            $q->select(['id', 'title', 'slug', 'excerpt', 'featured_image', 'published_at']);
+        }])->firstOrFail();
+
+    return view('reading-lists.shared', [
+        'collection' => $collection,
+    ]);
+})->name('reading-lists.shared.show');
 
 // Newsletter routes
 Route::post('/newsletter/subscribe', [\App\Http\Controllers\NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');

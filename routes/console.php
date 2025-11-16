@@ -2,6 +2,7 @@
 
 use App\Console\Commands\ArchiveActivityLogs;
 use App\Console\Commands\ArchiveSearchLogs;
+use App\Console\Commands\WarmCache;
 use App\Jobs\Analytics\AggregateWeeklyStatsJob;
 use App\Jobs\Analytics\CalculateDailyMetricsJob;
 use App\Jobs\Analytics\CleanOldAnalyticsDataJob;
@@ -68,3 +69,9 @@ Schedule::command('newsletters:send --subject="Weekly Digest" --content="<p>Your
     ->weeklyOn(1, '09:30') // Monday 09:30
     ->withoutOverlapping()
     ->description('Queue weekly newsletter sends');
+
+// Warm cache daily
+Schedule::command(WarmCache::class)
+    ->dailyAt('04:00')
+    ->withoutOverlapping()
+    ->description('Pre-warm application caches for common pages');

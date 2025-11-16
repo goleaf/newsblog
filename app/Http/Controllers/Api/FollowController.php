@@ -127,4 +127,34 @@ class FollowController extends Controller
             ],
         ]);
     }
+
+    public function suggestions(Request $request): JsonResponse
+    {
+        $auth = $request->user();
+        abort_unless($auth, 401);
+
+        $followingIds = Follow::query()
+            ->where('follower_id', $auth->id)
+            ->pluck('followed_id')
+            ->all();
+
+        $suggestions = \App\Models\User::query()
+            ->where('id', '!=', $auth->id)
+            ->whereNotIn('id', $followingIds)
+            ->withCount(['posts' => function ($q) {
+                $q->where('status', 'published');
+            }])
+            ->orderByDesc('posts_count')
+            ->limit(10)
+            ->get(['id', 'name', 'email']);
+
+        return response()->json([
+            'data' => $suggestions->map(fn ($u) => [
+                'id' => $u->id,
+                'name' => $u->name,
+                'email' => $u->email,
+                'posts_count' => $u->posts_count ?? 0,
+            ]),
+        ]);
+    }
 }

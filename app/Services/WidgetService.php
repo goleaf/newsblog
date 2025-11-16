@@ -118,8 +118,46 @@ class WidgetService
             'weather' => $this->renderWeather($widget),
             'stock-ticker' => $this->renderStockTicker($widget),
             'countdown' => $this->renderCountdown($widget),
+            'who-to-follow' => $this->renderWhoToFollow($widget),
             default => '',
         };
+    }
+
+    protected function renderWhoToFollow(Widget $widget): string
+    {
+        $user = auth()->user();
+        if (! $user) {
+            return '';
+        }
+
+        $limit = (int) ($widget->settings['count'] ?? 5);
+
+        $cacheKey = "widget.who-to-follow.user:{$user->id}.limit:{$limit}";
+        $suggestions = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($user, $limit) {
+            $followingIds = \App\Models\Follow::query()
+                ->where('follower_id', $user->id)
+                ->pluck('followed_id')
+                ->all();
+
+            return \App\Models\User::query()
+                ->where('id', '!=', $user->id)
+                ->whereNotIn('id', $followingIds)
+                ->withCount(['posts' => function ($q) {
+                    $q->where('status', 'published');
+                }])
+                ->orderByDesc('posts_count')
+                ->limit($limit)
+                ->get(['id', 'name', 'email']);
+        });
+
+        if ($suggestions->isEmpty()) {
+            return '';
+        }
+
+        return View::make('components.widgets.who-to-follow', [
+            'widget' => $widget,
+            'users' => $suggestions,
+        ])->render();
     }
 
     protected function renderRecentPosts(Widget $widget): string

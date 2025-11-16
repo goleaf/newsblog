@@ -33,8 +33,9 @@ if (typeof document !== 'undefined' && !document.querySelector('link[rel="styles
     const link = document.createElement('link');
     link.setAttribute('rel', 'stylesheet');
     link.setAttribute('media', 'print');
-    // Fallback path; in production Vite::asset will also add a proper link
-    link.setAttribute('href', '/build/assets/print.css');
+    // In production, use built asset path; in dev/test, use a tiny data URL to avoid 404/500s
+    const devDataCss = 'data:text/css,/* print placeholder for tests */';
+    link.setAttribute('href', import.meta.env.PROD ? '/build/assets/print.css' : devDataCss);
     document.head.appendChild(link);
 }
 

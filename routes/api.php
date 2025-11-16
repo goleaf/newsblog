@@ -73,6 +73,7 @@ Route::prefix('v1')->middleware(['throttle:api'])->group(function () {
         Route::delete('/users/{user}/follow', [\App\Http\Controllers\Api\FollowController::class, 'unfollow']);
         Route::get('/users/{user}/followers', [\App\Http\Controllers\Api\FollowController::class, 'followers']);
         Route::get('/users/{user}/following', [\App\Http\Controllers\Api\FollowController::class, 'following']);
+        Route::get('/users/suggestions', [\App\Http\Controllers\Api\FollowController::class, 'suggestions']);
 
         // Activity feeds
         Route::get('/activity/me', [\App\Http\Controllers\Api\ActivityController::class, 'my']);
@@ -89,7 +90,22 @@ Route::prefix('v1')->middleware(['throttle:api'])->group(function () {
 
         // Newsletter metrics
         Route::get('/newsletters/sends/{id}/metrics', [\App\Http\Controllers\Api\NewsletterMetricsController::class, 'show']);
+
+        // Reading lists
+        Route::get('/reading-lists', [\App\Http\Controllers\Api\ReadingListController::class, 'index']);
+        Route::post('/reading-lists', [\App\Http\Controllers\Api\ReadingListController::class, 'store']);
+        Route::get('/reading-lists/{collection}', [\App\Http\Controllers\Api\ReadingListController::class, 'show']);
+        Route::put('/reading-lists/{collection}', [\App\Http\Controllers\Api\ReadingListController::class, 'update']);
+        Route::delete('/reading-lists/{collection}', [\App\Http\Controllers\Api\ReadingListController::class, 'destroy']);
+        Route::post('/reading-lists/{collection}/items', [\App\Http\Controllers\Api\ReadingListController::class, 'addItem']);
+        Route::delete('/reading-lists/{collection}/items/{bookmark}', [\App\Http\Controllers\Api\ReadingListController::class, 'removeItem']);
+        Route::post('/reading-lists/{collection}/reorder', [\App\Http\Controllers\Api\ReadingListController::class, 'reorder']);
+        Route::post('/reading-lists/{collection}/share', [\App\Http\Controllers\Api\ReadingListController::class, 'share']);
+        Route::delete('/reading-lists/{collection}/share', [\App\Http\Controllers\Api\ReadingListController::class, 'revokeShare']);
     });
+
+    // Public shared reading list
+    Route::get('/reading-lists/shared/{token}', [\App\Http\Controllers\Api\ReadingListController::class, 'sharedShow']);
 
     // Moderation endpoints (admin/editor only)
     Route::middleware(['auth:sanctum', 'role:admin,editor'])->group(function () {

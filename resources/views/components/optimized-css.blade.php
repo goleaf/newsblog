@@ -34,7 +34,7 @@
     
     {{-- Defer non-critical CSS using media="print" trick --}}
     <link rel="preload" 
-          href="{{ Vite::asset('resources/css/app.css') }}" 
+          href="{{ \Illuminate\Support\Facades\Vite::asset('resources/css/app.css') }}" 
           as="style" 
           onload="this.onload=null;this.rel='stylesheet'">
     

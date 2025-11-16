@@ -55,9 +55,9 @@ export default defineConfig({
   /* Run your local dev server before starting the tests */
   webServer: {
     // Start Vite dev server and PHP built-in server together for e2e
-    // Use local concurrently binary to avoid PATH issues in sandboxes
-    command: 'node node_modules/.bin/concurrently -k -n vite,php "node node_modules/.bin/vite --host 127.0.0.1" "php -S 127.0.0.1:8000 -t public public/index.php"',
-    url: 'http://127.0.0.1:8000',
+    // Use a test-dedicated PHP port to avoid collisions with a dev server
+    command: 'node node_modules/.bin/concurrently -k -n vite,php "node node_modules/.bin/vite --host 127.0.0.1" "php -S 127.0.0.1:8100 -t public public/index.php"',
+    url: 'http://127.0.0.1:8100',
     reuseExistingServer: !process.env.CI,
     timeout: 240 * 1000,
   },

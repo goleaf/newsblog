@@ -174,7 +174,7 @@ endpoints:
         name: date_from
         description: 'Must be a valid date.'
         required: false
-        example: '2025-11-16T19:01:11'
+        example: '2025-11-16T19:22:35'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -197,7 +197,7 @@ endpoints:
       limit: 7
       category: z
       author: m
-      date_from: '2025-11-16T19:01:11'
+      date_from: '2025-11-16T19:22:35'
       date_to: '2051-12-10'
     fileParameters: []
     responses:
@@ -349,7 +349,7 @@ endpoints:
         name: date_from
         description: 'Must be a valid date.'
         required: false
-        example: '2025-11-16T19:01:11'
+        example: '2025-11-16T19:22:35'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -372,7 +372,7 @@ endpoints:
       limit: 7
       category: z
       author: m
-      date_from: '2025-11-16T19:01:11'
+      date_from: '2025-11-16T19:22:35'
       date_to: '2051-12-10'
     fileParameters: []
     responses:

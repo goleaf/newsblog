@@ -4,18 +4,22 @@
 
 @php
     // Fetch legal pages for footer
-    $legalPages = \App\Models\Page::active()
-        ->whereIn('slug', ['privacy-policy', 'terms-of-service', 'cookie-policy', 'gdpr'])
-        ->ordered()
-        ->get();
+    $legalPages = \Illuminate\Support\Facades\Cache::remember('footer:legal-pages', 600, function () {
+        return \App\Models\Page::active()
+            ->whereIn('slug', ['privacy-policy', 'terms-of-service', 'cookie-policy', 'gdpr'])
+            ->ordered()
+            ->get();
+    });
     
     // Get social media links from settings
-    $socialLinks = [
-        'twitter' => config('app.social.twitter', '#'),
-        'github' => config('app.social.github', '#'),
-        'linkedin' => config('app.social.linkedin', '#'),
-        'rss' => \Illuminate\Support\Facades\Route::has('feed') ? route('feed') : '#',
-    ];
+    $socialLinks = \Illuminate\Support\Facades\Cache::remember('footer:social-links', 600, function () {
+        return [
+            'twitter' => config('app.social.twitter', '#'),
+            'github' => config('app.social.github', '#'),
+            'linkedin' => config('app.social.linkedin', '#'),
+            'rss' => \Illuminate\Support\Facades\Route::has('feed') ? route('feed') : '#',
+        ];
+    });
 @endphp
 
 <footer class="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 mt-auto" role="contentinfo">
