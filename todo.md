@@ -1,3 +1,16 @@
+- [x] 14.1 Create Bookmark model and migration
+  - Added `bookmarks` table with `reader_token`, `post_id`, timestamps, and unique composite index.
+  - Created `App\Models\Bookmark` with relation to `Post`.
+- [x] 14.2 Create BookmarkController
+  - Implemented `index`, `store`, `destroy`, `toggle` with anonymous `reader_token` cookie.
+  - Added Form Requests with validation and messages.
+- [ ] 14.3 Add bookmark button to post cards and articles
+  - Added `resources/views/components/bookmark-button.blade.php`.
+  - Injected on post cards and article page.
+  - Implemented `resources/js/bookmarks.js` and imported in `resources/js/app.js`.
+- [ ] 14.4 Write bookmark system tests
+  - Added `tests/Feature/Bookmarks/BookmarkTest.php` covering create, duplicate, remove, index.
+
 ## Phase 2: Content Management & Admin (Nova)
 
 - [x] 5. Set up Laravel Nova admin panel

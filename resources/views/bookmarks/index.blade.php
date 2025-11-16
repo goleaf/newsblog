@@ -1,3 +1,24 @@
+@extends('layouts.app', ['page' => 'bookmarks'])
+
+@section('content')
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+	<h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">{{ __('Your reading list') }}</h1>
+
+	@if($bookmarks->count() === 0)
+		<p class="text-gray-600 dark:text-gray-300">{{ __('No bookmarks yet.') }}</p>
+	@else
+		<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+			@foreach($bookmarks as $bookmark)
+				<x-content.post-card :post="$bookmark->post" :showImage="true" />
+			@endforeach
+		</div>
+		<div class="mt-8">
+			{{ $bookmarks->links() }}
+		</div>
+	@endif
+</div>
+@endsection
+
 @extends('layouts.app')
 
 @section('title', 'My Reading List')

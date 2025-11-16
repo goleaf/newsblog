@@ -9,6 +9,7 @@ import modalStore from './stores/modal';
 
 // Import browser notifications
 import './browser-notifications';
+import './bookmarks';
 
 window.Alpine = Alpine;
 

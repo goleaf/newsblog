@@ -1,3 +1,15 @@
+# Phase 5: User Features & Engagement
+
+- [x] 14. Implement bookmark system
+- [x] 14.1 Create Bookmark model and migration
+  - Implemented anonymous bookmarks with `reader_token` + `post_id`, timestamps, composite unique index.
+- [x] 14.2 Create BookmarkController
+  - Added `index`, `store`, `destroy`, `toggle` with dedicated Form Requests.
+- [ ] 14.3 Add bookmark button to post cards and articles
+  - Added `<x-bookmark-button>` component and JS AJAX toggle.
+  - Wired into post cards and article page.
+- [ ] 14.4 Write bookmark system tests
+  - Created feature tests for create, duplicate prevention, removal, and reading list.
 ## 17. Create user dashboard and profile — Plan (Pending auth decision)
 
 Blocking decision needed before implementation:

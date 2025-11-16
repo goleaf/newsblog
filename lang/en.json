@@ -61,6 +61,9 @@
     "post.link_copied": "Link copied to clipboard!",
     "post.copy_link_error": "Failed to copy link",
     "post.login_to_bookmark": "Login to bookmark",
+	"Toggle bookmark": "Toggle bookmark",
+	"Your reading list": "Your reading list",
+	"No bookmarks yet.": "No bookmarks yet.",
 
     "bookmark.post_id_required": "The post ID is required.",
     "bookmark.post_id_integer": "The post ID must be an integer.",

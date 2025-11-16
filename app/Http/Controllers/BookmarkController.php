@@ -2,134 +2,125 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\DestroyBookmarkRequest;
-use App\Http\Requests\StoreBookmarkRequest;
+use App\Http\Requests\Bookmarks\DestroyBookmarkRequest;
+use App\Http\Requests\Bookmarks\IndexBookmarkRequest;
+use App\Http\Requests\Bookmarks\StoreBookmarkRequest;
+use App\Http\Requests\Bookmarks\ToggleBookmarkRequest;
 use App\Models\Bookmark;
 use App\Models\Post;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class BookmarkController extends Controller
 {
-    public function index(Request $request)
+    protected function getOrCreateReaderToken(Request $request): string
     {
-        $query = Bookmark::with(['post.user', 'post.category'])
-            ->where('bookmarks.user_id', Auth::id());
-
-        // Filter by category
-        if ($request->filled('category')) {
-            $query->whereHas('post', function ($q) use ($request) {
-                $q->where('category_id', $request->category);
-            });
+        $token = (string) $request->cookie('reader_token');
+        if ($token === '') {
+            $token = Str::uuid()->toString();
         }
+        // 2 years
+        cookie()->queue(cookie('reader_token', $token, 60 * 24 * 730, null, null, false, false, false, 'Lax'));
 
-        // Sort options
-        $sort = $request->get('sort', 'date_saved');
-        switch ($sort) {
-            case 'title':
-                $query->join('posts', 'bookmarks.post_id', '=', 'posts.id')
-                    ->orderBy('posts.title', 'asc')
-                    ->select('bookmarks.*');
-                break;
-            case 'reading_time':
-                $query->join('posts', 'bookmarks.post_id', '=', 'posts.id')
-                    ->orderBy('posts.reading_time', 'asc')
-                    ->select('bookmarks.*');
-                break;
-            case 'date_saved':
-            default:
-                $query->latest('bookmarks.created_at');
-                break;
-        }
-
-        $bookmarks = $query->paginate(12)->withQueryString();
-
-        // Get categories for filter
-        $categories = \App\Models\Category::whereHas('posts', function ($q) {
-            $q->whereIn('id', Bookmark::where('user_id', Auth::id())->pluck('post_id'));
-        })->get();
-
-        // Get user's collections
-        $collections = Auth::user()->bookmarkCollections()
-            ->withCount('bookmarks')
-            ->get();
-
-        return view('bookmarks.index', compact('bookmarks', 'categories', 'collections'));
+        return $token;
     }
 
-    public function store(StoreBookmarkRequest $request, Post $post)
+    public function index(IndexBookmarkRequest $request): View
     {
-        $bookmark = Bookmark::create([
-            'user_id' => Auth::id(),
+        $readerToken = (string) $request->cookie('reader_token');
+
+        $bookmarks = Bookmark::query()
+            ->where('reader_token', $readerToken)
+            ->with(['post' => ['category', 'tags', 'user']])
+            ->latest()
+            ->paginate(12);
+
+        return view('bookmarks.index', [
+            'bookmarks' => $bookmarks,
+        ]);
+    }
+
+    public function store(StoreBookmarkRequest $request): RedirectResponse|JsonResponse
+    {
+        $readerToken = $this->getOrCreateReaderToken($request);
+        $postId = (int) $request->validated('post_id');
+
+        $post = Post::query()->published()->findOrFail($postId);
+
+        $bookmark = Bookmark::firstOrCreate([
+            'reader_token' => $readerToken,
             'post_id' => $post->id,
         ]);
 
-        if ($request->expectsJson()) {
+        if ($request->wantsJson()) {
             return response()->json([
-                'success' => true,
+                'ok' => true,
                 'bookmarked' => true,
-                'message' => __('bookmark.bookmark_created'),
-                'data' => [
-                    'bookmark' => $bookmark,
-                    'bookmarks_count' => $post->fresh()->bookmarks()->count(),
-                ],
-            ], 201);
-        }
-
-        return back()->with('success', __('bookmark.bookmark_created'));
-    }
-
-    public function destroy(DestroyBookmarkRequest $request, Post $post)
-    {
-        $bookmark = Bookmark::where('user_id', Auth::id())
-            ->where('post_id', $post->id)
-            ->firstOrFail();
-
-        $bookmark->delete();
-
-        if ($request->expectsJson()) {
-            return response()->json([
-                'success' => true,
-                'bookmarked' => false,
-                'message' => __('bookmark.bookmark_deleted'),
-                'data' => [
-                    'bookmarks_count' => $post->fresh()->bookmarks()->count(),
-                ],
+                'bookmark_id' => $bookmark->id,
+                'count' => $post->bookmarks()->count(),
             ]);
         }
 
-        return back()->with('success', __('bookmark.bookmark_deleted'));
+        return back()->with('status', __('Bookmarked'));
     }
 
-    public function toggle(Request $request, $postId)
+    public function destroy(DestroyBookmarkRequest $request): RedirectResponse|JsonResponse
     {
-        $user = Auth::user();
+        $readerToken = (string) $request->cookie('reader_token');
+        $postId = (int) $request->validated('post_id');
 
-        $bookmark = Bookmark::where('user_id', $user->id)
-            ->where('post_id', $postId)
+        $post = Post::query()->findOrFail($postId);
+
+        Bookmark::query()
+            ->where('reader_token', $readerToken)
+            ->where('post_id', $post->id)
+            ->delete();
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'ok' => true,
+                'bookmarked' => false,
+                'count' => $post->bookmarks()->count(),
+            ]);
+        }
+
+        return back()->with('status', __('Bookmark removed'));
+    }
+
+    public function toggle(ToggleBookmarkRequest $request): JsonResponse
+    {
+        $readerToken = $this->getOrCreateReaderToken($request);
+        $postId = (int) $request->validated('post_id');
+
+        $post = Post::query()->published()->findOrFail($postId);
+
+        $existing = Bookmark::query()
+            ->where('reader_token', $readerToken)
+            ->where('post_id', $post->id)
             ->first();
 
-        if ($bookmark) {
-            $bookmark->delete();
-            $bookmarked = false;
-            $message = __('post.remove_from_reading_list');
-        } else {
-            Bookmark::create([
-                'user_id' => $user->id,
-                'post_id' => $postId,
-            ]);
-            $bookmarked = true;
-            $message = __('post.add_to_reading_list');
-        }
-
-        if ($request->expectsJson()) {
+        if ($existing) {
+            $existing->delete();
             return response()->json([
-                'success' => true,
-                'bookmarked' => $bookmarked,
-                'message' => $message,
+                'ok' => true,
+                'bookmarked' => false,
+                'count' => $post->bookmarks()->count(),
             ]);
         }
 
-        return back()->with('success', $message);
+        $bookmark = Bookmark::create([
+            'reader_token' => $readerToken,
+            'post_id' => $post->id,
+        ]);
+
+        return response()->json([
+            'ok' => true,
+            'bookmarked' => true,
+            'bookmark_id' => $bookmark->id,
+            'count' => $post->bookmarks()->count(),
+        ]);
     }
 }

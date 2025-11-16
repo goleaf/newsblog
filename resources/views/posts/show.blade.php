@@ -14,6 +14,9 @@
 
 <!-- Floating Action Bar -->
 <x-article.floating-actions :post="$post" />
+<div class="fixed bottom-6 right-6 z-40">
+	<x-bookmark-button :post="$post" size="lg" />
+	</div>
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">

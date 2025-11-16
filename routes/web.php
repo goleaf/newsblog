@@ -76,11 +76,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile/email-preferences', [ProfileController::class, 'updateEmailPreferences'])->name('profile.email-preferences');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Bookmarks
-    Route::get('/bookmarks', [\App\Http\Controllers\BookmarkController::class, 'index'])->name('bookmarks.index');
-    Route::post('/posts/{post}/bookmark', [\App\Http\Controllers\BookmarkController::class, 'store'])->name('bookmarks.store');
-    Route::delete('/posts/{post}/bookmark', [\App\Http\Controllers\BookmarkController::class, 'destroy'])->name('bookmarks.destroy');
-    Route::post('/posts/{post}/bookmark/toggle', [\App\Http\Controllers\BookmarkController::class, 'toggle'])->name('bookmarks.toggle');
+    // (auth-specific features continue below)
 
     // Bookmark Collections
     Route::post('/bookmarks/collections', [\App\Http\Controllers\BookmarkCollectionController::class, 'store'])->name('bookmarks.collections.store');
@@ -103,6 +99,14 @@ Route::middleware('auth')->group(function () {
     Route::delete('/gdpr/delete-account', [\App\Http\Controllers\GdprController::class, 'deleteAccount'])->name('gdpr.delete-account');
     Route::post('/gdpr/withdraw-consent', [\App\Http\Controllers\GdprController::class, 'withdrawConsent'])->name('gdpr.withdraw-consent');
 });
+
+// Public bookmark routes (anonymous via reader_token)
+Route::get('/bookmarks', [\App\Http\Controllers\BookmarkController::class, 'index'])->name('bookmarks.index');
+Route::post('/bookmarks', [\App\Http\Controllers\BookmarkController::class, 'store'])->name('bookmarks.store');
+Route::delete('/bookmarks', [\App\Http\Controllers\BookmarkController::class, 'destroy'])->name('bookmarks.destroy');
+Route::post('/bookmarks/toggle', [\App\Http\Controllers\BookmarkController::class, 'toggle'])
+    ->middleware('throttle:120,1')
+    ->name('bookmarks.toggle');
 
 // Page routes
 Route::get('/page/{slug}', [\App\Http\Controllers\PageController::class, 'show'])->name('page.show');
