@@ -50,7 +50,7 @@ class AdvancedSearchService
     protected function buildAdvancedSearchQuery(string $query, array $filters = []): Builder
     {
         $queryBuilder = Post::query()
-            ->published()
+            ->where('status', \App\Enums\PostStatus::Published)
             ->with(['user', 'category', 'tags']);
 
         // Multi-field search (title, content, excerpt)

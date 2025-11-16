@@ -60,6 +60,41 @@
 }
 
 @layer components {
+    /* Skeleton shimmer effect */
+    .skeleton {
+        @apply relative overflow-hidden bg-gray-200 dark:bg-gray-700;
+    }
+    .skeleton::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        transform: translateX(-100%);
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+        animation: shimmer 1.6s infinite;
+    }
+    @keyframes shimmer {
+        100% {
+            transform: translateX(100%);
+        }
+    }
+
+    /* Fade-in for loaded content/images */
+    .fade-in {
+        opacity: 0;
+        transition: opacity .35s ease-out;
+    }
+    .fade-in.is-visible {
+        opacity: 1;
+    }
+
+    /* Integrate with lazy image states */
+    img.lazy-image {
+        opacity: .2;
+        transition: opacity .35s ease-out, filter .3s ease-out;
+    }
+    img.lazy-loaded {
+        opacity: 1;
+    }
     /* Highlighted search match */
     .search-highlight, mark.search-highlight {
         @apply bg-yellow-200 px-1 rounded font-medium;

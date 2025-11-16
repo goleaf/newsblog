@@ -7,7 +7,9 @@ use App\Models\Post;
 use App\Models\Tag;
 use App\Models\Widget;
 use App\Models\WidgetArea;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 
 class WidgetService
@@ -39,6 +41,60 @@ class WidgetService
         }
 
         return $output;
+    }
+
+    /**
+     * Get widgets for an area by slug or model.
+     *
+     * @return \Illuminate\Support\Collection<int, \App\Models\Widget>
+     */
+    public function getWidgetsForArea(WidgetArea|string $areaOrSlug, bool $onlyActive = true): Collection
+    {
+        $area = $areaOrSlug instanceof WidgetArea
+            ? $areaOrSlug
+            : WidgetArea::where('slug', $areaOrSlug)->first();
+
+        if (! $area) {
+            return collect();
+        }
+
+        $relation = $onlyActive ? 'activeWidgets' : 'widgets';
+
+        return $area->{$relation}()->get();
+    }
+
+    /**
+     * Update ordering (and optionally area) for a set of widgets.
+     *
+     * Expects array of arrays with keys: id, order, widget_area_id
+     *
+     * @param  array<int, array{id:int, order:int, widget_area_id:int}>  $widgetsData
+     */
+    public function updateWidgetOrder(array $widgetsData): void
+    {
+        if ($widgetsData === []) {
+            return;
+        }
+
+        DB::transaction(function () use ($widgetsData): void {
+            foreach ($widgetsData as $data) {
+                Widget::where('id', $data['id'])->update([
+                    'order' => $data['order'],
+                    'widget_area_id' => $data['widget_area_id'],
+                ]);
+            }
+        });
+
+        // Clear caches for affected areas
+        collect($widgetsData)
+            ->pluck('widget_area_id')
+            ->unique()
+            ->each(function (int $areaId): void {
+                $area = WidgetArea::find($areaId);
+                if ($area) {
+                    $this->clearAreaCache($area);
+                }
+            });
     }
 
     protected function renderWidget(Widget $widget): string

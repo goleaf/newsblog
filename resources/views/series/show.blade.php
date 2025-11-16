@@ -92,7 +92,7 @@
                                             class="flex h-10 w-10 items-center justify-center rounded-full text-lg font-bold transition-colors"
                                             :class="isRead ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200'"
                                         >
-                                            {{ $post->pivot->order + 1 }}
+                                            {{ ($post->order_in_series ?? 0) + 1 }}
                                         </span>
                                         <!-- Checkmark for read articles -->
                                         <span 

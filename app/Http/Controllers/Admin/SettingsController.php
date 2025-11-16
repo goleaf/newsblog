@@ -3,14 +3,18 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\SendTestEmailRequest;
+use App\Http\Requests\Admin\UpdateSettingsRequest;
 use App\Models\Setting;
+use App\Services\SettingsService;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 
 class SettingsController extends Controller
 {
+    public function __construct(public SettingsService $settingsService) {}
+
     /**
      * Display the settings page.
      */
@@ -29,36 +33,30 @@ class SettingsController extends Controller
     /**
      * Update settings.
      */
-    public function update(Request $request): RedirectResponse
+    public function update(UpdateSettingsRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'settings' => 'required|array',
-            'settings.*' => 'nullable|string|max:65535',
-            'group' => 'required|string|in:'.implode(',', array_keys(Setting::GROUPS)),
-        ]);
+        $validated = $request->validated();
 
         $group = $validated['group'];
 
         foreach ($validated['settings'] as $key => $value) {
-            Setting::set($key, $value, $group);
+            $this->settingsService->set($key, $value, $group);
         }
 
         // Clear all settings cache
-        Setting::clearAllCache();
+        $this->settingsService->clearAllCache();
 
         return redirect()
             ->route('admin.settings.index')
-            ->with('success', 'Settings updated successfully.');
+            ->with('success', __('settings.updated'));
     }
 
     /**
      * Send a test email.
      */
-    public function sendTestEmail(Request $request): RedirectResponse
+    public function sendTestEmail(SendTestEmailRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'email' => 'required|email',
-        ]);
+        $validated = $request->validated();
 
         try {
             Mail::raw('This is a test email from TechNewsHub. If you received this, your email settings are configured correctly.', function ($message) use ($validated) {
@@ -72,7 +70,7 @@ class SettingsController extends Controller
         } catch (\Exception $e) {
             return redirect()
                 ->route('admin.settings.index')
-                ->with('error', 'Failed to send test email: '.$e->getMessage());
+                ->with('error', __('settings.test_email_failed', ['message' => $e->getMessage()]));
         }
     }
 
@@ -81,10 +79,10 @@ class SettingsController extends Controller
      */
     public function clearCache(): RedirectResponse
     {
-        Setting::clearAllCache();
+        $this->settingsService->clearAllCache();
 
         return redirect()
             ->route('admin.settings.index')
-            ->with('success', 'Settings cache cleared successfully.');
+            ->with('success', __('settings.cache_cleared'));
     }
 }

@@ -106,5 +106,30 @@
     "newsletter.validation.gdpr_required": "You must accept the privacy policy to subscribe.",
     "newsletter.validation.gdpr_accepted": "You must accept the privacy policy to subscribe.",
     "newsletter.email.verification_subject": "Verify Your Newsletter Subscription",
-    "newsletter.email.confirmation_subject": "Newsletter Subscription Confirmed"
+    "newsletter.email.confirmation_subject": "Newsletter Subscription Confirmed",
+
+    "settings.updated": "Settings updated successfully.",
+    "settings.cache_cleared": "Settings cache cleared successfully.",
+    "settings.test_email_subject": "Test Email from :app",
+    "settings.test_email_body": "This is a test email from :app. If you received this, your email settings are configured correctly.",
+    "settings.test_email_sent": "Test email sent successfully to :email",
+    "settings.test_email_failed": "Failed to send test email: :message",
+    "settings.test_email_help": "Enter the email address to send a test message.",
+
+    "validation.settings_required": "Settings data is required.",
+    "validation.settings_array": "Settings data must be an array.",
+    "validation.group_required": "A settings group is required.",
+    "validation.group_invalid": "The selected settings group is invalid.",
+    "validation.email_required": "The email field is required.",
+    "validation.email_invalid": "Please provide a valid email address.",
+
+    "dashboard.welcome_back": "Welcome back",
+    "dashboard.overview_text": "Here’s a quick overview of your activity.",
+    "dashboard.recent_notifications": "Recent Notifications",
+    "dashboard.unread_count": "Unread",
+    "dashboard.view": "View",
+    "dashboard.no_notifications": "You’re all caught up. No recent notifications.",
+    "dashboard.reading_history": "Reading History",
+    "dashboard.reading_history_subtitle": "Your last 100 viewed posts",
+    "dashboard.viewed_at": "Viewed"
 }

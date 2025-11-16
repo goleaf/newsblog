@@ -2,6 +2,9 @@
 
 namespace App\Nova;
 
+use App\Nova\Actions\ClearSettingsCache;
+use App\Nova\Actions\SendTestEmail;
+use App\Nova\Filters\SettingGroupFilter;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\DateTime;
@@ -193,7 +196,9 @@ class Setting extends Resource
      */
     public function filters(NovaRequest $request): array
     {
-        return [];
+        return [
+            new SettingGroupFilter,
+        ];
     }
 
     /**
@@ -213,6 +218,9 @@ class Setting extends Resource
      */
     public function actions(NovaRequest $request): array
     {
-        return [];
+        return [
+            (new SendTestEmail)->standalone(),
+            (new ClearSettingsCache)->standalone(),
+        ];
     }
 }

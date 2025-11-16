@@ -7,7 +7,6 @@ use App\Jobs\SendPostPublishedNotification;
 use App\Models\Post;
 use App\Services\CacheService;
 use App\Services\NotificationService;
-use App\Services\PostRevisionService;
 use App\Services\PostService;
 use App\Services\SearchIndexService;
 
@@ -77,21 +76,6 @@ class PostObserver
         $post->load(['user', 'category', 'tags']);
 
         $this->searchIndexService->updatePost($post);
-
-        // Create a revision if content-related fields changed (Requirement 19.2)
-        $contentRelevantFields = [
-            'title',
-            'content',
-            'excerpt',
-            'slug',
-            'featured_image',
-            'meta_title',
-            'meta_description',
-            'meta_keywords',
-        ];
-        if ($post->isDirty($contentRelevantFields)) {
-            app(PostRevisionService::class)->createRevision($post, 'Auto-save on update');
-        }
 
         // Check if post was just published (status changed to published)
         if ($post->isDirty('status')) {

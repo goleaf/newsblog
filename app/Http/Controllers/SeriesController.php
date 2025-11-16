@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\PostStatus;
 use App\Models\Series;
 use App\Services\SeriesNavigationService;
 
@@ -18,7 +19,7 @@ class SeriesController extends Controller
     {
         $series = Series::withCount('posts')
             ->with(['posts' => function ($query) {
-                $query->where('status', 'published')
+                $query->where('status', PostStatus::Published)
                     ->select('posts.id', 'posts.series_id', 'posts.featured_image', 'posts.reading_time', 'posts.order_in_series')
                     ->orderBy('order_in_series')
                     ->limit(1);
@@ -26,13 +27,13 @@ class SeriesController extends Controller
             ->latest()
             ->paginate(15);
 
-        // Calculate total reading time for each series
+        // Prepare thumbnail and total reading time per series item
         $series->each(function ($item) {
+            // Compute total reading time from published posts to ensure accuracy
             $item->total_reading_time = $item->posts()
-                ->where('status', 'published')
+                ->where('status', PostStatus::Published)
                 ->sum('reading_time');
 
-            // Get first post's featured image as series thumbnail
             $firstPost = $item->posts->first();
             $item->thumbnail = $firstPost?->featured_image_url;
         });
@@ -48,7 +49,7 @@ class SeriesController extends Controller
         $series = Series::where('slug', $slug)->firstOrFail();
 
         $series->load(['posts' => function ($query) {
-            $query->where('status', 'published')
+            $query->where('status', PostStatus::Published)
                 ->with(['user', 'category'])
                 ->orderBy('order_in_series');
         }]);

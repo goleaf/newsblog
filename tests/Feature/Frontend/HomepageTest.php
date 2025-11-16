@@ -282,6 +282,30 @@ class HomepageTest extends TestCase
         $response->assertSee('Breaking News Post');
     }
 
+    public function test_homepage_uses_lazy_loading_for_post_images(): void
+    {
+        \Illuminate\Support\Facades\Cache::flush();
+        $posts = Post::factory()
+            ->count(3)
+            ->published()
+            ->for($this->user)
+            ->for($this->category)
+            ->create([
+                'featured_image' => 'images/sample.jpg',
+            ]);
+
+        $response = $this->get('/');
+
+        $response->assertStatus(200);
+        // Hero image is eager; grid/list images should be lazy via optimized-image component.
+        // Check for loading=\"lazy\" or data-src markers from the lazy loader.
+        $html = $response->getContent();
+        $this->assertTrue(
+            str_contains($html, 'loading="lazy"') || str_contains($html, 'data-src='),
+            'Expected lazy-loading attributes to appear in homepage markup.'
+        );
+    }
+
     public function test_category_based_content_sections_display_posts(): void
     {
         $category1 = Category::factory()->create(['name' => 'Technology', 'status' => 'active']);

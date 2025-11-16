@@ -188,7 +188,9 @@ class SeriesManagementTest extends TestCase
             'title' => 'Test Post',
         ]);
 
-        $series->posts()->attach($post->id, ['order' => 0]);
+        $post->series()->associate($series);
+        $post->order_in_series = 0;
+        $post->save();
 
         $response = $this->get(route('series.show', $series->slug));
 

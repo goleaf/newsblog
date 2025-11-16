@@ -1,3 +1,46 @@
+## 17. Create user dashboard and profile — Plan (Pending auth decision)
+
+Blocking decision needed before implementation:
+- Option A: Session-based personal dashboard (no users/auth)
+- Option B: Minimal `User` model and auth exclusively for dashboard/profile
+
+Priority after decision:
+1) 17.3 Implement reading history tracking
+   - Create `PostView` model and migration
+   - Track by `session_id`, dedupe per post per session
+   - Store IP and user agent
+   - Keep most recent 100 views
+   - Tests for tracking and trimming
+2) 17.1 Build `DashboardController`
+   - `index`: stats (bookmarks, comments, posts read)
+   - Show recent bookmarks
+   - Display reading history
+   - Show notification summary
+   - Tests: dashboard data display
+3) 17.2 Create dashboard page template
+   - Tailwind stats cards
+   - Recent bookmarks section
+   - Recent notifications
+   - Reading history list
+   - Components: keep minimal count but reusable
+4) 17.4 Add profile management
+   - If Option A: local preferences (avatar, bio, email prefs) stored by session or key
+   - If Option B: profile edit with avatar upload, bio, email preferences on user
+   - Validation via Form Requests; tests for updates
+5) 17.5 Dashboard tests
+   - Dashboard data display
+   - Reading history tracking and limiting
+   - Profile updates
+
+Conventions & constraints to uphold:
+- TailwindCSS; remove Bootstrap and any CDNs if present
+- All JS/CSS via npm; no inline assets in blades
+- One layout; maximize component reuse with minimal component count
+- All strings translatable (JSON-based), use translation helpers in blades/controllers
+- Each controller method uses a Form Request for validation + messages
+- No Livewire, no Docker
+- Tests are PHPUnit feature/unit; run minimally-scoped tests per change
+
 # Phase 1: Foundation & Core Models
 
 - [x] 1. Set up project structure and core configuration
@@ -23,12 +66,45 @@
 
 ---
 
+- [x] 15. Create newsletter subscription system
+  - [x] 15.1 Create Newsletter model and migration
+    - Generated migration with email (unique), status (string for enum casting), verification_token, verification_token_expires_at, verified_at, unsubscribe_token fields
+    - Added unique index on email
+    - Added enum `App\Enums\NewsletterStatus` and cast on model
+  - [x] 15.2 Build NewsletterController
+    - Implemented subscribe method with double opt-in and resend flow
+    - Implemented verify method for email confirmation with expiry handling
+    - Implemented unsubscribe method with token
+    - Implemented export method for admins (kept pending product decision to remove per no-export rule)
+  - [x] 15.3 Create newsletter subscription form component
+    - Email input with inline validation and AJAX submission
+    - Success/error messages via Alpine, all strings localized
+  - [x] 15.4 Create email templates for newsletter
+    - Verification and confirmation templates exist; subjects localized
+    - Unsubscribe flow template exists
+  - [x] 15.5 Write newsletter tests
+    - Tests cover subscription, double opt-in verification, unsubscribe, duplicate prevention, export
+
 1. Reset database with fresh migrations and seed data.
 2. Ensure a default import user exists for posts.
 3. Run CSV import command for 1000 articles with categories and tags.
 4. Verify that posts, categories, and tags are correctly created and linked.
 
 ## Tasks
+
+- **21. Create settings management system**
+  - [x] 21.1 Create Setting model and migration
+    - Key unique, value JSON, group, timestamps
+  - [x] 21.2 Implement SettingsService
+    - get with 24h caching, set with invalidation, getGroup, type validation
+  - [ ] 21.3 Build settings management UI in Nova
+    - Settings resource with grouped filtering, actions: Send Test Email, Clear Cache
+    - Clear cache on save
+    - Groups: General, SEO, Social, Email, Comments, Media
+  - [x] 21.4 Seed default settings
+    - Site name, tagline, posts per page, SEO defaults, email config
+  - [x] 21.5 Write settings management tests
+    - Service tests for caching, invalidation, grouped settings
 
 - **3.5 Create model factories and seeders**
   - Ensure factories exist for `User`, `Category`, `Tag`, and `Post`.

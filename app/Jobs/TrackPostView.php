@@ -59,6 +59,20 @@ class TrackPostView implements ShouldQueue
 
             // Increment view count
             Post::where('id', $this->postId)->increment('view_count');
+
+            // Prune reading history to keep only the 100 most recent per user/session
+            $pruneQuery = PostView::query()
+                ->when($this->userId, function ($q) {
+                    $q->where('user_id', $this->userId);
+                }, function ($q) {
+                    $q->where('session_id', $this->sessionId);
+                })
+                ->orderByDesc('viewed_at')
+                ->skip(100);
+
+            // Delete older records beyond the first 100 most recent
+            // Use chunked deletion to avoid large queries
+            $pruneQuery->take(1000)->delete();
         }
     }
 }

@@ -7,7 +7,7 @@
 @endpush
 
 @section('content')
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" x-data="{ loading: false }" x-init="loading = false">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" x-data="{ loading: true }" x-init="(window.requestIdleCallback ? requestIdleCallback(() => loading = false) : setTimeout(() => loading = false, 0))">
     <!-- Breaking News Ticker -->
     @if(isset($breakingNews) && $breakingNews->count() > 0)
         <div class="mb-6 -mx-4 sm:-mx-6 lg:-mx-8">
@@ -21,7 +21,13 @@
             <!-- Hero Section with Featured Post -->
             @if($featuredPosts->count() > 0)
                 <div class="mb-12">
-                    <x-content.hero-post :post="$featuredPosts->first()" />
+                    <div x-show="loading" class="fade-in is-visible">
+                        <x-ui.skeleton-loader type="image" class="h-[500px] rounded-lg mb-4" />
+                        <x-ui.skeleton-loader type="text" :count="3" />
+                    </div>
+                    <div x-show="!loading" x-transition.opacity>
+                        <x-content.hero-post :post="$featuredPosts->first()" />
+                    </div>
                 </div>
             @endif
 
@@ -35,14 +41,24 @@
             <!-- Trending Section -->
             @if($trendingPosts->count() > 0)
                 <div class="mb-12">
-                    <x-content.trending-posts :posts="$trendingPosts" :limit="6" />
+                    <div x-show="loading">
+                        <x-ui.skeleton-loader type="list" :count="3" />
+                    </div>
+                    <div x-show="!loading" x-transition.opacity>
+                        <x-content.trending-posts :posts="$trendingPosts" :limit="6" />
+                    </div>
                 </div>
             @endif
 
             <!-- Category-Based Content Sections -->
             @if(isset($categorySections) && $categorySections->isNotEmpty())
                 <div class="mb-12">
-                    <x-content.category-sections :categorySections="$categorySections" />
+                    <div x-show="loading">
+                        <x-ui.skeleton-loader type="card" :count="4" />
+                    </div>
+                    <div x-show="!loading" x-transition.opacity>
+                        <x-content.category-sections :categorySections="$categorySections" />
+                    </div>
                 </div>
             @endif
 
@@ -66,7 +82,12 @@
                     </div>
                 </div>
                 
-                <x-content.post-grid :posts="$recentPosts" :columns="3" />
+                <div x-show="loading">
+                    <x-ui.skeleton-loader type="card" :count="6" />
+                </div>
+                <div x-show="!loading" x-transition.opacity>
+                    <x-content.post-grid :posts="$recentPosts" :columns="3" />
+                </div>
                 
                 <!-- Pagination -->
                 @if($recentPosts->hasPages())
@@ -89,12 +110,22 @@
             <div class="space-y-6">
                 <!-- Most Popular Widget -->
                 @if(isset($mostPopular) && $mostPopular->count() > 0)
-                    <x-widgets.most-popular :posts="$mostPopular" />
+                    <div x-show="loading">
+                        <x-ui.skeleton-loader type="list" :count="5" />
+                    </div>
+                    <div x-show="!loading" x-transition.opacity>
+                        <x-widgets.most-popular :posts="$mostPopular" />
+                    </div>
                 @endif
 
                 <!-- Trending Now Widget -->
                 @if(isset($trendingNow) && $trendingNow->count() > 0)
-                    <x-widgets.trending-now :posts="$trendingNow" />
+                    <div x-show="loading">
+                        <x-ui.skeleton-loader type="list" :count="5" />
+                    </div>
+                    <div x-show="!loading" x-transition.opacity>
+                        <x-widgets.trending-now :posts="$trendingNow" />
+                    </div>
                 @endif
 
                 <!-- Additional Widget Areas -->
