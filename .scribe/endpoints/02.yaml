@@ -1,0 +1,76 @@
+name: Social
+description: ''
+endpoints:
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/v1/shares
+    metadata:
+      custom: []
+      groupName: Social
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Track a social share event.'
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      post_id:
+        custom: []
+        name: post_id
+        description: 'The post being shared.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      provider:
+        custom: []
+        name: provider
+        description: 'One of twitter, facebook, linkedin, reddit.'
+        required: true
+        example: twitter
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      share_url:
+        custom: []
+        name: share_url
+        description: 'The full share URL.'
+        required: false
+        example: 'https://twitter.com/intent/tweet?text=...'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      post_id: 1
+      provider: twitter
+      share_url: 'https://twitter.com/intent/tweet?text=...'
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 201
+        content: '{"post_id":1,"provider":"twitter","total_shares":5}'
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null

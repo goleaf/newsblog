@@ -12,6 +12,11 @@ class PerformanceMetricsService
     private const DEFAULT_MEMORY_ALERT_THRESHOLD = 80; // percent
 
     /**
+     * Static flag to prevent infinite recursion when tracking cache stats
+     */
+    private static bool $trackingCacheStats = false;
+
+    /**
      * Track page load time and optional per-request stats.
      */
     public function trackPageLoad(string $route, float $loadTime, ?int $queryCount = null, ?int $memoryPeakBytes = null): void
@@ -144,19 +149,43 @@ class PerformanceMetricsService
 
     /**
      * Track cache hit/miss
+     * Prevents infinite recursion by using a static flag
      */
     public function trackCacheHit(bool $hit): void
     {
-        $key = 'performance.cache_stats.'.date('Y-m-d');
-        $stats = Cache::get($key, ['hits' => 0, 'misses' => 0]);
-
-        if ($hit) {
-            $stats['hits']++;
-        } else {
-            $stats['misses']++;
+        // Prevent infinite recursion - if we're already tracking, skip
+        if (self::$trackingCacheStats) {
+            return;
         }
 
-        Cache::put($key, $stats, now()->addDays(8));
+        self::$trackingCacheStats = true;
+
+        try {
+            $key = 'performance.cache_stats.'.date('Y-m-d');
+
+            // Use the cache store directly to avoid triggering events
+            $store = Cache::getStore();
+            $cached = $store->get($key);
+
+            // Ensure stats array has both keys, even if cached value is missing one
+            $stats = [
+                'hits' => $cached['hits'] ?? 0,
+                'misses' => $cached['misses'] ?? 0,
+            ];
+
+            if ($hit) {
+                $stats['hits']++;
+            } else {
+                $stats['misses']++;
+            }
+
+            // Convert expiration to seconds (store expects integer, not Carbon)
+            // 8 days = 8 * 24 * 60 * 60 = 691200 seconds
+            $expiration = 8 * 24 * 60 * 60;
+            $store->put($key, $stats, $expiration);
+        } finally {
+            self::$trackingCacheStats = false;
+        }
     }
 
     /**

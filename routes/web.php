@@ -62,6 +62,12 @@ Route::middleware('auth')->group(function () {
         ->name('comments.destroy');
 });
 
+// Admin: Newsletters
+Route::middleware(['auth', 'role:admin,editor'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/newsletters', [\App\Http\Controllers\Admin\NewsletterController::class, 'index'])->name('newsletters.index');
+    Route::get('/newsletters/export', [\App\Http\Controllers\Admin\NewsletterController::class, 'export'])->name('newsletters.export');
+});
+
 // Newsletter routes
 Route::post('/newsletter/subscribe', [\App\Http\Controllers\NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
 Route::get('/newsletter/verify/{token}', [\App\Http\Controllers\NewsletterController::class, 'verify'])->name('newsletter.verify');

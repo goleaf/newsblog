@@ -14,8 +14,8 @@ class BackupDatabaseCommandTest extends TestCase
 
     public function test_backup_database_creates_file_for_sqlite(): void
     {
-        // Point sqlite to a file
-        $dbFile = database_path('database.sqlite');
+        // Point sqlite to a temporary file in storage to avoid clobbering the dev DB
+        $dbFile = storage_path('framework/testing/backup_test.sqlite');
         if (! file_exists(dirname($dbFile))) {
             mkdir(dirname($dbFile), 0777, true);
         }
@@ -26,6 +26,9 @@ class BackupDatabaseCommandTest extends TestCase
         Storage::fake('local');
 
         $exit = Artisan::call('backup:database --retention=1');
+
+        // Cleanup
+        @unlink($dbFile);
         $this->assertSame(0, $exit);
 
         $files = Storage::disk('local')->files('backups');

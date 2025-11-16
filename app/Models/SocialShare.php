@@ -13,9 +13,9 @@ class SocialShare extends Model
     protected $fillable = [
         'post_id',
         'user_id',
-        'platform', // e.g., twitter, facebook, linkedin
+        'provider', // twitter, facebook, linkedin, reddit
+        'share_url',
         'shared_at',
-        'meta', // arbitrary share metadata
     ];
 
     /**
@@ -25,7 +25,6 @@ class SocialShare extends Model
     {
         return [
             'shared_at' => 'datetime',
-            'meta' => 'array',
         ];
     }
 

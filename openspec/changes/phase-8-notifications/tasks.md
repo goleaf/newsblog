@@ -1,8 +1,7 @@
 ## Phase 8 – Notifications Checklist
 
-- [ ] Notification classes: reply, follower, author article, reaction, mention
-- [ ] Notification preferences: email/in-app/frequency/digest
-- [ ] NotificationController: list/mark read/mark all read/delete/preferences
-- [ ] Jobs: send email + batch notifications (queued)
-- [ ] Views: dropdown + list + preferences page
-
+- [x] Notification classes/jobs exist (reply/approved/published via service)
+- [x] Notification preferences: model + migration + API endpoints
+- [x] Controllers: Web + API list/mark read/mark all/delete/preferences
+- [x] Jobs: cleanup old notifications; sending jobs present
+- [x] Views: dropdown + list

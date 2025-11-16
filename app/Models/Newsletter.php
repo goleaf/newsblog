@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\NewsletterStatus;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -27,6 +28,23 @@ class Newsletter extends Model
         'verification_token_expires_at' => 'datetime',
         'unsubscribed_at' => 'datetime',
     ];
+
+    /**
+     * Expose status as a string value for compatibility with tests and views.
+     */
+    protected function status(): Attribute
+    {
+        return Attribute::make(
+            get: function ($value) {
+                if (is_string($value)) {
+                    return $value;
+                }
+
+                // When enum cast is applied, $value will be an enum instance
+                return $value?->value;
+            }
+        );
+    }
 
     public function scopeSubscribed($query)
     {

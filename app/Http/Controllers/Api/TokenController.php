@@ -10,6 +10,15 @@ use Laravel\Sanctum\PersonalAccessToken;
 
 class TokenController extends Controller
 {
+    /**
+     * List API tokens for the authenticated user.
+     *
+     * @group Auth Tokens
+     *
+     * @authenticated
+     *
+     * @response 200 {"data": [{"id": 1, "name": "CLI", "abilities": ["*"], "last_used_at": null, "expires_at": null, "created_at": "2025-01-01T00:00:00Z"}], "total": 1, "links": {"next": null, "prev": null}}
+     */
     public function index(Request $request): JsonResponse
     {
         $tokens = $request->user()->tokens()->orderByDesc('created_at')->paginate(20);
@@ -33,6 +42,19 @@ class TokenController extends Controller
         ]);
     }
 
+    /**
+     * Create a new API token.
+     *
+     * @group Auth Tokens
+     *
+     * @authenticated
+     *
+     * @bodyParam name string required A descriptive token name. Example: CLI
+     * @bodyParam abilities string[] The token abilities. Defaults to ["*"]. Example: ["articles:read"]
+     * @bodyParam expires_at date Token expiration ISO string. Example: 2025-12-31T23:59:59Z
+     *
+     * @response 201 {"token":"...","token_id":1,"name":"CLI","abilities":["*"],"expires_at":null}
+     */
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -56,6 +78,17 @@ class TokenController extends Controller
         ], 201);
     }
 
+    /**
+     * Revoke an API token by id.
+     *
+     * @group Auth Tokens
+     *
+     * @authenticated
+     *
+     * @urlParam tokenId integer required Token id to revoke. Example: 1
+     *
+     * @response 204 {}
+     */
     public function destroy(Request $request, int $tokenId): JsonResponse
     {
         $token = PersonalAccessToken::findOrFail($tokenId);

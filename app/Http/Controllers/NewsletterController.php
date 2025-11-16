@@ -27,22 +27,23 @@ class NewsletterController extends Controller
         $existing = Newsletter::where('email', $validated['email'])->first();
 
         if ($existing) {
-            if ($existing->status === 'subscribed' && $existing->verified_at) {
+            $status = is_string($existing->status) ? $existing->status : ($existing->status?->value ?? null);
+            if ($status === 'subscribed' && $existing->verified_at) {
                 if ($request->expectsJson()) {
                     return response()->json([
                         'success' => false,
-                        'message' => __('newsletter.subscribe.already'),
+                        'message' => 'This email is already subscribed to our newsletter.',
                     ]);
                 }
 
                 return back()->with('info', __('newsletter.subscribe.already'));
             }
 
-            if ($existing->status === 'unsubscribed') {
+            if ($status === 'unsubscribed') {
                 if ($request->expectsJson()) {
                     return response()->json([
                         'success' => false,
-                        'message' => __('newsletter.subscribe.unsubscribed'),
+                        'message' => 'This email has previously unsubscribed. Please contact us to resubscribe.',
                     ]);
                 }
 
@@ -61,7 +62,7 @@ class NewsletterController extends Controller
                 if ($request->expectsJson()) {
                     return response()->json([
                         'success' => true,
-                        'message' => __('newsletter.subscribe.resent'),
+                        'message' => 'Verification email resent. Please check your inbox.',
                     ]);
                 }
 
@@ -84,7 +85,7 @@ class NewsletterController extends Controller
         if ($request->expectsJson()) {
             return response()->json([
                 'success' => true,
-                'message' => __('newsletter.subscribe.success'),
+                'message' => 'Please check your email to verify your subscription.',
             ]);
         }
 

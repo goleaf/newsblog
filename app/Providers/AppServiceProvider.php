@@ -101,12 +101,28 @@ class AppServiceProvider extends ServiceProvider
                 );
             });
 
-            // Track cache hits/misses
-            Event::listen(\Illuminate\Cache\Events\CacheHit::class, function () {
+            // Track cache hits/misses (exclude performance tracking keys to prevent recursion)
+            Event::listen(\Illuminate\Cache\Events\CacheHit::class, function ($event) {
+                // Skip tracking for performance-related cache keys to prevent infinite recursion
+                // Check both with and without Laravel's cache prefix
+                $key = $event->key ?? '';
+                if (str_starts_with($key, 'performance.') ||
+                    str_contains($key, 'performance.cache_stats') ||
+                    str_contains($key, 'laravel-cache-performance.')) {
+                    return;
+                }
                 app(\App\Services\PerformanceMetricsService::class)->trackCacheHit(true);
             });
 
-            Event::listen(\Illuminate\Cache\Events\CacheMissed::class, function () {
+            Event::listen(\Illuminate\Cache\Events\CacheMissed::class, function ($event) {
+                // Skip tracking for performance-related cache keys to prevent infinite recursion
+                // Check both with and without Laravel's cache prefix
+                $key = $event->key ?? '';
+                if (str_starts_with($key, 'performance.') ||
+                    str_contains($key, 'performance.cache_stats') ||
+                    str_contains($key, 'laravel-cache-performance.')) {
+                    return;
+                }
                 app(\App\Services\PerformanceMetricsService::class)->trackCacheHit(false);
             });
         }

@@ -9,14 +9,24 @@ use Illuminate\Console\Command;
 
 class SendNewslettersCommand extends Command
 {
-    protected $signature = 'newsletters:send {--subject=} {--content=}';
+    protected $signature = 'newsletters:send {--subject=} {--content=} {--period=daily}';
 
     protected $description = 'Queue newsletter sends for all verified subscribers.';
 
     public function handle(): int
     {
-        $subject = (string) ($this->option('subject') ?? 'TechNewsHub Newsletter');
-        $content = (string) ($this->option('content') ?? '<p>Your latest news digest.</p>');
+        $period = (string) $this->option('period');
+        $subject = (string) ($this->option('subject') ?? match ($period) {
+            'weekly' => 'TechNewsHub Weekly Digest',
+            'monthly' => 'TechNewsHub Monthly Digest',
+            default => 'TechNewsHub Daily Digest',
+        });
+
+        // Build content if not specified using NewsletterService
+        $content = $this->option('content');
+        if (! $content) {
+            $content = app(\App\Services\NewsletterService::class)->generateDigest($period);
+        }
 
         $count = 0;
         Newsletter::verified()->chunkById(500, function ($subscribers) use (&$count, $subject, $content) {

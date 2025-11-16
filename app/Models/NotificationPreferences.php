@@ -12,7 +12,10 @@ class NotificationPreferences extends Model
 
     protected $fillable = [
         'user_id',
-        'preferences',
+        'email_enabled',
+        'push_enabled',
+        'digest_frequency',
+        'channels',
     ];
 
     /**
@@ -21,7 +24,9 @@ class NotificationPreferences extends Model
     protected function casts(): array
     {
         return [
-            'preferences' => 'array',
+            'email_enabled' => 'boolean',
+            'push_enabled' => 'boolean',
+            'channels' => 'array',
         ];
     }
 

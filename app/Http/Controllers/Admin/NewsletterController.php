@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Newsletter;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 
 class NewsletterController extends Controller
@@ -13,12 +14,14 @@ class NewsletterController extends Controller
     {
         $newsletters = Newsletter::latest()->paginate(50);
 
-        $stats = [
-            'total' => Newsletter::count(),
-            'verified' => Newsletter::verified()->count(),
-            'pending' => Newsletter::whereNull('verified_at')->where('status', 'pending')->count(),
-            'unsubscribed' => Newsletter::unsubscribed()->count(),
-        ];
+        $stats = Cache::remember('admin:newsletter:stats', 300, function () {
+            return [
+                'total' => Newsletter::count(),
+                'verified' => Newsletter::verified()->count(),
+                'pending' => Newsletter::whereNull('verified_at')->where('status', 'pending')->count(),
+                'unsubscribed' => Newsletter::unsubscribed()->count(),
+            ];
+        });
 
         return view('admin.newsletters.index', compact('newsletters', 'stats'));
     }

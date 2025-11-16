@@ -23,6 +23,9 @@ Route::prefix('v1')->middleware(['throttle:api'])->group(function () {
     Route::get('/tags/{id}/articles', [\App\Http\Controllers\Api\TagController::class, 'articles']);
     Route::get('/comments', [\App\Http\Controllers\Api\CommentController::class, 'index']);
 
+    // Social share tracking (public)
+    Route::post('/shares', [\App\Http\Controllers\Api\SocialShareController::class, 'store']);
+
     // Media Library (public, no auth)
     Route::get('/media', [MediaController::class, 'index'])->name('api.media.index');
     Route::post('/media', [MediaController::class, 'store'])->name('api.media.store');
@@ -64,6 +67,28 @@ Route::prefix('v1')->middleware(['throttle:api'])->group(function () {
         Route::get('/tokens', [\App\Http\Controllers\Api\TokenController::class, 'index']);
         Route::post('/tokens', [\App\Http\Controllers\Api\TokenController::class, 'store']);
         Route::delete('/tokens/{tokenId}', [\App\Http\Controllers\Api\TokenController::class, 'destroy']);
+
+        // Follow system
+        Route::post('/users/{user}/follow', [\App\Http\Controllers\Api\FollowController::class, 'follow']);
+        Route::delete('/users/{user}/follow', [\App\Http\Controllers\Api\FollowController::class, 'unfollow']);
+        Route::get('/users/{user}/followers', [\App\Http\Controllers\Api\FollowController::class, 'followers']);
+        Route::get('/users/{user}/following', [\App\Http\Controllers\Api\FollowController::class, 'following']);
+
+        // Activity feeds
+        Route::get('/activity/me', [\App\Http\Controllers\Api\ActivityController::class, 'my']);
+        Route::get('/activity/following', [\App\Http\Controllers\Api\ActivityController::class, 'following']);
+
+        // Notifications
+        Route::get('/notifications', [\App\Http\Controllers\Api\NotificationController::class, 'index']);
+        Route::get('/notifications/unread', [\App\Http\Controllers\Api\NotificationController::class, 'unread']);
+        Route::post('/notifications/{notification}/read', [\App\Http\Controllers\Api\NotificationController::class, 'markAsRead']);
+        Route::post('/notifications/read-all', [\App\Http\Controllers\Api\NotificationController::class, 'markAllAsRead']);
+        Route::delete('/notifications/{notification}', [\App\Http\Controllers\Api\NotificationController::class, 'destroy']);
+        Route::get('/notifications/preferences', [\App\Http\Controllers\Api\NotificationController::class, 'preferences']);
+        Route::put('/notifications/preferences', [\App\Http\Controllers\Api\NotificationController::class, 'updatePreferences']);
+
+        // Newsletter metrics
+        Route::get('/newsletters/sends/{id}/metrics', [\App\Http\Controllers\Api\NewsletterMetricsController::class, 'show']);
     });
 
     // Moderation endpoints (admin/editor only)
