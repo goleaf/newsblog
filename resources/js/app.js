@@ -36,3 +36,12 @@ window.loadPageModule = async (moduleName) => {
         console.error(`Failed to load page module: ${moduleName}`, error);
     }
 };
+
+// Register Service Worker for PWA (only in production and if supported)
+if ('serviceWorker' in navigator && import.meta.env.PROD) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch((err) => {
+            console.warn('Service worker registration failed:', err);
+        });
+    });
+}

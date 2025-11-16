@@ -48,6 +48,13 @@ Notes:
 
 ## Priority: High
 
+- [x] 23. Implement SEO optimization features
+  - [x] 23.1 Create SEO meta tags component (Open Graph, Twitter, Schema.org, canonical)
+  - [x] 23.2 Implement SitemapService with lastmod/changefreq/priority and splitting
+  - [x] 23.3 Create sitemap generation command and regenerate on post publish
+  - [x] 23.4 Add dynamic robots.txt route including sitemap URL
+  - [x] 23.5 Write SEO tests (meta, sitemap verified; robots.txt added)
+
 - [x] 13.1 Verify and enhance RelatedPostsService
   - [x] Verify category weight is 40%
   - [x] Verify tag matching weight is 40%

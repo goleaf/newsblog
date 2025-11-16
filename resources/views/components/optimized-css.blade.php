@@ -52,7 +52,3 @@
     <link rel="preconnect" href="{{ config('services.cdn.url') }}" crossorigin>
     <link rel="dns-prefetch" href="{{ config('services.cdn.url') }}">
 @endif
-
-{{-- Resource hints for fonts --}}
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

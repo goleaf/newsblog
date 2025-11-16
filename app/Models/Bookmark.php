@@ -12,7 +12,10 @@ class Bookmark extends Model
 
     protected $fillable = [
         'reader_token',
+        'user_id',
         'post_id',
+        'collection_id',
+        'order',
     ];
 
     public function post(): BelongsTo

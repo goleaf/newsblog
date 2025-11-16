@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
+import viteCompression from 'vite-plugin-compression';
 
 export default defineConfig({
     plugins: [
@@ -18,12 +19,28 @@ export default defineConfig({
             ],
             refresh: true,
         }),
+        // Generate gzip and brotli compressed assets for production
+        viteCompression({
+            verbose: false,
+            disable: process.env.NODE_ENV !== 'production',
+            algorithm: 'gzip',
+            ext: '.gz',
+            threshold: 1024,
+        }),
+        viteCompression({
+            verbose: false,
+            disable: process.env.NODE_ENV !== 'production',
+            algorithm: 'brotliCompress',
+            ext: '.br',
+            threshold: 1024,
+        }),
     ],
     build: {
         // Optimize chunk size
         chunkSizeWarningLimit: 1000,
         rollupOptions: {
             output: {
+                treeshake: true,
                 // Manual chunk splitting for better caching
                 manualChunks(id) {
                     // Vendor chunk for Alpine.js and other dependencies

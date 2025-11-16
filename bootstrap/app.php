@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
             'security.headers' => \App\Http\Middleware\SecurityHeaders::class,
+            'page.cache' => \App\Http\Middleware\PageCache::class,
         ]);
 
         $middleware->remove(\Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance::class);
@@ -24,6 +25,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
         $middleware->append(\App\Http\Middleware\TrackPerformance::class);
         $middleware->append(\App\Http\Middleware\SetCacheHeaders::class);
+        $middleware->append(\App\Http\Middleware\PageCache::class);
 
         $middleware->replaceInGroup(
             'web',
@@ -84,6 +86,12 @@ return Application::configure(basePath: dirname(__DIR__))
         // Check performance alerts every 15 minutes
         $schedule->command('performance:check-alerts')
             ->everyFifteenMinutes()
+            ->withoutOverlapping()
+            ->runInBackground();
+
+        // Warm caches shortly after deployments (fallback: daily at 02:15)
+        $schedule->command('cache:warm')
+            ->dailyAt('02:15')
             ->withoutOverlapping()
             ->runInBackground();
     })

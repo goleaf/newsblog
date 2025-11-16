@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Cache;
+use App\Models\Setting;
 
 /**
  * Centralized cache management service
@@ -44,6 +45,42 @@ class CacheService
     public function remember(string $key, int $ttl, callable $callback): mixed
     {
         return Cache::remember($key, $ttl, $callback);
+    }
+
+    /**
+     * Remember a Post by slug or ID (defaults to 1 hour)
+     */
+    public function rememberPost(int|string $identifier, callable $resolver, int $ttl = self::TTL_LONG): mixed
+    {
+        $key = self::PREFIX_MODEL.".post.{$identifier}";
+
+        return $this->remember($key, $ttl, $resolver);
+    }
+
+    /**
+     * Remember a Category by slug or ID (defaults to 15 minutes or given TTL)
+     */
+    public function rememberCategory(int|string $identifier, callable $resolver, int $ttl = self::TTL_SHORT): mixed
+    {
+        $key = self::PREFIX_MODEL.".category.{$identifier}";
+
+        return $this->remember($key, $ttl, $resolver);
+    }
+
+    /**
+     * Remember all settings for 24 hours, or a specific key if provided
+     */
+    public function rememberSettings(?string $key = null, mixed $default = null): mixed
+    {
+        if ($key === null) {
+            return Cache::remember('settings_all', self::TTL_VERY_LONG, static function () {
+                return Setting::query()->pluck('value', 'key')->toArray();
+            });
+        }
+
+        return Cache::remember("setting_{$key}", self::TTL_VERY_LONG, static function () use ($key, $default) {
+            return Setting::query()->where('key', $key)->value('value') ?? $default;
+        });
     }
 
     /**
@@ -177,6 +214,41 @@ class CacheService
     }
 
     /**
+     * Helpers for common query caches
+     */
+    public function rememberPopularPosts(int $limit, int $ttl = self::TTL_LONG, callable $resolver = null): mixed
+    {
+        $key = self::PREFIX_QUERY.".popular-posts.limit:{$limit}";
+        $callback = $resolver ?? static fn () => [];
+
+        return $this->remember($key, $ttl, $callback);
+    }
+
+    public function rememberRecentPosts(int $limit, int $ttl = self::TTL_SHORT, callable $resolver = null): mixed
+    {
+        $key = self::PREFIX_QUERY.".recent-posts.limit:{$limit}";
+        $callback = $resolver ?? static fn () => [];
+
+        return $this->remember($key, $ttl, $callback);
+    }
+
+    public function rememberCategoryTree(int $ttl = self::TTL_VERY_LONG, callable $resolver = null): mixed
+    {
+        $key = self::PREFIX_QUERY.".category-tree";
+        $callback = $resolver ?? static fn () => [];
+
+        return $this->remember($key, $ttl, $callback);
+    }
+
+    public function rememberMenuItems(string $menu = 'primary', int $ttl = self::TTL_VERY_LONG, callable $resolver = null): mixed
+    {
+        $key = self::PREFIX_QUERY.".menu.{$menu}";
+        $callback = $resolver ?? static fn () => [];
+
+        return $this->remember($key, $ttl, $callback);
+    }
+
+    /**
      * Cache post view (30 minutes)
      * Requirement 20.1, 20.5
      */
@@ -238,6 +310,17 @@ class CacheService
         // Use tags if available, otherwise use pattern matching
         $this->invalidateByPattern(self::PREFIX_CATEGORY.".page.{$categoryId}.*");
         $this->invalidateByPattern(self::PREFIX_VIEW.'.'.self::PREFIX_CATEGORY.'.*');
+    }
+
+    /**
+     * Invalidate settings cache
+     */
+    public function invalidateSettings(?string $key = null): void
+    {
+        if ($key !== null) {
+            Cache::forget("setting_{$key}");
+        }
+        Cache::forget('settings_all');
     }
 
     /**

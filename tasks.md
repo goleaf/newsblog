@@ -1,5 +1,12 @@
 # Phase 5: User Features & Engagement
 
+- [ ] 23. Implement SEO optimization features
+  - [x] 23.1 Create SEO meta tags component (OG, Twitter, Schema.org, canonical)
+  - [x] 23.2 Implement SitemapService (posts, categories, pages, tags; lastmod/changefreq/priority; splitting)
+  - [x] 23.3 Create sitemap generation command (store in public; regenerate on publish)
+  - [x] 23.4 Add robots.txt generation (dynamic route; allow all; include sitemap URL)
+  - [ ] 23.5 Write SEO tests (robots.txt added; meta/sitemap tests verified)
+
 - [x] 14. Implement bookmark system
 - [x] 14.1 Create Bookmark model and migration
   - Implemented anonymous bookmarks with `reader_token` + `post_id`, timestamps, composite unique index.

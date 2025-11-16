@@ -37,25 +37,52 @@
     $classes = trim($class . ($blurUp && !$eager ? ' lazy-image' : ''));
 @endphp
 
-<img 
-    @if($blurUp && !$eager)
-        src="{{ $placeholder }}"
-        data-src="{{ $src }}"
-        @if($srcset) data-srcset="{{ $srcset }}" @endif
-        @if($sizes) data-sizes="{{ $sizes }}" @endif
-    @else
-        src="{{ $src }}"
-        @if($srcset) srcset="{{ $srcset }}" @endif
-        @if($sizes) sizes="{{ $sizes }}" @endif
+@php
+    $supportsWebp = preg_match('/\.(jpg|jpeg|png)$/i', $src);
+    $webpSrc = $supportsWebp ? preg_replace('/\.(jpg|jpeg|png)$/i', '.webp', $src) : null;
+    $webpSrcset = null;
+    if ($supportsWebp && $isStoragePath && !$eager) {
+        $webpSrcset = implode(', ', [
+            ($webpSrc ?? $src) . '?w=400&format=webp 400w',
+            ($webpSrc ?? $src) . '?w=800&format=webp 800w',
+            ($webpSrc ?? $src) . '?w=1200&format=webp 1200w',
+            ($webpSrc ?? $src) . '?w=1600&format=webp 1600w',
+        ]);
+    }
+@endphp
+
+<picture>
+    @if($supportsWebp)
+        @if($blurUp && !$eager)
+            <source type="image/webp"
+                    @if($webpSrcset) data-srcset="{{ $webpSrcset }}" @endif
+                    @if($sizes) data-sizes="{{ $sizes }}" @endif>
+        @else
+            <source type="image/webp"
+                    srcset="{{ $webpSrcset ?: (($webpSrc ?? $src) . ' 1x') }}"
+                    @if($sizes) sizes="{{ $sizes }}" @endif>
+        @endif
     @endif
-    alt="{{ $alt }}"
-    @if($width) width="{{ $width }}" @endif
-    @if($height) height="{{ $height }}" @endif
-    loading="{{ $eager ? 'eager' : 'lazy' }}"
-    decoding="async"
-    @if($classes) class="{{ $classes }}" @endif
-    {{ $attributes }}
->
+    <img 
+        @if($blurUp && !$eager)
+            src="{{ $placeholder }}"
+            data-src="{{ $src }}"
+            @if($srcset) data-srcset="{{ $srcset }}" @endif
+            @if($sizes) data-sizes="{{ $sizes }}" @endif
+        @else
+            src="{{ $src }}"
+            @if($srcset) srcset="{{ $srcset }}" @endif
+            @if($sizes) sizes="{{ $sizes }}" @endif
+        @endif
+        alt="{{ $alt }}"
+        @if($width) width="{{ $width }}" @endif
+        @if($height) height="{{ $height }}" @endif
+        loading="{{ $eager ? 'eager' : 'lazy' }}"
+        decoding="async"
+        @if($classes) class="{{ $classes }}" @endif
+        {{ $attributes }}
+    >
+</picture>
 
 @if($blurUp && !$eager)
     @once

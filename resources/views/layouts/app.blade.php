@@ -33,6 +33,10 @@
     {{-- Additional Styles --}}
     @stack('styles')
     
+    {{-- PWA Manifest and theme color --}}
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta name="theme-color" content="#0ea5e9">
+    
     {{-- Preload critical resources --}}
     @stack('preload')
 </head>

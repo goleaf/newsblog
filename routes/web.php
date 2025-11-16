@@ -8,12 +8,17 @@ use App\Http\Controllers\PostController as PublicPostController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SitemapController;
+use App\Http\Controllers\RobotsController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
+// Offline fallback page (for PWA)
+Route::view('/offline', 'offline')->name('offline');
+
 // Sitemap routes
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap.index');
+Route::get('/robots.txt', [RobotsController::class, 'index'])->name('robots.txt');
 Route::get('/post/{slug}', [PublicPostController::class, 'show'])->name('post.show');
 Route::get('/category/{slug}', [\App\Http\Controllers\CategoryController::class, 'show'])->name('category.show');
 Route::get('/tag/{slug}', [\App\Http\Controllers\TagController::class, 'show'])->name('tag.show');

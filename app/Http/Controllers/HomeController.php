@@ -68,7 +68,7 @@ class HomeController extends Controller
                 ->get();
         });
 
-        $mostPopular = Cache::remember('home.popular', CacheService::TTL_MEDIUM, function () {
+        $mostPopular = Cache::remember('home.popular', CacheService::TTL_LONG, function () {
             return Post::published()
                 ->popular()
                 ->with(['user:id,name', 'category:id,name,slug'])

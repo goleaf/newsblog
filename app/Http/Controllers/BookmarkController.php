@@ -38,8 +38,17 @@ class BookmarkController extends Controller
             ->latest()
             ->paginate(12);
 
+        $collections = collect();
+        $categories = collect();
+
+        if (auth()->check()) {
+            $collections = auth()->user()->bookmarkCollections()->withCount('bookmarks')->get();
+        }
+
         return view('bookmarks.index', [
             'bookmarks' => $bookmarks,
+            'collections' => $collections,
+            'categories' => $categories,
         ]);
     }
 
