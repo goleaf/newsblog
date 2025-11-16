@@ -50,8 +50,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                 ])->icon('user-group')->collapsable(),
 
                 MenuSection::make('System Tools', [
-                    MenuItem::link('System Health', '/tools/system-health')
-                        ->icon('server'),
+                    MenuItem::link('System Health', '/tools/system-health'),
                 ])->icon('cog')->collapsable()
                     ->canSee(function ($request) {
                         return in_array($request->user()?->role, ['admin'], true);

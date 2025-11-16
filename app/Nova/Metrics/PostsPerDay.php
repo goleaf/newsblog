@@ -12,6 +12,14 @@ use Laravel\Nova\Nova;
 class PostsPerDay extends Trend
 {
     /**
+     * Get the displayable name of the metric.
+     */
+    public function name(): string
+    {
+        return 'Posts Per Day';
+    }
+
+    /**
      * Calculate the value of the metric.
      */
     public function calculate(NovaRequest $request): TrendResult

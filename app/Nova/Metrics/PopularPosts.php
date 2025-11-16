@@ -12,6 +12,14 @@ use Laravel\Nova\Metrics\Table;
 class PopularPosts extends Table
 {
     /**
+     * Get the displayable name of the metric.
+     */
+    public function name(): string
+    {
+        return 'Popular Posts';
+    }
+
+    /**
      * Calculate the value of the metric.
      *
      * @return array<int, \Laravel\Nova\Metrics\MetricTableRow>

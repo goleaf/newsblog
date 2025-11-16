@@ -60,4 +60,12 @@ class ArchivePost extends Action
     {
         return in_array($request->user()?->role, ['admin', 'editor'], true);
     }
+
+    /**
+     * Determine if the action can be run for the given request.
+     */
+    public function authorizedToRun($request, $model): bool
+    {
+        return in_array($request->user()?->role, ['admin', 'editor'], true);
+    }
 }

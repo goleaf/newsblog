@@ -13,6 +13,14 @@ use Laravel\Nova\Nova;
 class PendingComments extends Value
 {
     /**
+     * Get the displayable name of the metric.
+     */
+    public function name(): string
+    {
+        return 'Pending Comments';
+    }
+
+    /**
      * Calculate the value of the metric.
      */
     public function calculate(NovaRequest $request): ValueResult

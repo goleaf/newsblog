@@ -12,6 +12,14 @@ use Laravel\Nova\Nova;
 class TotalPosts extends Value
 {
     /**
+     * Get the displayable name of the metric.
+     */
+    public function name(): string
+    {
+        return 'Total Posts';
+    }
+
+    /**
      * Calculate the value of the metric.
      */
     public function calculate(NovaRequest $request): ValueResult

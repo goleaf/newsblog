@@ -79,4 +79,44 @@
     }
 }
 
+/* Custom Nova resource styling */
+.nova-resource-index {
+    background: #ffffff;
+}
+
+/* Custom action button styling */
+.nova-action-button {
+    transition: all 0.2s ease-in-out;
+}
+
+.nova-action-button:hover {
+    transform: translateY(-1px);
+}
+
+/* Custom filter styling */
+.nova-filter {
+    border-radius: 6px;
+}
+
+/* Custom metric value styling */
+.metric-value {
+    font-weight: 700;
+    color: #1e293b;
+}
+
+/* Custom table styling */
+.nova-table {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Custom form field styling */
+.nova-form-field {
+    transition: border-color 0.2s ease-in-out;
+}
+
+.nova-form-field:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
 
