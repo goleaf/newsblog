@@ -68,6 +68,7 @@ Route::middleware(['auth', 'role:admin,editor'])->prefix('admin')->name('admin.'
     Route::get('/newsletters/export', [\App\Http\Controllers\Admin\NewsletterController::class, 'export'])->name('newsletters.export');
     Route::get('/newsletters/sends', [\App\Http\Controllers\Admin\NewsletterController::class, 'sends'])->name('newsletters.sends');
     Route::get('/newsletters/sends/{send}', [\App\Http\Controllers\Admin\NewsletterController::class, 'showSend'])->name('newsletters.sends.show');
+    Route::post('/newsletters/sends/{send}/resend', [\App\Http\Controllers\Admin\NewsletterController::class, 'resend'])->name('newsletters.sends.resend');
 });
 
 // Public shared reading list view

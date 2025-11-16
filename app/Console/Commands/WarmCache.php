@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Category;
 use App\Models\Post;
+use App\Models\Tag;
 use App\Services\CacheService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
@@ -71,6 +72,14 @@ class WarmCache extends Command
                 ->get();
         });
 
+        // Popular tags (by usage)
+        $this->cacheService->cacheQuery('home.tags-popular', CacheService::TTL_MEDIUM, function () {
+            return Tag::withCount('posts')
+                ->orderByDesc('posts_count')
+                ->take(20)
+                ->get(['id', 'name', 'slug']);
+        });
+
         // Category tree and menu items
         $this->cacheService->rememberCategoryTree(CacheService::TTL_VERY_LONG, function () {
             return Category::active()
@@ -87,11 +96,34 @@ class WarmCache extends Command
             return [];
         });
 
+        // Warm recent posts by top categories
+        $topCategories = Category::active()->withCount('posts')->orderByDesc('posts_count')->take(5)->get(['id']);
+        foreach ($topCategories as $cat) {
+            $this->cacheService->cacheQuery("category:{$cat->id}:recent", CacheService::TTL_SHORT, function () use ($cat) {
+                return \App\Models\Post::published()
+                    ->byCategory($cat->id)
+                    ->select(['id', 'title', 'slug', 'excerpt', 'featured_image', 'published_at', 'category_id'])
+                    ->latest('published_at')
+                    ->take(10)
+                    ->get();
+            });
+        }
+
+        // Warm recent posts by top tags
+        $topTags = Tag::withCount('posts')->orderByDesc('posts_count')->take(5)->get(['id']);
+        foreach ($topTags as $tag) {
+            $this->cacheService->cacheQuery("tag:{$tag->id}:recent", CacheService::TTL_SHORT, function () use ($tag) {
+                return \App\Models\Post::published()
+                    ->byTag($tag->id)
+                    ->select(['id', 'title', 'slug', 'excerpt', 'featured_image', 'published_at'])
+                    ->latest('published_at')
+                    ->take(10)
+                    ->get();
+            });
+        }
+
         $this->info('Cache warming completed.');
 
         return self::SUCCESS;
     }
 }
-
-
-

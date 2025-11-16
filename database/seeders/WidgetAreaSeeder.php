@@ -41,5 +41,19 @@ class WidgetAreaSeeder extends Seeder
                 $area
             );
         }
+
+        // Ensure Who To Follow widget exists in primary sidebar for logged-in users
+        $primary = WidgetArea::where('slug', 'primary-sidebar')->first();
+        if ($primary) {
+            \App\Models\Widget::firstOrCreate(
+                ['widget_area_id' => $primary->id, 'type' => 'who-to-follow'],
+                [
+                    'title' => 'Who to Follow',
+                    'settings' => ['count' => 5],
+                    'order' => 99,
+                    'active' => true,
+                ]
+            );
+        }
     }
 }
