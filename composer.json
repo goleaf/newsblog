@@ -38,6 +38,7 @@
         "laravel/nova": "^5.7.6",
         "laravel/sanctum": "^4.2",
         "laravel/scout": "^10.22",
+        "laravel/socialite": "^5.23",
         "laravel/tinker": "^2.10.1",
         "loilo/fuse": "^7.1",
         "meilisearch/meilisearch-php": "^1.7",

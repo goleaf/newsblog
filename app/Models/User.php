@@ -172,6 +172,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Social accounts linked to this user.
+     */
+    public function socialAccounts()
+    {
+        return $this->hasMany(SocialAccount::class);
+    }
+
+    /**
      * Users following this user.
      */
     public function followers()
