@@ -206,6 +206,7 @@
     "qr.open": "Show QR code",
     "qr.title": "QR Code",
     "settings.cache_cleared": "Settings cache cleared successfully.",
+    "settings.feature_flag_updated": "Feature flag updated successfully.",
     "settings.test_email_body": "This is a test email from :app. If you received this, your email settings are configured correctly.",
     "settings.test_email_failed": "Failed to send test email: :message",
     "settings.test_email_help": "Enter the email address to send a test message.",

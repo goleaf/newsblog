@@ -195,6 +195,11 @@ return [
             'ignore_exceptions' => false,
         ],
 
+        'sentry' => [
+            'driver' => 'sentry',
+            'level' => env('SENTRY_LOG_LEVEL', 'error'),
+        ],
+
     ],
 
 ];

@@ -125,17 +125,34 @@ return Application::configure(basePath: dirname(__DIR__))
             ->at('04:00');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        // Integrate Sentry for error tracking
+        $exceptions->reportable(function (Throwable $e) {
+            if (app()->bound('sentry')) {
+                app('sentry')->captureException($e);
+            }
+        });
+
+        // Log critical errors with context
+        $exceptions->reportable(function (Throwable $e) {
+            $loggingService = app(\App\Services\LoggingService::class);
+
+            // Log critical errors (500-level errors)
+            if ($e instanceof \Symfony\Component\HttpKernel\Exception\HttpException) {
+                if ($e->getStatusCode() >= 500) {
+                    $loggingService->logCritical('HTTP Exception: '.$e->getMessage(), $e);
+                }
+            } else {
+                // Log all other exceptions as errors
+                $loggingService->logError('Exception: '.$e->getMessage(), $e);
+            }
+        });
+
         $exceptions->render(function (\Illuminate\Http\Exceptions\ThrottleRequestsException $e, Request $request) {
             $retryAfter = $e->getHeaders()['Retry-After'] ?? 60;
 
             // Log rate limit violation
-            \Illuminate\Support\Facades\Log::warning('Rate limit exceeded', [
-                'ip' => $request->ip(),
-                'path' => $request->path(),
-                'method' => $request->method(),
-                'user_agent' => $request->userAgent(),
-                'retry_after' => $retryAfter,
-            ]);
+            $loggingService = app(\App\Services\LoggingService::class);
+            $loggingService->logRateLimitExceeded($request->path(), auth()->id());
 
             if ($request->expectsJson()) {
                 return response()->json([

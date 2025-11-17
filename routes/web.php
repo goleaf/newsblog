@@ -31,6 +31,8 @@ Route::view('/offline', 'offline')->name('offline');
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap.index');
 Route::get('/robots.txt', [RobotsController::class, 'index'])->name('robots.txt');
 Route::get('/post/{slug}', [PublicPostController::class, 'show'])->name('post.show');
+// Route alias expected by tests (pluralized)
+Route::get('/posts/{slug}', [PublicPostController::class, 'show'])->name('posts.show');
 
 // Article routes (alias for posts)
 Route::get('/articles', [\App\Http\Controllers\ArticleController::class, 'index'])->name('articles.index');

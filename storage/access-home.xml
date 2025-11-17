@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="/Users/andrejprus/Library/CloudStorage/Dropbox/projects/newsblog/phpunit.xml" tests="1" assertions="8" errors="0" failures="0" skipped="0" time="1.385184">
+    <testsuite name="Feature" tests="1" assertions="8" errors="0" failures="0" skipped="0" time="1.385184">
+      <testsuite name="Tests\Feature\AccessibilityTest" file="/Users/andrejprus/Library/CloudStorage/Dropbox/projects/newsblog/tests/Feature/AccessibilityTest.php" tests="1" assertions="8" errors="0" failures="0" skipped="0" time="1.385184">
+        <testcase name="test_homepage_contains_landmarks_and_skip_link" file="/Users/andrejprus/Library/CloudStorage/Dropbox/projects/newsblog/tests/Feature/AccessibilityTest.php" line="24" class="Tests\Feature\AccessibilityTest" classname="Tests.Feature.AccessibilityTest" assertions="8" time="1.385184"/>
+      </testsuite>
+    </testsuite>
+  </testsuite>
+</testsuites>

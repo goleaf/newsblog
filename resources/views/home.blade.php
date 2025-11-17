@@ -28,10 +28,10 @@
 
 @push('structured-data')
     {{-- Organization Schema --}}
-    <x-seo.organization-schema />
+    @include('components.seo.organization-schema')
     
     {{-- Website Schema --}}
-    <x-seo.website-schema />
+    @include('components.seo.website-schema')
 @endpush
 
 @push('page-scripts')
@@ -39,7 +39,7 @@
 @endpush
 
 @section('content')
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" x-data="{ loading: true }" x-init="(window.requestIdleCallback ? requestIdleCallback(() => loading = false) : setTimeout(() => loading = false, 0))">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" x-data="{ loading: true }" x-init="setTimeout(() => loading = false, 100)">
     <!-- Breaking News Ticker -->
     @if(isset($breakingNews) && $breakingNews->count() > 0)
         <div class="mb-6 -mx-4 sm:-mx-6 lg:-mx-8">

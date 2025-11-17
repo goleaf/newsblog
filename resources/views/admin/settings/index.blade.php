@@ -247,6 +247,196 @@
                                             </div>
                                         @endif
 
+                                        @if($groupKey === 'features')
+                                            <div class="space-y-4">
+                                                <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                                                    Enable or disable platform features. Changes take effect immediately.
+                                                </p>
+
+                                                <div>
+                                                    <label class="flex items-center">
+                                                        <input type="checkbox" 
+                                                               name="settings[feature_recommendations]" 
+                                                               value="1"
+                                                               {{ ($groupSettings['feature_recommendations'] ?? '1') == '1' ? 'checked' : '' }}
+                                                               class="rounded border-gray-300 dark:border-gray-600">
+                                                        <span class="ml-2 text-sm">
+                                                            <strong>Recommendations</strong> - AI-powered content recommendations
+                                                        </span>
+                                                    </label>
+                                                </div>
+
+                                                <div>
+                                                    <label class="flex items-center">
+                                                        <input type="checkbox" 
+                                                               name="settings[feature_social_sharing]" 
+                                                               value="1"
+                                                               {{ ($groupSettings['feature_social_sharing'] ?? '1') == '1' ? 'checked' : '' }}
+                                                               class="rounded border-gray-300 dark:border-gray-600">
+                                                        <span class="ml-2 text-sm">
+                                                            <strong>Social Sharing</strong> - Share buttons and social media integration
+                                                        </span>
+                                                    </label>
+                                                </div>
+
+                                                <div>
+                                                    <label class="flex items-center">
+                                                        <input type="checkbox" 
+                                                               name="settings[feature_newsletter]" 
+                                                               value="1"
+                                                               {{ ($groupSettings['feature_newsletter'] ?? '1') == '1' ? 'checked' : '' }}
+                                                               class="rounded border-gray-300 dark:border-gray-600">
+                                                        <span class="ml-2 text-sm">
+                                                            <strong>Newsletter</strong> - Email newsletter subscriptions and sending
+                                                        </span>
+                                                    </label>
+                                                </div>
+
+                                                <div>
+                                                    <label class="flex items-center">
+                                                        <input type="checkbox" 
+                                                               name="settings[feature_bookmarks]" 
+                                                               value="1"
+                                                               {{ ($groupSettings['feature_bookmarks'] ?? '1') == '1' ? 'checked' : '' }}
+                                                               class="rounded border-gray-300 dark:border-gray-600">
+                                                        <span class="ml-2 text-sm">
+                                                            <strong>Bookmarks</strong> - Allow users to bookmark articles
+                                                        </span>
+                                                    </label>
+                                                </div>
+
+                                                <div>
+                                                    <label class="flex items-center">
+                                                        <input type="checkbox" 
+                                                               name="settings[feature_reading_lists]" 
+                                                               value="1"
+                                                               {{ ($groupSettings['feature_reading_lists'] ?? '1') == '1' ? 'checked' : '' }}
+                                                               class="rounded border-gray-300 dark:border-gray-600">
+                                                        <span class="ml-2 text-sm">
+                                                            <strong>Reading Lists</strong> - Organized collections of bookmarked articles
+                                                        </span>
+                                                    </label>
+                                                </div>
+
+                                                <div>
+                                                    <label class="flex items-center">
+                                                        <input type="checkbox" 
+                                                               name="settings[feature_comments]" 
+                                                               value="1"
+                                                               {{ ($groupSettings['feature_comments'] ?? '1') == '1' ? 'checked' : '' }}
+                                                               class="rounded border-gray-300 dark:border-gray-600">
+                                                        <span class="ml-2 text-sm">
+                                                            <strong>Comments</strong> - User comments and discussions
+                                                        </span>
+                                                    </label>
+                                                </div>
+
+                                                <div>
+                                                    <label class="flex items-center">
+                                                        <input type="checkbox" 
+                                                               name="settings[feature_user_profiles]" 
+                                                               value="1"
+                                                               {{ ($groupSettings['feature_user_profiles'] ?? '1') == '1' ? 'checked' : '' }}
+                                                               class="rounded border-gray-300 dark:border-gray-600">
+                                                        <span class="ml-2 text-sm">
+                                                            <strong>User Profiles</strong> - Public user profiles and activity
+                                                        </span>
+                                                    </label>
+                                                </div>
+
+                                                <div>
+                                                    <label class="flex items-center">
+                                                        <input type="checkbox" 
+                                                               name="settings[feature_notifications]" 
+                                                               value="1"
+                                                               {{ ($groupSettings['feature_notifications'] ?? '1') == '1' ? 'checked' : '' }}
+                                                               class="rounded border-gray-300 dark:border-gray-600">
+                                                        <span class="ml-2 text-sm">
+                                                            <strong>Notifications</strong> - In-app and email notifications
+                                                        </span>
+                                                    </label>
+                                                </div>
+
+                                                <div>
+                                                    <label class="flex items-center">
+                                                        <input type="checkbox" 
+                                                               name="settings[feature_search]" 
+                                                               value="1"
+                                                               {{ ($groupSettings['feature_search'] ?? '1') == '1' ? 'checked' : '' }}
+                                                               class="rounded border-gray-300 dark:border-gray-600">
+                                                        <span class="ml-2 text-sm">
+                                                            <strong>Search</strong> - Full-text search functionality
+                                                        </span>
+                                                    </label>
+                                                </div>
+
+                                                <div>
+                                                    <label class="flex items-center">
+                                                        <input type="checkbox" 
+                                                               name="settings[feature_analytics]" 
+                                                               value="1"
+                                                               {{ ($groupSettings['feature_analytics'] ?? '1') == '1' ? 'checked' : '' }}
+                                                               class="rounded border-gray-300 dark:border-gray-600">
+                                                        <span class="ml-2 text-sm">
+                                                            <strong>Analytics</strong> - Track views, engagement, and performance
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        @endif
+
+                                        @if($groupKey === 'api')
+                                            <div class="space-y-4">
+                                                <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                                                    Configure API access and rate limiting settings.
+                                                </p>
+
+                                                <div>
+                                                    <label class="flex items-center">
+                                                        <input type="checkbox" 
+                                                               name="settings[api_enabled]" 
+                                                               value="1"
+                                                               {{ ($groupSettings['api_enabled'] ?? '1') == '1' ? 'checked' : '' }}
+                                                               class="rounded border-gray-300 dark:border-gray-600">
+                                                        <span class="ml-2 text-sm">Enable API Access</span>
+                                                    </label>
+                                                </div>
+
+                                                <div>
+                                                    <label class="block text-sm font-medium mb-2">Rate Limit (requests per minute - Guest)</label>
+                                                    <input type="number" 
+                                                           name="settings[api_rate_limit]" 
+                                                           value="{{ $groupSettings['api_rate_limit'] ?? 60 }}"
+                                                           min="1"
+                                                           max="1000"
+                                                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700">
+                                                    <p class="mt-1 text-xs text-gray-500">Default: 60 requests per minute</p>
+                                                </div>
+
+                                                <div>
+                                                    <label class="block text-sm font-medium mb-2">Rate Limit (requests per minute - Authenticated)</label>
+                                                    <input type="number" 
+                                                           name="settings[api_rate_limit_authenticated]" 
+                                                           value="{{ $groupSettings['api_rate_limit_authenticated'] ?? 120 }}"
+                                                           min="1"
+                                                           max="1000"
+                                                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700">
+                                                    <p class="mt-1 text-xs text-gray-500">Default: 120 requests per minute</p>
+                                                </div>
+
+                                                <div>
+                                                    <label class="flex items-center">
+                                                        <input type="checkbox" 
+                                                               name="settings[api_documentation_enabled]" 
+                                                               value="1"
+                                                               {{ ($groupSettings['api_documentation_enabled'] ?? '1') == '1' ? 'checked' : '' }}
+                                                               class="rounded border-gray-300 dark:border-gray-600">
+                                                        <span class="ml-2 text-sm">Enable API Documentation</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        @endif
+
                                         
                                     </div>
 

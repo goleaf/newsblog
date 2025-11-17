@@ -43,7 +43,8 @@
         "laravel/tinker": "^2.10.1",
         "loilo/fuse": "^7.1",
         "meilisearch/meilisearch-php": "^1.7",
-        "partitech/php-mistral": "^0.0.22"
+        "partitech/php-mistral": "^0.0.22",
+        "sentry/sentry-laravel": "^4.19"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.16",

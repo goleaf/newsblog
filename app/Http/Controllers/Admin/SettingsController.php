@@ -85,4 +85,25 @@ class SettingsController extends Controller
             ->route('admin.settings.index')
             ->with('success', __('settings.cache_cleared'));
     }
+
+    /**
+     * Get feature flag status.
+     */
+    public function getFeatureFlag(string $flag): bool
+    {
+        return (bool) $this->settingsService->get("feature_{$flag}", false);
+    }
+
+    /**
+     * Toggle a feature flag.
+     */
+    public function toggleFeatureFlag(string $flag): RedirectResponse
+    {
+        $currentValue = $this->getFeatureFlag($flag);
+        $this->settingsService->set("feature_{$flag}", ! $currentValue, 'features');
+
+        return redirect()
+            ->route('admin.settings.index')
+            ->with('success', __('settings.feature_flag_updated'));
+    }
 }

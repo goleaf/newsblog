@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Services\LoggingService;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -41,8 +42,12 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
+        $loggingService = app(LoggingService::class);
+
         if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
+
+            $loggingService->logFailedLogin($this->string('email')->toString(), 'invalid_credentials');
 
             throw ValidationException::withMessages([
                 'email' => trans('auth.failed'),
@@ -55,10 +60,14 @@ class LoginRequest extends FormRequest
             Auth::logout();
             RateLimiter::hit($this->throttleKey());
 
+            $loggingService->logFailedLogin($this->string('email')->toString(), 'account_inactive');
+
             throw ValidationException::withMessages([
                 'email' => __('Your account is not active. Please contact support.'),
             ]);
         }
+
+        $loggingService->logSuccessfulLogin($user->id, $user->email);
 
         RateLimiter::clear($this->throttleKey());
     }
@@ -75,6 +84,9 @@ class LoginRequest extends FormRequest
         }
 
         event(new Lockout($this));
+
+        $loggingService = app(LoggingService::class);
+        $loggingService->logRateLimitExceeded('login', null);
 
         $seconds = RateLimiter::availableIn($this->throttleKey());
 

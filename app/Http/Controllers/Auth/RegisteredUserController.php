@@ -7,6 +7,7 @@ use App\Enums\UserStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Models\User;
+use App\Services\LoggingService;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
@@ -28,7 +29,7 @@ class RegisteredUserController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(RegisterRequest $request): RedirectResponse
+    public function store(RegisterRequest $request, LoggingService $loggingService): RedirectResponse
     {
         $validated = $request->validated();
 
@@ -42,6 +43,8 @@ class RegisteredUserController extends Controller
             'role' => $role,
             'status' => UserStatus::Active->value,
         ]);
+
+        $loggingService->logUserRegistration($user->id, $user->email);
 
         event(new Registered($user));
 

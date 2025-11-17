@@ -56,6 +56,22 @@ class SettingsService
         'theme_color' => 'string',
         'dark_mode_enabled' => 'bool',
         'footer_text' => 'string',
+        // Feature Flags
+        'feature_recommendations' => 'bool',
+        'feature_social_sharing' => 'bool',
+        'feature_newsletter' => 'bool',
+        'feature_bookmarks' => 'bool',
+        'feature_reading_lists' => 'bool',
+        'feature_comments' => 'bool',
+        'feature_user_profiles' => 'bool',
+        'feature_notifications' => 'bool',
+        'feature_search' => 'bool',
+        'feature_analytics' => 'bool',
+        // API Settings
+        'api_enabled' => 'bool',
+        'api_rate_limit' => 'int',
+        'api_rate_limit_authenticated' => 'int',
+        'api_documentation_enabled' => 'bool',
     ];
 
     public function __construct()
