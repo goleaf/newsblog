@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\SubscribeNewsletterRequest;
 use App\Http\Requests\UnsubscribeNewsletterRequest;
+use App\Http\Requests\UpdateNewsletterPreferencesRequest;
 use App\Http\Requests\VerifyNewsletterRequest;
 use App\Mail\NewsletterConfirmationMail;
 use App\Mail\NewsletterVerificationMail;
@@ -57,7 +58,7 @@ class NewsletterController extends Controller
                     'verification_token_expires_at' => now()->addDays(7),
                 ]);
 
-                Mail::to($existing->email)->send(new NewsletterVerificationMail($existing));
+                Mail::to($existing->email)->queue(new NewsletterVerificationMail($existing));
 
                 if ($request->expectsJson()) {
                     return response()->json([
@@ -80,7 +81,7 @@ class NewsletterController extends Controller
         ]);
 
         // Send verification email
-        Mail::to($newsletter->email)->send(new NewsletterVerificationMail($newsletter));
+        Mail::to($newsletter->email)->queue(new NewsletterVerificationMail($newsletter));
 
         if ($request->expectsJson()) {
             return response()->json([
@@ -118,7 +119,7 @@ class NewsletterController extends Controller
         $newsletter->verify();
 
         // Send confirmation email
-        Mail::to($newsletter->email)->send(new NewsletterConfirmationMail($newsletter));
+        Mail::to($newsletter->email)->queue(new NewsletterConfirmationMail($newsletter));
 
         return view('newsletter.verified', compact('newsletter'));
     }
@@ -145,5 +146,55 @@ class NewsletterController extends Controller
         $newsletter->unsubscribe();
 
         return view('newsletter.unsubscribed', ['alreadyUnsubscribed' => false]);
+    }
+
+    /**
+     * Show the preferences page for a newsletter subscription.
+     */
+    public function showPreferences(string $token): View|RedirectResponse
+    {
+        $newsletter = Newsletter::where('unsubscribe_token', $token)->first();
+
+        if (! $newsletter) {
+            return redirect()->route('home')->with('error', __('newsletter.preferences.invalid'));
+        }
+
+        if ($newsletter->status === 'unsubscribed') {
+            return redirect()->route('home')->with('error', __('newsletter.preferences.unsubscribed'));
+        }
+
+        if (! $newsletter->verified_at) {
+            return redirect()->route('home')->with('error', __('newsletter.preferences.not_verified'));
+        }
+
+        return view('newsletter.preferences', compact('newsletter'));
+    }
+
+    /**
+     * Update newsletter preferences.
+     */
+    public function updatePreferences(UpdateNewsletterPreferencesRequest $request, string $token): RedirectResponse
+    {
+        $validated = $request->validated();
+
+        $newsletter = Newsletter::where('unsubscribe_token', $token)->first();
+
+        if (! $newsletter) {
+            return redirect()->route('home')->with('error', __('newsletter.preferences.invalid'));
+        }
+
+        if ($newsletter->status === 'unsubscribed') {
+            return redirect()->route('home')->with('error', __('newsletter.preferences.unsubscribed'));
+        }
+
+        if (! $newsletter->verified_at) {
+            return redirect()->route('home')->with('error', __('newsletter.preferences.not_verified'));
+        }
+
+        $newsletter->update([
+            'frequency' => $validated['frequency'],
+        ]);
+
+        return back()->with('success', __('newsletter.preferences.updated'));
     }
 }

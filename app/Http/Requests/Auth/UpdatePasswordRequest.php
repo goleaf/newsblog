@@ -8,6 +8,11 @@ use Illuminate\Validation\Rules;
 class UpdatePasswordRequest extends FormRequest
 {
     /**
+     * Use a named error bag to match the profile view expectations.
+     */
+    protected $errorBag = 'updatePassword';
+
+    /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool

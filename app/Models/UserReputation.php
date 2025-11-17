@@ -10,6 +10,8 @@ class UserReputation extends Model
 {
     use HasFactory;
 
+    protected $table = 'user_reputation';
+
     protected $fillable = [
         'user_id',
         'score',

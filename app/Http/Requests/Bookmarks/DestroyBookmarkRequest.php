@@ -14,7 +14,7 @@ class DestroyBookmarkRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'post_id' => ['required', 'integer', 'exists:posts,id'],
+            'post_id' => ['nullable', 'integer', 'exists:posts,id'],
         ];
     }
 
@@ -26,6 +26,3 @@ class DestroyBookmarkRequest extends FormRequest
         ];
     }
 }
-
-
-

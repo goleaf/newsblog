@@ -89,7 +89,7 @@ class GdprController extends Controller
 
         // Send confirmation email before anonymization
         $originalEmail = $user->email;
-        Mail::to($originalEmail)->send(new AccountDeletionConfirmation($user));
+        Mail::to($originalEmail)->queue(new AccountDeletionConfirmation($user));
 
         // Log out the user
         Auth::logout();

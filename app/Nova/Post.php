@@ -9,6 +9,7 @@ use App\Nova\Filters\PostCategory;
 use App\Nova\Filters\PostFeatured;
 use App\Nova\Filters\PostStatus;
 use App\Services\AltTextValidator;
+use App\Services\ContentSanitizer;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsTo;
@@ -381,5 +382,27 @@ class Post extends Resource
             new Actions\ViewRevisionHistory,
             new Actions\FillMissingAltText,
         ];
+    }
+
+    /**
+     * Handle any post-validation processing.
+     */
+    protected static function afterValidation(NovaRequest $request, $validator): void
+    {
+        // Sanitize article content before saving
+        if ($request->has('content')) {
+            $sanitizer = app(ContentSanitizer::class);
+            $request->merge([
+                'content' => $sanitizer->sanitizeArticle($request->input('content')),
+            ]);
+        }
+
+        // Sanitize excerpt if provided
+        if ($request->has('excerpt')) {
+            $sanitizer = app(ContentSanitizer::class);
+            $request->merge([
+                'excerpt' => $sanitizer->sanitizeArticle($request->input('excerpt')),
+            ]);
+        }
     }
 }

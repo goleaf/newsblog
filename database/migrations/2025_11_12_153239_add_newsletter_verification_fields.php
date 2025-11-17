@@ -27,6 +27,9 @@ return new class extends Migration
      */
     public function down(): void
     {
+        if (config('database.default') === 'sqlite') {
+            return;
+        }
         Schema::table('newsletters', function (Blueprint $table) {
             $table->dropIndex(['verification_token']);
             $table->dropIndex(['unsubscribe_token']);

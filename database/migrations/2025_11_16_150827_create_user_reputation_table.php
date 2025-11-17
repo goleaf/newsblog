@@ -15,9 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->integer('score')->default(0);
-            $table->integer('upvotes')->default(0);
-            $table->integer('downvotes')->default(0);
-            $table->timestamp('last_calculated_at')->nullable();
+            $table->string('level')->default('new'); // new, contributor, member, trusted, expert, banned
+            $table->json('meta')->nullable();
             $table->timestamps();
 
             $table->unique('user_id');

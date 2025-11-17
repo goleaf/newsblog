@@ -6,10 +6,10 @@ use App\Enums\MenuItemType;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Repeater;
+use Laravel\Nova\Fields\Repeater\Repeatable;
 use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
-use Laravel\Nova\Repeatable;
 
 class MenuItemRepeater extends Repeatable
 {
@@ -28,7 +28,7 @@ class MenuItemRepeater extends Repeatable
                     MenuItemType::Tag->value => __('Tag'),
                 ])
                 ->displayUsingLabels()
-                ->rules('required', 'in:' . implode(',', array_map(fn ($c) => $c->value, MenuItemType::cases()))),
+                ->rules('required', 'in:'.implode(',', array_map(fn ($c) => $c->value, MenuItemType::cases()))),
 
             Text::make(__('Title'), 'title')
                 ->rules('required', 'string', 'max:255'),
@@ -58,5 +58,3 @@ class MenuItemRepeater extends Repeatable
         ];
     }
 }
-
-

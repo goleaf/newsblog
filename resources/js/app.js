@@ -14,6 +14,12 @@ import './bookmarks';
 import './shortcuts';
 import './utils/qrcode';
 
+// Import mobile navigation with swipe gestures
+import './mobile-navigation';
+
+// Import accessibility features
+import './accessibility';
+
 // UI components
 import './components/gallery';
 import './components/social-embed';
@@ -26,18 +32,7 @@ import { initCountdownWidgets } from './widgets/countdown';
 // Ensure print stylesheet is included in manifest for tests/build
 import '../css/print.css';
 
-// Ensure presence of a print stylesheet link tag for environments where Vite dev server
-// inlines CSS and no <link media="print"> is emitted. This satisfies e2e checks and
-// does not affect rendering unless printing.
-if (typeof document !== 'undefined' && !document.querySelector('link[rel="stylesheet"][media="print"]')) {
-    const link = document.createElement('link');
-    link.setAttribute('rel', 'stylesheet');
-    link.setAttribute('media', 'print');
-    // In production, use built asset path; in dev/test, use a tiny data URL to avoid 404/500s
-    const devDataCss = 'data:text/css,/* print placeholder for tests */';
-    link.setAttribute('href', import.meta.env.PROD ? '/build/assets/print.css' : devDataCss);
-    document.head.appendChild(link);
-}
+// Rely on Vite to include print.css (imported above) via manifest.
 
 window.Alpine = Alpine;
 

@@ -2,6 +2,38 @@
 
 @section('title', __('home.title'))
 
+@push('meta-tags')
+    {{-- SEO Meta Tags for Homepage --}}
+    <meta name="description" content="{{ config('app.description', 'Your source for technology news and insights') }}">
+    <meta name="keywords" content="technology news, programming, software development, tech articles">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    
+    {{-- Open Graph --}}
+    <meta property="og:title" content="{{ config('app.name') }} - {{ config('app.description') }}">
+    <meta property="og:description" content="{{ config('app.description', 'Your source for technology news and insights') }}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url('/') }}">
+    <meta property="og:image" content="{{ asset('images/og-image.jpg') }}">
+    <meta property="og:site_name" content="{{ config('app.name') }}">
+    
+    {{-- Twitter Card --}}
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ config('app.name') }} - {{ config('app.description') }}">
+    <meta name="twitter:description" content="{{ config('app.description', 'Your source for technology news and insights') }}">
+    <meta name="twitter:image" content="{{ asset('images/og-image.jpg') }}">
+    
+    {{-- Canonical URL --}}
+    <link rel="canonical" href="{{ url('/') }}">
+@endpush
+
+@push('structured-data')
+    {{-- Organization Schema --}}
+    <x-seo.organization-schema />
+    
+    {{-- Website Schema --}}
+    <x-seo.website-schema />
+@endpush
+
 @push('page-scripts')
     <x-page-scripts page="homepage" />
 @endpush

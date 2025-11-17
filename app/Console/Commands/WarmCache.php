@@ -38,7 +38,7 @@ class WarmCache extends Command
         $this->info('Warming caches...');
 
         // Home view cache (HTML)
-        Cache::forget(CacheService::PREFIX_VIEW.'.'.CacheService::PREFIX_HOME);
+        Cache::forget('home.page');
 
         // Homepage data components
         $this->cacheService->cacheQuery('home.featured', CacheService::TTL_LONG, function () {

@@ -2,6 +2,7 @@
 
 namespace App\Nova;
 
+use App\Services\ContentSanitizer;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsTo;
@@ -263,5 +264,19 @@ class Comment extends Resource
             new Actions\ApproveComments,
             new Actions\RejectComments,
         ];
+    }
+
+    /**
+     * Handle any post-validation processing.
+     */
+    protected static function afterValidation(NovaRequest $request, $validator): void
+    {
+        // Sanitize comment content before saving
+        if ($request->has('content')) {
+            $sanitizer = app(ContentSanitizer::class);
+            $request->merge([
+                'content' => $sanitizer->sanitizeComment($request->input('content')),
+            ]);
+        }
     }
 }

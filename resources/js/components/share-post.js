@@ -29,6 +29,9 @@ export default function sharePost({
     text,
     copyErrorMessage,
     copySuccessDuration = 3000,
+    postId = null,
+    trackUrl = null,
+    shareCount = 0,
 } = {}) {
     return {
         copied: false,
@@ -37,6 +40,9 @@ export default function sharePost({
         title,
         text,
         copyErrorMessage,
+        postId,
+        trackUrl,
+        shareCount,
 
         init() {
             this.canShare =
@@ -44,11 +50,38 @@ export default function sharePost({
                 typeof navigator.share === 'function';
         },
 
+        async trackShare(platform) {
+            if (!this.trackUrl || !this.postId) {
+                return;
+            }
+
+            try {
+                const response = await fetch(this.trackUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                    },
+                    body: JSON.stringify({ platform }),
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.share_count !== undefined) {
+                        this.shareCount = data.share_count;
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to track share:', error);
+            }
+        },
+
         shareOnFacebook() {
             const shareUrl = encodeURIComponent(this.url);
             openPopup(
                 `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`,
             );
+            this.trackShare('facebook');
         },
 
         shareOnTwitter() {
@@ -57,6 +90,33 @@ export default function sharePost({
             openPopup(
                 `https://twitter.com/intent/tweet?url=${shareUrl}&text=${shareText}`,
             );
+            this.trackShare('twitter');
+        },
+
+        shareOnLinkedIn() {
+            const shareUrl = encodeURIComponent(this.url);
+            openPopup(
+                `https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`,
+            );
+            this.trackShare('linkedin');
+        },
+
+        shareOnReddit() {
+            const shareUrl = encodeURIComponent(this.url);
+            const shareTitle = encodeURIComponent(this.title);
+            openPopup(
+                `https://www.reddit.com/submit?url=${shareUrl}&title=${shareTitle}`,
+            );
+            this.trackShare('reddit');
+        },
+
+        shareOnHackerNews() {
+            const shareUrl = encodeURIComponent(this.url);
+            const shareTitle = encodeURIComponent(this.title);
+            openPopup(
+                `https://news.ycombinator.com/submitlink?u=${shareUrl}&t=${shareTitle}`,
+            );
+            this.trackShare('hackernews');
         },
 
         async copyLink() {

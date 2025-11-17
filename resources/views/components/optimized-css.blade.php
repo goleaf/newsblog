@@ -11,15 +11,22 @@
         'default' => 'critical',
     ];
     
-    $criticalCssFile = $criticalCssMap[$page] ?? 'critical';
+    $criticalCssEntry = $criticalCssMap[$page] ?? 'critical';
     
-    // Get the critical CSS content for inlining
-    $criticalCssPath = public_path('build/assets/' . $criticalCssFile . '.css');
+    // Resolve critical CSS file via Vite manifest to support hashed filenames and proper dirs
     $criticalCss = '';
-    
-    // In production, inline the critical CSS
-    if (app()->environment('production') && file_exists($criticalCssPath)) {
-        $criticalCss = file_get_contents($criticalCssPath);
+    if (app()->environment('production')) {
+        $manifestPath = public_path('build/manifest.json');
+        $resourceKey = 'resources/css/' . $criticalCssEntry . '.css';
+        if (file_exists($manifestPath)) {
+            $manifest = json_decode(file_get_contents($manifestPath), true) ?: [];
+            if (isset($manifest[$resourceKey]['file'])) {
+                $builtFile = public_path('build/' . $manifest[$resourceKey]['file']);
+                if (file_exists($builtFile)) {
+                    $criticalCss = file_get_contents($builtFile);
+                }
+            }
+        }
     }
 @endphp
 

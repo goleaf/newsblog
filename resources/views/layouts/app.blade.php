@@ -36,8 +36,6 @@
     @if(file_exists(public_path('build/manifest.json')))
         <link rel="stylesheet" href="{{ \Illuminate\Support\Facades\Vite::asset('resources/css/print.css') }}" media="print">
     @endif
-    {{-- Fallback print link to satisfy e2e in dev/test environments --}}
-    <link rel="stylesheet" href="/build/assets/print.css" media="print">
     
     {{-- PWA Manifest and theme color --}}
     <link rel="manifest" href="/manifest.webmanifest">
@@ -90,6 +88,8 @@
     <x-ui.search-modal />
     {{-- Shortcuts Help Modal --}}
     <x-ui.shortcuts-modal />
+    {{-- Keyboard Shortcuts Modal --}}
+    <x-accessibility.keyboard-shortcuts-modal />
 
     {{-- Modal Container --}}
     <div id="modal-container">
@@ -105,8 +105,8 @@
     {{-- Additional Scripts --}}
     @stack('scripts')
     
-    {{-- Cookie Consent Banner (Requirement 16.4) --}}
-    <x-gdpr.cookie-consent />
+    {{-- Cookie Consent Banner (Requirement 16.5) --}}
+    <x-cookie-consent />
     
     {{-- Scroll to Top Button (Requirement 74) --}}
     <x-ui.scroll-to-top />

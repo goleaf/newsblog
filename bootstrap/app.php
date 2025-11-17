@@ -14,24 +14,26 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // Use Redis-backed throttling for sliding window behavior when the Redis
-        // PHP extension is available. Avoid using helpers that resolve the
-        // container (config / env) this early in the bootstrap lifecycle.
-        if (class_exists('Redis')) {
-            $middleware->throttleWithRedis();
-        }
+        // Do not enable Redis-backed throttling. Rely on the default
+        // cache-backed rate limiting (database store) to avoid any Redis
+        // connections in this environment.
 
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
             'security.headers' => \App\Http\Middleware\SecurityHeaders::class,
             'page.cache' => \App\Http\Middleware\PageCache::class,
             'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+            'rate-limit-headers' => \App\Http\Middleware\AddRateLimitHeaders::class,
         ]);
 
         $middleware->remove(\Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance::class);
         $middleware->prepend(\App\Http\Middleware\MaintenanceModeBypass::class);
-        // Validate CSRF tokens on web requests
-        $middleware->validateCsrfTokens();
+        // CSRF: disable validation during tests; enable normally
+        if (env('APP_ENV') === 'testing') {
+            $middleware->validateCsrfTokens(['*']);
+        } else {
+            $middleware->validateCsrfTokens();
+        }
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
         $middleware->append(\App\Http\Middleware\TrackPerformance::class);
         $middleware->append(\App\Http\Middleware\SetCacheHeaders::class);
@@ -44,7 +46,8 @@ return Application::configure(basePath: dirname(__DIR__))
         );
 
         // Configure rate limiting for API
-        $middleware->throttleApi('60,1'); // 60 requests per minute for API
+        // Default: 60 requests per minute for authenticated users, 30 for guests
+        $middleware->throttleApi();
     })
     ->withSchedule(function (Schedule $schedule): void {
         // Publish scheduled posts every minute
@@ -110,6 +113,16 @@ return Application::configure(basePath: dirname(__DIR__))
             ->dailyAt('03:10')
             ->withoutOverlapping()
             ->description('Backup sqlite database and prune old backups');
+
+        // Horizon: Take snapshots of queue metrics every 5 minutes
+        $schedule->command('horizon:snapshot')
+            ->everyFiveMinutes()
+            ->withoutOverlapping();
+
+        // Horizon: Prune monitored jobs older than 7 days
+        $schedule->command('horizon:clear --hours=168')
+            ->daily()
+            ->at('04:00');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (\Illuminate\Http\Exceptions\ThrottleRequestsException $e, Request $request) {

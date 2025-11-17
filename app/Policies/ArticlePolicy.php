@@ -105,7 +105,7 @@ class ArticlePolicy
      */
     public function publish(User $user, Post|Article $article): bool
     {
-        // Only editors and admins can publish articles
+        // Only editors and admins can publish/unpublish articles
         return in_array($user->role, [UserRole::Editor, UserRole::Admin]);
     }
 

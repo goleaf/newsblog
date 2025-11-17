@@ -15,10 +15,11 @@ return new class extends Migration
             $table->id();
             $table->foreignId('post_id')->constrained()->cascadeOnDelete();
             $table->string('url', 2048);
-            $table->integer('status_code')->nullable();
+            // Current schema fields used by the application
+            $table->timestamp('checked_at')->nullable();
+            $table->integer('response_code')->nullable();
             $table->string('error_message')->nullable();
-            $table->timestamp('last_checked_at');
-            $table->enum('status', ['pending', 'fixed', 'ignored'])->default('pending');
+            $table->enum('status', ['ok', 'broken', 'ignored'])->default('broken');
             $table->timestamps();
 
             $table->index(['post_id', 'status']);

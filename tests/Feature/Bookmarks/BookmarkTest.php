@@ -18,7 +18,7 @@ class BookmarkTest extends TestCase
         $token = Str::uuid()->toString();
 
         $response = $this->withCookie('reader_token', $token)
-            ->postJson(route('bookmarks.toggle'), ['post_id' => $post->id]);
+            ->postJson(route('bookmarks.toggle.anonymous'), ['post_id' => $post->id, 'reader_token' => $token]);
 
         $response->assertOk()
             ->assertJson(['bookmarked' => true]);
@@ -36,13 +36,13 @@ class BookmarkTest extends TestCase
 
         // First toggle => create
         $this->withCookie('reader_token', $token)
-            ->postJson(route('bookmarks.toggle'), ['post_id' => $post->id])
+            ->postJson(route('bookmarks.toggle.anonymous'), ['post_id' => $post->id, 'reader_token' => $token])
             ->assertOk()
             ->assertJson(['bookmarked' => true]);
 
         // Second store explicitly should not create duplicate
         $this->withCookie('reader_token', $token)
-            ->postJson(route('bookmarks.store'), ['post_id' => $post->id])
+            ->postJson(route('bookmarks.store.anonymous'), ['post_id' => $post->id, 'reader_token' => $token])
             ->assertOk()
             ->assertJson(['bookmarked' => true]);
 
@@ -55,11 +55,11 @@ class BookmarkTest extends TestCase
         $token = Str::uuid()->toString();
 
         $this->withCookie('reader_token', $token)
-            ->postJson(route('bookmarks.toggle'), ['post_id' => $post->id])
+            ->postJson(route('bookmarks.toggle.anonymous'), ['post_id' => $post->id, 'reader_token' => $token])
             ->assertOk();
 
         $this->withCookie('reader_token', $token)
-            ->deleteJson(route('bookmarks.destroy'), ['post_id' => $post->id])
+            ->deleteJson(route('bookmarks.destroy.anonymous'), ['post_id' => $post->id, 'reader_token' => $token])
             ->assertOk()
             ->assertJson(['bookmarked' => false]);
 
@@ -81,13 +81,11 @@ class BookmarkTest extends TestCase
             ]);
         }
 
-        $response = $this->withCookie('reader_token', $token)->get(route('bookmarks.index'));
+        $response = $this->withCookie('reader_token', $token)
+            ->get(route('bookmarks.index', ['reader_token' => $token]));
         $response->assertOk();
         foreach ($posts as $post) {
             $response->assertSee(e($post->title));
         }
     }
 }
-
-
-

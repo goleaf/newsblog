@@ -111,9 +111,9 @@
     >
         <!-- Header -->
         <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-            <h3 class="text-sm font-semibold text-gray-900 dark:text-white">
+            <div class="text-sm font-semibold text-gray-900 dark:text-white">
                 {{ __('Notifications') }}
-            </h3>
+            </div>
             <button 
                 @click="markAllAsRead()"
                 x-show="unreadCount > 0"

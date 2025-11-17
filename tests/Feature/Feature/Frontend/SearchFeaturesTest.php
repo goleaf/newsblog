@@ -2,10 +2,13 @@
 
 namespace Tests\Feature\Feature\Frontend;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class SearchFeaturesTest extends TestCase
 {
+    use RefreshDatabase;
+
     /**
      * A basic feature test example.
      */

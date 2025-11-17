@@ -22,7 +22,7 @@
         </h1>
         <p class="text-lg text-gray-600 dark:text-gray-400">
             @if($posts->total() > 0)
-                Found <span class="font-semibold text-gray-900 dark:text-white">{{ number_format($posts->total()) }}</span> {{ Str::plural('result', $posts->total()) }}
+                Found {{ number_format($posts->total()) }} {{ Str::plural('result', $posts->total()) }}
                 @if(!empty($query))
                     for "<span class="font-semibold text-gray-900 dark:text-white">{{ e($query) }}</span>"
                 @endif
@@ -34,6 +34,7 @@
                 @endif
             @endif
         </p>
+        <!-- DEBUG-FILTERS: {{ json_encode($filters) }} -->
     </div>
     
     <!-- Search Bar with Autocomplete -->

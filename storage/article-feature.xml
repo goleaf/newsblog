@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="/Users/andrejprus/Library/CloudStorage/Dropbox/projects/newsblog/phpunit.xml" tests="10" assertions="19" errors="0" failures="5" skipped="0" time="3.000603">
+    <testsuite name="Feature" tests="10" assertions="19" errors="0" failures="5" skipped="0" time="3.000603">
+      <testsuite name="Tests\Feature\ArticleControllerTest" file="/Users/andrejprus/Library/CloudStorage/Dropbox/projects/newsblog/tests/Feature/ArticleControllerTest.php" tests="10" assertions="19" errors="0" failures="5" skipped="0" time="3.000603">
+        <testcase name="test_can_view_articles_index" file="/Users/andrejprus/Library/CloudStorage/Dropbox/projects/newsblog/tests/Feature/ArticleControllerTest.php" line="27" class="Tests\Feature\ArticleControllerTest" classname="Tests.Feature.ArticleControllerTest" assertions="3" time="1.908483"/>
+        <testcase name="test_can_view_single_article" file="/Users/andrejprus/Library/CloudStorage/Dropbox/projects/newsblog/tests/Feature/ArticleControllerTest.php" line="41" class="Tests\Feature\ArticleControllerTest" classname="Tests.Feature.ArticleControllerTest" assertions="4" time="0.190861"/>
+        <testcase name="test_can_view_create_form_when_authenticated" file="/Users/andrejprus/Library/CloudStorage/Dropbox/projects/newsblog/tests/Feature/ArticleControllerTest.php" line="56" class="Tests\Feature\ArticleControllerTest" classname="Tests.Feature.ArticleControllerTest" assertions="2" time="0.110634"/>
+        <testcase name="test_cannot_view_create_form_when_not_authenticated" file="/Users/andrejprus/Library/CloudStorage/Dropbox/projects/newsblog/tests/Feature/ArticleControllerTest.php" line="64" class="Tests\Feature\ArticleControllerTest" classname="Tests.Feature.ArticleControllerTest" assertions="2" time="0.086984"/>
+        <testcase name="test_can_create_article" file="/Users/andrejprus/Library/CloudStorage/Dropbox/projects/newsblog/tests/Feature/ArticleControllerTest.php" line="71" class="Tests\Feature\ArticleControllerTest" classname="Tests.Feature.ArticleControllerTest" assertions="1" time="0.094556">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">Tests\Feature\ArticleControllerTest::test_can_create_article
+Expected response status code [201, 301, 302, 303, 307, 308] but received 419.
+Failed asserting that false is true.
+
+/Users/andrejprus/Library/CloudStorage/Dropbox/projects/newsblog/vendor/laravel/framework/src/Illuminate/Testing/TestResponseAssert.php:45
+/Users/andrejprus/Library/CloudStorage/Dropbox/projects/newsblog/vendor/laravel/framework/src/Illuminate/Testing/TestResponse.php:199
+/Users/andrejprus/Library/CloudStorage/Dropbox/projects/newsblog/tests/Feature/ArticleControllerTest.php:83</failure>
+        </testcase>
+        <testcase name="test_can_view_edit_form" file="/Users/andrejprus/Library/CloudStorage/Dropbox/projects/newsblog/tests/Feature/ArticleControllerTest.php" line="90" class="Tests\Feature\ArticleControllerTest" classname="Tests.Feature.ArticleControllerTest" assertions="3" time="0.254826"/>
+        <testcase name="test_can_update_article" file="/Users/andrejprus/Library/CloudStorage/Dropbox/projects/newsblog/tests/Feature/ArticleControllerTest.php" line="103" class="Tests\Feature\ArticleControllerTest" classname="Tests.Feature.ArticleControllerTest" assertions="1" time="0.117754">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">Tests\Feature\ArticleControllerTest::test_can_update_article
+Expected response status code [201, 301, 302, 303, 307, 308] but received 419.
+Failed asserting that false is true.
+
+/Users/andrejprus/Library/CloudStorage/Dropbox/projects/newsblog/vendor/laravel/framework/src/Illuminate/Testing/TestResponseAssert.php:45
+/Users/andrejprus/Library/CloudStorage/Dropbox/projects/newsblog/vendor/laravel/framework/src/Illuminate/Testing/TestResponse.php:199
+/Users/andrejprus/Library/CloudStorage/Dropbox/projects/newsblog/tests/Feature/ArticleControllerTest.php:118</failure>
+        </testcase>
+        <testcase name="test_can_delete_article" file="/Users/andrejprus/Library/CloudStorage/Dropbox/projects/newsblog/tests/Feature/ArticleControllerTest.php" line="125" class="Tests\Feature\ArticleControllerTest" classname="Tests.Feature.ArticleControllerTest" assertions="1" time="0.083505">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">Tests\Feature\ArticleControllerTest::test_can_delete_article
+Expected response status code [201, 301, 302, 303, 307, 308] but received 419.
+Failed asserting that false is true.
+
+/Users/andrejprus/Library/CloudStorage/Dropbox/projects/newsblog/vendor/laravel/framework/src/Illuminate/Testing/TestResponseAssert.php:45
+/Users/andrejprus/Library/CloudStorage/Dropbox/projects/newsblog/vendor/laravel/framework/src/Illuminate/Testing/TestResponse.php:199
+/Users/andrejprus/Library/CloudStorage/Dropbox/projects/newsblog/tests/Feature/ArticleControllerTest.php:133</failure>
+        </testcase>
+        <testcase name="test_can_publish_article" file="/Users/andrejprus/Library/CloudStorage/Dropbox/projects/newsblog/tests/Feature/ArticleControllerTest.php" line="139" class="Tests\Feature\ArticleControllerTest" classname="Tests.Feature.ArticleControllerTest" assertions="1" time="0.051100">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">Tests\Feature\ArticleControllerTest::test_can_publish_article
+Expected response status code [201, 301, 302, 303, 307, 308] but received 419.
+Failed asserting that false is true.
+
+/Users/andrejprus/Library/CloudStorage/Dropbox/projects/newsblog/vendor/laravel/framework/src/Illuminate/Testing/TestResponseAssert.php:45
+/Users/andrejprus/Library/CloudStorage/Dropbox/projects/newsblog/vendor/laravel/framework/src/Illuminate/Testing/TestResponse.php:199
+/Users/andrejprus/Library/CloudStorage/Dropbox/projects/newsblog/tests/Feature/ArticleControllerTest.php:148</failure>
+        </testcase>
+        <testcase name="test_can_unpublish_article" file="/Users/andrejprus/Library/CloudStorage/Dropbox/projects/newsblog/tests/Feature/ArticleControllerTest.php" line="154" class="Tests\Feature\ArticleControllerTest" classname="Tests.Feature.ArticleControllerTest" assertions="1" time="0.101899">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">Tests\Feature\ArticleControllerTest::test_can_unpublish_article
+Expected response status code [201, 301, 302, 303, 307, 308] but received 419.
+Failed asserting that false is true.
+
+/Users/andrejprus/Library/CloudStorage/Dropbox/projects/newsblog/vendor/laravel/framework/src/Illuminate/Testing/TestResponseAssert.php:45
+/Users/andrejprus/Library/CloudStorage/Dropbox/projects/newsblog/vendor/laravel/framework/src/Illuminate/Testing/TestResponse.php:199
+/Users/andrejprus/Library/CloudStorage/Dropbox/projects/newsblog/tests/Feature/ArticleControllerTest.php:164</failure>
+        </testcase>
+      </testsuite>
+    </testsuite>
+  </testsuite>
+</testsuites>

@@ -66,7 +66,10 @@
                     </div>
                 </div>
 
-                <div class="mt-6">
+                <div class="mt-6 space-y-3">
+                    <a href="{{ route('newsletter.preferences', $newsletter->unsubscribe_token) }}" class="w-full flex justify-center py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Manage Preferences
+                    </a>
                     <a href="{{ route('home') }}" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-indigo-500 dark:hover:bg-indigo-600">
                         Go to Homepage
                     </a>
@@ -74,7 +77,7 @@
             </div>
 
             <p class="text-center text-xs text-gray-500 dark:text-gray-400">
-                You can unsubscribe at any time from the links in our emails.
+                You can manage your preferences or unsubscribe at any time from the links in our emails.
             </p>
         </div>
     </div>

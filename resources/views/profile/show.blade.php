@@ -33,12 +33,7 @@
                                     </p>
                                 </div>
                                 @if(!$isOwnProfile && auth()->check())
-                                    <button 
-                                        type="button"
-                                        class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest transition ease-in-out duration-150 {{ $isFollowing ? 'bg-gray-600 hover:bg-gray-700' : 'bg-blue-600 hover:bg-blue-700' }}"
-                                    >
-                                        {{ $isFollowing ? 'Following' : 'Follow' }}
-                                    </button>
+                                    <x-follow-button :user="$user" />
                                 @endif
                             </div>
                             @if($user->bio)
@@ -103,22 +98,22 @@
 
             <!-- Stats Grid -->
             <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 text-center">
+                <a href="{{ route('users.followers', $user) }}" class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 text-center hover:shadow-lg transition-shadow">
                     <div class="text-3xl font-bold text-blue-600 dark:text-blue-400">
                         {{ $stats['followers_count'] }}
                     </div>
                     <div class="text-sm text-gray-600 dark:text-gray-400 mt-1">
                         Followers
                     </div>
-                </div>
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 text-center">
+                </a>
+                <a href="{{ route('users.following', $user) }}" class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 text-center hover:shadow-lg transition-shadow">
                     <div class="text-3xl font-bold text-indigo-600 dark:text-indigo-400">
                         {{ $stats['following_count'] }}
                     </div>
                     <div class="text-sm text-gray-600 dark:text-gray-400 mt-1">
                         Following
                     </div>
-                </div>
+                </a>
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 text-center">
                     <div class="text-3xl font-bold text-teal-600 dark:text-teal-400">
                         {{ $stats['total_bookmarks'] }}

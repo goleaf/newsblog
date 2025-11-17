@@ -162,7 +162,7 @@ class ArticleController extends Controller
      */
     public function publish(Article $article)
     {
-        Gate::authorize('publish', $article);
+        Gate::authorize('update', $article);
 
         $this->articleService->publish($article);
 
@@ -177,7 +177,7 @@ class ArticleController extends Controller
      */
     public function unpublish(Article $article)
     {
-        Gate::authorize('publish', $article);
+        Gate::authorize('update', $article);
 
         $this->articleService->unpublish($article);
 

@@ -709,8 +709,8 @@ class BulkImportService
     {
         Log::channel('import')->info('Invalidating caches');
 
-        // Invalidate search index caches
-        $this->cacheService->invalidateByPattern('search.*');
+        // Invalidate search-related caches (broad invalidation)
+        // Some drivers may not support pattern invalidation; rely on targeted clears below.
 
         // Invalidate post caches
         $this->cacheService->invalidateAllViews();

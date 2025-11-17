@@ -79,6 +79,10 @@ class User extends Authenticatable
             'comment_approved' => true,
             'series_updated' => true,
             'newsletter' => true,
+            'new_followers' => true,
+            'author_new_article' => true,
+            'comment_reactions' => true,
+            'mentions' => true,
             'frequency' => 'immediate', // immediate, daily, weekly
         ];
     }
@@ -148,6 +152,14 @@ class User extends Authenticatable
     public function bookmarkCollections()
     {
         return $this->hasMany(BookmarkCollection::class)->orderBy('order');
+    }
+
+    /**
+     * Alias for reading lists to match spec terminology.
+     */
+    public function readingLists()
+    {
+        return $this->bookmarkCollections();
     }
 
     public function reactions()
@@ -221,6 +233,22 @@ class User extends Authenticatable
         return $this->hasMany(Notification::class);
     }
 
+    /**
+     * Get unread notifications.
+     */
+    public function unreadNotifications()
+    {
+        return $this->notifications()->unread();
+    }
+
+    /**
+     * Get read notifications.
+     */
+    public function readNotifications()
+    {
+        return $this->notifications()->read();
+    }
+
     public function postViews()
     {
         return $this->hasMany(PostView::class)->latest('viewed_at');
@@ -246,6 +274,16 @@ class User extends Authenticatable
         return $query->where('role', UserRole::Author);
     }
 
+    public function scopeModerators($query)
+    {
+        return $query->where('role', UserRole::Moderator);
+    }
+
+    public function scopeReaders($query)
+    {
+        return $query->where('role', UserRole::Reader);
+    }
+
     public function isAdmin(): bool
     {
         return $this->role === UserRole::Admin;
@@ -259,6 +297,56 @@ class User extends Authenticatable
     public function isAuthor(): bool
     {
         return $this->role === UserRole::Author;
+    }
+
+    public function isModerator(): bool
+    {
+        return $this->role === UserRole::Moderator;
+    }
+
+    public function isReader(): bool
+    {
+        return $this->role === UserRole::Reader;
+    }
+
+    /**
+     * Check if user can create articles.
+     */
+    public function canCreateArticles(): bool
+    {
+        return $this->role->canCreateArticles();
+    }
+
+    /**
+     * Check if user can publish articles.
+     */
+    public function canPublishArticles(): bool
+    {
+        return $this->role->canPublishArticles();
+    }
+
+    /**
+     * Check if user can moderate content.
+     */
+    public function canModerate(): bool
+    {
+        return $this->role->canModerate();
+    }
+
+    /**
+     * Check if user can delete any content.
+     */
+    public function canDeleteAnyContent(): bool
+    {
+        return $this->role->canDeleteAnyContent();
+    }
+
+    /**
+     * Check if user can manage users.
+     */
+    public function canManageUsers(): bool
+    {
+        return $this->role->canManageUsers();
     }
 
     public function isActive(): bool

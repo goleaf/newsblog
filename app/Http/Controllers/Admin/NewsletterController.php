@@ -6,9 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\NewsletterSendsFilterRequest;
 use App\Models\Newsletter;
 use App\Models\NewsletterSend;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\Response;
 
 class NewsletterController extends Controller
 {

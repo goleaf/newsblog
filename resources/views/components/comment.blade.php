@@ -11,26 +11,33 @@
                 </div>
             </div>
             <div class="ml-4 flex-1">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center">
-                        <h4 class="text-sm font-semibold text-gray-900 dark:text-white">{{ $comment->author_name }}</h4>
-                        <span class="ml-2 text-xs text-gray-500 dark:text-gray-400">{{ $comment->created_at->diffForHumans() }}</span>
-                        @if($depth > 0)
-                            <span class="ml-2 text-xs text-indigo-600 dark:text-indigo-400">
-                                Replying to {{ $comment->parent->author_name }}
-                            </span>
-                        @endif
-                    </div>
+                <div class="flex items-center">
+                    <h4 class="text-sm font-semibold text-gray-900 dark:text-white">{{ $comment->author_name }}</h4>
+                    <span class="ml-2 text-xs text-gray-500 dark:text-gray-400">{{ $comment->created_at->diffForHumans() }}</span>
+                    @if($depth > 0)
+                        <span class="ml-2 text-xs text-indigo-600 dark:text-indigo-400">
+                            Replying to {{ $comment->parent->author_name }}
+                        </span>
+                    @endif
+                </div>
+                <p class="mt-2 text-gray-700 dark:text-gray-300">{{ $comment->content }}</p>
+                
+                <!-- Comment Actions -->
+                <div class="mt-3 flex items-center gap-4">
+                    <x-engagement.comment-reaction-button :comment="$comment" />
+                    
                     @if($comment->canReply())
                         <button 
                             @click="replyingTo = replyingTo === {{ $comment->id }} ? null : {{ $comment->id }}"
-                            class="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 font-medium"
+                            class="inline-flex items-center gap-1 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
                         >
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                            </svg>
                             Reply
                         </button>
                     @endif
                 </div>
-                <p class="mt-2 text-gray-700 dark:text-gray-300">{{ $comment->content }}</p>
                 
                 <!-- Inline Reply Form -->
                 <div x-show="replyingTo === {{ $comment->id }}" 

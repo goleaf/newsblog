@@ -93,7 +93,8 @@ class AdvancedSearchService
         }
 
         // Apply sorting (Requirement 5.2, 14.3)
-        $sort = $filters['sort'] ?? 'newest';
+        // Default to relevance when a query is present, else newest
+        $sort = $filters['sort'] ?? (! empty($query) ? 'relevant' : 'newest');
 
         switch ($sort) {
             case 'oldest':
@@ -110,22 +111,20 @@ class AdvancedSearchService
                 break;
 
             case 'relevant':
-                // Relevance-based sorting (exact title matches first)
+                // Relevance-based sorting (exact title > title contains > excerpt contains)
                 if (! empty($query)) {
-                    $queryBuilder->orderByRaw('
-                        CASE 
-                            WHEN title LIKE ? THEN 1
-                            WHEN title LIKE ? THEN 2
-                            WHEN excerpt LIKE ? THEN 3
-                            ELSE 4
-                        END
-                    ', [
-                        $query, // Exact match
-                        "%{$query}%", // Contains match
-                        "%{$query}%", // Excerpt match
-                    ]);
+                    $term = mb_strtolower($query);
+                    $queryBuilder->orderByRaw(
+                        'CASE '
+                        .'WHEN lower(title) = ? THEN 1 '
+                        .'WHEN lower(title) LIKE ? THEN 2 '
+                        .'WHEN lower(excerpt) LIKE ? THEN 3 '
+                        .'ELSE 4 END',
+                        [$term, "%{$term}%", "%{$term}%"]
+                    )->latest('published_at');
+                } else {
+                    $queryBuilder->latest('published_at');
                 }
-                $queryBuilder->latest('published_at');
                 break;
 
             case 'newest':

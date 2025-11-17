@@ -4,6 +4,11 @@
 ])
 
 {{-- Categories are provided by CategoryMenuComposer --}}
+@php
+    // Cache key based on mobile/desktop and limit
+    $cacheKey = 'category-menu.' . ($mobile ? 'mobile' : 'desktop') . '.' . ($limit ?? 'all');
+    $cacheTtl = config('cache.ttl.categories', 7200);
+@endphp
 
 @if($mobile)
     {{-- Mobile: Vertical List --}}
@@ -151,9 +156,9 @@
                                     {{-- Subcategories --}}
                                     @if($category->children->isNotEmpty())
                                         <div class="space-y-2">
-                                            <h4 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
+                                            <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
                                                 {{ __('Subcategories') }}
-                                            </h4>
+                                            </div>
                                             <div class="space-y-1">
                                                 @foreach($category->children as $child)
                                                     <a 
@@ -183,9 +188,9 @@
                                 {{-- Right Column: Popular Posts --}}
                                 @if($category->posts->isNotEmpty())
                                     <div class="border-l border-gray-200 dark:border-gray-700 pl-6">
-                                        <h4 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
+                                        <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
                                             {{ __('Recent Posts') }}
-                                        </h4>
+                                        </div>
                                         <div class="space-y-3">
                                             @foreach($category->posts as $post)
                                                 <a 
@@ -201,9 +206,9 @@
                                                         />
                                                     @endif
                                                     <div class="flex-1 min-w-0">
-                                                        <h5 class="text-sm font-medium text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 mb-1">
+                                                        <div class="text-sm font-medium text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 mb-1">
                                                             {{ $post->title }}
-                                                        </h5>
+                                                        </div>
                                                         <div class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
                                                             <time datetime="{{ $post->published_at->toIso8601String() }}">
                                                                 {{ $post->published_at->diffForHumans() }}

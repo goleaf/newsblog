@@ -13,16 +13,16 @@ return new class extends Migration
     {
         Schema::create('notifications', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->string('type'); // comment_reply, post_published, comment_approved, etc.
-            $table->string('title');
-            $table->text('message');
+            $table->foreignId('user_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->string('type')->nullable(); // comment_reply, post_published, comment_approved, etc.
+            $table->string('title')->nullable();
+            $table->text('message')->nullable();
             $table->string('action_url')->nullable();
             $table->string('icon')->nullable();
             $table->json('data')->nullable(); // Additional metadata
             $table->timestamp('read_at')->nullable();
             $table->timestamps();
-            
+
             $table->index(['user_id', 'read_at']);
             $table->index(['user_id', 'created_at']);
         });

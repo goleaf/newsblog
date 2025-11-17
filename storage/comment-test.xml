@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="/Users/andrejprus/Library/CloudStorage/Dropbox/projects/newsblog/phpunit.xml" tests="3" assertions="11" errors="0" failures="0" skipped="0" time="2.385062">
+    <testsuite name="Unit" tests="3" assertions="11" errors="0" failures="0" skipped="0" time="2.385062">
+      <testsuite name="Tests\Unit\CommentTest" file="/Users/andrejprus/Library/CloudStorage/Dropbox/projects/newsblog/tests/Unit/CommentTest.php" tests="3" assertions="11" errors="0" failures="0" skipped="0" time="2.385062">
+        <testcase name="test_comment_uses_enum_cast_for_status" file="/Users/andrejprus/Library/CloudStorage/Dropbox/projects/newsblog/tests/Unit/CommentTest.php" line="15" class="Tests\Unit\CommentTest" classname="Tests.Unit.CommentTest" assertions="2" time="2.103333"/>
+        <testcase name="test_comment_relationships_are_configured" file="/Users/andrejprus/Library/CloudStorage/Dropbox/projects/newsblog/tests/Unit/CommentTest.php" line="28" class="Tests\Unit\CommentTest" classname="Tests.Unit.CommentTest" assertions="3" time="0.207572"/>
+        <testcase name="test_scopes_filter_comments_correctly" file="/Users/andrejprus/Library/CloudStorage/Dropbox/projects/newsblog/tests/Unit/CommentTest.php" line="47" class="Tests\Unit\CommentTest" classname="Tests.Unit.CommentTest" assertions="6" time="0.074157"/>
+      </testsuite>
+    </testsuite>
+  </testsuite>
+</testsuites>

@@ -11,12 +11,11 @@ class ModerationAction extends Model
     use HasFactory;
 
     protected $fillable = [
-        'moderation_queue_id',
-        'action', // approve, reject, escalate
+        'moderator_id',
+        'action_type',
+        'subject_type',
+        'subject_id',
         'reason',
-        'performed_by',
-        'performed_at',
-        'meta',
     ];
 
     /**
@@ -25,18 +24,21 @@ class ModerationAction extends Model
     protected function casts(): array
     {
         return [
-            'performed_at' => 'datetime',
-            'meta' => 'array',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
         ];
     }
 
-    public function queue(): BelongsTo
+    public function moderator(): BelongsTo
     {
-        return $this->belongsTo(ModerationQueue::class, 'moderation_queue_id');
+        return $this->belongsTo(User::class, 'moderator_id');
     }
 
-    public function actor(): BelongsTo
+    /**
+     * Get the subject (polymorphic).
+     */
+    public function subject()
     {
-        return $this->belongsTo(User::class, 'performed_by');
+        return $this->morphTo();
     }
 }

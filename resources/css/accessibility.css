@@ -1,0 +1,325 @@
+/**
+ * Accessibility Styles
+ * 
+ * These styles ensure WCAG 2.1 Level AA compliance
+ */
+
+/* ===========================
+   Focus Indicators
+   =========================== */
+
+/* Enhanced focus styles for keyboard navigation */
+*:focus {
+    outline: 2px solid theme('colors.blue.600');
+    outline-offset: 2px;
+}
+
+*:focus:not(:focus-visible) {
+    outline: none;
+}
+
+*:focus-visible {
+    outline: 2px solid theme('colors.blue.600');
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px theme('colors.blue.100');
+}
+
+.dark *:focus-visible {
+    outline-color: theme('colors.blue.400');
+    box-shadow: 0 0 0 4px theme('colors.blue.900');
+}
+
+/* Skip links */
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: theme('colors.blue.600');
+    color: white;
+    padding: 8px 16px;
+    text-decoration: none;
+    border-radius: 0 0 4px 0;
+    z-index: 100;
+    transition: top 0.2s;
+}
+
+.skip-link:focus {
+    top: 0;
+}
+
+/* ===========================
+   Screen Reader Only
+   =========================== */
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+.sr-only-focusable:focus,
+.sr-only-focusable:active {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+}
+
+/* ===========================
+   High Contrast Mode Support
+   =========================== */
+
+@media (prefers-contrast: high) {
+    * {
+        border-color: currentColor !important;
+    }
+    
+    button,
+    a {
+        text-decoration: underline;
+    }
+}
+
+/* ===========================
+   Reduced Motion
+   =========================== */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* ===========================
+   Color Contrast Helpers
+   =========================== */
+
+/* Ensure sufficient contrast for text */
+.text-contrast-aa {
+    color: theme('colors.gray.900');
+}
+
+.dark .text-contrast-aa {
+    color: theme('colors.gray.100');
+}
+
+/* Link contrast */
+a:not([class]) {
+    color: theme('colors.blue.700');
+    text-decoration: underline;
+}
+
+.dark a:not([class]) {
+    color: theme('colors.blue.300');
+}
+
+/* ===========================
+   Interactive Elements
+   =========================== */
+
+/* Ensure interactive elements have sufficient size */
+button,
+a,
+input[type="checkbox"],
+input[type="radio"],
+select {
+    min-height: 44px;
+    min-width: 44px;
+}
+
+/* Exception for inline links */
+p a,
+li a,
+td a {
+    min-height: auto;
+    min-width: auto;
+}
+
+/* ===========================
+   Form Accessibility
+   =========================== */
+
+/* Required field indicator */
+.required-field::after {
+    content: " *";
+    color: theme('colors.red.600');
+    font-weight: bold;
+}
+
+.dark .required-field::after {
+    color: theme('colors.red.400');
+}
+
+/* Error states */
+[aria-invalid="true"] {
+    border-color: theme('colors.red.500') !important;
+    background-color: theme('colors.red.50');
+}
+
+.dark [aria-invalid="true"] {
+    border-color: theme('colors.red.400') !important;
+    background-color: theme('colors.red.900/20');
+}
+
+/* Field descriptions */
+.field-description {
+    font-size: 0.875rem;
+    color: theme('colors.gray.600');
+    margin-top: 0.25rem;
+}
+
+.dark .field-description {
+    color: theme('colors.gray.400');
+}
+
+/* Error messages */
+.field-error {
+    font-size: 0.875rem;
+    color: theme('colors.red.600');
+    margin-top: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.dark .field-error {
+    color: theme('colors.red.400');
+}
+
+/* ===========================
+   ARIA Live Regions
+   =========================== */
+
+[aria-live] {
+    position: relative;
+}
+
+/* ===========================
+   Keyboard Navigation Helpers
+   =========================== */
+
+/* Tab order indicator (for debugging) */
+[tabindex]:not([tabindex="-1"]) {
+    position: relative;
+}
+
+/* ===========================
+   Touch Target Sizing
+   =========================== */
+
+@media (pointer: coarse) {
+    button,
+    a,
+    input,
+    select,
+    textarea {
+        min-height: 48px;
+        min-width: 48px;
+    }
+}
+
+/* ===========================
+   Print Accessibility
+   =========================== */
+
+@media print {
+    /* Ensure links are visible in print */
+    a[href]::after {
+        content: " (" attr(href) ")";
+        font-size: 0.8em;
+        color: theme('colors.gray.600');
+    }
+    
+    /* Don't print navigation */
+    nav,
+    .no-print {
+        display: none !important;
+    }
+    
+    /* Ensure good contrast in print */
+    * {
+        color: black !important;
+        background: white !important;
+    }
+}
+
+/* ===========================
+   Semantic HTML Enhancements
+   =========================== */
+
+/* Article structure */
+article {
+    position: relative;
+}
+
+article header {
+    margin-bottom: 1.5rem;
+}
+
+article footer {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid theme('colors.gray.200');
+}
+
+.dark article footer {
+    border-top-color: theme('colors.gray.700');
+}
+
+/* Navigation landmarks */
+nav[aria-label] {
+    position: relative;
+}
+
+/* Complementary content */
+aside {
+    position: relative;
+}
+
+/* ===========================
+   Status Messages
+   =========================== */
+
+[role="status"],
+[role="alert"] {
+    padding: 1rem;
+    border-radius: 0.375rem;
+    margin-bottom: 1rem;
+}
+
+[role="status"] {
+    background-color: theme('colors.blue.50');
+    color: theme('colors.blue.900');
+    border: 1px solid theme('colors.blue.200');
+}
+
+.dark [role="status"] {
+    background-color: theme('colors.blue.900/20');
+    color: theme('colors.blue.100');
+    border-color: theme('colors.blue.800');
+}
+
+[role="alert"] {
+    background-color: theme('colors.red.50');
+    color: theme('colors.red.900');
+    border: 1px solid theme('colors.red.200');
+}
+
+.dark [role="alert"] {
+    background-color: theme('colors.red.900/20');
+    color: theme('colors.red.100');
+    border-color: theme('colors.red.800');
+}

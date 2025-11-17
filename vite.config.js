@@ -110,6 +110,12 @@ export default defineConfig({
     },
     // Remove console statements and debuggers in production builds
     esbuild: {
-        drop: ['console', 'debugger'],
+        drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : [],
+        legalComments: 'none',
+    },
+    // Optimize dependencies
+    optimizeDeps: {
+        include: ['alpinejs', 'axios'],
+        exclude: [],
     },
 });

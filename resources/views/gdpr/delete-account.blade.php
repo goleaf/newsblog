@@ -6,82 +6,60 @@
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+        <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <div class="overflow-hidden bg-white shadow-sm dark:bg-gray-800 sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <div class="mb-6">
-                        <h3 class="text-lg font-medium text-red-600 dark:text-red-400 mb-2">
-                            Warning: This action cannot be undone
-                        </h3>
-                        <p class="text-sm text-gray-600 dark:text-gray-400">
-                            Deleting your account will permanently remove all your personal data and anonymize your content. 
-                            This includes:
+                        <h3 class="mb-4 text-lg font-medium">Delete Your Account</h3>
+                        <p class="mb-4 text-sm text-gray-600 dark:text-gray-400">
+                            Once your account is deleted, all of your data will be permanently removed. Your posts will remain but will be anonymized.
                         </p>
-                        <ul class="mt-3 list-disc list-inside text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                            <li>Your profile information (name, email, bio, avatar)</li>
-                            <li>All your comments</li>
-                            <li>All your bookmarks and reactions</li>
-                            <li>All uploaded media files</li>
-                            <li>Your posts will be kept but anonymized</li>
-                        </ul>
+                        <p class="mb-4 text-sm text-gray-600 dark:text-gray-400">
+                            Before deleting your account, you may want to download your data using the export feature below.
+                        </p>
                     </div>
 
-                    <form method="POST" action="{{ route('gdpr.delete-account') }}" class="space-y-6">
-                        @csrf
-                        @method('DELETE')
+                    <div class="mb-8">
+                        <h4 class="mb-2 text-base font-medium">Export Your Data</h4>
+                        <p class="mb-4 text-sm text-gray-600 dark:text-gray-400">
+                            Download a copy of all your data in JSON format.
+                        </p>
+                        <a href="{{ route('gdpr.export-data') }}" 
+                           class="inline-flex items-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-blue-700 focus:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:bg-blue-900 dark:bg-blue-200 dark:text-blue-900 dark:hover:bg-white dark:focus:bg-white dark:focus:ring-offset-gray-800 dark:active:bg-gray-300">
+                            Export Data
+                        </a>
+                    </div>
 
-                        <div>
-                            <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Confirm your password
-                            </label>
-                            <input 
-                                type="password" 
-                                name="password" 
-                                id="password" 
-                                required
-                                class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                            >
-                            @error('password')
-                                <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                            @enderror
-                        </div>
+                    <div class="border-t border-gray-200 pt-8 dark:border-gray-700">
+                        <h4 class="mb-2 text-base font-medium text-red-600 dark:text-red-400">Danger Zone</h4>
+                        <p class="mb-4 text-sm text-gray-600 dark:text-gray-400">
+                            This action cannot be undone. Please be certain.
+                        </p>
 
-                        <div class="flex items-start">
-                            <div class="flex items-center h-5">
-                                <input 
-                                    type="checkbox" 
-                                    name="confirm_deletion" 
-                                    id="confirm_deletion" 
-                                    value="1"
-                                    required
-                                    class="rounded border-gray-300 dark:border-gray-700 text-blue-600 focus:ring-blue-500"
-                                >
-                            </div>
-                            <div class="ml-3 text-sm">
-                                <label for="confirm_deletion" class="font-medium text-gray-700 dark:text-gray-300">
-                                    I understand that this action is permanent and cannot be undone
+                        <form method="POST" action="{{ route('gdpr.delete-account') }}" onsubmit="return confirm('Are you absolutely sure you want to delete your account? This action cannot be undone.');">
+                            @csrf
+                            @method('DELETE')
+
+                            <div class="mb-4">
+                                <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Confirm your password
                                 </label>
+                                <input type="password" 
+                                       name="password" 
+                                       id="password" 
+                                       required
+                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-600 dark:focus:ring-blue-600 sm:text-sm">
+                                @error('password')
+                                    <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                @enderror
                             </div>
-                        </div>
-                        @error('confirm_deletion')
-                            <p class="text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                        @enderror
 
-                        <div class="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
-                            <a 
-                                href="{{ route('dashboard') }}" 
-                                class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
-                            >
-                                Cancel
-                            </a>
-                            <button 
-                                type="submit" 
-                                class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors"
-                            >
-                                Delete My Account
+                            <button type="submit" 
+                                    class="inline-flex items-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-red-700 focus:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 active:bg-red-900 dark:focus:ring-offset-gray-800">
+                                Delete Account
                             </button>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>

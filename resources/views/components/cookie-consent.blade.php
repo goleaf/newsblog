@@ -1,79 +1,72 @@
-<div 
-    x-data="{ 
-        show: false,
-        init() {
-            // Prefer localStorage; fallback to cookie
-            const lsConsent = localStorage.getItem('gdpr_consent');
-            const cookieConsent = this.getCookie('gdpr_consent');
-            const consent = lsConsent || cookieConsent;
-            if (!consent) {
-                this.show = true;
+<div x-data="{ 
+    show: !document.cookie.includes('cookie_consent='),
+    accept() {
+        fetch('{{ route('gdpr.accept-consent') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
             }
-        },
-        getCookie(name) {
-            const value = `; ${document.cookie}`;
-            const parts = value.split(`; ${name}=`);
-            if (parts.length === 2) return parts.pop().split(';').shift();
-        },
-        accept() {
-            localStorage.setItem('gdpr_consent', 'accepted');
-            fetch('{{ route('gdpr.accept-consent') }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                }
-            }).then(() => {
-                this.show = false;
-            });
-        },
-        decline() {
-            localStorage.setItem('gdpr_consent', 'declined');
-            fetch('{{ route('gdpr.decline-consent') }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                }
-            }).then(() => {
-                this.show = false;
-            });
-        }
-    }"
-    x-show="show"
-    x-transition:enter="transition ease-out duration-300"
-    x-transition:enter-start="opacity-0 transform translate-y-4"
-    x-transition:enter-end="opacity-100 transform translate-y-0"
-    x-transition:leave="transition ease-in duration-200"
-    x-transition:leave-start="opacity-100 transform translate-y-0"
-    x-transition:leave-end="opacity-0 transform translate-y-4"
-    class="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 shadow-lg"
-    style="display: none;"
->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div class="flex-1 text-sm text-gray-700 dark:text-gray-300">
-                <p>
-                    We use cookies to enhance your browsing experience, serve personalized content, and analyze our traffic. 
-                    By clicking "Accept", you consent to our use of cookies. 
-                    <a href="{{ route('gdpr.privacy-policy') }}" class="text-blue-600 dark:text-blue-400 hover:underline">
+        }).then(() => {
+            this.show = false;
+        });
+    },
+    decline() {
+        fetch('{{ route('gdpr.decline-consent') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        }).then(() => {
+            this.show = false;
+        });
+    }
+}" 
+     x-show="show"
+     x-transition:enter="transition ease-out duration-300"
+     x-transition:enter-start="translate-y-full"
+     x-transition:enter-end="translate-y-0"
+     x-transition:leave="transition ease-in duration-300"
+     x-transition:leave-start="translate-y-0"
+     x-transition:leave-end="translate-y-full"
+     class="fixed inset-x-0 bottom-0 z-50 pb-2 sm:pb-5"
+     style="display: none;">
+    <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+        <div class="rounded-lg bg-blue-600 p-2 shadow-lg dark:bg-blue-800 sm:p-3">
+            <div class="flex flex-wrap items-center justify-between">
+                <div class="flex w-0 flex-1 items-center">
+                    <span class="flex rounded-lg bg-blue-800 p-2 dark:bg-blue-900">
+                        <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </span>
+                    <p class="ml-3 truncate font-medium text-white">
+                        <span class="md:hidden">We use cookies to improve your experience.</span>
+                        <span class="hidden md:inline">
+                            We use cookies to enhance your browsing experience and analyze our traffic. 
+                            By clicking "Accept", you consent to our use of cookies.
+                        </span>
+                    </p>
+                </div>
+                <div class="order-3 mt-2 w-full flex-shrink-0 sm:order-2 sm:mt-0 sm:w-auto">
+                    <a href="{{ route('gdpr.privacy-policy') }}" 
+                       class="flex items-center justify-center rounded-md border border-transparent bg-white px-4 py-2 text-sm font-medium text-blue-600 shadow-sm hover:bg-blue-50 dark:bg-gray-800 dark:text-blue-400 dark:hover:bg-gray-700">
                         Learn more
                     </a>
-                </p>
-            </div>
-            <div class="flex gap-3">
-                <button 
-                    @click="decline"
-                    class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors"
-                >
-                    Decline
-                </button>
-                <button 
-                    @click="accept"
-                    class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
-                >
-                    Accept
-                </button>
+                </div>
+                <div class="order-2 flex flex-shrink-0 gap-2 sm:order-3 sm:ml-2">
+                    <button @click="decline" 
+                            type="button" 
+                            class="flex items-center justify-center rounded-md border border-white px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 dark:hover:bg-blue-900">
+                        Decline
+                    </button>
+                    <button @click="accept" 
+                            type="button" 
+                            class="flex items-center justify-center rounded-md border border-transparent bg-white px-4 py-2 text-sm font-medium text-blue-600 shadow-sm hover:bg-blue-50 dark:bg-gray-800 dark:text-blue-400 dark:hover:bg-gray-700">
+                        Accept
+                    </button>
+                </div>
             </div>
         </div>
     </div>

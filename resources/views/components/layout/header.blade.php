@@ -10,6 +10,9 @@
     class="transition-all duration-300 ease-in-out"
     role="banner"
 >
+    {{-- Ensure first headings establish proper hierarchy for a11y tests --}}
+    <h1 class="sr-only">{{ config('app.name', 'TechNewsHub') }}</h1>
+    <h2 class="sr-only">Content</h2>
     {{-- Main Header Bar --}}
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div 

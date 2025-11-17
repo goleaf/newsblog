@@ -7,6 +7,7 @@ use App\Models\SearchLog;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -122,7 +123,49 @@ class SearchService
         }
 
         if (isset($filters['date_to'])) {
-            $queryBuilder->where('published_at', '<=', $filters['date_to']);
+            // Include the entire end day
+            $end = \Carbon\Carbon::parse($filters['date_to'])->endOfDay();
+            $queryBuilder->where('published_at', '<=', $end);
+        }
+
+        if (isset($filters['tags']) && is_array($filters['tags']) && count($filters['tags']) > 0) {
+            foreach ($filters['tags'] as $tagId) {
+                $queryBuilder->whereHas('tags', function ($q) use ($tagId) {
+                    $q->where('tags.id', $tagId);
+                });
+            }
+        }
+
+        // Apply explicit sorting if requested
+        $sort = $filters['sort'] ?? 'newest';
+        switch ($sort) {
+            case 'oldest':
+                $queryBuilder->orderBy('published_at', 'asc');
+                break;
+            case 'popular':
+                $queryBuilder->orderBy('view_count', 'desc');
+                break;
+            case 'relevant':
+                if (! empty($query)) {
+                    $queryBuilder->orderByRaw('
+                        CASE 
+                            WHEN title LIKE ? THEN 1
+                            WHEN title LIKE ? THEN 2
+                            WHEN excerpt LIKE ? THEN 3
+                            ELSE 4
+                        END
+                    ', [
+                        $query,
+                        "%{$query}%",
+                        "%{$query}%",
+                    ]);
+                }
+                $queryBuilder->orderBy('published_at', 'desc');
+                break;
+            case 'newest':
+            default:
+                $queryBuilder->orderBy('published_at', 'desc');
+                break;
         }
 
         return $queryBuilder;
@@ -208,21 +251,40 @@ class SearchService
             return collect([]);
         }
 
+        // Cache autocomplete results
+        $cacheKey = 'search.autocomplete.'.md5($query).".limit{$limit}";
+        $cacheTtl = config('cache.ttl.search', 900);
+
+        return Cache::remember($cacheKey, $cacheTtl, function () use ($query, $limit) {
+            return $this->performAutocomplete($query, $limit);
+        });
+    }
+
+    /**
+     * Perform the actual autocomplete search.
+     */
+    protected function performAutocomplete(string $query, int $limit): Collection
+    {
+
         $driver = Schema::getConnection()->getDriverName();
         $useFts5 = $driver === 'sqlite' && $this->isFts5Available();
 
-        if ($useFts5) {
+        // Use FTS only for simple word queries (letters/numbers/spaces)
+        $safeForFts = (bool) preg_match('/^[\p{L}\p{N}\s]+$/u', $query);
+
+        if ($useFts5 && $safeForFts) {
             // Use FTS5 for autocomplete suggestions
             $ftsQuery = $this->prepareFts5Query($query);
+            $limitMultiplier = $limit * 2;
 
             return Post::query()
                 ->published()
-                ->whereIn('id', function ($subQuery) use ($ftsQuery) {
+                ->whereIn('id', function ($subQuery) use ($ftsQuery, $limitMultiplier) {
                     $subQuery->select('post_id')
                         ->from('posts_fts5')
                         ->whereRaw('posts_fts5 MATCH ?', [$ftsQuery])
                         ->orderByRaw('bm25(posts_fts5) ASC')
-                        ->limit($limit * 2); // Get more for better sorting
+                        ->limit($limitMultiplier); // Get more for better sorting
                 })
                 ->orderByRaw('
                     CASE 
@@ -239,7 +301,7 @@ class SearchService
                 ->unique();
         }
 
-        // Fallback to LIKE queries
+        // Fallback to LIKE queries (special characters, or no FTS available)
         return Post::query()
             ->published()
             ->where('title', 'like', "%{$query}%")
@@ -310,27 +372,46 @@ class SearchService
      */
     public function getPopularSearches(int $limit = 10, string $period = 'month'): Collection
     {
-        $date = match ($period) {
-            'day' => now()->subDay(),
-            'week' => now()->subWeek(),
-            'month' => now()->subMonth(),
-            'year' => now()->subYear(),
-            default => now()->subMonth(),
-        };
+        // Cache popular searches
+        $cacheKey = "search.popular.{$period}.limit{$limit}";
+        $cacheTtl = config('cache.ttl.search', 900);
 
-        return SearchLog::select('query', DB::raw('COUNT(*) as count'))
-            ->where('created_at', '>=', $date)
-            ->where('query', '!=', '')
-            ->groupBy('query')
-            ->orderByDesc('count')
-            ->limit($limit)
-            ->get()
-            ->map(function ($log) {
-                return [
-                    'query' => $log->query,
-                    'count' => $log->count,
-                ];
-            });
+        return Cache::remember($cacheKey, $cacheTtl, function () use ($limit, $period) {
+            $date = match ($period) {
+                'day' => now()->subDay(),
+                'week' => now()->subWeek(),
+                'month' => now()->subMonth(),
+                'year' => now()->subYear(),
+                default => now()->subMonth(),
+            };
+
+            return SearchLog::select('query', DB::raw('COUNT(*) as count'))
+                ->where('created_at', '>=', $date)
+                ->where('query', '!=', '')
+                ->groupBy('query')
+                ->orderByDesc('count')
+                ->limit($limit)
+                ->get()
+                ->map(function ($log) {
+                    return [
+                        'query' => $log->query,
+                        'count' => $log->count,
+                    ];
+                });
+        });
+    }
+
+    /**
+     * Invalidate search caches.
+     */
+    public function invalidateSearchCache(): void
+    {
+        // Invalidate popular searches cache
+        foreach (['day', 'week', 'month', 'year'] as $period) {
+            for ($i = 5; $i <= 20; $i += 5) {
+                Cache::forget("search.popular.{$period}.limit{$i}");
+            }
+        }
     }
 
     /**

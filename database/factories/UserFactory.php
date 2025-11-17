@@ -87,6 +87,26 @@ class UserFactory extends Factory
     }
 
     /**
+     * Set the user role to moderator.
+     */
+    public function moderator(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => UserRole::Moderator,
+        ]);
+    }
+
+    /**
+     * Set the user role to reader.
+     */
+    public function reader(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => UserRole::Reader,
+        ]);
+    }
+
+    /**
      * Set the user status to active.
      */
     public function active(): static

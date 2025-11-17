@@ -11,13 +11,16 @@ use App\Http\Requests\StoreCommentRequest;
 use App\Jobs\SendCommentApprovedNotification;
 use App\Jobs\SendCommentReplyNotification;
 use App\Models\Comment;
+use App\Services\ContentSanitizer;
 use App\Services\SpamDetectionService;
-use App\Support\Html\SimpleSanitizer;
 use Illuminate\Http\RedirectResponse;
 
 class CommentController extends Controller
 {
-    public function __construct(private SpamDetectionService $spamDetectionService) {}
+    public function __construct(
+        private SpamDetectionService $spamDetectionService,
+        private ContentSanitizer $contentSanitizer
+    ) {}
 
     /**
      * Store a new comment.
@@ -27,7 +30,7 @@ class CommentController extends Controller
         $validated = $request->validated();
 
         // Sanitize user-provided HTML content
-        $validated['content'] = SimpleSanitizer::sanitize($validated['content']);
+        $validated['content'] = $this->contentSanitizer->sanitizeComment($validated['content']);
 
         // Calculate time on page
         $timeOnPage = null;
@@ -104,7 +107,7 @@ class CommentController extends Controller
         $ipAddress = $request->ip();
 
         // Sanitize user-provided HTML content
-        $validated['content'] = SimpleSanitizer::sanitize($validated['content']);
+        $validated['content'] = $this->contentSanitizer->sanitizeComment($validated['content']);
 
         // Check for spam using SpamDetectionService
         $context = [

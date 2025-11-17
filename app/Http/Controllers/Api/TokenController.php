@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\StoreTokenRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -10,6 +11,24 @@ use Laravel\Sanctum\PersonalAccessToken;
 
 class TokenController extends Controller
 {
+    /**
+     * List available token abilities.
+     *
+     * @group Auth Tokens
+     *
+     * @authenticated
+     *
+     * @response 200 {"abilities": {"articles:read": "Read articles", "articles:create": "Create articles", "*": "Full access to all endpoints"}}
+     */
+    public function abilities(): JsonResponse
+    {
+        $abilities = config('sanctum.abilities', []);
+
+        return response()->json([
+            'abilities' => $abilities,
+        ]);
+    }
+
     /**
      * List API tokens for the authenticated user.
      *
@@ -55,14 +74,9 @@ class TokenController extends Controller
      *
      * @response 201 {"token":"...","token_id":1,"name":"CLI","abilities":["*"],"expires_at":null}
      */
-    public function store(Request $request): JsonResponse
+    public function store(StoreTokenRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'abilities' => ['nullable', 'array'],
-            'abilities.*' => ['string'],
-            'expires_at' => ['nullable', 'date'],
-        ]);
+        $validated = $request->validated();
 
         $abilities = $validated['abilities'] ?? ['*'];
         $expiresAt = isset($validated['expires_at']) ? Carbon::parse($validated['expires_at']) : null;
@@ -76,6 +90,47 @@ class TokenController extends Controller
             'abilities' => $token->accessToken->abilities,
             'expires_at' => $token->accessToken->expires_at?->toISOString(),
         ], 201);
+    }
+
+    /**
+     * Update an API token's abilities.
+     *
+     * @group Auth Tokens
+     *
+     * @authenticated
+     *
+     * @urlParam tokenId integer required Token id to update. Example: 1
+     *
+     * @bodyParam abilities string[] required The new token abilities. Example: ["articles:read", "comments:read"]
+     *
+     * @response 200 {"id": 1, "name": "CLI", "abilities": ["articles:read", "comments:read"], "last_used_at": null, "expires_at": null, "created_at": "2025-01-01T00:00:00Z"}
+     */
+    public function update(Request $request, int $tokenId): JsonResponse
+    {
+        $token = PersonalAccessToken::findOrFail($tokenId);
+
+        if ($token->tokenable_id !== $request->user()->getKey() || $token->tokenable_type !== get_class($request->user())) {
+            abort(403);
+        }
+
+        $availableAbilities = array_keys(config('sanctum.abilities', []));
+
+        $validated = $request->validate([
+            'abilities' => ['required', 'array'],
+            'abilities.*' => ['string', 'in:'.implode(',', $availableAbilities)],
+        ]);
+
+        $token->abilities = $validated['abilities'];
+        $token->save();
+
+        return response()->json([
+            'id' => $token->id,
+            'name' => $token->name,
+            'abilities' => $token->abilities,
+            'last_used_at' => $token->last_used_at?->toISOString(),
+            'expires_at' => $token->expires_at?->toISOString(),
+            'created_at' => $token->created_at?->toISOString(),
+        ]);
     }
 
     /**

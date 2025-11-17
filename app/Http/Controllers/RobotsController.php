@@ -16,6 +16,25 @@ class RobotsController extends Controller
         $lines = [
             'User-agent: *',
             'Allow: /',
+            '',
+            '# Disallow admin areas',
+            'Disallow: /nova/',
+            'Disallow: /admin/',
+            'Disallow: /dashboard/',
+            'Disallow: /api/',
+            '',
+            '# Disallow user-specific pages',
+            'Disallow: /profile/edit',
+            'Disallow: /bookmarks/',
+            'Disallow: /reading-lists/create',
+            'Disallow: /reading-lists/*/edit',
+            '',
+            '# Disallow search and filter pages with parameters',
+            'Disallow: /search?*',
+            'Disallow: /*?sort=*',
+            'Disallow: /*?filter=*',
+            '',
+            '# Sitemap location',
             'Sitemap: '.$this->sitemapService->getSitemapUrl(),
         ];
 
@@ -23,6 +42,3 @@ class RobotsController extends Controller
             ->header('Content-Type', 'text/plain; charset=utf-8');
     }
 }
-
-
-

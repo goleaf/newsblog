@@ -308,4 +308,100 @@ class NewsletterTest extends TestCase
 
         $this->assertFalse($newsletter->isVerificationTokenValid());
     }
+
+    public function test_user_can_view_preferences_page(): void
+    {
+        $newsletter = Newsletter::factory()->create([
+            'email' => 'test@example.com',
+            'status' => 'subscribed',
+            'verified_at' => now(),
+            'frequency' => 'weekly',
+            'unsubscribe_token' => Newsletter::generateUnsubscribeToken(),
+        ]);
+
+        $response = $this->get(route('newsletter.preferences', $newsletter->unsubscribe_token));
+
+        $response->assertOk();
+        $response->assertViewIs('newsletter.preferences');
+        $response->assertViewHas('newsletter');
+    }
+
+    public function test_user_can_update_newsletter_frequency(): void
+    {
+        $newsletter = Newsletter::factory()->create([
+            'email' => 'test@example.com',
+            'status' => 'subscribed',
+            'verified_at' => now(),
+            'frequency' => 'weekly',
+            'unsubscribe_token' => Newsletter::generateUnsubscribeToken(),
+        ]);
+
+        $response = $this->post(route('newsletter.preferences.update', $newsletter->unsubscribe_token), [
+            'token' => $newsletter->unsubscribe_token,
+            'frequency' => 'daily',
+        ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('success');
+
+        $newsletter->refresh();
+        $this->assertEquals('daily', $newsletter->frequency);
+    }
+
+    public function test_preferences_update_validates_frequency(): void
+    {
+        $newsletter = Newsletter::factory()->create([
+            'email' => 'test@example.com',
+            'status' => 'subscribed',
+            'verified_at' => now(),
+            'frequency' => 'weekly',
+            'unsubscribe_token' => Newsletter::generateUnsubscribeToken(),
+        ]);
+
+        $response = $this->post(route('newsletter.preferences.update', $newsletter->unsubscribe_token), [
+            'token' => $newsletter->unsubscribe_token,
+            'frequency' => 'invalid',
+        ]);
+
+        $response->assertSessionHasErrors('frequency');
+    }
+
+    public function test_unsubscribed_user_cannot_access_preferences(): void
+    {
+        $newsletter = Newsletter::factory()->create([
+            'email' => 'test@example.com',
+            'status' => 'unsubscribed',
+            'verified_at' => now(),
+            'unsubscribed_at' => now(),
+            'unsubscribe_token' => Newsletter::generateUnsubscribeToken(),
+        ]);
+
+        $response = $this->get(route('newsletter.preferences', $newsletter->unsubscribe_token));
+
+        $response->assertRedirect(route('home'));
+        $response->assertSessionHas('error');
+    }
+
+    public function test_unverified_user_cannot_access_preferences(): void
+    {
+        $newsletter = Newsletter::factory()->create([
+            'email' => 'test@example.com',
+            'status' => 'pending',
+            'verified_at' => null,
+            'unsubscribe_token' => Newsletter::generateUnsubscribeToken(),
+        ]);
+
+        $response = $this->get(route('newsletter.preferences', $newsletter->unsubscribe_token));
+
+        $response->assertRedirect(route('home'));
+        $response->assertSessionHas('error');
+    }
+
+    public function test_invalid_token_cannot_access_preferences(): void
+    {
+        $response = $this->get(route('newsletter.preferences', 'invalid-token'));
+
+        $response->assertRedirect(route('home'));
+        $response->assertSessionHas('error');
+    }
 }

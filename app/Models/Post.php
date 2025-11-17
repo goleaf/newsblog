@@ -123,6 +123,11 @@ class Post extends Model
         return $this->hasMany(BrokenLink::class);
     }
 
+    public function socialShares()
+    {
+        return $this->hasMany(SocialShare::class);
+    }
+
     public function scopePublished($query)
     {
         return $query->where('status', PostStatus::Published)
@@ -219,7 +224,15 @@ class Post extends Model
 
     public function isPublished()
     {
-        return $this->status === PostStatus::Published && $this->published_at <= now();
+        $status = $this->getAttribute('status');
+
+        if ($status instanceof PostStatus) {
+            $statusValue = $status->value;
+        } else {
+            $statusValue = is_string($status) ? $status : null;
+        }
+
+        return $statusValue === PostStatus::Published->value && $this->published_at <= now();
     }
 
     public function canBeEditedBy($user)
@@ -491,24 +504,26 @@ class Post extends Model
      */
     public function toSearchableArray(): array
     {
-        // Avoid heavy relationship loading; accessors are null-safe
-        $author = $this->user?->name;
-        $category = $this->category?->name;
-        $tags = $this->relationLoaded('tags') ? $this->tags->pluck('name')->all() : $this->tags()->pluck('name')->all();
-
-        return [
+        // Base searchable fields that map to real DB columns
+        $payload = [
             'id' => $this->id,
             'title' => (string) $this->title,
             'slug' => (string) $this->slug,
             'excerpt' => trim((string) strip_tags((string) $this->excerpt)),
             'content' => trim((string) strip_tags((string) $this->content)),
-            'author' => $author,
-            'category' => $category,
-            'tags' => $tags,
             'view_count' => (int) $this->view_count,
             'reading_time' => (int) $this->reading_time,
             'published_at' => $this->published_at?->toDateTimeString(),
         ];
+
+        // Always include denormalized relation fields for tests and consistent search indexing
+        $payload['author'] = $this->user?->name;
+        $payload['category'] = $this->category?->name;
+        $payload['tags'] = $this->relationLoaded('tags')
+            ? $this->tags->pluck('name')->all()
+            : $this->tags()->pluck('name')->all();
+
+        return $payload;
     }
 
     /**

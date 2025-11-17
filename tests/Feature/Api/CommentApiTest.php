@@ -24,7 +24,7 @@ class CommentApiTest extends TestCase
             'status' => \App\Enums\CommentStatus::Approved,
         ]);
 
-        $res = $this->getJson('/api/v1/comments?post_id='.$post->id);
+        $res = $this->getJson('/api/v1/articles/'.$post->id.'/comments');
         $res->assertOk();
         $this->assertArrayHasKey('data', $res->json());
         $this->assertGreaterThanOrEqual(1, $res->json('total'));
@@ -39,13 +39,12 @@ class CommentApiTest extends TestCase
         ]);
 
         $payload = [
-            'post_id' => $post->id,
             'author_name' => 'Alice',
             'author_email' => 'alice@example.com',
             'content' => 'Great post! Thanks for sharing.',
         ];
 
-        $res = $this->actingAs($user, 'sanctum')->postJson('/api/v1/comments', $payload);
+        $res = $this->actingAs($user, 'sanctum')->postJson('/api/v1/articles/'.$post->id.'/comments', $payload);
         $res->assertCreated();
         $this->assertDatabaseHas('comments', [
             'post_id' => $post->id,

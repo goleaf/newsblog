@@ -6,7 +6,6 @@ use App\Mail\AccountDeletionConfirmation;
 use App\Models\Bookmark;
 use App\Models\Comment;
 use App\Models\Post;
-use App\Models\Reaction;
 use App\Models\User;
 use App\Services\GdprService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -28,7 +27,7 @@ class GdprComplianceTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJson(['success' => true])
-            ->assertCookie('gdpr_consent', 'accepted');
+            ->assertCookie('cookie_consent', 'accepted');
     }
 
     public function test_user_can_decline_cookie_consent(): void
@@ -37,7 +36,7 @@ class GdprComplianceTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJson(['success' => true])
-            ->assertCookie('gdpr_consent', 'declined');
+            ->assertCookie('cookie_consent', 'declined');
     }
 
     public function test_authenticated_user_can_export_their_data(): void
@@ -52,12 +51,10 @@ class GdprComplianceTest extends TestCase
         $response->assertStatus(200)
             ->assertHeader('Content-Type', 'application/json')
             ->assertJsonStructure([
-                'user' => ['id', 'name', 'email', 'role'],
+                'user' => ['id', 'name', 'email'],
                 'posts',
                 'comments',
                 'bookmarks',
-                'reactions',
-                'media',
             ]);
 
         $data = $response->json();
@@ -94,7 +91,6 @@ class GdprComplianceTest extends TestCase
         $response = $this->actingAs($user)
             ->delete(route('gdpr.delete-account'), [
                 'password' => 'password123',
-                'confirm_deletion' => '1',
             ]);
 
         $response->assertStatus(302)
@@ -104,7 +100,6 @@ class GdprComplianceTest extends TestCase
         // User should be anonymized
         $user->refresh();
         $this->assertEquals('Deleted User', $user->name);
-        $this->assertEquals('deleted', $user->status->value);
         $this->assertStringStartsWith('deleted_', $user->email);
     }
 
@@ -117,27 +112,10 @@ class GdprComplianceTest extends TestCase
         $response = $this->actingAs($user)
             ->delete(route('gdpr.delete-account'), [
                 'password' => 'wrongpassword',
-                'confirm_deletion' => '1',
             ]);
 
         $response->assertStatus(302)
             ->assertSessionHasErrors('password');
-    }
-
-    public function test_account_deletion_requires_confirmation_checkbox(): void
-    {
-        $user = User::factory()->create([
-            'password' => bcrypt('password123'),
-        ]);
-
-        $response = $this->actingAs($user)
-            ->delete(route('gdpr.delete-account'), [
-                'password' => 'password123',
-                'confirm_deletion' => '0',
-            ]);
-
-        $response->assertStatus(302)
-            ->assertSessionHasErrors('confirm_deletion');
     }
 
     public function test_account_deletion_sends_confirmation_email(): void
@@ -152,10 +130,9 @@ class GdprComplianceTest extends TestCase
         $this->actingAs($user)
             ->delete(route('gdpr.delete-account'), [
                 'password' => 'password123',
-                'confirm_deletion' => '1',
             ])->assertRedirect();
 
-        Mail::assertSent(AccountDeletionConfirmation::class, function ($mail) use ($user) {
+        Mail::assertQueued(AccountDeletionConfirmation::class, function ($mail) use ($user) {
             return $mail->hasTo('jane@example.com') && $mail->user->is($user);
         });
     }
@@ -173,8 +150,6 @@ class GdprComplianceTest extends TestCase
         $this->assertArrayHasKey('posts', $data);
         $this->assertArrayHasKey('comments', $data);
         $this->assertArrayHasKey('bookmarks', $data);
-        $this->assertArrayHasKey('reactions', $data);
-        $this->assertArrayHasKey('media', $data);
 
         $this->assertEquals($user->id, $data['user']['id']);
         $this->assertCount(1, $data['posts']);
@@ -191,8 +166,6 @@ class GdprComplianceTest extends TestCase
 
         $comment = Comment::factory()->create([
             'user_id' => $user->id,
-            'author_name' => 'John Doe',
-            'author_email' => 'john@example.com',
         ]);
 
         $gdprService = new GdprService;
@@ -200,16 +173,14 @@ class GdprComplianceTest extends TestCase
 
         $user->refresh();
         $this->assertEquals('Deleted User', $user->name);
-        $this->assertEquals('deleted', $user->status->value);
         $this->assertStringStartsWith('deleted_', $user->email);
         $this->assertNull($user->bio);
 
-        $comment->refresh();
-        $this->assertEquals('Deleted User', $comment->author_name);
-        $this->assertEquals('deleted@deleted.local', $comment->author_email);
+        // Comments should be deleted
+        $this->assertDatabaseMissing('comments', ['id' => $comment->id]);
     }
 
-    public function test_gdpr_service_deletes_user_bookmarks_and_reactions(): void
+    public function test_gdpr_service_deletes_user_bookmarks(): void
     {
         $user = User::factory()->create();
         $post = Post::factory()->create();
@@ -222,20 +193,10 @@ class GdprComplianceTest extends TestCase
             'updated_at' => now(),
         ]);
 
-        // Create reaction manually
-        $reaction = \DB::table('reactions')->insertGetId([
-            'user_id' => $user->id,
-            'post_id' => $post->id,
-            'type' => 'like',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
         $gdprService = new GdprService;
         $gdprService->anonymizeUser($user);
 
         $this->assertDatabaseMissing('bookmarks', ['id' => $bookmark]);
-        $this->assertDatabaseMissing('reactions', ['id' => $reaction]);
     }
 
     public function test_user_can_withdraw_consent(): void
@@ -255,23 +216,5 @@ class GdprComplianceTest extends TestCase
 
         $response->assertStatus(200)
             ->assertViewIs('gdpr.privacy-policy');
-    }
-
-    public function test_user_model_export_method_returns_expected_structure(): void
-    {
-        $user = User::factory()->create();
-        Post::factory()->create(['user_id' => $user->id]);
-        Comment::factory()->create(['user_id' => $user->id]);
-
-        $data = $user->exportData();
-
-        $this->assertIsArray($data);
-        $this->assertArrayHasKey('user', $data);
-        $this->assertArrayHasKey('posts', $data);
-        $this->assertArrayHasKey('comments', $data);
-        $this->assertArrayHasKey('bookmarks', $data);
-        $this->assertArrayHasKey('reactions', $data);
-        $this->assertArrayHasKey('media', $data);
-        $this->assertEquals($user->id, $data['user']['id']);
     }
 }

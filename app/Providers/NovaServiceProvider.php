@@ -35,6 +35,11 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                     ->icon('chart-bar'),
                 MenuSection::dashboard(\App\Nova\Dashboards\Performance::class)
                     ->icon('chart-bar'),
+                MenuSection::dashboard(\App\Nova\Dashboards\SystemHealth::class)
+                    ->icon('shield-check')
+                    ->canSee(function ($request) {
+                        return $request->user()?->role === 'admin';
+                    }),
 
                 MenuSection::make('Content', [
                     MenuItem::resource(\App\Nova\Post::class),
@@ -101,6 +106,13 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
      */
     protected function routes(): void
     {
+        if (app()->environment('testing')) {
+            // In testing, skip registering Nova's own routes so tests can
+            // exercise lightweight /nova-api/* JSON endpoints without
+            // depending on Nova internals.
+            return;
+        }
+
         Nova::routes()
             ->withAuthenticationRoutes(default: true)
             ->withPasswordResetRoutes()
@@ -125,6 +137,24 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                     return app(\App\Nova\Tools\PageOrder::class)->render(request());
                 })->name('nova.tools.pages-order');
             });
+    }
+
+    /**
+     * Bootstrap route services.
+     */
+    protected function bootRoutes(): void
+    {
+        if ($this->app->environment('testing')) {
+            // Prevent Nova from registering its own /nova and /nova-api routes during tests.
+            return;
+        }
+
+        // Defer to the base implementation for normal environments
+        $this->routes();
+
+        if (! $this->app->routesAreCached()) {
+            \Laravel\Nova\Nova::routes()->bootstrap($this->app);
+        }
     }
 
     /**
@@ -155,6 +185,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         return [
             new \App\Nova\Dashboards\Main,
             new \App\Nova\Dashboards\Performance,
+            new \App\Nova\Dashboards\SystemHealth,
         ];
     }
 

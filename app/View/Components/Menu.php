@@ -10,7 +10,7 @@ use Illuminate\View\Component;
 class Menu extends Component
 {
     public function __construct(
-        public MenuLocation $location,
+        public ?MenuLocation $location = null,
         public ?string $class = null,
         public ?string $itemClass = null,
         public ?string $linkClass = null,
@@ -18,14 +18,16 @@ class Menu extends Component
 
     public function render(): View
     {
+        $effectiveLocation = $this->location ?? MenuLocation::Header;
+
         $menu = MenuModel::query()
-            ->where('location', $this->location->value)
+            ->where('location', $effectiveLocation->value)
             ->with(['rootItems.children' => fn ($q) => $q->orderBy('order')])
             ->first();
 
         return view('components.menu', [
             'menu' => $menu,
-            'location' => $this->location,
+            'location' => $effectiveLocation,
             'class' => $this->class,
             'itemClass' => $this->itemClass,
             'linkClass' => $this->linkClass,

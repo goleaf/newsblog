@@ -90,44 +90,55 @@ class SearchController extends Controller
 
         try {
             // Optional engine override: use Scout if requested
-            if ($request->string('engine')->lower() === 'scout') {
-                $builder = Post::search($query)
-                    ->query(function ($q) use ($filters, $request) {
-                        if (! empty($filters['category'])) {
-                            $q->whereHas('category', function ($sub) use ($filters) {
-                                $sub->where('slug', $filters['category']);
-                            });
-                        }
-                        if (! empty($filters['author'])) {
-                            $q->whereHas('user', function ($sub) use ($filters) {
-                                $sub->where('name', 'like', '%'.$filters['author'].'%');
-                            });
-                        }
-                        if (! empty($filters['date_from'])) {
-                            $q->where('published_at', '>=', $filters['date_from']);
-                        }
-                        if (! empty($filters['date_to'])) {
-                            $q->where('published_at', '<=', $filters['date_to']);
-                        }
+            if (strtolower((string) $request->input('engine')) === 'scout') {
+                // Implement a database-backed search flow compatible with Scout interface
+                $sort = strtolower((string) $request->input('sort', 'relevance'));
 
-                        // Sorting within the Eloquent query stage
-                        $sort = strtolower((string) $request->input('sort', 'relevance'));
-                        if ($sort === 'date') {
-                            $q->orderByDesc('published_at');
-                        } elseif ($sort === 'popularity') {
-                            $q->orderByDesc('view_count');
-                        }
+                $queryBuilder = Post::query()
+                    ->where('status', 'published')
+                    ->where(function ($q) use ($query) {
+                        $q->where('title', 'like', "%{$query}%")
+                            ->orWhere('excerpt', 'like', "%{$query}%")
+                            ->orWhere('content', 'like', "%{$query}%");
                     });
 
-                // Pagination support
+                if (! empty($filters['category'])) {
+                    $queryBuilder->whereHas('category', function ($sub) use ($filters) {
+                        $sub->where('slug', $filters['category']);
+                    });
+                }
+                if (! empty($filters['author'])) {
+                    $queryBuilder->whereHas('user', function ($sub) use ($filters) {
+                        $sub->where('name', 'like', '%'.$filters['author'].'%');
+                    });
+                }
+                if (! empty($filters['date_from'])) {
+                    $queryBuilder->where('published_at', '>=', $filters['date_from']);
+                }
+                if (! empty($filters['date_to'])) {
+                    $queryBuilder->where('published_at', '<=', $filters['date_to']);
+                }
+
+                // Sorting
+                match ($sort) {
+                    'date' => $queryBuilder->orderBy('published_at', 'desc'),
+                    'popularity', 'popular' => $queryBuilder->orderBy('view_count', 'desc'),
+                    default => $queryBuilder->orderByRaw('CASE WHEN title LIKE ? THEN 1 WHEN title LIKE ? THEN 2 WHEN excerpt LIKE ? THEN 3 ELSE 4 END', [
+                        $query,
+                        "%{$query}%",
+                        "%{$query}%",
+                    ])->orderBy('published_at', 'desc'),
+                };
+
+                // Pagination
                 $perPage = (int) max(1, min((int) $request->input('per_page', $limit), 50));
                 $page = (int) max(1, (int) $request->input('page', 1));
 
-                $paginator = $builder->paginate($perPage, 'page', $page);
+                $paginator = $queryBuilder->paginate($perPage, ['*'], 'page', $page);
+                $collection = collect($paginator->items());
 
-                $items = collect($paginator->items());
-                $results = $items->values()->map(function ($post, $idx) use ($page, $perPage) {
-                    $pos = (($page - 1) * $perPage) + $idx;
+                $results = $collection->values()->map(function ($post, $idx) use ($paginator) {
+                    $pos = (($paginator->currentPage() - 1) * $paginator->perPage()) + $idx;
                     $score = max(1, 100 - $pos);
 
                     return SearchResult::fromPost($post, (float) $score);
@@ -162,7 +173,7 @@ class SearchController extends Controller
             // Async query logging
             if (config('fuzzy-search.analytics.log_queries', true)) {
                 $resultCount = $results->count();
-                $fuzzyEnabled = $request->string('engine')->lower() !== 'scout' && $this->fuzzySearchService->isEnabled('posts');
+                $fuzzyEnabled = strtolower((string) $request->input('engine')) !== 'scout' && $this->fuzzySearchService->isEnabled('posts');
                 $analyticsService = $this->analyticsService;
 
                 dispatch(function () use ($query, $resultCount, $executionTime, $filters, $fuzzyEnabled, $analyticsService) {

@@ -1,0 +1,578 @@
+/**
+ * Responsive Design Utilities
+ * Mobile-first approach with Tailwind CSS
+ * Requirements: 17.1, 17.2, 17.3, 17.4
+ */
+
+/* ===================================
+   Base Responsive Typography
+   =================================== */
+
+/* Mobile-first: Base font size 16px minimum for readability (Requirement 17.3) */
+html {
+    font-size: 16px;
+    -webkit-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+/* Responsive typography scaling */
+@media (min-width: 640px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 17px;
+    }
+}
+
+@media (min-width: 1024px) {
+    html {
+        font-size: 18px;
+    }
+}
+
+/* Ensure readable line height on mobile (Requirement 17.3) */
+body {
+    line-height: 1.6;
+}
+
+@media (min-width: 768px) {
+    body {
+        line-height: 1.7;
+    }
+}
+
+/* ===================================
+   Responsive Container Utilities
+   =================================== */
+
+.container-responsive {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+    .container-responsive {
+        max-width: 640px;
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .container-responsive {
+        max-width: 768px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .container-responsive {
+        max-width: 1024px;
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
+}
+
+@media (min-width: 1280px) {
+    .container-responsive {
+        max-width: 1280px;
+    }
+}
+
+/* ===================================
+   Responsive Grid System
+   =================================== */
+
+.grid-responsive {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+    .grid-responsive {
+        gap: 1.5rem;
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .grid-responsive {
+        gap: 2rem;
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.grid-responsive-2 {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+    .grid-responsive-2 {
+        gap: 1.5rem;
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.grid-responsive-4 {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+    .grid-responsive-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .grid-responsive-4 {
+        gap: 1.5rem;
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* ===================================
+   Flexible Images and Media
+   =================================== */
+
+img,
+video,
+iframe {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Responsive image containers */
+.img-responsive {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+}
+
+.img-responsive img {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+/* Aspect ratio utilities */
+.aspect-16-9 {
+    aspect-ratio: 16 / 9;
+}
+
+.aspect-4-3 {
+    aspect-ratio: 4 / 3;
+}
+
+.aspect-1-1 {
+    aspect-ratio: 1 / 1;
+}
+
+/* ===================================
+   Touch-Friendly Targets (Requirement 17.2)
+   =================================== */
+
+/* Minimum 44x44px touch targets on mobile */
+@media (max-width: 1023px) {
+    button,
+    a.btn,
+    input[type="button"],
+    input[type="submit"],
+    .touch-target {
+        min-height: 44px;
+        min-width: 44px;
+        padding: 0.75rem 1rem;
+    }
+    
+    /* Ensure adequate spacing between touch targets */
+    .touch-target-group > * + * {
+        margin-top: 0.5rem;
+    }
+}
+
+/* ===================================
+   Mobile Navigation Utilities
+   =================================== */
+
+/* Hamburger menu animation */
+.hamburger-line {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background-color: currentColor;
+    transition: all 0.3s ease-in-out;
+}
+
+.hamburger-line + .hamburger-line {
+    margin-top: 5px;
+}
+
+.hamburger-open .hamburger-line:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+}
+
+.hamburger-open .hamburger-line:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger-open .hamburger-line:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+}
+
+/* ===================================
+   Responsive Text Utilities
+   =================================== */
+
+/* Responsive heading sizes */
+.heading-responsive-xl {
+    font-size: 1.875rem; /* 30px */
+    line-height: 1.2;
+}
+
+@media (min-width: 768px) {
+    .heading-responsive-xl {
+        font-size: 2.25rem; /* 36px */
+    }
+}
+
+@media (min-width: 1024px) {
+    .heading-responsive-xl {
+        font-size: 3rem; /* 48px */
+    }
+}
+
+.heading-responsive-lg {
+    font-size: 1.5rem; /* 24px */
+    line-height: 1.3;
+}
+
+@media (min-width: 768px) {
+    .heading-responsive-lg {
+        font-size: 1.875rem; /* 30px */
+    }
+}
+
+@media (min-width: 1024px) {
+    .heading-responsive-lg {
+        font-size: 2.25rem; /* 36px */
+    }
+}
+
+.heading-responsive-md {
+    font-size: 1.25rem; /* 20px */
+    line-height: 1.4;
+}
+
+@media (min-width: 768px) {
+    .heading-responsive-md {
+        font-size: 1.5rem; /* 24px */
+    }
+}
+
+@media (min-width: 1024px) {
+    .heading-responsive-md {
+        font-size: 1.875rem; /* 30px */
+    }
+}
+
+/* Responsive body text */
+.text-responsive {
+    font-size: 1rem; /* 16px minimum */
+    line-height: 1.6;
+}
+
+@media (min-width: 768px) {
+    .text-responsive {
+        font-size: 1.0625rem; /* 17px */
+        line-height: 1.7;
+    }
+}
+
+@media (min-width: 1024px) {
+    .text-responsive {
+        font-size: 1.125rem; /* 18px */
+        line-height: 1.75;
+    }
+}
+
+/* ===================================
+   Mobile-Specific Utilities
+   =================================== */
+
+/* Hide on mobile */
+@media (max-width: 767px) {
+    .hide-mobile {
+        display: none !important;
+    }
+}
+
+/* Show only on mobile */
+@media (min-width: 768px) {
+    .show-mobile {
+        display: none !important;
+    }
+}
+
+/* Hide on tablet */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .hide-tablet {
+        display: none !important;
+    }
+}
+
+/* Show only on tablet */
+@media (max-width: 767px), (min-width: 1024px) {
+    .show-tablet {
+        display: none !important;
+    }
+}
+
+/* Hide on desktop */
+@media (min-width: 1024px) {
+    .hide-desktop {
+        display: none !important;
+    }
+}
+
+/* Show only on desktop */
+@media (max-width: 1023px) {
+    .show-desktop {
+        display: none !important;
+    }
+}
+
+/* ===================================
+   Responsive Spacing
+   =================================== */
+
+.spacing-responsive-sm {
+    padding: 1rem;
+}
+
+@media (min-width: 768px) {
+    .spacing-responsive-sm {
+        padding: 1.5rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .spacing-responsive-sm {
+        padding: 2rem;
+    }
+}
+
+.spacing-responsive-md {
+    padding: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .spacing-responsive-md {
+        padding: 2rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .spacing-responsive-md {
+        padding: 3rem;
+    }
+}
+
+.spacing-responsive-lg {
+    padding: 2rem;
+}
+
+@media (min-width: 768px) {
+    .spacing-responsive-lg {
+        padding: 3rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .spacing-responsive-lg {
+        padding: 4rem;
+    }
+}
+
+/* ===================================
+   Responsive Card Layouts
+   =================================== */
+
+.card-responsive {
+    display: flex;
+    flex-direction: column;
+    background: white;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+@media (min-width: 768px) {
+    .card-responsive-horizontal {
+        flex-direction: row;
+    }
+    
+    .card-responsive-horizontal .card-image {
+        width: 40%;
+        flex-shrink: 0;
+    }
+    
+    .card-responsive-horizontal .card-content {
+        width: 60%;
+    }
+}
+
+/* ===================================
+   Mobile Reading Experience
+   =================================== */
+
+/* Optimized article content for mobile reading */
+.article-content-mobile {
+    font-size: 1rem; /* 16px minimum */
+    line-height: 1.7;
+    word-spacing: 0.05em;
+}
+
+@media (min-width: 768px) {
+    .article-content-mobile {
+        font-size: 1.0625rem; /* 17px */
+        line-height: 1.75;
+    }
+}
+
+@media (min-width: 1024px) {
+    .article-content-mobile {
+        font-size: 1.125rem; /* 18px */
+        line-height: 1.8;
+    }
+}
+
+/* Responsive article width for optimal reading */
+.article-width-responsive {
+    max-width: 100%;
+}
+
+@media (min-width: 768px) {
+    .article-width-responsive {
+        max-width: 65ch; /* Optimal line length for reading */
+    }
+}
+
+/* ===================================
+   Responsive Tables
+   =================================== */
+
+@media (max-width: 767px) {
+    .table-responsive {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .table-responsive table {
+        min-width: 600px;
+    }
+}
+
+/* ===================================
+   Responsive Forms
+   =================================== */
+
+.form-responsive input,
+.form-responsive select,
+.form-responsive textarea {
+    width: 100%;
+    font-size: 1rem; /* Prevent zoom on iOS */
+}
+
+@media (max-width: 767px) {
+    .form-responsive input,
+    .form-responsive select,
+    .form-responsive textarea {
+        font-size: 16px; /* Prevent iOS zoom */
+    }
+}
+
+/* ===================================
+   Responsive Modal/Dialog
+   =================================== */
+
+.modal-responsive {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    border-radius: 0;
+}
+
+@media (min-width: 640px) {
+    .modal-responsive {
+        max-width: 640px;
+        margin: 1rem auto;
+        border-radius: 0.5rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .modal-responsive {
+        max-width: 768px;
+        margin: 2rem auto;
+    }
+}
+
+/* ===================================
+   Performance Optimizations
+   =================================== */
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* ===================================
+   Print Styles
+   =================================== */
+
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    
+    body {
+        font-size: 12pt;
+        line-height: 1.5;
+        color: #000;
+        background: #fff;
+    }
+    
+    a[href]::after {
+        content: " (" attr(href) ")";
+    }
+    
+    img {
+        max-width: 100% !important;
+        page-break-inside: avoid;
+    }
+    
+    h1, h2, h3, h4, h5, h6 {
+        page-break-after: avoid;
+    }
+}

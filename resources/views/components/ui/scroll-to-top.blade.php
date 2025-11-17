@@ -11,7 +11,7 @@
 --}}
 
 <button
-    x-data="scrollToTop"
+    x-data="scrollToTop()"
     x-init="init()"
     @click="scrollToTop()"
     x-show="isVisible"
@@ -42,7 +42,7 @@
     </svg>
 </button>
 
-<script>
+<script nonce="{{ \Illuminate\Support\Facades\Vite::cspNonce() }}">
 document.addEventListener('alpine:init', () => {
     Alpine.data('scrollToTop', () => ({
         isVisible: false,
@@ -79,6 +79,5 @@ document.addEventListener('alpine:init', () => {
     }));
 });
 </script>
-
 
 

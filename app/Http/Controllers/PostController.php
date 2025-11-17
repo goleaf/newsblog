@@ -7,6 +7,7 @@ use App\Http\Requests\ShowPostRequest;
 use App\Models\Category;
 use App\Models\Post;
 use App\Models\Tag;
+use App\Services\BreadcrumbService;
 use App\Services\FuzzySearchService;
 use App\Services\PostService;
 use App\Services\RelatedPostsService;
@@ -26,6 +27,7 @@ class PostController extends Controller
         protected RelatedPostsService $relatedPostsService,
         protected SearchService $searchService,
         protected SeriesNavigationService $seriesNavigationService,
+        protected BreadcrumbService $breadcrumbService,
         protected PostViewController $postViewController,
         protected \App\Services\CacheService $cacheService
     ) {}
@@ -104,7 +106,11 @@ class PostController extends Controller
             return $this->seriesNavigationService->getPostSeriesWithNavigation($post);
         });
 
-        return view('posts.show', compact('post', 'relatedPosts', 'seriesData'));
+        // Generate breadcrumbs and structured data (for tests and SEO)
+        $breadcrumbs = $this->breadcrumbService->generate($request);
+        $breadcrumbStructuredData = $this->breadcrumbService->generateStructuredData($breadcrumbs);
+
+        return view('posts.show', compact('post', 'relatedPosts', 'seriesData', 'breadcrumbs', 'breadcrumbStructuredData'));
     }
 
     public function category($slug, Request $request)

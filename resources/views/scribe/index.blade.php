@@ -23,6 +23,8 @@
         /* starts out as display none and is replaced with js later  */
                     body .content .bash-example code { display: none; }
                     body .content .javascript-example code { display: none; }
+                    body .content .php-example code { display: none; }
+                    body .content .python-example code { display: none; }
             </style>
 
     <script>
@@ -36,7 +38,7 @@
 
 </head>
 
-<body data-languages="[&quot;bash&quot;,&quot;javascript&quot;]">
+<body data-languages="[&quot;bash&quot;,&quot;javascript&quot;,&quot;php&quot;,&quot;python&quot;]">
 
 <a href="#" id="nav-button">
     <span>
@@ -49,6 +51,8 @@
             <div class="lang-selector">
                                             <button type="button" class="lang-button" data-language-name="bash">bash</button>
                                             <button type="button" class="lang-button" data-language-name="javascript">javascript</button>
+                                            <button type="button" class="lang-button" data-language-name="php">php</button>
+                                            <button type="button" class="lang-button" data-language-name="python">python</button>
                     </div>
     
     <div class="search">
@@ -60,25 +64,94 @@
                 <li class="tocify-item level-1" data-unique="introduction">
                     <a href="#introduction">Introduction</a>
                 </li>
+                                    <ul id="tocify-subheader-introduction" class="tocify-subheader">
+                                                    <li class="tocify-item level-2" data-unique="overview">
+                                <a href="#overview">Overview</a>
+                            </li>
+                                                                        </ul>
                             </ul>
-                    <ul id="tocify-header-authenticating-requests" class="tocify-header">
-                <li class="tocify-item level-1" data-unique="authenticating-requests">
-                    <a href="#authenticating-requests">Authenticating requests</a>
+                    <ul id="tocify-header-authentication" class="tocify-header">
+                <li class="tocify-item level-1" data-unique="authentication">
+                    <a href="#authentication">Authentication</a>
                 </li>
+                                    <ul id="tocify-subheader-authentication" class="tocify-subheader">
+                                                    <li class="tocify-item level-2" data-unique="obtaining-an-api-token">
+                                <a href="#obtaining-an-api-token">Obtaining an API Token</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="using-your-token">
+                                <a href="#using-your-token">Using Your Token</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="token-abilities-permissions">
+                                <a href="#token-abilities-permissions">Token Abilities (Permissions)</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="managing-tokens">
+                                <a href="#managing-tokens">Managing Tokens</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="token-security-best-practices">
+                                <a href="#token-security-best-practices">Token Security Best Practices</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="public-vs-authenticated-endpoints">
+                                <a href="#public-vs-authenticated-endpoints">Public vs Authenticated Endpoints</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="error-responses">
+                                <a href="#error-responses">Error Responses</a>
+                            </li>
+                                                                        </ul>
                             </ul>
                     <ul id="tocify-header-auth-tokens" class="tocify-header">
                 <li class="tocify-item level-1" data-unique="auth-tokens">
                     <a href="#auth-tokens">Auth Tokens</a>
                 </li>
                                     <ul id="tocify-subheader-auth-tokens" class="tocify-subheader">
-                                                    <li class="tocify-item level-2" data-unique="auth-tokens-GETapi-v1-tokens">
+                                                    <li class="tocify-item level-2" data-unique="auth-tokens-GETapi-v1-tokens-abilities">
+                                <a href="#auth-tokens-GETapi-v1-tokens-abilities">List available token abilities.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="auth-tokens-GETapi-v1-tokens">
                                 <a href="#auth-tokens-GETapi-v1-tokens">List API tokens for the authenticated user.</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="auth-tokens-POSTapi-v1-tokens">
                                 <a href="#auth-tokens-POSTapi-v1-tokens">Create a new API token.</a>
                             </li>
+                                                                                <li class="tocify-item level-2" data-unique="auth-tokens-PUTapi-v1-tokens--tokenId-">
+                                <a href="#auth-tokens-PUTapi-v1-tokens--tokenId-">Update an API token's abilities.</a>
+                            </li>
                                                                                 <li class="tocify-item level-2" data-unique="auth-tokens-DELETEapi-v1-tokens--tokenId-">
                                 <a href="#auth-tokens-DELETEapi-v1-tokens--tokenId-">Revoke an API token by id.</a>
+                            </li>
+                                                                        </ul>
+                            </ul>
+                    <ul id="tocify-header-bookmarks" class="tocify-header">
+                <li class="tocify-item level-1" data-unique="bookmarks">
+                    <a href="#bookmarks">Bookmarks</a>
+                </li>
+                                    <ul id="tocify-subheader-bookmarks" class="tocify-subheader">
+                                                    <li class="tocify-item level-2" data-unique="bookmarks-GETapi-v1-bookmarks">
+                                <a href="#bookmarks-GETapi-v1-bookmarks">List Bookmarks</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="bookmarks-POSTapi-v1-bookmarks">
+                                <a href="#bookmarks-POSTapi-v1-bookmarks">Create a bookmark</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="bookmarks-DELETEapi-v1-bookmarks--id-">
+                                <a href="#bookmarks-DELETEapi-v1-bookmarks--id-">Remove a bookmark</a>
+                            </li>
+                                                                        </ul>
+                            </ul>
+                    <ul id="tocify-header-comments" class="tocify-header">
+                <li class="tocify-item level-1" data-unique="comments">
+                    <a href="#comments">Comments</a>
+                </li>
+                                    <ul id="tocify-subheader-comments" class="tocify-subheader">
+                                                    <li class="tocify-item level-2" data-unique="comments-GETapi-v1-articles--article_id--comments">
+                                <a href="#comments-GETapi-v1-articles--article_id--comments">GET api/v1/articles/{article_id}/comments</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="comments-POSTapi-v1-articles--article_id--comments">
+                                <a href="#comments-POSTapi-v1-articles--article_id--comments">POST api/v1/articles/{article_id}/comments</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="comments-PUTapi-v1-comments--comment_id-">
+                                <a href="#comments-PUTapi-v1-comments--comment_id-">PUT api/v1/comments/{comment_id}</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="comments-DELETEapi-v1-comments--id-">
+                                <a href="#comments-DELETEapi-v1-comments--id-">DELETE api/v1/comments/{id}</a>
                             </li>
                                                                         </ul>
                             </ul>
@@ -90,6 +163,24 @@
                                                     <li class="tocify-item level-2" data-unique="endpoints-GETapi-nova-api-system-health">
                                 <a href="#endpoints-GETapi-nova-api-system-health">Get system health status.</a>
                             </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-nova-api-posts">
+                                <a href="#endpoints-GETapi-nova-api-posts">GET api/nova-api/posts</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-nova-api-users">
+                                <a href="#endpoints-GETapi-nova-api-users">GET api/nova-api/users</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-nova-api-categories">
+                                <a href="#endpoints-GETapi-nova-api-categories">GET api/nova-api/categories</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-nova-api-tags">
+                                <a href="#endpoints-GETapi-nova-api-tags">GET api/nova-api/tags</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-nova-api-comments">
+                                <a href="#endpoints-GETapi-nova-api-comments">GET api/nova-api/comments</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-nova-api-media">
+                                <a href="#endpoints-GETapi-nova-api-media">GET api/nova-api/media</a>
+                            </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-GETapi-v1-categories">
                                 <a href="#endpoints-GETapi-v1-categories">GET api/v1/categories</a>
                             </li>
@@ -99,32 +190,26 @@
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-GETapi-v1-tags">
                                 <a href="#endpoints-GETapi-v1-tags">GET api/v1/tags</a>
                             </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-v1-tags-search">
+                                <a href="#endpoints-GETapi-v1-tags-search">GET api/v1/tags/search</a>
+                            </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-GETapi-v1-tags--id--articles">
                                 <a href="#endpoints-GETapi-v1-tags--id--articles">GET api/v1/tags/{id}/articles</a>
                             </li>
-                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-v1-comments">
-                                <a href="#endpoints-GETapi-v1-comments">GET api/v1/comments</a>
-                            </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-GETapi-v1-media">
-                                <a href="#endpoints-GETapi-v1-media">GET api/v1/media</a>
+                                <a href="#endpoints-GETapi-v1-media">List user's uploaded media with optional filtering.</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-POSTapi-v1-media">
-                                <a href="#endpoints-POSTapi-v1-media">POST api/v1/media</a>
+                                <a href="#endpoints-POSTapi-v1-media">Upload a new image.</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-DELETEapi-v1-media--media_id-">
-                                <a href="#endpoints-DELETEapi-v1-media--media_id-">DELETE api/v1/media/{media_id}</a>
+                                <a href="#endpoints-DELETEapi-v1-media--media_id-">Delete an uploaded image and its variants.</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-GETapi-v1-widgets-weather">
                                 <a href="#endpoints-GETapi-v1-widgets-weather">GET api/v1/widgets/weather</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-GETapi-v1-widgets-stocks">
                                 <a href="#endpoints-GETapi-v1-widgets-stocks">GET api/v1/widgets/stocks</a>
-                            </li>
-                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-v1-users-me">
-                                <a href="#endpoints-GETapi-v1-users-me">GET api/v1/users/me</a>
-                            </li>
-                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-v1-bookmarks">
-                                <a href="#endpoints-GETapi-v1-bookmarks">GET api/v1/bookmarks</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-POSTapi-v1-posts--postId--reactions">
                                 <a href="#endpoints-POSTapi-v1-posts--postId--reactions">POST api/v1/posts/{postId}/reactions</a>
@@ -133,19 +218,13 @@
                                 <a href="#endpoints-POSTapi-v1-posts--postId--bookmark">POST api/v1/posts/{postId}/bookmark</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-POSTapi-v1-comments--commentId--reactions">
-                                <a href="#endpoints-POSTapi-v1-comments--commentId--reactions">POST api/v1/comments/{commentId}/reactions</a>
+                                <a href="#endpoints-POSTapi-v1-comments--commentId--reactions">Store or toggle a reaction on a comment.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-v1-comments--commentId--reactions">
+                                <a href="#endpoints-GETapi-v1-comments--commentId--reactions">Get reaction counts for a comment.</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-POSTapi-v1-comments--commentId--flags">
                                 <a href="#endpoints-POSTapi-v1-comments--commentId--flags">POST api/v1/comments/{commentId}/flags</a>
-                            </li>
-                                                                                <li class="tocify-item level-2" data-unique="endpoints-POSTapi-v1-comments">
-                                <a href="#endpoints-POSTapi-v1-comments">POST api/v1/comments</a>
-                            </li>
-                                                                                <li class="tocify-item level-2" data-unique="endpoints-PUTapi-v1-comments--comment_id-">
-                                <a href="#endpoints-PUTapi-v1-comments--comment_id-">PUT api/v1/comments/{comment_id}</a>
-                            </li>
-                                                                                <li class="tocify-item level-2" data-unique="endpoints-DELETEapi-v1-comments--comment_id-">
-                                <a href="#endpoints-DELETEapi-v1-comments--comment_id-">DELETE api/v1/comments/{comment_id}</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-POSTapi-v1-users--user--follow">
                                 <a href="#endpoints-POSTapi-v1-users--user--follow">POST api/v1/users/{user}/follow</a>
@@ -158,9 +237,6 @@
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-GETapi-v1-users--user--following">
                                 <a href="#endpoints-GETapi-v1-users--user--following">GET api/v1/users/{user}/following</a>
-                            </li>
-                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-v1-users-suggestions">
-                                <a href="#endpoints-GETapi-v1-users-suggestions">GET api/v1/users/suggestions</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-GETapi-v1-activity-me">
                                 <a href="#endpoints-GETapi-v1-activity-me">GET api/v1/activity/me</a>
@@ -215,20 +291,26 @@
                     <a href="#posts">Posts</a>
                 </li>
                                     <ul id="tocify-subheader-posts" class="tocify-subheader">
-                                                    <li class="tocify-item level-2" data-unique="posts-GETapi-v1-posts">
+                                                    <li class="tocify-item level-2" data-unique="posts-GETapi-v1-articles">
+                                <a href="#posts-GETapi-v1-articles">List Posts</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="posts-GETapi-v1-articles--id-">
+                                <a href="#posts-GETapi-v1-articles--id-">Get Single Post</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="posts-GETapi-v1-posts">
                                 <a href="#posts-GETapi-v1-posts">List Posts</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="posts-GETapi-v1-posts--slug-">
                                 <a href="#posts-GETapi-v1-posts--slug-">Get Single Post</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="posts-POSTapi-v1-articles">
-                                <a href="#posts-POSTapi-v1-articles">Create Post (auth)</a>
+                                <a href="#posts-POSTapi-v1-articles">Create Post</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="posts-PUTapi-v1-articles--post_id-">
-                                <a href="#posts-PUTapi-v1-articles--post_id-">Update Post (auth)</a>
+                                <a href="#posts-PUTapi-v1-articles--post_id-">Update Post</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="posts-DELETEapi-v1-articles--post_id-">
-                                <a href="#posts-DELETEapi-v1-articles--post_id-">Delete Post (auth)</a>
+                                <a href="#posts-DELETEapi-v1-articles--post_id-">Delete Post</a>
                             </li>
                                                                         </ul>
                             </ul>
@@ -295,6 +377,25 @@
                             </li>
                                                                         </ul>
                             </ul>
+                    <ul id="tocify-header-users" class="tocify-header">
+                <li class="tocify-item level-1" data-unique="users">
+                    <a href="#users">Users</a>
+                </li>
+                                    <ul id="tocify-subheader-users" class="tocify-subheader">
+                                                    <li class="tocify-item level-2" data-unique="users-GETapi-v1-users-me">
+                                <a href="#users-GETapi-v1-users-me">Get Current User</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="users-PUTapi-v1-users-me">
+                                <a href="#users-PUTapi-v1-users-me">Update Current User</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="users-GETapi-v1-users-suggestions">
+                                <a href="#users-GETapi-v1-users-suggestions">Get User Suggestions</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="users-GETapi-v1-users--id-">
+                                <a href="#users-GETapi-v1-users--id-">Get User Profile</a>
+                            </li>
+                                                                        </ul>
+                            </ul>
             </div>
 
     <ul class="toc-footer" id="toc-footer">
@@ -304,7 +405,7 @@
     </ul>
 
     <ul class="toc-footer" id="last-updated">
-        <li>Last updated: November 16, 2025</li>
+        <li>Last updated: November 17, 2025</li>
     </ul>
 </div>
 
@@ -312,22 +413,384 @@
     <div class="dark-box"></div>
     <div class="content">
         <h1 id="introduction">Introduction</h1>
+<p>Welcome to the Technology News Platform API documentation. This RESTful API provides comprehensive access to articles, user management, comments, bookmarks, social features, and more.</p>
 <aside>
     <strong>Base URL</strong>: <code>http://localhost</code>
 </aside>
-<pre><code>This documentation aims to provide all the information you need to work with our API.
+<h2 id="overview">Overview</h2>
+<p>The API is organized around REST principles. It accepts JSON-encoded request bodies, returns JSON-encoded responses, and uses standard HTTP response codes, authentication, and verbs.</p>
+<h3 id="key-features">Key Features</h3>
+<ul>
+<li><strong>Articles Management</strong>: Create, read, update, and delete articles</li>
+<li><strong>User Profiles</strong>: Manage user accounts and profiles</li>
+<li><strong>Comments</strong>: Threaded commenting system with reactions</li>
+<li><strong>Bookmarks &amp; Reading Lists</strong>: Save and organize articles</li>
+<li><strong>Social Features</strong>: Follow users, track activity, share content</li>
+<li><strong>Search</strong>: Full-text search with advanced filtering</li>
+<li><strong>Notifications</strong>: Real-time notification system</li>
+<li><strong>Newsletter</strong>: Subscription and preference management</li>
+</ul>
+<h3 id="api-versioning">API Versioning</h3>
+<p>The current API version is <strong>v1</strong>. All endpoints are prefixed with <code>/api/v1/</code>.</p>
+<h3 id="rate-limiting">Rate Limiting</h3>
+<p>API requests are rate-limited to ensure fair usage:</p>
+<ul>
+<li><strong>Public endpoints</strong>: 60 requests per minute</li>
+<li><strong>Authenticated endpoints</strong>: 60 requests per minute</li>
+<li><strong>Write operations</strong>: 30 requests per minute</li>
+<li><strong>Search endpoints</strong>: 30 requests per minute</li>
+<li><strong>Token creation</strong>: 5 requests per minute</li>
+</ul>
+<p>Rate limit information is included in response headers:</p>
+<ul>
+<li><code>X-RateLimit-Limit</code>: Maximum requests allowed</li>
+<li><code>X-RateLimit-Remaining</code>: Requests remaining in current window</li>
+<li><code>Retry-After</code>: Seconds to wait before retrying (when rate limited)</li>
+</ul>
+<h3 id="response-format">Response Format</h3>
+<p>All responses are returned in JSON format with the following structure:</p>
+<p><strong>Success Response:</strong></p>
+<pre><code class="language-json">{
+  "data": {
+    // Resource data
+  }
+}</code></pre>
+<p><strong>Paginated Response:</strong></p>
+<pre><code class="language-json">{
+  "data": [...],
+  "links": {
+    "first": "...",
+    "last": "...",
+    "prev": null,
+    "next": "..."
+  },
+  "meta": {
+    "current_page": 1,
+    "from": 1,
+    "last_page": 10,
+    "per_page": 15,
+    "to": 15,
+    "total": 150
+  }
+}</code></pre>
+<p><strong>Error Response:</strong></p>
+<pre><code class="language-json">{
+  "message": "Error description",
+  "errors": {
+    "field": ["Validation error message"]
+  }
+}</code></pre>
+<h3 id="http-status-codes">HTTP Status Codes</h3>
+<p>The API uses standard HTTP status codes:</p>
+<ul>
+<li><code>200 OK</code>: Request succeeded</li>
+<li><code>201 Created</code>: Resource created successfully</li>
+<li><code>204 No Content</code>: Request succeeded with no response body</li>
+<li><code>400 Bad Request</code>: Invalid request parameters</li>
+<li><code>401 Unauthorized</code>: Authentication required or failed</li>
+<li><code>403 Forbidden</code>: Authenticated but not authorized</li>
+<li><code>404 Not Found</code>: Resource not found</li>
+<li><code>422 Unprocessable Entity</code>: Validation failed</li>
+<li><code>429 Too Many Requests</code>: Rate limit exceeded</li>
+<li><code>500 Internal Server Error</code>: Server error</li>
+</ul>
+<h3 id="code-examples">Code Examples</h3>
+<aside>As you scroll, you'll see code examples for working with the API in different programming languages in the dark area to the right (or as part of the content on mobile).
+You can switch the language used with the tabs at the top right (or from the nav menu at the top left on mobile).</aside>
+<h3 id="support">Support</h3>
+<p>For API support, please contact us at support@example.com or visit our developer forum.</p>
 
-&lt;aside&gt;As you scroll, you'll see code examples for working with the API in different programming languages in the dark area to the right (or as part of the content on mobile).
-You can switch the language used with the tabs at the top right (or from the nav menu at the top left on mobile).&lt;/aside&gt;</code></pre>
-
-        <h1 id="authenticating-requests">Authenticating requests</h1>
-<p>This API is not authenticated.</p>
+        <h1 id="authentication">Authentication</h1>
+<p>The API uses <strong>Laravel Sanctum</strong> for authentication with Bearer tokens. Some endpoints are public and don't require authentication, while others require you to be authenticated.</p>
+<h2 id="obtaining-an-api-token">Obtaining an API Token</h2>
+<p>To authenticate API requests, you need to obtain an API token. There are two ways to do this:</p>
+<h3 id="1-create-token-via-api-recommended">1. Create Token via API (Recommended)</h3>
+<p>Send a POST request to <code>/api/v1/tokens</code> with your login credentials:</p>
+<pre><code class="language-bash">curl -X POST http://localhost/api/v1/tokens \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -d '{
+    "email": "user@example.com",
+    "password": "your-password",
+    "token_name": "My API Token",
+    "abilities": ["*"]
+  }'</code></pre>
+<p><strong>Response:</strong></p>
+<pre><code class="language-json">{
+  "data": {
+    "token": "1|abcdef123456...",
+    "token_name": "My API Token",
+    "abilities": ["*"],
+    "expires_at": null
+  }
+}</code></pre>
+<h3 id="2-generate-token-via-dashboard">2. Generate Token via Dashboard</h3>
+<ol>
+<li>Log in to your account</li>
+<li>Navigate to your profile settings</li>
+<li>Go to the &quot;API Tokens&quot; section</li>
+<li>Click &quot;Generate New Token&quot;</li>
+<li>Copy the generated token (it will only be shown once)</li>
+</ol>
+<h2 id="using-your-token">Using Your Token</h2>
+<p>Include your API token in the <code>Authorization</code> header of your requests using the Bearer scheme:</p>
+<pre><code class="language-bash">curl -X GET http://localhost/api/v1/users/me \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Accept: application/json"</code></pre>
+<h2 id="token-abilities-permissions">Token Abilities (Permissions)</h2>
+<p>Tokens can be created with specific abilities to limit what actions they can perform:</p>
+<ul>
+<li><code>*</code>: Full access to all endpoints</li>
+<li><code>read</code>: Read-only access to resources</li>
+<li><code>write</code>: Create and update resources</li>
+<li><code>delete</code>: Delete resources</li>
+<li><code>articles:read</code>: Read articles only</li>
+<li><code>articles:write</code>: Create and update articles</li>
+<li><code>comments:write</code>: Create and update comments</li>
+<li><code>bookmarks:manage</code>: Manage bookmarks</li>
+</ul>
+<p><strong>Example: Creating a read-only token</strong></p>
+<pre><code class="language-json">{
+  "email": "user@example.com",
+  "password": "your-password",
+  "token_name": "Read-Only Token",
+  "abilities": ["read", "articles:read"]
+}</code></pre>
+<h2 id="managing-tokens">Managing Tokens</h2>
+<h3 id="list-your-tokens">List Your Tokens</h3>
+<pre><code class="language-bash">GET /api/v1/tokens</code></pre>
+<h3 id="update-token-abilities">Update Token Abilities</h3>
+<pre><code class="language-bash">PUT /api/v1/tokens/{tokenId}</code></pre>
+<h3 id="revoke-a-token">Revoke a Token</h3>
+<pre><code class="language-bash">DELETE /api/v1/tokens/{tokenId}</code></pre>
+<h2 id="token-security-best-practices">Token Security Best Practices</h2>
+<ol>
+<li><strong>Keep tokens secure</strong>: Never share your API tokens or commit them to version control</li>
+<li><strong>Use specific abilities</strong>: Create tokens with only the permissions needed</li>
+<li><strong>Rotate tokens regularly</strong>: Periodically revoke old tokens and create new ones</li>
+<li><strong>Use HTTPS</strong>: Always use HTTPS in production to prevent token interception</li>
+<li><strong>Revoke compromised tokens</strong>: Immediately revoke any token you suspect has been compromised</li>
+</ol>
+<h2 id="public-vs-authenticated-endpoints">Public vs Authenticated Endpoints</h2>
+<h3 id="public-endpoints-no-authentication-required">Public Endpoints (No Authentication Required)</h3>
+<ul>
+<li><code>GET /api/v1/articles</code> - List articles</li>
+<li><code>GET /api/v1/articles/{id}</code> - Get single article</li>
+<li><code>GET /api/v1/categories</code> - List categories</li>
+<li><code>GET /api/v1/tags</code> - List tags</li>
+<li><code>GET /api/v1/search</code> - Search articles</li>
+<li><code>GET /api/v1/users/{id}</code> - View public user profile</li>
+</ul>
+<h3 id="authenticated-endpoints-token-required">Authenticated Endpoints (Token Required)</h3>
+<ul>
+<li><code>POST /api/v1/articles</code> - Create article</li>
+<li><code>PUT /api/v1/articles/{id}</code> - Update article</li>
+<li><code>DELETE /api/v1/articles/{id}</code> - Delete article</li>
+<li><code>GET /api/v1/users/me</code> - Get current user</li>
+<li><code>POST /api/v1/bookmarks</code> - Create bookmark</li>
+<li><code>POST /api/v1/comments</code> - Create comment</li>
+<li>All notification endpoints</li>
+<li>All reading list endpoints</li>
+<li>All follow/unfollow endpoints</li>
+</ul>
+<h2 id="error-responses">Error Responses</h2>
+<h3 id="401-unauthorized">401 Unauthorized</h3>
+<p>Returned when authentication is required but not provided or invalid:</p>
+<pre><code class="language-json">{
+  "message": "Unauthenticated."
+}</code></pre>
+<h3 id="403-forbidden">403 Forbidden</h3>
+<p>Returned when authenticated but lacking required permissions:</p>
+<pre><code class="language-json">{
+  "message": "This action is unauthorized."
+}</code></pre>
+<h3 id="429-too-many-requests">429 Too Many Requests</h3>
+<p>Returned when rate limit is exceeded:</p>
+<pre><code class="language-json">{
+  "message": "Too Many Attempts."
+}</code></pre>
+<p><strong>Response Headers:</strong></p>
+<ul>
+<li><code>X-RateLimit-Limit</code>: 60</li>
+<li><code>X-RateLimit-Remaining</code>: 0</li>
+<li><code>Retry-After</code>: 60</li>
+</ul>
 
         <h1 id="auth-tokens">Auth Tokens</h1>
 
     
 
-                                <h2 id="auth-tokens-GETapi-v1-tokens">List API tokens for the authenticated user.</h2>
+                                <h2 id="auth-tokens-GETapi-v1-tokens-abilities">List available token abilities.</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+
+
+<span id="example-requests-GETapi-v1-tokens-abilities">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost/api/v1/tokens/abilities" \
+    --header "Authorization: Bearer {YOUR_API_TOKEN}" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/v1/tokens/abilities"
+);
+
+const headers = {
+    "Authorization": "Bearer {YOUR_API_TOKEN}",
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/tokens/abilities';
+$response = $client-&gt;get(
+    $url,
+    [
+        'headers' =&gt; [
+            'Authorization' =&gt; 'Bearer {YOUR_API_TOKEN}',
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/tokens/abilities'
+headers = {
+  'Authorization': 'Bearer {YOUR_API_TOKEN}',
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('GET', url, headers=headers)
+response.json()</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v1-tokens-abilities">
+            <blockquote>
+            <p>Example response (200):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;abilities&quot;: {
+        &quot;articles:read&quot;: &quot;Read articles&quot;,
+        &quot;articles:create&quot;: &quot;Create articles&quot;,
+        &quot;*&quot;: &quot;Full access to all endpoints&quot;
+    }
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-v1-tokens-abilities" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-v1-tokens-abilities"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v1-tokens-abilities"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v1-tokens-abilities" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v1-tokens-abilities">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-v1-tokens-abilities" data-method="GET"
+      data-path="api/v1/tokens/abilities"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v1-tokens-abilities', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v1-tokens-abilities"
+                    onclick="tryItOut('GETapi-v1-tokens-abilities');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v1-tokens-abilities"
+                    onclick="cancelTryOut('GETapi-v1-tokens-abilities');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v1-tokens-abilities"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v1/tokens/abilities</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Authorization</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Authorization" class="auth-value"               data-endpoint="GETapi-v1-tokens-abilities"
+               value="Bearer {YOUR_API_TOKEN}"
+               data-component="header">
+    <br>
+<p>Example: <code>Bearer {YOUR_API_TOKEN}</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v1-tokens-abilities"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v1-tokens-abilities"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        </form>
+
+                    <h2 id="auth-tokens-GETapi-v1-tokens">List API tokens for the authenticated user.</h2>
 
 <p>
 <small class="badge badge-darkred">requires authentication</small>
@@ -342,6 +805,7 @@ You can switch the language used with the tabs at the top right (or from the nav
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
     --get "http://localhost/api/v1/tokens" \
+    --header "Authorization: Bearer {YOUR_API_TOKEN}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
@@ -352,6 +816,7 @@ You can switch the language used with the tabs at the top right (or from the nav
 );
 
 const headers = {
+    "Authorization": "Bearer {YOUR_API_TOKEN}",
     "Content-Type": "application/json",
     "Accept": "application/json",
 };
@@ -360,6 +825,38 @@ fetch(url, {
     method: "GET",
     headers,
 }).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/tokens';
+$response = $client-&gt;get(
+    $url,
+    [
+        'headers' =&gt; [
+            'Authorization' =&gt; 'Bearer {YOUR_API_TOKEN}',
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/tokens'
+headers = {
+  'Authorization': 'Bearer {YOUR_API_TOKEN}',
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('GET', url, headers=headers)
+response.json()</code></pre></div>
 
 </span>
 
@@ -438,6 +935,18 @@ You can check the Dev Tools console for debugging information.</code></pre>
         </p>
                 <h4 class="fancy-heading-panel"><b>Headers</b></h4>
                                 <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Authorization</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Authorization" class="auth-value"               data-endpoint="GETapi-v1-tokens"
+               value="Bearer {YOUR_API_TOKEN}"
+               data-component="header">
+    <br>
+<p>Example: <code>Bearer {YOUR_API_TOKEN}</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
 &nbsp;
  &nbsp;
@@ -478,6 +987,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
     "http://localhost/api/v1/tokens" \
+    --header "Authorization: Bearer {YOUR_API_TOKEN}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -496,6 +1006,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 );
 
 const headers = {
+    "Authorization": "Bearer {YOUR_API_TOKEN}",
     "Content-Type": "application/json",
     "Accept": "application/json",
 };
@@ -513,6 +1024,52 @@ fetch(url, {
     headers,
     body: JSON.stringify(body),
 }).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/tokens';
+$response = $client-&gt;post(
+    $url,
+    [
+        'headers' =&gt; [
+            'Authorization' =&gt; 'Bearer {YOUR_API_TOKEN}',
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+        'json' =&gt; [
+            'name' =&gt; 'CLI',
+            'abilities' =&gt; [
+                'articles:read',
+            ],
+            'expires_at' =&gt; '2025-12-31T23:59:59Z',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/tokens'
+payload = {
+    "name": "CLI",
+    "abilities": [
+        "articles:read"
+    ],
+    "expires_at": "2025-12-31T23:59:59Z"
+}
+headers = {
+  'Authorization': 'Bearer {YOUR_API_TOKEN}',
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('POST', url, headers=headers, json=payload)
+response.json()</code></pre></div>
 
 </span>
 
@@ -581,6 +1138,18 @@ You can check the Dev Tools console for debugging information.</code></pre>
         </p>
                 <h4 class="fancy-heading-panel"><b>Headers</b></h4>
                                 <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Authorization</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Authorization" class="auth-value"               data-endpoint="POSTapi-v1-tokens"
+               value="Bearer {YOUR_API_TOKEN}"
+               data-component="header">
+    <br>
+<p>Example: <code>Bearer {YOUR_API_TOKEN}</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
 &nbsp;
  &nbsp;
@@ -645,6 +1214,235 @@ You can check the Dev Tools console for debugging information.</code></pre>
         </div>
         </form>
 
+                    <h2 id="auth-tokens-PUTapi-v1-tokens--tokenId-">Update an API token&#039;s abilities.</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+
+
+<span id="example-requests-PUTapi-v1-tokens--tokenId-">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request PUT \
+    "http://localhost/api/v1/tokens/1" \
+    --header "Authorization: Bearer {YOUR_API_TOKEN}" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json" \
+    --data "{
+    \"abilities\": [
+        \"articles:read\",
+        \"comments:read\"
+    ]
+}"
+</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/v1/tokens/1"
+);
+
+const headers = {
+    "Authorization": "Bearer {YOUR_API_TOKEN}",
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+let body = {
+    "abilities": [
+        "articles:read",
+        "comments:read"
+    ]
+};
+
+fetch(url, {
+    method: "PUT",
+    headers,
+    body: JSON.stringify(body),
+}).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/tokens/1';
+$response = $client-&gt;put(
+    $url,
+    [
+        'headers' =&gt; [
+            'Authorization' =&gt; 'Bearer {YOUR_API_TOKEN}',
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+        'json' =&gt; [
+            'abilities' =&gt; [
+                'articles:read',
+                'comments:read',
+            ],
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/tokens/1'
+payload = {
+    "abilities": [
+        "articles:read",
+        "comments:read"
+    ]
+}
+headers = {
+  'Authorization': 'Bearer {YOUR_API_TOKEN}',
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('PUT', url, headers=headers, json=payload)
+response.json()</code></pre></div>
+
+</span>
+
+<span id="example-responses-PUTapi-v1-tokens--tokenId-">
+            <blockquote>
+            <p>Example response (200):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;id&quot;: 1,
+    &quot;name&quot;: &quot;CLI&quot;,
+    &quot;abilities&quot;: [
+        &quot;articles:read&quot;,
+        &quot;comments:read&quot;
+    ],
+    &quot;last_used_at&quot;: null,
+    &quot;expires_at&quot;: null,
+    &quot;created_at&quot;: &quot;2025-01-01T00:00:00Z&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-PUTapi-v1-tokens--tokenId-" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-PUTapi-v1-tokens--tokenId-"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-PUTapi-v1-tokens--tokenId-"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-PUTapi-v1-tokens--tokenId-" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-PUTapi-v1-tokens--tokenId-">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-PUTapi-v1-tokens--tokenId-" data-method="PUT"
+      data-path="api/v1/tokens/{tokenId}"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('PUTapi-v1-tokens--tokenId-', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-PUTapi-v1-tokens--tokenId-"
+                    onclick="tryItOut('PUTapi-v1-tokens--tokenId-');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-PUTapi-v1-tokens--tokenId-"
+                    onclick="cancelTryOut('PUTapi-v1-tokens--tokenId-');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-PUTapi-v1-tokens--tokenId-"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-darkblue">PUT</small>
+            <b><code>api/v1/tokens/{tokenId}</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Authorization</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Authorization" class="auth-value"               data-endpoint="PUTapi-v1-tokens--tokenId-"
+               value="Bearer {YOUR_API_TOKEN}"
+               data-component="header">
+    <br>
+<p>Example: <code>Bearer {YOUR_API_TOKEN}</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="PUTapi-v1-tokens--tokenId-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="PUTapi-v1-tokens--tokenId-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>tokenId</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="tokenId"                data-endpoint="PUTapi-v1-tokens--tokenId-"
+               value="1"
+               data-component="url">
+    <br>
+<p>Token id to update. Example: <code>1</code></p>
+            </div>
+                            <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+        <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>abilities</code></b>&nbsp;&nbsp;
+<small>string[]</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="abilities[0]"                data-endpoint="PUTapi-v1-tokens--tokenId-"
+               data-component="body">
+        <input type="text" style="display: none"
+               name="abilities[1]"                data-endpoint="PUTapi-v1-tokens--tokenId-"
+               data-component="body">
+    <br>
+<p>The new token abilities.</p>
+        </div>
+        </form>
+
                     <h2 id="auth-tokens-DELETEapi-v1-tokens--tokenId-">Revoke an API token by id.</h2>
 
 <p>
@@ -660,6 +1458,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <div class="bash-example">
     <pre><code class="language-bash">curl --request DELETE \
     "http://localhost/api/v1/tokens/1" \
+    --header "Authorization: Bearer {YOUR_API_TOKEN}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
@@ -670,6 +1469,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 );
 
 const headers = {
+    "Authorization": "Bearer {YOUR_API_TOKEN}",
     "Content-Type": "application/json",
     "Accept": "application/json",
 };
@@ -678,6 +1478,38 @@ fetch(url, {
     method: "DELETE",
     headers,
 }).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/tokens/1';
+$response = $client-&gt;delete(
+    $url,
+    [
+        'headers' =&gt; [
+            'Authorization' =&gt; 'Bearer {YOUR_API_TOKEN}',
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/tokens/1'
+headers = {
+  'Authorization': 'Bearer {YOUR_API_TOKEN}',
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('DELETE', url, headers=headers)
+response.json()</code></pre></div>
 
 </span>
 
@@ -737,6 +1569,18 @@ You can check the Dev Tools console for debugging information.</code></pre>
         </p>
                 <h4 class="fancy-heading-panel"><b>Headers</b></h4>
                                 <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Authorization</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Authorization" class="auth-value"               data-endpoint="DELETEapi-v1-tokens--tokenId-"
+               value="Bearer {YOUR_API_TOKEN}"
+               data-component="header">
+    <br>
+<p>Example: <code>Bearer {YOUR_API_TOKEN}</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
 &nbsp;
  &nbsp;
@@ -772,6 +1616,1328 @@ You can check the Dev Tools console for debugging information.</code></pre>
                data-component="url">
     <br>
 <p>Token id to revoke. Example: <code>1</code></p>
+            </div>
+                    </form>
+
+                <h1 id="bookmarks">Bookmarks</h1>
+
+    <p>API endpoints for managing article bookmarks and reading lists.</p>
+
+                                <h2 id="bookmarks-GETapi-v1-bookmarks">List Bookmarks</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+<p>Get all bookmarks for the authenticated user.</p>
+
+<span id="example-requests-GETapi-v1-bookmarks">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost/api/v1/bookmarks" \
+    --header "Authorization: Bearer {YOUR_API_TOKEN}" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/v1/bookmarks"
+);
+
+const headers = {
+    "Authorization": "Bearer {YOUR_API_TOKEN}",
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/bookmarks';
+$response = $client-&gt;get(
+    $url,
+    [
+        'headers' =&gt; [
+            'Authorization' =&gt; 'Bearer {YOUR_API_TOKEN}',
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/bookmarks'
+headers = {
+  'Authorization': 'Bearer {YOUR_API_TOKEN}',
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('GET', url, headers=headers)
+response.json()</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v1-bookmarks">
+            <blockquote>
+            <p>Example response (200):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+  &quot;data&quot;: [
+    {
+      &quot;id&quot;: 1,
+      &quot;post&quot;: {
+        &quot;id&quot;: 5,
+        &quot;title&quot;: &quot;Laravel Best Practices&quot;,
+        &quot;slug&quot;: &quot;laravel-best-practices&quot;,
+        &quot;excerpt&quot;: &quot;Learn the best practices...&quot;,
+        &quot;author&quot;: {
+          &quot;id&quot;: 2,
+          &quot;name&quot;: &quot;Jane Smith&quot;
+        }
+      },
+      &quot;created_at&quot;: &quot;2024-01-01T12:00:00.000000Z&quot;
+    }
+  ],
+  &quot;links&quot;: {...},
+  &quot;meta&quot;: {...}
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-v1-bookmarks" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-v1-bookmarks"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v1-bookmarks"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v1-bookmarks" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v1-bookmarks">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-v1-bookmarks" data-method="GET"
+      data-path="api/v1/bookmarks"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v1-bookmarks', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v1-bookmarks"
+                    onclick="tryItOut('GETapi-v1-bookmarks');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v1-bookmarks"
+                    onclick="cancelTryOut('GETapi-v1-bookmarks');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v1-bookmarks"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v1/bookmarks</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Authorization</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Authorization" class="auth-value"               data-endpoint="GETapi-v1-bookmarks"
+               value="Bearer {YOUR_API_TOKEN}"
+               data-component="header">
+    <br>
+<p>Example: <code>Bearer {YOUR_API_TOKEN}</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v1-bookmarks"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v1-bookmarks"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        </form>
+
+                    <h2 id="bookmarks-POSTapi-v1-bookmarks">Create a bookmark</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-POSTapi-v1-bookmarks">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request POST \
+    "http://localhost/api/v1/bookmarks" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json" \
+    --data "{
+    \"post_id\": 16,
+    \"collection_id\": 16,
+    \"notes\": \"n\"
+}"
+</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/v1/bookmarks"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+let body = {
+    "post_id": 16,
+    "collection_id": 16,
+    "notes": "n"
+};
+
+fetch(url, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body),
+}).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/bookmarks';
+$response = $client-&gt;post(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+        'json' =&gt; [
+            'post_id' =&gt; 16,
+            'collection_id' =&gt; 16,
+            'notes' =&gt; 'n',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/bookmarks'
+payload = {
+    "post_id": 16,
+    "collection_id": 16,
+    "notes": "n"
+}
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('POST', url, headers=headers, json=payload)
+response.json()</code></pre></div>
+
+</span>
+
+<span id="example-responses-POSTapi-v1-bookmarks">
+</span>
+<span id="execution-results-POSTapi-v1-bookmarks" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-POSTapi-v1-bookmarks"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-POSTapi-v1-bookmarks"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-POSTapi-v1-bookmarks" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-POSTapi-v1-bookmarks">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-POSTapi-v1-bookmarks" data-method="POST"
+      data-path="api/v1/bookmarks"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('POSTapi-v1-bookmarks', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-POSTapi-v1-bookmarks"
+                    onclick="tryItOut('POSTapi-v1-bookmarks');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-POSTapi-v1-bookmarks"
+                    onclick="cancelTryOut('POSTapi-v1-bookmarks');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-POSTapi-v1-bookmarks"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-black">POST</small>
+            <b><code>api/v1/bookmarks</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="POSTapi-v1-bookmarks"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="POSTapi-v1-bookmarks"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+        <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>post_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="post_id"                data-endpoint="POSTapi-v1-bookmarks"
+               value="16"
+               data-component="body">
+    <br>
+<p>The <code>id</code> of an existing record in the posts table. Example: <code>16</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>collection_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="collection_id"                data-endpoint="POSTapi-v1-bookmarks"
+               value="16"
+               data-component="body">
+    <br>
+<p>The <code>id</code> of an existing record in the bookmark_collections table. Example: <code>16</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>notes</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="notes"                data-endpoint="POSTapi-v1-bookmarks"
+               value="n"
+               data-component="body">
+    <br>
+<p>Must not be greater than 1000 characters. Example: <code>n</code></p>
+        </div>
+        </form>
+
+                    <h2 id="bookmarks-DELETEapi-v1-bookmarks--id-">Remove a bookmark</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-DELETEapi-v1-bookmarks--id-">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request DELETE \
+    "http://localhost/api/v1/bookmarks/architecto" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/v1/bookmarks/architecto"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "DELETE",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/bookmarks/architecto';
+$response = $client-&gt;delete(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/bookmarks/architecto'
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('DELETE', url, headers=headers)
+response.json()</code></pre></div>
+
+</span>
+
+<span id="example-responses-DELETEapi-v1-bookmarks--id-">
+</span>
+<span id="execution-results-DELETEapi-v1-bookmarks--id-" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-DELETEapi-v1-bookmarks--id-"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-DELETEapi-v1-bookmarks--id-"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-DELETEapi-v1-bookmarks--id-" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-DELETEapi-v1-bookmarks--id-">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-DELETEapi-v1-bookmarks--id-" data-method="DELETE"
+      data-path="api/v1/bookmarks/{id}"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('DELETEapi-v1-bookmarks--id-', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-DELETEapi-v1-bookmarks--id-"
+                    onclick="tryItOut('DELETEapi-v1-bookmarks--id-');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-DELETEapi-v1-bookmarks--id-"
+                    onclick="cancelTryOut('DELETEapi-v1-bookmarks--id-');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-DELETEapi-v1-bookmarks--id-"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-red">DELETE</small>
+            <b><code>api/v1/bookmarks/{id}</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="DELETEapi-v1-bookmarks--id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="DELETEapi-v1-bookmarks--id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="id"                data-endpoint="DELETEapi-v1-bookmarks--id-"
+               value="architecto"
+               data-component="url">
+    <br>
+<p>The ID of the bookmark. Example: <code>architecto</code></p>
+            </div>
+                    </form>
+
+                <h1 id="comments">Comments</h1>
+
+    <p>API endpoints for managing article comments and replies.</p>
+
+                                <h2 id="comments-GETapi-v1-articles--article_id--comments">GET api/v1/articles/{article_id}/comments</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-GETapi-v1-articles--article_id--comments">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost/api/v1/articles/architecto/comments" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/v1/articles/architecto/comments"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/articles/architecto/comments';
+$response = $client-&gt;get(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/articles/architecto/comments'
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('GET', url, headers=headers)
+response.json()</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v1-articles--article_id--comments">
+            <blockquote>
+            <p>Example response (400):</p>
+        </blockquote>
+                <details class="annotation">
+            <summary style="cursor: pointer;">
+                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
+            </summary>
+            <pre><code class="language-http">cache-control: no-cache, private
+content-type: application/json
+x-ratelimit-limit: 60
+x-ratelimit-remaining: 53
+x-page-load-time: 10.81ms
+x-db-query-count: 9
+x-memory-peak: 55050240
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
+permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
+access-control-allow-origin: *
+ </code></pre></details>         <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;Article ID is required&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-v1-articles--article_id--comments" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-v1-articles--article_id--comments"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v1-articles--article_id--comments"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v1-articles--article_id--comments" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v1-articles--article_id--comments">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-v1-articles--article_id--comments" data-method="GET"
+      data-path="api/v1/articles/{article_id}/comments"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v1-articles--article_id--comments', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v1-articles--article_id--comments"
+                    onclick="tryItOut('GETapi-v1-articles--article_id--comments');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v1-articles--article_id--comments"
+                    onclick="cancelTryOut('GETapi-v1-articles--article_id--comments');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v1-articles--article_id--comments"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v1/articles/{article_id}/comments</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v1-articles--article_id--comments"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v1-articles--article_id--comments"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>article_id</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="article_id"                data-endpoint="GETapi-v1-articles--article_id--comments"
+               value="architecto"
+               data-component="url">
+    <br>
+<p>The ID of the article. Example: <code>architecto</code></p>
+            </div>
+                    </form>
+
+                    <h2 id="comments-POSTapi-v1-articles--article_id--comments">POST api/v1/articles/{article_id}/comments</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-POSTapi-v1-articles--article_id--comments">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request POST \
+    "http://localhost/api/v1/articles/architecto/comments" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json" \
+    --data "{
+    \"author_name\": \"b\",
+    \"author_email\": \"zbailey@example.net\",
+    \"content\": \"i\",
+    \"page_load_time\": 4326.41688
+}"
+</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/v1/articles/architecto/comments"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+let body = {
+    "author_name": "b",
+    "author_email": "zbailey@example.net",
+    "content": "i",
+    "page_load_time": 4326.41688
+};
+
+fetch(url, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body),
+}).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/articles/architecto/comments';
+$response = $client-&gt;post(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+        'json' =&gt; [
+            'author_name' =&gt; 'b',
+            'author_email' =&gt; 'zbailey@example.net',
+            'content' =&gt; 'i',
+            'page_load_time' =&gt; 4326.41688,
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/articles/architecto/comments'
+payload = {
+    "author_name": "b",
+    "author_email": "zbailey@example.net",
+    "content": "i",
+    "page_load_time": 4326.41688
+}
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('POST', url, headers=headers, json=payload)
+response.json()</code></pre></div>
+
+</span>
+
+<span id="example-responses-POSTapi-v1-articles--article_id--comments">
+</span>
+<span id="execution-results-POSTapi-v1-articles--article_id--comments" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-POSTapi-v1-articles--article_id--comments"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-POSTapi-v1-articles--article_id--comments"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-POSTapi-v1-articles--article_id--comments" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-POSTapi-v1-articles--article_id--comments">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-POSTapi-v1-articles--article_id--comments" data-method="POST"
+      data-path="api/v1/articles/{article_id}/comments"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('POSTapi-v1-articles--article_id--comments', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-POSTapi-v1-articles--article_id--comments"
+                    onclick="tryItOut('POSTapi-v1-articles--article_id--comments');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-POSTapi-v1-articles--article_id--comments"
+                    onclick="cancelTryOut('POSTapi-v1-articles--article_id--comments');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-POSTapi-v1-articles--article_id--comments"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-black">POST</small>
+            <b><code>api/v1/articles/{article_id}/comments</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="POSTapi-v1-articles--article_id--comments"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="POSTapi-v1-articles--article_id--comments"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>article_id</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="article_id"                data-endpoint="POSTapi-v1-articles--article_id--comments"
+               value="architecto"
+               data-component="url">
+    <br>
+<p>The ID of the article. Example: <code>architecto</code></p>
+            </div>
+                            <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+        <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>post_id</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="post_id"                data-endpoint="POSTapi-v1-articles--article_id--comments"
+               value=""
+               data-component="body">
+    <br>
+<p>The <code>id</code> of an existing record in the posts table.</p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>author_name</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="author_name"                data-endpoint="POSTapi-v1-articles--article_id--comments"
+               value="b"
+               data-component="body">
+    <br>
+<p>Must not be greater than 255 characters. Example: <code>b</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>author_email</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="author_email"                data-endpoint="POSTapi-v1-articles--article_id--comments"
+               value="zbailey@example.net"
+               data-component="body">
+    <br>
+<p>Must be a valid email address. Must not be greater than 255 characters. Example: <code>zbailey@example.net</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>content</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="content"                data-endpoint="POSTapi-v1-articles--article_id--comments"
+               value="i"
+               data-component="body">
+    <br>
+<p>Must not be greater than 5000 characters. Example: <code>i</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>parent_id</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="parent_id"                data-endpoint="POSTapi-v1-articles--article_id--comments"
+               value=""
+               data-component="body">
+    <br>
+<p>The <code>id</code> of an existing record in the comments table.</p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>honeypot</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="honeypot"                data-endpoint="POSTapi-v1-articles--article_id--comments"
+               value=""
+               data-component="body">
+    <br>
+
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>page_load_time</code></b>&nbsp;&nbsp;
+<small>number</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="page_load_time"                data-endpoint="POSTapi-v1-articles--article_id--comments"
+               value="4326.41688"
+               data-component="body">
+    <br>
+<p>Example: <code>4326.41688</code></p>
+        </div>
+        </form>
+
+                    <h2 id="comments-PUTapi-v1-comments--comment_id-">PUT api/v1/comments/{comment_id}</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-PUTapi-v1-comments--comment_id-">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request PUT \
+    "http://localhost/api/v1/comments/16" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json" \
+    --data "{
+    \"content\": \"b\"
+}"
+</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/v1/comments/16"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+let body = {
+    "content": "b"
+};
+
+fetch(url, {
+    method: "PUT",
+    headers,
+    body: JSON.stringify(body),
+}).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/comments/16';
+$response = $client-&gt;put(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+        'json' =&gt; [
+            'content' =&gt; 'b',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/comments/16'
+payload = {
+    "content": "b"
+}
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('PUT', url, headers=headers, json=payload)
+response.json()</code></pre></div>
+
+</span>
+
+<span id="example-responses-PUTapi-v1-comments--comment_id-">
+</span>
+<span id="execution-results-PUTapi-v1-comments--comment_id-" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-PUTapi-v1-comments--comment_id-"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-PUTapi-v1-comments--comment_id-"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-PUTapi-v1-comments--comment_id-" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-PUTapi-v1-comments--comment_id-">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-PUTapi-v1-comments--comment_id-" data-method="PUT"
+      data-path="api/v1/comments/{comment_id}"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('PUTapi-v1-comments--comment_id-', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-PUTapi-v1-comments--comment_id-"
+                    onclick="tryItOut('PUTapi-v1-comments--comment_id-');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-PUTapi-v1-comments--comment_id-"
+                    onclick="cancelTryOut('PUTapi-v1-comments--comment_id-');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-PUTapi-v1-comments--comment_id-"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-darkblue">PUT</small>
+            <b><code>api/v1/comments/{comment_id}</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="PUTapi-v1-comments--comment_id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="PUTapi-v1-comments--comment_id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>comment_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="comment_id"                data-endpoint="PUTapi-v1-comments--comment_id-"
+               value="16"
+               data-component="url">
+    <br>
+<p>The ID of the comment. Example: <code>16</code></p>
+            </div>
+                            <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+        <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>content</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="content"                data-endpoint="PUTapi-v1-comments--comment_id-"
+               value="b"
+               data-component="body">
+    <br>
+<p>Must be at least 2 characters. Must not be greater than 5000 characters. Example: <code>b</code></p>
+        </div>
+        </form>
+
+                    <h2 id="comments-DELETEapi-v1-comments--id-">DELETE api/v1/comments/{id}</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-DELETEapi-v1-comments--id-">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request DELETE \
+    "http://localhost/api/v1/comments/16" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/v1/comments/16"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "DELETE",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/comments/16';
+$response = $client-&gt;delete(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/comments/16'
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('DELETE', url, headers=headers)
+response.json()</code></pre></div>
+
+</span>
+
+<span id="example-responses-DELETEapi-v1-comments--id-">
+</span>
+<span id="execution-results-DELETEapi-v1-comments--id-" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-DELETEapi-v1-comments--id-"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-DELETEapi-v1-comments--id-"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-DELETEapi-v1-comments--id-" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-DELETEapi-v1-comments--id-">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-DELETEapi-v1-comments--id-" data-method="DELETE"
+      data-path="api/v1/comments/{id}"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('DELETEapi-v1-comments--id-', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-DELETEapi-v1-comments--id-"
+                    onclick="tryItOut('DELETEapi-v1-comments--id-');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-DELETEapi-v1-comments--id-"
+                    onclick="cancelTryOut('DELETEapi-v1-comments--id-');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-DELETEapi-v1-comments--id-"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-red">DELETE</small>
+            <b><code>api/v1/comments/{id}</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="DELETEapi-v1-comments--id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="DELETEapi-v1-comments--id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="id"                data-endpoint="DELETEapi-v1-comments--id-"
+               value="16"
+               data-component="url">
+    <br>
+<p>The ID of the comment. Example: <code>16</code></p>
             </div>
                     </form>
 
@@ -812,6 +2978,36 @@ fetch(url, {
     headers,
 }).then(response =&gt; response.json());</code></pre></div>
 
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/nova-api/system-health';
+$response = $client-&gt;get(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/nova-api/system-health'
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('GET', url, headers=headers)
+response.json()</code></pre></div>
+
 </span>
 
 <span id="example-responses-GETapi-nova-api-system-health">
@@ -826,13 +3022,13 @@ fetch(url, {
 content-type: application/json
 x-ratelimit-limit: 60
 x-ratelimit-remaining: 59
-x-page-load-time: 9174.78ms
+x-page-load-time: 301.21ms
 x-db-query-count: 2
 x-memory-peak: 48758784
 x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
-content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;nonce-IP5Dtur181zDCPOj08n2O8tw9i3TzBDUTtqTskVm&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;nonce-IP5Dtur181zDCPOj08n2O8tw9i3TzBDUTtqTskVm&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
 permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
 access-control-allow-origin: *
  </code></pre></details>         <pre>
@@ -915,6 +3111,990 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                         </form>
 
+                    <h2 id="endpoints-GETapi-nova-api-posts">GET api/nova-api/posts</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-GETapi-nova-api-posts">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost/api/nova-api/posts" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/nova-api/posts"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/nova-api/posts';
+$response = $client-&gt;get(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/nova-api/posts'
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('GET', url, headers=headers)
+response.json()</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-nova-api-posts">
+            <blockquote>
+            <p>Example response (401):</p>
+        </blockquote>
+                <details class="annotation">
+            <summary style="cursor: pointer;">
+                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
+            </summary>
+            <pre><code class="language-http">cache-control: no-cache, private
+content-type: application/json
+x-page-load-time: 8.06ms
+x-db-query-count: 2
+x-memory-peak: 50855936
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
+permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
+access-control-allow-origin: *
+ </code></pre></details>         <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;Unauthenticated.&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-nova-api-posts" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-nova-api-posts"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-nova-api-posts"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-nova-api-posts" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-nova-api-posts">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-nova-api-posts" data-method="GET"
+      data-path="api/nova-api/posts"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-nova-api-posts', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-nova-api-posts"
+                    onclick="tryItOut('GETapi-nova-api-posts');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-nova-api-posts"
+                    onclick="cancelTryOut('GETapi-nova-api-posts');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-nova-api-posts"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/nova-api/posts</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-nova-api-posts"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-nova-api-posts"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        </form>
+
+                    <h2 id="endpoints-GETapi-nova-api-users">GET api/nova-api/users</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-GETapi-nova-api-users">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost/api/nova-api/users" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/nova-api/users"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/nova-api/users';
+$response = $client-&gt;get(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/nova-api/users'
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('GET', url, headers=headers)
+response.json()</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-nova-api-users">
+            <blockquote>
+            <p>Example response (401):</p>
+        </blockquote>
+                <details class="annotation">
+            <summary style="cursor: pointer;">
+                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
+            </summary>
+            <pre><code class="language-http">cache-control: no-cache, private
+content-type: application/json
+x-page-load-time: 1.25ms
+x-db-query-count: 2
+x-memory-peak: 50855936
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
+permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
+access-control-allow-origin: *
+ </code></pre></details>         <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;Unauthenticated.&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-nova-api-users" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-nova-api-users"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-nova-api-users"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-nova-api-users" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-nova-api-users">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-nova-api-users" data-method="GET"
+      data-path="api/nova-api/users"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-nova-api-users', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-nova-api-users"
+                    onclick="tryItOut('GETapi-nova-api-users');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-nova-api-users"
+                    onclick="cancelTryOut('GETapi-nova-api-users');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-nova-api-users"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/nova-api/users</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-nova-api-users"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-nova-api-users"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        </form>
+
+                    <h2 id="endpoints-GETapi-nova-api-categories">GET api/nova-api/categories</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-GETapi-nova-api-categories">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost/api/nova-api/categories" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/nova-api/categories"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/nova-api/categories';
+$response = $client-&gt;get(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/nova-api/categories'
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('GET', url, headers=headers)
+response.json()</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-nova-api-categories">
+            <blockquote>
+            <p>Example response (401):</p>
+        </blockquote>
+                <details class="annotation">
+            <summary style="cursor: pointer;">
+                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
+            </summary>
+            <pre><code class="language-http">cache-control: no-cache, private
+content-type: application/json
+x-page-load-time: 2.4ms
+x-db-query-count: 2
+x-memory-peak: 50855936
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
+permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
+access-control-allow-origin: *
+ </code></pre></details>         <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;Unauthenticated.&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-nova-api-categories" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-nova-api-categories"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-nova-api-categories"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-nova-api-categories" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-nova-api-categories">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-nova-api-categories" data-method="GET"
+      data-path="api/nova-api/categories"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-nova-api-categories', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-nova-api-categories"
+                    onclick="tryItOut('GETapi-nova-api-categories');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-nova-api-categories"
+                    onclick="cancelTryOut('GETapi-nova-api-categories');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-nova-api-categories"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/nova-api/categories</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-nova-api-categories"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-nova-api-categories"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        </form>
+
+                    <h2 id="endpoints-GETapi-nova-api-tags">GET api/nova-api/tags</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-GETapi-nova-api-tags">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost/api/nova-api/tags" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/nova-api/tags"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/nova-api/tags';
+$response = $client-&gt;get(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/nova-api/tags'
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('GET', url, headers=headers)
+response.json()</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-nova-api-tags">
+            <blockquote>
+            <p>Example response (401):</p>
+        </blockquote>
+                <details class="annotation">
+            <summary style="cursor: pointer;">
+                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
+            </summary>
+            <pre><code class="language-http">cache-control: no-cache, private
+content-type: application/json
+x-page-load-time: 1.56ms
+x-db-query-count: 2
+x-memory-peak: 50855936
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
+permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
+access-control-allow-origin: *
+ </code></pre></details>         <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;Unauthenticated.&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-nova-api-tags" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-nova-api-tags"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-nova-api-tags"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-nova-api-tags" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-nova-api-tags">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-nova-api-tags" data-method="GET"
+      data-path="api/nova-api/tags"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-nova-api-tags', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-nova-api-tags"
+                    onclick="tryItOut('GETapi-nova-api-tags');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-nova-api-tags"
+                    onclick="cancelTryOut('GETapi-nova-api-tags');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-nova-api-tags"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/nova-api/tags</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-nova-api-tags"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-nova-api-tags"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        </form>
+
+                    <h2 id="endpoints-GETapi-nova-api-comments">GET api/nova-api/comments</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-GETapi-nova-api-comments">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost/api/nova-api/comments" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/nova-api/comments"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/nova-api/comments';
+$response = $client-&gt;get(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/nova-api/comments'
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('GET', url, headers=headers)
+response.json()</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-nova-api-comments">
+            <blockquote>
+            <p>Example response (401):</p>
+        </blockquote>
+                <details class="annotation">
+            <summary style="cursor: pointer;">
+                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
+            </summary>
+            <pre><code class="language-http">cache-control: no-cache, private
+content-type: application/json
+x-page-load-time: 1.36ms
+x-db-query-count: 2
+x-memory-peak: 50855936
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
+permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
+access-control-allow-origin: *
+ </code></pre></details>         <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;Unauthenticated.&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-nova-api-comments" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-nova-api-comments"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-nova-api-comments"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-nova-api-comments" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-nova-api-comments">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-nova-api-comments" data-method="GET"
+      data-path="api/nova-api/comments"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-nova-api-comments', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-nova-api-comments"
+                    onclick="tryItOut('GETapi-nova-api-comments');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-nova-api-comments"
+                    onclick="cancelTryOut('GETapi-nova-api-comments');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-nova-api-comments"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/nova-api/comments</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-nova-api-comments"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-nova-api-comments"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        </form>
+
+                    <h2 id="endpoints-GETapi-nova-api-media">GET api/nova-api/media</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-GETapi-nova-api-media">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost/api/nova-api/media" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/nova-api/media"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/nova-api/media';
+$response = $client-&gt;get(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/nova-api/media'
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('GET', url, headers=headers)
+response.json()</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-nova-api-media">
+            <blockquote>
+            <p>Example response (401):</p>
+        </blockquote>
+                <details class="annotation">
+            <summary style="cursor: pointer;">
+                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
+            </summary>
+            <pre><code class="language-http">cache-control: no-cache, private
+content-type: application/json
+x-page-load-time: 1.27ms
+x-db-query-count: 2
+x-memory-peak: 50855936
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
+permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
+access-control-allow-origin: *
+ </code></pre></details>         <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;Unauthenticated.&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-nova-api-media" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-nova-api-media"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-nova-api-media"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-nova-api-media" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-nova-api-media">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-nova-api-media" data-method="GET"
+      data-path="api/nova-api/media"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-nova-api-media', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-nova-api-media"
+                    onclick="tryItOut('GETapi-nova-api-media');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-nova-api-media"
+                    onclick="cancelTryOut('GETapi-nova-api-media');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-nova-api-media"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/nova-api/media</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-nova-api-media"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-nova-api-media"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        </form>
+
                     <h2 id="endpoints-GETapi-v1-categories">GET api/v1/categories</h2>
 
 <p>
@@ -948,6 +4128,36 @@ fetch(url, {
     headers,
 }).then(response =&gt; response.json());</code></pre></div>
 
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/categories';
+$response = $client-&gt;get(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/categories'
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('GET', url, headers=headers)
+response.json()</code></pre></div>
+
 </span>
 
 <span id="example-responses-GETapi-v1-categories">
@@ -962,13 +4172,13 @@ fetch(url, {
 content-type: application/json
 x-ratelimit-limit: 60
 x-ratelimit-remaining: 58
-x-page-load-time: 24.42ms
+x-page-load-time: 15.53ms
 x-db-query-count: 4
-x-memory-peak: 50855936
+x-memory-peak: 52953088
 x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
-content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;nonce-dsAewRKMQn1tUZCZzFcJLXf52Y2FicC4K2LPvJOS&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;nonce-dsAewRKMQn1tUZCZzFcJLXf52Y2FicC4K2LPvJOS&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
 permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
 access-control-allow-origin: *
  </code></pre></details>         <pre>
@@ -1089,6 +4299,36 @@ fetch(url, {
     headers,
 }).then(response =&gt; response.json());</code></pre></div>
 
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/categories/16/articles';
+$response = $client-&gt;get(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/categories/16/articles'
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('GET', url, headers=headers)
+response.json()</code></pre></div>
+
 </span>
 
 <span id="example-responses-GETapi-v1-categories--id--articles">
@@ -1103,13 +4343,13 @@ fetch(url, {
 content-type: application/json
 x-ratelimit-limit: 60
 x-ratelimit-remaining: 57
-x-page-load-time: 16.18ms
+x-page-load-time: 10.65ms
 x-db-query-count: 6
-x-memory-peak: 50855936
+x-memory-peak: 52953088
 x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
-content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;nonce-vr8xdfR4s2SO67zj9B0ICrAMOUYFIMpapTItuoqh&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;nonce-vr8xdfR4s2SO67zj9B0ICrAMOUYFIMpapTItuoqh&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
 permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
 access-control-allow-origin: *
  </code></pre></details>         <pre>
@@ -1238,6 +4478,36 @@ fetch(url, {
     headers,
 }).then(response =&gt; response.json());</code></pre></div>
 
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/tags';
+$response = $client-&gt;get(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/tags'
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('GET', url, headers=headers)
+response.json()</code></pre></div>
+
 </span>
 
 <span id="example-responses-GETapi-v1-tags">
@@ -1252,13 +4522,13 @@ fetch(url, {
 content-type: application/json
 x-ratelimit-limit: 60
 x-ratelimit-remaining: 56
-x-page-load-time: 7.68ms
+x-page-load-time: 6.09ms
 x-db-query-count: 7
-x-memory-peak: 50855936
+x-memory-peak: 52953088
 x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
-content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;nonce-kBDJaMqMGlxxspL2GU88MNa4qSZhuRhq9Og2oHh8&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;nonce-kBDJaMqMGlxxspL2GU88MNa4qSZhuRhq9Og2oHh8&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
 permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
 access-control-allow-origin: *
  </code></pre></details>         <pre>
@@ -1346,6 +4616,170 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                         </form>
 
+                    <h2 id="endpoints-GETapi-v1-tags-search">GET api/v1/tags/search</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-GETapi-v1-tags-search">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost/api/v1/tags/search" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/v1/tags/search"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/tags/search';
+$response = $client-&gt;get(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/tags/search'
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('GET', url, headers=headers)
+response.json()</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v1-tags-search">
+            <blockquote>
+            <p>Example response (200):</p>
+        </blockquote>
+                <details class="annotation">
+            <summary style="cursor: pointer;">
+                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
+            </summary>
+            <pre><code class="language-http">cache-control: no-cache, private
+content-type: application/json
+x-ratelimit-limit: 60
+x-ratelimit-remaining: 55
+x-page-load-time: 27.13ms
+x-db-query-count: 7
+x-memory-peak: 52953088
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
+permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
+access-control-allow-origin: *
+ </code></pre></details>         <pre>
+
+<code class="language-json" style="max-height: 300px;">[]</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-v1-tags-search" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-v1-tags-search"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v1-tags-search"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v1-tags-search" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v1-tags-search">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-v1-tags-search" data-method="GET"
+      data-path="api/v1/tags/search"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v1-tags-search', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v1-tags-search"
+                    onclick="tryItOut('GETapi-v1-tags-search');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v1-tags-search"
+                    onclick="cancelTryOut('GETapi-v1-tags-search');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v1-tags-search"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v1/tags/search</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v1-tags-search"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v1-tags-search"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        </form>
+
                     <h2 id="endpoints-GETapi-v1-tags--id--articles">GET api/v1/tags/{id}/articles</h2>
 
 <p>
@@ -1379,6 +4813,36 @@ fetch(url, {
     headers,
 }).then(response =&gt; response.json());</code></pre></div>
 
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/tags/16/articles';
+$response = $client-&gt;get(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/tags/16/articles'
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('GET', url, headers=headers)
+response.json()</code></pre></div>
+
 </span>
 
 <span id="example-responses-GETapi-v1-tags--id--articles">
@@ -1392,14 +4856,14 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 60
-x-ratelimit-remaining: 55
-x-page-load-time: 9.25ms
+x-ratelimit-remaining: 54
+x-page-load-time: 28.91ms
 x-db-query-count: 9
-x-memory-peak: 50855936
+x-memory-peak: 52953088
 x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
-content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;nonce-Mlc4C0Xk8LIWkI0CKGxAjwIkIdk1wzsfsRI9kl6l&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;nonce-Mlc4C0Xk8LIWkI0CKGxAjwIkIdk1wzsfsRI9kl6l&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
 permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
 access-control-allow-origin: *
  </code></pre></details>         <pre>
@@ -1495,170 +4959,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                     </form>
 
-                    <h2 id="endpoints-GETapi-v1-comments">GET api/v1/comments</h2>
-
-<p>
-</p>
-
-
-
-<span id="example-requests-GETapi-v1-comments">
-<blockquote>Example request:</blockquote>
-
-
-<div class="bash-example">
-    <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost/api/v1/comments" \
-    --header "Content-Type: application/json" \
-    --header "Accept: application/json" \
-    --data "{
-    \"post_id\": 16
-}"
-</code></pre></div>
-
-
-<div class="javascript-example">
-    <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/v1/comments"
-);
-
-const headers = {
-    "Content-Type": "application/json",
-    "Accept": "application/json",
-};
-
-let body = {
-    "post_id": 16
-};
-
-fetch(url, {
-    method: "GET",
-    headers,
-    body: JSON.stringify(body),
-}).then(response =&gt; response.json());</code></pre></div>
-
-</span>
-
-<span id="example-responses-GETapi-v1-comments">
-            <blockquote>
-            <p>Example response (422):</p>
-        </blockquote>
-                <details class="annotation">
-            <summary style="cursor: pointer;">
-                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
-            </summary>
-            <pre><code class="language-http">cache-control: no-cache, private
-content-type: application/json
-x-ratelimit-limit: 60
-x-ratelimit-remaining: 54
-x-page-load-time: 47.31ms
-x-db-query-count: 10
-x-memory-peak: 52953088
-x-content-type-options: nosniff
-x-frame-options: SAMEORIGIN
-referrer-policy: strict-origin-when-cross-origin
-content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;nonce-Z2D4Dgf1rJz11C0a67a6s4sORK9kTOon4jbJKMi6&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;nonce-Z2D4Dgf1rJz11C0a67a6s4sORK9kTOon4jbJKMi6&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
-permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
-access-control-allow-origin: *
- </code></pre></details>         <pre>
-
-<code class="language-json" style="max-height: 300px;">{
-    &quot;message&quot;: &quot;The selected post id is invalid.&quot;,
-    &quot;errors&quot;: {
-        &quot;post_id&quot;: [
-            &quot;The selected post id is invalid.&quot;
-        ]
-    }
-}</code>
- </pre>
-    </span>
-<span id="execution-results-GETapi-v1-comments" hidden>
-    <blockquote>Received response<span
-                id="execution-response-status-GETapi-v1-comments"></span>:
-    </blockquote>
-    <pre class="json"><code id="execution-response-content-GETapi-v1-comments"
-      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
-</span>
-<span id="execution-error-GETapi-v1-comments" hidden>
-    <blockquote>Request failed with error:</blockquote>
-    <pre><code id="execution-error-message-GETapi-v1-comments">
-
-Tip: Check that you&#039;re properly connected to the network.
-If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
-You can check the Dev Tools console for debugging information.</code></pre>
-</span>
-<form id="form-GETapi-v1-comments" data-method="GET"
-      data-path="api/v1/comments"
-      data-authed="0"
-      data-hasfiles="0"
-      data-isarraybody="0"
-      autocomplete="off"
-      onsubmit="event.preventDefault(); executeTryOut('GETapi-v1-comments', this);">
-    <h3>
-        Request&nbsp;&nbsp;&nbsp;
-                    <button type="button"
-                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-tryout-GETapi-v1-comments"
-                    onclick="tryItOut('GETapi-v1-comments');">Try it out ⚡
-            </button>
-            <button type="button"
-                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-canceltryout-GETapi-v1-comments"
-                    onclick="cancelTryOut('GETapi-v1-comments');" hidden>Cancel 🛑
-            </button>&nbsp;&nbsp;
-            <button type="submit"
-                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-executetryout-GETapi-v1-comments"
-                    data-initial-text="Send Request 💥"
-                    data-loading-text="⏱ Sending..."
-                    hidden>Send Request 💥
-            </button>
-            </h3>
-            <p>
-            <small class="badge badge-green">GET</small>
-            <b><code>api/v1/comments</code></b>
-        </p>
-                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
-                                <div style="padding-left: 28px; clear: unset;">
-                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
-&nbsp;
- &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="Content-Type"                data-endpoint="GETapi-v1-comments"
-               value="application/json"
-               data-component="header">
-    <br>
-<p>Example: <code>application/json</code></p>
-            </div>
-                                <div style="padding-left: 28px; clear: unset;">
-                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
-&nbsp;
- &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="Accept"                data-endpoint="GETapi-v1-comments"
-               value="application/json"
-               data-component="header">
-    <br>
-<p>Example: <code>application/json</code></p>
-            </div>
-                                <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
-        <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>post_id</code></b>&nbsp;&nbsp;
-<small>integer</small>&nbsp;
- &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="post_id"                data-endpoint="GETapi-v1-comments"
-               value="16"
-               data-component="body">
-    <br>
-<p>The <code>id</code> of an existing record in the posts table. Example: <code>16</code></p>
-        </div>
-        </form>
-
-                    <h2 id="endpoints-GETapi-v1-media">GET api/v1/media</h2>
+                    <h2 id="endpoints-GETapi-v1-media">List user&#039;s uploaded media with optional filtering.</h2>
 
 <p>
 </p>
@@ -1704,6 +5005,46 @@ fetch(url, {
     body: JSON.stringify(body),
 }).then(response =&gt; response.json());</code></pre></div>
 
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/media';
+$response = $client-&gt;get(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+        'json' =&gt; [
+            'q' =&gt; 'b',
+            'mime_type' =&gt; 'n',
+            'per_page' =&gt; 7,
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/media'
+payload = {
+    "q": "b",
+    "mime_type": "n",
+    "per_page": 7
+}
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('GET', url, headers=headers, json=payload)
+response.json()</code></pre></div>
+
 </span>
 
 <span id="example-responses-GETapi-v1-media">
@@ -1717,51 +5058,26 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 60
-x-ratelimit-remaining: 53
-x-page-load-time: 17.48ms
-x-db-query-count: 11
-x-memory-peak: 52953088
+x-ratelimit-remaining: 52
+x-page-load-time: 29.26ms
+x-db-query-count: 10
+x-memory-peak: 55050240
 x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
-content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;nonce-FGguI9XVDhXj158XrbgO7oCGXe54S5A7XkQaTVY5&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;nonce-FGguI9XVDhXj158XrbgO7oCGXe54S5A7XkQaTVY5&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
 permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
 access-control-allow-origin: *
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
-    &quot;current_page&quot;: 1,
     &quot;data&quot;: [],
-    &quot;first_page_url&quot;: &quot;http://localhost/api/v1/media?page=1&quot;,
-    &quot;from&quot;: null,
-    &quot;last_page&quot;: 1,
-    &quot;last_page_url&quot;: &quot;http://localhost/api/v1/media?page=1&quot;,
-    &quot;links&quot;: [
-        {
-            &quot;url&quot;: null,
-            &quot;label&quot;: &quot;&amp;laquo; Previous&quot;,
-            &quot;page&quot;: null,
-            &quot;active&quot;: false
-        },
-        {
-            &quot;url&quot;: &quot;http://localhost/api/v1/media?page=1&quot;,
-            &quot;label&quot;: &quot;1&quot;,
-            &quot;page&quot;: 1,
-            &quot;active&quot;: true
-        },
-        {
-            &quot;url&quot;: null,
-            &quot;label&quot;: &quot;Next &amp;raquo;&quot;,
-            &quot;page&quot;: null,
-            &quot;active&quot;: false
-        }
-    ],
-    &quot;next_page_url&quot;: null,
-    &quot;path&quot;: &quot;http://localhost/api/v1/media&quot;,
-    &quot;per_page&quot;: 7,
-    &quot;prev_page_url&quot;: null,
-    &quot;to&quot;: null,
-    &quot;total&quot;: 0
+    &quot;meta&quot;: {
+        &quot;current_page&quot;: 1,
+        &quot;last_page&quot;: 1,
+        &quot;per_page&quot;: 7,
+        &quot;total&quot;: 0
+    }
 }</code>
  </pre>
     </span>
@@ -1875,7 +5191,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
         </div>
         </form>
 
-                    <h2 id="endpoints-POSTapi-v1-media">POST api/v1/media</h2>
+                    <h2 id="endpoints-POSTapi-v1-media">Upload a new image.</h2>
 
 <p>
 </p>
@@ -1893,7 +5209,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Accept: application/json" \
     --form "alt_text=b"\
     --form "caption=architecto"\
-    --form "file=@/private/var/folders/22/sjnz0rps36gdzhql_1xlb3q40000gn/T/phpm0oni0arj0pk6b5YWhS" </code></pre></div>
+    --form "file=@/private/var/folders/22/sjnz0rps36gdzhql_1xlb3q40000gn/T/php9dl3b6sb0ioldGhPf20" </code></pre></div>
 
 
 <div class="javascript-example">
@@ -1916,6 +5232,58 @@ fetch(url, {
     headers,
     body,
 }).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/media';
+$response = $client-&gt;post(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'multipart/form-data',
+            'Accept' =&gt; 'application/json',
+        ],
+        'multipart' =&gt; [
+            [
+                'name' =&gt; 'alt_text',
+                'contents' =&gt; 'b'
+            ],
+            [
+                'name' =&gt; 'caption',
+                'contents' =&gt; 'architecto'
+            ],
+            [
+                'name' =&gt; 'file',
+                'contents' =&gt; fopen('/private/var/folders/22/sjnz0rps36gdzhql_1xlb3q40000gn/T/php9dl3b6sb0ioldGhPf20', 'r')
+            ],
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/media'
+files = {
+  'alt_text': (None, 'b'),
+  'caption': (None, 'architecto'),
+  'file': open('/private/var/folders/22/sjnz0rps36gdzhql_1xlb3q40000gn/T/php9dl3b6sb0ioldGhPf20', 'rb')}
+payload = {
+    "alt_text": "b",
+    "caption": "architecto"
+}
+headers = {
+  'Content-Type': 'multipart/form-data',
+  'Accept': 'application/json'
+}
+
+response = requests.request('POST', url, headers=headers, files=files)
+response.json()</code></pre></div>
 
 </span>
 
@@ -2003,7 +5371,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
                value=""
                data-component="body">
     <br>
-<p>Must be a file. Must be an image. Must not be greater than 10240 kilobytes. Example: <code>/private/var/folders/22/sjnz0rps36gdzhql_1xlb3q40000gn/T/phpm0oni0arj0pk6b5YWhS</code></p>
+<p>Must be a file. Must be an image. Must not be greater than 10240 kilobytes. Example: <code>/private/var/folders/22/sjnz0rps36gdzhql_1xlb3q40000gn/T/php9dl3b6sb0ioldGhPf20</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>alt_text</code></b>&nbsp;&nbsp;
@@ -2043,7 +5411,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
         </div>
         </form>
 
-                    <h2 id="endpoints-DELETEapi-v1-media--media_id-">DELETE api/v1/media/{media_id}</h2>
+                    <h2 id="endpoints-DELETEapi-v1-media--media_id-">Delete an uploaded image and its variants.</h2>
 
 <p>
 </p>
@@ -2075,6 +5443,36 @@ fetch(url, {
     method: "DELETE",
     headers,
 }).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/media/16';
+$response = $client-&gt;delete(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/media/16'
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('DELETE', url, headers=headers)
+response.json()</code></pre></div>
 
 </span>
 
@@ -2210,6 +5608,44 @@ fetch(url, {
     body: JSON.stringify(body),
 }).then(response =&gt; response.json());</code></pre></div>
 
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/widgets/weather';
+$response = $client-&gt;get(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+        'json' =&gt; [
+            'lat' =&gt; -89,
+            'lon' =&gt; -179,
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/widgets/weather'
+payload = {
+    "lat": -89,
+    "lon": -179
+}
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('GET', url, headers=headers, json=payload)
+response.json()</code></pre></div>
+
 </span>
 
 <span id="example-responses-GETapi-v1-widgets-weather">
@@ -2223,14 +5659,14 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 60
-x-ratelimit-remaining: 52
-x-page-load-time: 259.23ms
-x-db-query-count: 12
-x-memory-peak: 57147392
+x-ratelimit-remaining: 51
+x-page-load-time: 355.75ms
+x-db-query-count: 11
+x-memory-peak: 59244544
 x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
-content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;nonce-hvPrFfmwzr2GmtoNFBfn4gbUmF2Bf7uu5GBkrFN4&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;nonce-hvPrFfmwzr2GmtoNFBfn4gbUmF2Bf7uu5GBkrFN4&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
 permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
 access-control-allow-origin: *
  </code></pre></details>         <pre>
@@ -2239,10 +5675,10 @@ access-control-allow-origin: *
     &quot;lat&quot;: -89,
     &quot;lon&quot;: -179,
     &quot;data&quot;: {
-        &quot;temperature&quot;: -42.8,
-        &quot;windspeed&quot;: 13.3,
+        &quot;temperature&quot;: -43,
+        &quot;windspeed&quot;: 12.2,
         &quot;weathercode&quot;: 1,
-        &quot;time&quot;: &quot;2025-11-16T19:15&quot;,
+        &quot;time&quot;: &quot;2025-11-17T00:00&quot;,
         &quot;units&quot;: {
             &quot;temperature&quot;: &quot;&deg;C&quot;,
             &quot;windspeed&quot;: &quot;km/h&quot;
@@ -2392,6 +5828,42 @@ fetch(url, {
     body: JSON.stringify(body),
 }).then(response =&gt; response.json());</code></pre></div>
 
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/widgets/stocks';
+$response = $client-&gt;get(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+        'json' =&gt; [
+            'symbols' =&gt; 'Zzi',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/widgets/stocks'
+payload = {
+    "symbols": "Zzi"
+}
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('GET', url, headers=headers, json=payload)
+response.json()</code></pre></div>
+
 </span>
 
 <span id="example-responses-GETapi-v1-widgets-stocks">
@@ -2405,14 +5877,14 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 60
-x-ratelimit-remaining: 51
-x-page-load-time: 304.79ms
-x-db-query-count: 12
-x-memory-peak: 57147392
+x-ratelimit-remaining: 50
+x-page-load-time: 245.9ms
+x-db-query-count: 11
+x-memory-peak: 59244544
 x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
-content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;nonce-8CdqZn08RzswA67ATYYNgKmBRGdSlLXbo0B63gQE&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;nonce-8CdqZn08RzswA67ATYYNgKmBRGdSlLXbo0B63gQE&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
 permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
 access-control-allow-origin: *
  </code></pre></details>         <pre>
@@ -2521,274 +5993,6 @@ You can check the Dev Tools console for debugging information.</code></pre>
         </div>
         </form>
 
-                    <h2 id="endpoints-GETapi-v1-users-me">GET api/v1/users/me</h2>
-
-<p>
-</p>
-
-
-
-<span id="example-requests-GETapi-v1-users-me">
-<blockquote>Example request:</blockquote>
-
-
-<div class="bash-example">
-    <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost/api/v1/users/me" \
-    --header "Content-Type: application/json" \
-    --header "Accept: application/json"</code></pre></div>
-
-
-<div class="javascript-example">
-    <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/v1/users/me"
-);
-
-const headers = {
-    "Content-Type": "application/json",
-    "Accept": "application/json",
-};
-
-fetch(url, {
-    method: "GET",
-    headers,
-}).then(response =&gt; response.json());</code></pre></div>
-
-</span>
-
-<span id="example-responses-GETapi-v1-users-me">
-            <blockquote>
-            <p>Example response (401):</p>
-        </blockquote>
-                <details class="annotation">
-            <summary style="cursor: pointer;">
-                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
-            </summary>
-            <pre><code class="language-http">cache-control: no-cache, private
-content-type: application/json
-x-page-load-time: 1.72ms
-x-db-query-count: 12
-x-memory-peak: 57147392
-x-content-type-options: nosniff
-x-frame-options: SAMEORIGIN
-referrer-policy: strict-origin-when-cross-origin
-content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;nonce-oupl0TOvs2gTSlMSdvjNhyVWhwcnHAufmRtjRm6v&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;nonce-oupl0TOvs2gTSlMSdvjNhyVWhwcnHAufmRtjRm6v&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
-permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
-access-control-allow-origin: *
- </code></pre></details>         <pre>
-
-<code class="language-json" style="max-height: 300px;">{
-    &quot;message&quot;: &quot;Unauthenticated.&quot;
-}</code>
- </pre>
-    </span>
-<span id="execution-results-GETapi-v1-users-me" hidden>
-    <blockquote>Received response<span
-                id="execution-response-status-GETapi-v1-users-me"></span>:
-    </blockquote>
-    <pre class="json"><code id="execution-response-content-GETapi-v1-users-me"
-      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
-</span>
-<span id="execution-error-GETapi-v1-users-me" hidden>
-    <blockquote>Request failed with error:</blockquote>
-    <pre><code id="execution-error-message-GETapi-v1-users-me">
-
-Tip: Check that you&#039;re properly connected to the network.
-If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
-You can check the Dev Tools console for debugging information.</code></pre>
-</span>
-<form id="form-GETapi-v1-users-me" data-method="GET"
-      data-path="api/v1/users/me"
-      data-authed="0"
-      data-hasfiles="0"
-      data-isarraybody="0"
-      autocomplete="off"
-      onsubmit="event.preventDefault(); executeTryOut('GETapi-v1-users-me', this);">
-    <h3>
-        Request&nbsp;&nbsp;&nbsp;
-                    <button type="button"
-                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-tryout-GETapi-v1-users-me"
-                    onclick="tryItOut('GETapi-v1-users-me');">Try it out ⚡
-            </button>
-            <button type="button"
-                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-canceltryout-GETapi-v1-users-me"
-                    onclick="cancelTryOut('GETapi-v1-users-me');" hidden>Cancel 🛑
-            </button>&nbsp;&nbsp;
-            <button type="submit"
-                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-executetryout-GETapi-v1-users-me"
-                    data-initial-text="Send Request 💥"
-                    data-loading-text="⏱ Sending..."
-                    hidden>Send Request 💥
-            </button>
-            </h3>
-            <p>
-            <small class="badge badge-green">GET</small>
-            <b><code>api/v1/users/me</code></b>
-        </p>
-                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
-                                <div style="padding-left: 28px; clear: unset;">
-                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
-&nbsp;
- &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="Content-Type"                data-endpoint="GETapi-v1-users-me"
-               value="application/json"
-               data-component="header">
-    <br>
-<p>Example: <code>application/json</code></p>
-            </div>
-                                <div style="padding-left: 28px; clear: unset;">
-                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
-&nbsp;
- &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="Accept"                data-endpoint="GETapi-v1-users-me"
-               value="application/json"
-               data-component="header">
-    <br>
-<p>Example: <code>application/json</code></p>
-            </div>
-                        </form>
-
-                    <h2 id="endpoints-GETapi-v1-bookmarks">GET api/v1/bookmarks</h2>
-
-<p>
-</p>
-
-
-
-<span id="example-requests-GETapi-v1-bookmarks">
-<blockquote>Example request:</blockquote>
-
-
-<div class="bash-example">
-    <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost/api/v1/bookmarks" \
-    --header "Content-Type: application/json" \
-    --header "Accept: application/json"</code></pre></div>
-
-
-<div class="javascript-example">
-    <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/v1/bookmarks"
-);
-
-const headers = {
-    "Content-Type": "application/json",
-    "Accept": "application/json",
-};
-
-fetch(url, {
-    method: "GET",
-    headers,
-}).then(response =&gt; response.json());</code></pre></div>
-
-</span>
-
-<span id="example-responses-GETapi-v1-bookmarks">
-            <blockquote>
-            <p>Example response (401):</p>
-        </blockquote>
-                <details class="annotation">
-            <summary style="cursor: pointer;">
-                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
-            </summary>
-            <pre><code class="language-http">cache-control: no-cache, private
-content-type: application/json
-x-page-load-time: 1.41ms
-x-db-query-count: 12
-x-memory-peak: 57147392
-x-content-type-options: nosniff
-x-frame-options: SAMEORIGIN
-referrer-policy: strict-origin-when-cross-origin
-content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;nonce-ch0VYMS2UYNPxzNWF9pH54dJm0TPXUdJMKEt72XH&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;nonce-ch0VYMS2UYNPxzNWF9pH54dJm0TPXUdJMKEt72XH&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
-permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
-access-control-allow-origin: *
- </code></pre></details>         <pre>
-
-<code class="language-json" style="max-height: 300px;">{
-    &quot;message&quot;: &quot;Unauthenticated.&quot;
-}</code>
- </pre>
-    </span>
-<span id="execution-results-GETapi-v1-bookmarks" hidden>
-    <blockquote>Received response<span
-                id="execution-response-status-GETapi-v1-bookmarks"></span>:
-    </blockquote>
-    <pre class="json"><code id="execution-response-content-GETapi-v1-bookmarks"
-      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
-</span>
-<span id="execution-error-GETapi-v1-bookmarks" hidden>
-    <blockquote>Request failed with error:</blockquote>
-    <pre><code id="execution-error-message-GETapi-v1-bookmarks">
-
-Tip: Check that you&#039;re properly connected to the network.
-If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
-You can check the Dev Tools console for debugging information.</code></pre>
-</span>
-<form id="form-GETapi-v1-bookmarks" data-method="GET"
-      data-path="api/v1/bookmarks"
-      data-authed="0"
-      data-hasfiles="0"
-      data-isarraybody="0"
-      autocomplete="off"
-      onsubmit="event.preventDefault(); executeTryOut('GETapi-v1-bookmarks', this);">
-    <h3>
-        Request&nbsp;&nbsp;&nbsp;
-                    <button type="button"
-                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-tryout-GETapi-v1-bookmarks"
-                    onclick="tryItOut('GETapi-v1-bookmarks');">Try it out ⚡
-            </button>
-            <button type="button"
-                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-canceltryout-GETapi-v1-bookmarks"
-                    onclick="cancelTryOut('GETapi-v1-bookmarks');" hidden>Cancel 🛑
-            </button>&nbsp;&nbsp;
-            <button type="submit"
-                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-executetryout-GETapi-v1-bookmarks"
-                    data-initial-text="Send Request 💥"
-                    data-loading-text="⏱ Sending..."
-                    hidden>Send Request 💥
-            </button>
-            </h3>
-            <p>
-            <small class="badge badge-green">GET</small>
-            <b><code>api/v1/bookmarks</code></b>
-        </p>
-                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
-                                <div style="padding-left: 28px; clear: unset;">
-                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
-&nbsp;
- &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="Content-Type"                data-endpoint="GETapi-v1-bookmarks"
-               value="application/json"
-               data-component="header">
-    <br>
-<p>Example: <code>application/json</code></p>
-            </div>
-                                <div style="padding-left: 28px; clear: unset;">
-                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
-&nbsp;
- &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="Accept"                data-endpoint="GETapi-v1-bookmarks"
-               value="application/json"
-               data-component="header">
-    <br>
-<p>Example: <code>application/json</code></p>
-            </div>
-                        </form>
-
                     <h2 id="endpoints-POSTapi-v1-posts--postId--reactions">POST api/v1/posts/{postId}/reactions</h2>
 
 <p>
@@ -2830,6 +6034,42 @@ fetch(url, {
     headers,
     body: JSON.stringify(body),
 }).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/posts/16/reactions';
+$response = $client-&gt;post(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+        'json' =&gt; [
+            'type' =&gt; 'architecto',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/posts/16/reactions'
+payload = {
+    "type": "architecto"
+}
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('POST', url, headers=headers, json=payload)
+response.json()</code></pre></div>
 
 </span>
 
@@ -2967,6 +6207,36 @@ fetch(url, {
     headers,
 }).then(response =&gt; response.json());</code></pre></div>
 
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/posts/16/bookmark';
+$response = $client-&gt;post(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/posts/16/bookmark'
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('POST', url, headers=headers)
+response.json()</code></pre></div>
+
 </span>
 
 <span id="example-responses-POSTapi-v1-posts--postId--bookmark">
@@ -3057,7 +6327,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                     </form>
 
-                    <h2 id="endpoints-POSTapi-v1-comments--commentId--reactions">POST api/v1/comments/{commentId}/reactions</h2>
+                    <h2 id="endpoints-POSTapi-v1-comments--commentId--reactions">Store or toggle a reaction on a comment.</h2>
 
 <p>
 </p>
@@ -3098,6 +6368,42 @@ fetch(url, {
     headers,
     body: JSON.stringify(body),
 }).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/comments/architecto/reactions';
+$response = $client-&gt;post(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+        'json' =&gt; [
+            'type' =&gt; 'architecto',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/comments/architecto/reactions'
+payload = {
+    "type": "architecto"
+}
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('POST', url, headers=headers, json=payload)
+response.json()</code></pre></div>
 
 </span>
 
@@ -3202,6 +6508,183 @@ You can check the Dev Tools console for debugging information.</code></pre>
         </div>
         </form>
 
+                    <h2 id="endpoints-GETapi-v1-comments--commentId--reactions">Get reaction counts for a comment.</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-GETapi-v1-comments--commentId--reactions">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost/api/v1/comments/architecto/reactions" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/v1/comments/architecto/reactions"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/comments/architecto/reactions';
+$response = $client-&gt;get(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/comments/architecto/reactions'
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('GET', url, headers=headers)
+response.json()</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v1-comments--commentId--reactions">
+            <blockquote>
+            <p>Example response (401):</p>
+        </blockquote>
+                <details class="annotation">
+            <summary style="cursor: pointer;">
+                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
+            </summary>
+            <pre><code class="language-http">cache-control: no-cache, private
+content-type: application/json
+x-page-load-time: 2.16ms
+x-db-query-count: 15
+x-memory-peak: 61341696
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
+permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
+access-control-allow-origin: *
+ </code></pre></details>         <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;Unauthenticated.&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-v1-comments--commentId--reactions" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-v1-comments--commentId--reactions"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v1-comments--commentId--reactions"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v1-comments--commentId--reactions" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v1-comments--commentId--reactions">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-v1-comments--commentId--reactions" data-method="GET"
+      data-path="api/v1/comments/{commentId}/reactions"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v1-comments--commentId--reactions', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v1-comments--commentId--reactions"
+                    onclick="tryItOut('GETapi-v1-comments--commentId--reactions');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v1-comments--commentId--reactions"
+                    onclick="cancelTryOut('GETapi-v1-comments--commentId--reactions');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v1-comments--commentId--reactions"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v1/comments/{commentId}/reactions</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v1-comments--commentId--reactions"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v1-comments--commentId--reactions"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>commentId</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="commentId"                data-endpoint="GETapi-v1-comments--commentId--reactions"
+               value="architecto"
+               data-component="url">
+    <br>
+<p>Example: <code>architecto</code></p>
+            </div>
+                    </form>
+
                     <h2 id="endpoints-POSTapi-v1-comments--commentId--flags">POST api/v1/comments/{commentId}/flags</h2>
 
 <p>
@@ -3245,6 +6728,44 @@ fetch(url, {
     headers,
     body: JSON.stringify(body),
 }).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/comments/architecto/flags';
+$response = $client-&gt;post(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+        'json' =&gt; [
+            'reason' =&gt; 'architecto',
+            'notes' =&gt; 'n',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/comments/architecto/flags'
+payload = {
+    "reason": "architecto",
+    "notes": "n"
+}
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('POST', url, headers=headers, json=payload)
+response.json()</code></pre></div>
 
 </span>
 
@@ -3361,486 +6882,6 @@ You can check the Dev Tools console for debugging information.</code></pre>
         </div>
         </form>
 
-                    <h2 id="endpoints-POSTapi-v1-comments">POST api/v1/comments</h2>
-
-<p>
-</p>
-
-
-
-<span id="example-requests-POSTapi-v1-comments">
-<blockquote>Example request:</blockquote>
-
-
-<div class="bash-example">
-    <pre><code class="language-bash">curl --request POST \
-    "http://localhost/api/v1/comments" \
-    --header "Content-Type: application/json" \
-    --header "Accept: application/json" \
-    --data "{
-    \"post_id\": \"architecto\",
-    \"author_name\": \"n\",
-    \"author_email\": \"ashly64@example.com\",
-    \"content\": \"v\",
-    \"page_load_time\": 4326.41688
-}"
-</code></pre></div>
-
-
-<div class="javascript-example">
-    <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/v1/comments"
-);
-
-const headers = {
-    "Content-Type": "application/json",
-    "Accept": "application/json",
-};
-
-let body = {
-    "post_id": "architecto",
-    "author_name": "n",
-    "author_email": "ashly64@example.com",
-    "content": "v",
-    "page_load_time": 4326.41688
-};
-
-fetch(url, {
-    method: "POST",
-    headers,
-    body: JSON.stringify(body),
-}).then(response =&gt; response.json());</code></pre></div>
-
-</span>
-
-<span id="example-responses-POSTapi-v1-comments">
-</span>
-<span id="execution-results-POSTapi-v1-comments" hidden>
-    <blockquote>Received response<span
-                id="execution-response-status-POSTapi-v1-comments"></span>:
-    </blockquote>
-    <pre class="json"><code id="execution-response-content-POSTapi-v1-comments"
-      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
-</span>
-<span id="execution-error-POSTapi-v1-comments" hidden>
-    <blockquote>Request failed with error:</blockquote>
-    <pre><code id="execution-error-message-POSTapi-v1-comments">
-
-Tip: Check that you&#039;re properly connected to the network.
-If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
-You can check the Dev Tools console for debugging information.</code></pre>
-</span>
-<form id="form-POSTapi-v1-comments" data-method="POST"
-      data-path="api/v1/comments"
-      data-authed="0"
-      data-hasfiles="0"
-      data-isarraybody="0"
-      autocomplete="off"
-      onsubmit="event.preventDefault(); executeTryOut('POSTapi-v1-comments', this);">
-    <h3>
-        Request&nbsp;&nbsp;&nbsp;
-                    <button type="button"
-                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-tryout-POSTapi-v1-comments"
-                    onclick="tryItOut('POSTapi-v1-comments');">Try it out ⚡
-            </button>
-            <button type="button"
-                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-canceltryout-POSTapi-v1-comments"
-                    onclick="cancelTryOut('POSTapi-v1-comments');" hidden>Cancel 🛑
-            </button>&nbsp;&nbsp;
-            <button type="submit"
-                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-executetryout-POSTapi-v1-comments"
-                    data-initial-text="Send Request 💥"
-                    data-loading-text="⏱ Sending..."
-                    hidden>Send Request 💥
-            </button>
-            </h3>
-            <p>
-            <small class="badge badge-black">POST</small>
-            <b><code>api/v1/comments</code></b>
-        </p>
-                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
-                                <div style="padding-left: 28px; clear: unset;">
-                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
-&nbsp;
- &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="Content-Type"                data-endpoint="POSTapi-v1-comments"
-               value="application/json"
-               data-component="header">
-    <br>
-<p>Example: <code>application/json</code></p>
-            </div>
-                                <div style="padding-left: 28px; clear: unset;">
-                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
-&nbsp;
- &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="Accept"                data-endpoint="POSTapi-v1-comments"
-               value="application/json"
-               data-component="header">
-    <br>
-<p>Example: <code>application/json</code></p>
-            </div>
-                                <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
-        <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>post_id</code></b>&nbsp;&nbsp;
-<small>string</small>&nbsp;
- &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="post_id"                data-endpoint="POSTapi-v1-comments"
-               value="architecto"
-               data-component="body">
-    <br>
-<p>The <code>id</code> of an existing record in the posts table. Example: <code>architecto</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>author_name</code></b>&nbsp;&nbsp;
-<small>string</small>&nbsp;
- &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="author_name"                data-endpoint="POSTapi-v1-comments"
-               value="n"
-               data-component="body">
-    <br>
-<p>Must not be greater than 255 characters. Example: <code>n</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>author_email</code></b>&nbsp;&nbsp;
-<small>string</small>&nbsp;
- &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="author_email"                data-endpoint="POSTapi-v1-comments"
-               value="ashly64@example.com"
-               data-component="body">
-    <br>
-<p>Must be a valid email address. Must not be greater than 255 characters. Example: <code>ashly64@example.com</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>content</code></b>&nbsp;&nbsp;
-<small>string</small>&nbsp;
- &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="content"                data-endpoint="POSTapi-v1-comments"
-               value="v"
-               data-component="body">
-    <br>
-<p>Must not be greater than 5000 characters. Example: <code>v</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>parent_id</code></b>&nbsp;&nbsp;
-<small>string</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="parent_id"                data-endpoint="POSTapi-v1-comments"
-               value=""
-               data-component="body">
-    <br>
-<p>The <code>id</code> of an existing record in the comments table.</p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>honeypot</code></b>&nbsp;&nbsp;
-<small>string</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="honeypot"                data-endpoint="POSTapi-v1-comments"
-               value=""
-               data-component="body">
-    <br>
-
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>page_load_time</code></b>&nbsp;&nbsp;
-<small>number</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="page_load_time"                data-endpoint="POSTapi-v1-comments"
-               value="4326.41688"
-               data-component="body">
-    <br>
-<p>Example: <code>4326.41688</code></p>
-        </div>
-        </form>
-
-                    <h2 id="endpoints-PUTapi-v1-comments--comment_id-">PUT api/v1/comments/{comment_id}</h2>
-
-<p>
-</p>
-
-
-
-<span id="example-requests-PUTapi-v1-comments--comment_id-">
-<blockquote>Example request:</blockquote>
-
-
-<div class="bash-example">
-    <pre><code class="language-bash">curl --request PUT \
-    "http://localhost/api/v1/comments/16" \
-    --header "Content-Type: application/json" \
-    --header "Accept: application/json" \
-    --data "{
-    \"content\": \"b\"
-}"
-</code></pre></div>
-
-
-<div class="javascript-example">
-    <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/v1/comments/16"
-);
-
-const headers = {
-    "Content-Type": "application/json",
-    "Accept": "application/json",
-};
-
-let body = {
-    "content": "b"
-};
-
-fetch(url, {
-    method: "PUT",
-    headers,
-    body: JSON.stringify(body),
-}).then(response =&gt; response.json());</code></pre></div>
-
-</span>
-
-<span id="example-responses-PUTapi-v1-comments--comment_id-">
-</span>
-<span id="execution-results-PUTapi-v1-comments--comment_id-" hidden>
-    <blockquote>Received response<span
-                id="execution-response-status-PUTapi-v1-comments--comment_id-"></span>:
-    </blockquote>
-    <pre class="json"><code id="execution-response-content-PUTapi-v1-comments--comment_id-"
-      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
-</span>
-<span id="execution-error-PUTapi-v1-comments--comment_id-" hidden>
-    <blockquote>Request failed with error:</blockquote>
-    <pre><code id="execution-error-message-PUTapi-v1-comments--comment_id-">
-
-Tip: Check that you&#039;re properly connected to the network.
-If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
-You can check the Dev Tools console for debugging information.</code></pre>
-</span>
-<form id="form-PUTapi-v1-comments--comment_id-" data-method="PUT"
-      data-path="api/v1/comments/{comment_id}"
-      data-authed="0"
-      data-hasfiles="0"
-      data-isarraybody="0"
-      autocomplete="off"
-      onsubmit="event.preventDefault(); executeTryOut('PUTapi-v1-comments--comment_id-', this);">
-    <h3>
-        Request&nbsp;&nbsp;&nbsp;
-                    <button type="button"
-                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-tryout-PUTapi-v1-comments--comment_id-"
-                    onclick="tryItOut('PUTapi-v1-comments--comment_id-');">Try it out ⚡
-            </button>
-            <button type="button"
-                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-canceltryout-PUTapi-v1-comments--comment_id-"
-                    onclick="cancelTryOut('PUTapi-v1-comments--comment_id-');" hidden>Cancel 🛑
-            </button>&nbsp;&nbsp;
-            <button type="submit"
-                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-executetryout-PUTapi-v1-comments--comment_id-"
-                    data-initial-text="Send Request 💥"
-                    data-loading-text="⏱ Sending..."
-                    hidden>Send Request 💥
-            </button>
-            </h3>
-            <p>
-            <small class="badge badge-darkblue">PUT</small>
-            <b><code>api/v1/comments/{comment_id}</code></b>
-        </p>
-                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
-                                <div style="padding-left: 28px; clear: unset;">
-                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
-&nbsp;
- &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="Content-Type"                data-endpoint="PUTapi-v1-comments--comment_id-"
-               value="application/json"
-               data-component="header">
-    <br>
-<p>Example: <code>application/json</code></p>
-            </div>
-                                <div style="padding-left: 28px; clear: unset;">
-                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
-&nbsp;
- &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="Accept"                data-endpoint="PUTapi-v1-comments--comment_id-"
-               value="application/json"
-               data-component="header">
-    <br>
-<p>Example: <code>application/json</code></p>
-            </div>
-                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
-                    <div style="padding-left: 28px; clear: unset;">
-                <b style="line-height: 2;"><code>comment_id</code></b>&nbsp;&nbsp;
-<small>integer</small>&nbsp;
- &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="comment_id"                data-endpoint="PUTapi-v1-comments--comment_id-"
-               value="16"
-               data-component="url">
-    <br>
-<p>The ID of the comment. Example: <code>16</code></p>
-            </div>
-                            <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
-        <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>content</code></b>&nbsp;&nbsp;
-<small>string</small>&nbsp;
- &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="content"                data-endpoint="PUTapi-v1-comments--comment_id-"
-               value="b"
-               data-component="body">
-    <br>
-<p>Must be at least 2 characters. Must not be greater than 5000 characters. Example: <code>b</code></p>
-        </div>
-        </form>
-
-                    <h2 id="endpoints-DELETEapi-v1-comments--comment_id-">DELETE api/v1/comments/{comment_id}</h2>
-
-<p>
-</p>
-
-
-
-<span id="example-requests-DELETEapi-v1-comments--comment_id-">
-<blockquote>Example request:</blockquote>
-
-
-<div class="bash-example">
-    <pre><code class="language-bash">curl --request DELETE \
-    "http://localhost/api/v1/comments/16" \
-    --header "Content-Type: application/json" \
-    --header "Accept: application/json"</code></pre></div>
-
-
-<div class="javascript-example">
-    <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/v1/comments/16"
-);
-
-const headers = {
-    "Content-Type": "application/json",
-    "Accept": "application/json",
-};
-
-fetch(url, {
-    method: "DELETE",
-    headers,
-}).then(response =&gt; response.json());</code></pre></div>
-
-</span>
-
-<span id="example-responses-DELETEapi-v1-comments--comment_id-">
-</span>
-<span id="execution-results-DELETEapi-v1-comments--comment_id-" hidden>
-    <blockquote>Received response<span
-                id="execution-response-status-DELETEapi-v1-comments--comment_id-"></span>:
-    </blockquote>
-    <pre class="json"><code id="execution-response-content-DELETEapi-v1-comments--comment_id-"
-      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
-</span>
-<span id="execution-error-DELETEapi-v1-comments--comment_id-" hidden>
-    <blockquote>Request failed with error:</blockquote>
-    <pre><code id="execution-error-message-DELETEapi-v1-comments--comment_id-">
-
-Tip: Check that you&#039;re properly connected to the network.
-If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
-You can check the Dev Tools console for debugging information.</code></pre>
-</span>
-<form id="form-DELETEapi-v1-comments--comment_id-" data-method="DELETE"
-      data-path="api/v1/comments/{comment_id}"
-      data-authed="0"
-      data-hasfiles="0"
-      data-isarraybody="0"
-      autocomplete="off"
-      onsubmit="event.preventDefault(); executeTryOut('DELETEapi-v1-comments--comment_id-', this);">
-    <h3>
-        Request&nbsp;&nbsp;&nbsp;
-                    <button type="button"
-                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-tryout-DELETEapi-v1-comments--comment_id-"
-                    onclick="tryItOut('DELETEapi-v1-comments--comment_id-');">Try it out ⚡
-            </button>
-            <button type="button"
-                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-canceltryout-DELETEapi-v1-comments--comment_id-"
-                    onclick="cancelTryOut('DELETEapi-v1-comments--comment_id-');" hidden>Cancel 🛑
-            </button>&nbsp;&nbsp;
-            <button type="submit"
-                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-executetryout-DELETEapi-v1-comments--comment_id-"
-                    data-initial-text="Send Request 💥"
-                    data-loading-text="⏱ Sending..."
-                    hidden>Send Request 💥
-            </button>
-            </h3>
-            <p>
-            <small class="badge badge-red">DELETE</small>
-            <b><code>api/v1/comments/{comment_id}</code></b>
-        </p>
-                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
-                                <div style="padding-left: 28px; clear: unset;">
-                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
-&nbsp;
- &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="Content-Type"                data-endpoint="DELETEapi-v1-comments--comment_id-"
-               value="application/json"
-               data-component="header">
-    <br>
-<p>Example: <code>application/json</code></p>
-            </div>
-                                <div style="padding-left: 28px; clear: unset;">
-                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
-&nbsp;
- &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="Accept"                data-endpoint="DELETEapi-v1-comments--comment_id-"
-               value="application/json"
-               data-component="header">
-    <br>
-<p>Example: <code>application/json</code></p>
-            </div>
-                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
-                    <div style="padding-left: 28px; clear: unset;">
-                <b style="line-height: 2;"><code>comment_id</code></b>&nbsp;&nbsp;
-<small>integer</small>&nbsp;
- &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="comment_id"                data-endpoint="DELETEapi-v1-comments--comment_id-"
-               value="16"
-               data-component="url">
-    <br>
-<p>The ID of the comment. Example: <code>16</code></p>
-            </div>
-                    </form>
-
                     <h2 id="endpoints-POSTapi-v1-users--user--follow">POST api/v1/users/{user}/follow</h2>
 
 <p>
@@ -3873,6 +6914,36 @@ fetch(url, {
     method: "POST",
     headers,
 }).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/users/architecto/follow';
+$response = $client-&gt;post(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/users/architecto/follow'
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('POST', url, headers=headers)
+response.json()</code></pre></div>
 
 </span>
 
@@ -3997,6 +7068,36 @@ fetch(url, {
     headers,
 }).then(response =&gt; response.json());</code></pre></div>
 
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/users/architecto/follow';
+$response = $client-&gt;delete(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/users/architecto/follow'
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('DELETE', url, headers=headers)
+response.json()</code></pre></div>
+
 </span>
 
 <span id="example-responses-DELETEapi-v1-users--user--follow">
@@ -4120,6 +7221,36 @@ fetch(url, {
     headers,
 }).then(response =&gt; response.json());</code></pre></div>
 
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/users/architecto/followers';
+$response = $client-&gt;get(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/users/architecto/followers'
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('GET', url, headers=headers)
+response.json()</code></pre></div>
+
 </span>
 
 <span id="example-responses-GETapi-v1-users--user--followers">
@@ -4132,13 +7263,13 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-x-page-load-time: 1.51ms
-x-db-query-count: 18
-x-memory-peak: 59244544
+x-page-load-time: 0.74ms
+x-db-query-count: 17
+x-memory-peak: 61341696
 x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
-content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;nonce-IHggwpJ3SWmNFnPsJM8ZiWqBOldmxghN1TmW9qc6&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;nonce-IHggwpJ3SWmNFnPsJM8ZiWqBOldmxghN1TmW9qc6&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
 permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
 access-control-allow-origin: *
  </code></pre></details>         <pre>
@@ -4267,6 +7398,36 @@ fetch(url, {
     headers,
 }).then(response =&gt; response.json());</code></pre></div>
 
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/users/architecto/following';
+$response = $client-&gt;get(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/users/architecto/following'
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('GET', url, headers=headers)
+response.json()</code></pre></div>
+
 </span>
 
 <span id="example-responses-GETapi-v1-users--user--following">
@@ -4279,13 +7440,13 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-x-page-load-time: 1.17ms
-x-db-query-count: 18
-x-memory-peak: 59244544
+x-page-load-time: 0.73ms
+x-db-query-count: 17
+x-memory-peak: 61341696
 x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
-content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;nonce-Z8jClXo1eTz9rpcEhfpwHGiVGmj4EFkY3tQ96KKV&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;nonce-Z8jClXo1eTz9rpcEhfpwHGiVGmj4EFkY3tQ96KKV&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
 permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
 access-control-allow-origin: *
  </code></pre></details>         <pre>
@@ -4381,140 +7542,6 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                     </form>
 
-                    <h2 id="endpoints-GETapi-v1-users-suggestions">GET api/v1/users/suggestions</h2>
-
-<p>
-</p>
-
-
-
-<span id="example-requests-GETapi-v1-users-suggestions">
-<blockquote>Example request:</blockquote>
-
-
-<div class="bash-example">
-    <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost/api/v1/users/suggestions" \
-    --header "Content-Type: application/json" \
-    --header "Accept: application/json"</code></pre></div>
-
-
-<div class="javascript-example">
-    <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/v1/users/suggestions"
-);
-
-const headers = {
-    "Content-Type": "application/json",
-    "Accept": "application/json",
-};
-
-fetch(url, {
-    method: "GET",
-    headers,
-}).then(response =&gt; response.json());</code></pre></div>
-
-</span>
-
-<span id="example-responses-GETapi-v1-users-suggestions">
-            <blockquote>
-            <p>Example response (401):</p>
-        </blockquote>
-                <details class="annotation">
-            <summary style="cursor: pointer;">
-                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
-            </summary>
-            <pre><code class="language-http">cache-control: no-cache, private
-content-type: application/json
-x-page-load-time: 1.24ms
-x-db-query-count: 18
-x-memory-peak: 59244544
-x-content-type-options: nosniff
-x-frame-options: SAMEORIGIN
-referrer-policy: strict-origin-when-cross-origin
-content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;nonce-3uVpTlVb6tyCCGD96REAe8DgeXV1DlMk85Q4QMQ8&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;nonce-3uVpTlVb6tyCCGD96REAe8DgeXV1DlMk85Q4QMQ8&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
-permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
-access-control-allow-origin: *
- </code></pre></details>         <pre>
-
-<code class="language-json" style="max-height: 300px;">{
-    &quot;message&quot;: &quot;Unauthenticated.&quot;
-}</code>
- </pre>
-    </span>
-<span id="execution-results-GETapi-v1-users-suggestions" hidden>
-    <blockquote>Received response<span
-                id="execution-response-status-GETapi-v1-users-suggestions"></span>:
-    </blockquote>
-    <pre class="json"><code id="execution-response-content-GETapi-v1-users-suggestions"
-      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
-</span>
-<span id="execution-error-GETapi-v1-users-suggestions" hidden>
-    <blockquote>Request failed with error:</blockquote>
-    <pre><code id="execution-error-message-GETapi-v1-users-suggestions">
-
-Tip: Check that you&#039;re properly connected to the network.
-If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
-You can check the Dev Tools console for debugging information.</code></pre>
-</span>
-<form id="form-GETapi-v1-users-suggestions" data-method="GET"
-      data-path="api/v1/users/suggestions"
-      data-authed="0"
-      data-hasfiles="0"
-      data-isarraybody="0"
-      autocomplete="off"
-      onsubmit="event.preventDefault(); executeTryOut('GETapi-v1-users-suggestions', this);">
-    <h3>
-        Request&nbsp;&nbsp;&nbsp;
-                    <button type="button"
-                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-tryout-GETapi-v1-users-suggestions"
-                    onclick="tryItOut('GETapi-v1-users-suggestions');">Try it out ⚡
-            </button>
-            <button type="button"
-                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-canceltryout-GETapi-v1-users-suggestions"
-                    onclick="cancelTryOut('GETapi-v1-users-suggestions');" hidden>Cancel 🛑
-            </button>&nbsp;&nbsp;
-            <button type="submit"
-                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-executetryout-GETapi-v1-users-suggestions"
-                    data-initial-text="Send Request 💥"
-                    data-loading-text="⏱ Sending..."
-                    hidden>Send Request 💥
-            </button>
-            </h3>
-            <p>
-            <small class="badge badge-green">GET</small>
-            <b><code>api/v1/users/suggestions</code></b>
-        </p>
-                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
-                                <div style="padding-left: 28px; clear: unset;">
-                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
-&nbsp;
- &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="Content-Type"                data-endpoint="GETapi-v1-users-suggestions"
-               value="application/json"
-               data-component="header">
-    <br>
-<p>Example: <code>application/json</code></p>
-            </div>
-                                <div style="padding-left: 28px; clear: unset;">
-                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
-&nbsp;
- &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="Accept"                data-endpoint="GETapi-v1-users-suggestions"
-               value="application/json"
-               data-component="header">
-    <br>
-<p>Example: <code>application/json</code></p>
-            </div>
-                        </form>
-
                     <h2 id="endpoints-GETapi-v1-activity-me">GET api/v1/activity/me</h2>
 
 <p>
@@ -4548,6 +7575,36 @@ fetch(url, {
     headers,
 }).then(response =&gt; response.json());</code></pre></div>
 
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/activity/me';
+$response = $client-&gt;get(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/activity/me'
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('GET', url, headers=headers)
+response.json()</code></pre></div>
+
 </span>
 
 <span id="example-responses-GETapi-v1-activity-me">
@@ -4560,13 +7617,13 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-x-page-load-time: 0.67ms
-x-db-query-count: 18
-x-memory-peak: 59244544
+x-page-load-time: 0.7ms
+x-db-query-count: 17
+x-memory-peak: 61341696
 x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
-content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;nonce-d08Aclh6tSXtezzGoHKpMINU7WtXBVUwLzpFos49&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;nonce-d08Aclh6tSXtezzGoHKpMINU7WtXBVUwLzpFos49&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
 permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
 access-control-allow-origin: *
  </code></pre></details>         <pre>
@@ -4682,6 +7739,36 @@ fetch(url, {
     headers,
 }).then(response =&gt; response.json());</code></pre></div>
 
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/activity/following';
+$response = $client-&gt;get(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/activity/following'
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('GET', url, headers=headers)
+response.json()</code></pre></div>
+
 </span>
 
 <span id="example-responses-GETapi-v1-activity-following">
@@ -4694,13 +7781,13 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-x-page-load-time: 1.09ms
-x-db-query-count: 18
-x-memory-peak: 59244544
+x-page-load-time: 0.97ms
+x-db-query-count: 17
+x-memory-peak: 61341696
 x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
-content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;nonce-rZiXyeLp6cWXmGATsCGyoLs1iKBFwYLfNK6eL5fm&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;nonce-rZiXyeLp6cWXmGATsCGyoLs1iKBFwYLfNK6eL5fm&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
 permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
 access-control-allow-origin: *
  </code></pre></details>         <pre>
@@ -4816,6 +7903,36 @@ fetch(url, {
     headers,
 }).then(response =&gt; response.json());</code></pre></div>
 
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/notifications';
+$response = $client-&gt;get(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/notifications'
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('GET', url, headers=headers)
+response.json()</code></pre></div>
+
 </span>
 
 <span id="example-responses-GETapi-v1-notifications">
@@ -4828,13 +7945,13 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-x-page-load-time: 0.95ms
-x-db-query-count: 18
-x-memory-peak: 59244544
+x-page-load-time: 0.7ms
+x-db-query-count: 17
+x-memory-peak: 61341696
 x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
-content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;nonce-cZJBHzpiJ0Lsayk77Acmz2I9HPG2TatoS8rfYBvQ&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;nonce-cZJBHzpiJ0Lsayk77Acmz2I9HPG2TatoS8rfYBvQ&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
 permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
 access-control-allow-origin: *
  </code></pre></details>         <pre>
@@ -4950,6 +8067,36 @@ fetch(url, {
     headers,
 }).then(response =&gt; response.json());</code></pre></div>
 
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/notifications/unread';
+$response = $client-&gt;get(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/notifications/unread'
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('GET', url, headers=headers)
+response.json()</code></pre></div>
+
 </span>
 
 <span id="example-responses-GETapi-v1-notifications-unread">
@@ -4963,12 +8110,12 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-page-load-time: 1.72ms
-x-db-query-count: 18
-x-memory-peak: 59244544
+x-db-query-count: 17
+x-memory-peak: 61341696
 x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
-content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;nonce-4H6RLOIyUI36eIjQJUx0z57ZqFeCLeMV8aRNmQkX&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;nonce-4H6RLOIyUI36eIjQJUx0z57ZqFeCLeMV8aRNmQkX&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
 permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
 access-control-allow-origin: *
  </code></pre></details>         <pre>
@@ -5083,6 +8230,36 @@ fetch(url, {
     method: "POST",
     headers,
 }).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/notifications/16/read';
+$response = $client-&gt;post(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/notifications/16/read'
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('POST', url, headers=headers)
+response.json()</code></pre></div>
 
 </span>
 
@@ -5207,6 +8384,36 @@ fetch(url, {
     headers,
 }).then(response =&gt; response.json());</code></pre></div>
 
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/notifications/read-all';
+$response = $client-&gt;post(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/notifications/read-all'
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('POST', url, headers=headers)
+response.json()</code></pre></div>
+
 </span>
 
 <span id="example-responses-POSTapi-v1-notifications-read-all">
@@ -5316,6 +8523,36 @@ fetch(url, {
     method: "DELETE",
     headers,
 }).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/notifications/16';
+$response = $client-&gt;delete(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/notifications/16'
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('DELETE', url, headers=headers)
+response.json()</code></pre></div>
 
 </span>
 
@@ -5440,6 +8677,36 @@ fetch(url, {
     headers,
 }).then(response =&gt; response.json());</code></pre></div>
 
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/notifications/preferences';
+$response = $client-&gt;get(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/notifications/preferences'
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('GET', url, headers=headers)
+response.json()</code></pre></div>
+
 </span>
 
 <span id="example-responses-GETapi-v1-notifications-preferences">
@@ -5452,13 +8719,13 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-x-page-load-time: 1.07ms
-x-db-query-count: 20
-x-memory-peak: 59244544
+x-page-load-time: 0.81ms
+x-db-query-count: 19
+x-memory-peak: 61341696
 x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
-content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;nonce-P5Cl0BG5zbWK2WWKiXsdUA6SBI8ZZVROmm63NQLr&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;nonce-P5Cl0BG5zbWK2WWKiXsdUA6SBI8ZZVROmm63NQLr&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
 permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
 access-control-allow-origin: *
  </code></pre></details>         <pre>
@@ -5558,9 +8825,9 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
-    \"email_enabled\": true,
+    \"email_enabled\": false,
     \"push_enabled\": true,
-    \"digest_frequency\": \"none\"
+    \"digest_frequency\": \"weekly\"
 }"
 </code></pre></div>
 
@@ -5576,9 +8843,9 @@ const headers = {
 };
 
 let body = {
-    "email_enabled": true,
+    "email_enabled": false,
     "push_enabled": true,
-    "digest_frequency": "none"
+    "digest_frequency": "weekly"
 };
 
 fetch(url, {
@@ -5586,6 +8853,46 @@ fetch(url, {
     headers,
     body: JSON.stringify(body),
 }).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/notifications/preferences';
+$response = $client-&gt;put(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+        'json' =&gt; [
+            'email_enabled' =&gt; false,
+            'push_enabled' =&gt; true,
+            'digest_frequency' =&gt; 'weekly',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/notifications/preferences'
+payload = {
+    "email_enabled": false,
+    "push_enabled": true,
+    "digest_frequency": "weekly"
+}
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('PUT', url, headers=headers, json=payload)
+response.json()</code></pre></div>
 
 </span>
 
@@ -5683,7 +8990,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>true</code></p>
+<p>Example: <code>false</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>push_enabled</code></b>&nbsp;&nbsp;
@@ -5714,10 +9021,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="digest_frequency"                data-endpoint="PUTapi-v1-notifications-preferences"
-               value="none"
+               value="weekly"
                data-component="body">
     <br>
-<p>Example: <code>none</code></p>
+<p>Example: <code>weekly</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>none</code></li> <li><code>daily</code></li> <li><code>weekly</code></li></ul>
         </div>
@@ -5768,6 +9075,36 @@ fetch(url, {
     headers,
 }).then(response =&gt; response.json());</code></pre></div>
 
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/moderation/flags';
+$response = $client-&gt;get(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/moderation/flags'
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('GET', url, headers=headers)
+response.json()</code></pre></div>
+
 </span>
 
 <span id="example-responses-GETapi-v1-moderation-flags">
@@ -5780,13 +9117,13 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-x-page-load-time: 2.03ms
-x-db-query-count: 30
-x-memory-peak: 61341696
+x-page-load-time: 1.66ms
+x-db-query-count: 31
+x-memory-peak: 63438848
 x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
-content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;nonce-0aNwXe6JM1VK3H9xNoqGTpgX8sDTmvbgNEi0iOyj&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;nonce-0aNwXe6JM1VK3H9xNoqGTpgX8sDTmvbgNEi0iOyj&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
 permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
 access-control-allow-origin: *
  </code></pre></details>         <pre>
@@ -5886,7 +9223,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
-    \"status\": \"resolved\",
+    \"status\": \"rejected\",
     \"notes\": \"b\"
 }"
 </code></pre></div>
@@ -5903,7 +9240,7 @@ const headers = {
 };
 
 let body = {
-    "status": "resolved",
+    "status": "rejected",
     "notes": "b"
 };
 
@@ -5912,6 +9249,44 @@ fetch(url, {
     headers,
     body: JSON.stringify(body),
 }).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/moderation/flags/16/review';
+$response = $client-&gt;post(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+        'json' =&gt; [
+            'status' =&gt; 'rejected',
+            'notes' =&gt; 'b',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/moderation/flags/16/review'
+payload = {
+    "status": "rejected",
+    "notes": "b"
+}
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('POST', url, headers=headers, json=payload)
+response.json()</code></pre></div>
 
 </span>
 
@@ -6009,10 +9384,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="status"                data-endpoint="POSTapi-v1-moderation-flags--flag_id--review"
-               value="resolved"
+               value="rejected"
                data-component="body">
     <br>
-<p>Example: <code>resolved</code></p>
+<p>Example: <code>rejected</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>reviewed</code></li> <li><code>resolved</code></li> <li><code>rejected</code></li></ul>
         </div>
@@ -6050,7 +9425,7 @@ Must be one of:
     \"ids\": [
         16
     ],
-    \"status\": \"resolved\"
+    \"status\": \"rejected\"
 }"
 </code></pre></div>
 
@@ -6069,7 +9444,7 @@ let body = {
     "ids": [
         16
     ],
-    "status": "resolved"
+    "status": "rejected"
 };
 
 fetch(url, {
@@ -6077,6 +9452,48 @@ fetch(url, {
     headers,
     body: JSON.stringify(body),
 }).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/moderation/flags/bulk-review';
+$response = $client-&gt;post(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+        'json' =&gt; [
+            'ids' =&gt; [
+                16,
+            ],
+            'status' =&gt; 'rejected',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/moderation/flags/bulk-review'
+payload = {
+    "ids": [
+        16
+    ],
+    "status": "rejected"
+}
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('POST', url, headers=headers, json=payload)
+response.json()</code></pre></div>
 
 </span>
 
@@ -6175,10 +9592,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="status"                data-endpoint="POSTapi-v1-moderation-flags-bulk-review"
-               value="resolved"
+               value="rejected"
                data-component="body">
     <br>
-<p>Example: <code>resolved</code></p>
+<p>Example: <code>rejected</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>reviewed</code></li> <li><code>resolved</code></li> <li><code>rejected</code></li></ul>
         </div>
@@ -6203,6 +9620,7 @@ Must be one of:
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
     --get "http://localhost/api/v1/newsletters/sends/1/metrics" \
+    --header "Authorization: Bearer {YOUR_API_TOKEN}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
@@ -6213,6 +9631,7 @@ Must be one of:
 );
 
 const headers = {
+    "Authorization": "Bearer {YOUR_API_TOKEN}",
     "Content-Type": "application/json",
     "Accept": "application/json",
 };
@@ -6221,6 +9640,38 @@ fetch(url, {
     method: "GET",
     headers,
 }).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/newsletters/sends/1/metrics';
+$response = $client-&gt;get(
+    $url,
+    [
+        'headers' =&gt; [
+            'Authorization' =&gt; 'Bearer {YOUR_API_TOKEN}',
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/newsletters/sends/1/metrics'
+headers = {
+  'Authorization': 'Bearer {YOUR_API_TOKEN}',
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('GET', url, headers=headers)
+response.json()</code></pre></div>
 
 </span>
 
@@ -6286,6 +9737,18 @@ You can check the Dev Tools console for debugging information.</code></pre>
         </p>
                 <h4 class="fancy-heading-panel"><b>Headers</b></h4>
                                 <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Authorization</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Authorization" class="auth-value"               data-endpoint="GETapi-v1-newsletters-sends--id--metrics"
+               value="Bearer {YOUR_API_TOKEN}"
+               data-component="header">
+    <br>
+<p>Example: <code>Bearer {YOUR_API_TOKEN}</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
 &nbsp;
  &nbsp;
@@ -6328,7 +9791,425 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
     <p>API endpoints for managing and retrieving blog posts.</p>
 
-                                <h2 id="posts-GETapi-v1-posts">List Posts</h2>
+                                <h2 id="posts-GETapi-v1-articles">List Posts</h2>
+
+<p>
+</p>
+
+<p>Get a paginated list of published posts. You can filter by category, tag, or search term.</p>
+
+<span id="example-requests-GETapi-v1-articles">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost/api/v1/articles?category=technology&amp;tag=laravel&amp;search=php&amp;page=1" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/v1/articles"
+);
+
+const params = {
+    "category": "technology",
+    "tag": "laravel",
+    "search": "php",
+    "page": "1",
+};
+Object.keys(params)
+    .forEach(key =&gt; url.searchParams.append(key, params[key]));
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/articles';
+$response = $client-&gt;get(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+        'query' =&gt; [
+            'category' =&gt; 'technology',
+            'tag' =&gt; 'laravel',
+            'search' =&gt; 'php',
+            'page' =&gt; '1',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/articles'
+params = {
+  'category': 'technology',
+  'tag': 'laravel',
+  'search': 'php',
+  'page': '1',
+}
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('GET', url, headers=headers, params=params)
+response.json()</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v1-articles">
+            <blockquote>
+            <p>Example response (200):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+  &quot;data&quot;: [
+    {
+      &quot;id&quot;: 1,
+      &quot;title&quot;: &quot;Example Post&quot;,
+      &quot;slug&quot;: &quot;example-post&quot;,
+      &quot;excerpt&quot;: &quot;This is an example post excerpt...&quot;,
+      &quot;published_at&quot;: &quot;2024-01-01T00:00:00.000000Z&quot;,
+      &quot;author&quot;: {
+        &quot;id&quot;: 1,
+        &quot;name&quot;: &quot;John Doe&quot;
+      },
+      &quot;category&quot;: {
+        &quot;id&quot;: 1,
+        &quot;name&quot;: &quot;Technology&quot;
+      }
+    }
+  ],
+  &quot;links&quot;: {...},
+  &quot;meta&quot;: {...}
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-v1-articles" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-v1-articles"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v1-articles"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v1-articles" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v1-articles">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-v1-articles" data-method="GET"
+      data-path="api/v1/articles"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v1-articles', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v1-articles"
+                    onclick="tryItOut('GETapi-v1-articles');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v1-articles"
+                    onclick="cancelTryOut('GETapi-v1-articles');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v1-articles"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v1/articles</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v1-articles"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v1-articles"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                            <h4 class="fancy-heading-panel"><b>Query Parameters</b></h4>
+                                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>category</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="category"                data-endpoint="GETapi-v1-articles"
+               value="technology"
+               data-component="query">
+    <br>
+<p>Filter by category slug. Example: <code>technology</code></p>
+            </div>
+                                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>tag</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="tag"                data-endpoint="GETapi-v1-articles"
+               value="laravel"
+               data-component="query">
+    <br>
+<p>Filter by tag slug. Example: <code>laravel</code></p>
+            </div>
+                                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>search</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="search"                data-endpoint="GETapi-v1-articles"
+               value="php"
+               data-component="query">
+    <br>
+<p>Search in title and content. Example: <code>php</code></p>
+            </div>
+                                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>page</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="page"                data-endpoint="GETapi-v1-articles"
+               value="1"
+               data-component="query">
+    <br>
+<p>Page number for pagination. Example: <code>1</code></p>
+            </div>
+                </form>
+
+                    <h2 id="posts-GETapi-v1-articles--id-">Get Single Post</h2>
+
+<p>
+</p>
+
+<p>Retrieve a single published post by its ID or slug.</p>
+
+<span id="example-requests-GETapi-v1-articles--id-">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost/api/v1/articles/1 or example-post" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/v1/articles/1 or example-post"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/articles/1 or example-post';
+$response = $client-&gt;get(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/articles/1 or example-post'
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('GET', url, headers=headers)
+response.json()</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v1-articles--id-">
+            <blockquote>
+            <p>Example response (200):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+  &quot;data&quot;: {
+    &quot;id&quot;: 1,
+    &quot;title&quot;: &quot;Example Post&quot;,
+    &quot;slug&quot;: &quot;example-post&quot;,
+    &quot;content&quot;: &quot;Full post content...&quot;,
+    &quot;published_at&quot;: &quot;2024-01-01T00:00:00.000000Z&quot;,
+    &quot;author&quot;: {...},
+    &quot;category&quot;: {...},
+    &quot;tags&quot;: [...],
+    &quot;comments_count&quot;: 5
+  }
+}</code>
+ </pre>
+            <blockquote>
+            <p>Example response (404):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;Post not found&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-v1-articles--id-" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-v1-articles--id-"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v1-articles--id-"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v1-articles--id-" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v1-articles--id-">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-v1-articles--id-" data-method="GET"
+      data-path="api/v1/articles/{id}"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v1-articles--id-', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v1-articles--id-"
+                    onclick="tryItOut('GETapi-v1-articles--id-');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v1-articles--id-"
+                    onclick="cancelTryOut('GETapi-v1-articles--id-');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v1-articles--id-"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v1/articles/{id}</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v1-articles--id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v1-articles--id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="id"                data-endpoint="GETapi-v1-articles--id-"
+               value="1 or example-post"
+               data-component="url">
+    <br>
+<p>The post ID or slug. Example: <code>1 or example-post</code></p>
+            </div>
+                    </form>
+
+                    <h2 id="posts-GETapi-v1-posts">List Posts</h2>
 
 <p>
 </p>
@@ -6369,6 +10250,48 @@ fetch(url, {
     method: "GET",
     headers,
 }).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/posts';
+$response = $client-&gt;get(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+        'query' =&gt; [
+            'category' =&gt; 'technology',
+            'tag' =&gt; 'laravel',
+            'search' =&gt; 'php',
+            'page' =&gt; '1',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/posts'
+params = {
+  'category': 'technology',
+  'tag': 'laravel',
+  'search': 'php',
+  'page': '1',
+}
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('GET', url, headers=headers, params=params)
+response.json()</code></pre></div>
 
 </span>
 
@@ -6528,7 +10451,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <p>
 </p>
 
-<p>Retrieve a single published post by its slug.</p>
+<p>Retrieve a single published post by its ID or slug.</p>
 
 <span id="example-requests-GETapi-v1-posts--slug-">
 <blockquote>Example request:</blockquote>
@@ -6536,14 +10459,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost/api/v1/posts/example-post" \
+    --get "http://localhost/api/v1/posts/16" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/v1/posts/example-post"
+    "http://localhost/api/v1/posts/16"
 );
 
 const headers = {
@@ -6555,6 +10478,36 @@ fetch(url, {
     method: "GET",
     headers,
 }).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/posts/16';
+$response = $client-&gt;get(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/posts/16'
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('GET', url, headers=headers)
+response.json()</code></pre></div>
 
 </span>
 
@@ -6662,24 +10615,37 @@ You can check the Dev Tools console for debugging information.</code></pre>
                         <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
                     <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>slug</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="slug"                data-endpoint="GETapi-v1-posts--slug-"
+               value="16"
+               data-component="url">
+    <br>
+<p>The slug of the post. Example: <code>16</code></p>
+            </div>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
 <small>string</small>&nbsp;
  &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="slug"                data-endpoint="GETapi-v1-posts--slug-"
-               value="example-post"
+                              name="id"                data-endpoint="GETapi-v1-posts--slug-"
+               value="1 or example-post"
                data-component="url">
     <br>
-<p>The post slug. Example: <code>example-post</code></p>
+<p>The post ID or slug. Example: <code>1 or example-post</code></p>
             </div>
                     </form>
 
-                    <h2 id="posts-POSTapi-v1-articles">Create Post (auth)</h2>
+                    <h2 id="posts-POSTapi-v1-articles">Create Post</h2>
 
 <p>
+<small class="badge badge-darkred">requires authentication</small>
 </p>
 
-
+<p>Create a new article. Requires authentication.</p>
 
 <span id="example-requests-POSTapi-v1-articles">
 <blockquote>Example request:</blockquote>
@@ -6688,24 +10654,25 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
     "http://localhost/api/v1/articles" \
+    --header "Authorization: Bearer {YOUR_API_TOKEN}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
-    \"title\": \"b\",
-    \"slug\": \"n\",
-    \"excerpt\": \"g\",
-    \"content\": \"architecto\",
-    \"featured_image\": \"n\",
-    \"image_alt_text\": \"g\",
+    \"title\": \"Getting Started with Laravel\",
+    \"slug\": \"getting-started-with-laravel\",
+    \"excerpt\": \"Learn the basics of Laravel framework\",
+    \"content\": \"&lt;p&gt;Laravel is a web application framework...&lt;\\/p&gt;\",
+    \"featured_image\": \"https:\\/\\/example.com\\/images\\/laravel.jpg\",
+    \"image_alt_text\": \"Laravel logo\",
     \"status\": \"published\",
     \"is_featured\": false,
     \"is_trending\": false,
-    \"category_id\": \"architecto\",
-    \"published_at\": \"2025-11-16T19:22:35\",
-    \"scheduled_at\": \"2025-11-16T19:22:35\",
-    \"meta_title\": \"n\",
-    \"meta_description\": \"g\",
-    \"meta_keywords\": \"z\"
+    \"category_id\": 1,
+    \"published_at\": \"2024-01-01 12:00:00\",
+    \"scheduled_at\": \"2024-01-15 09:00:00\",
+    \"meta_title\": \"Getting Started with Laravel - Complete Guide\",
+    \"meta_description\": \"A comprehensive guide to getting started with Laravel framework\",
+    \"meta_keywords\": \"laravel, php, framework, tutorial\"
 }"
 </code></pre></div>
 
@@ -6716,26 +10683,27 @@ You can check the Dev Tools console for debugging information.</code></pre>
 );
 
 const headers = {
+    "Authorization": "Bearer {YOUR_API_TOKEN}",
     "Content-Type": "application/json",
     "Accept": "application/json",
 };
 
 let body = {
-    "title": "b",
-    "slug": "n",
-    "excerpt": "g",
-    "content": "architecto",
-    "featured_image": "n",
-    "image_alt_text": "g",
+    "title": "Getting Started with Laravel",
+    "slug": "getting-started-with-laravel",
+    "excerpt": "Learn the basics of Laravel framework",
+    "content": "&lt;p&gt;Laravel is a web application framework...&lt;\/p&gt;",
+    "featured_image": "https:\/\/example.com\/images\/laravel.jpg",
+    "image_alt_text": "Laravel logo",
     "status": "published",
     "is_featured": false,
     "is_trending": false,
-    "category_id": "architecto",
-    "published_at": "2025-11-16T19:22:35",
-    "scheduled_at": "2025-11-16T19:22:35",
-    "meta_title": "n",
-    "meta_description": "g",
-    "meta_keywords": "z"
+    "category_id": 1,
+    "published_at": "2024-01-01 12:00:00",
+    "scheduled_at": "2024-01-15 09:00:00",
+    "meta_title": "Getting Started with Laravel - Complete Guide",
+    "meta_description": "A comprehensive guide to getting started with Laravel framework",
+    "meta_keywords": "laravel, php, framework, tutorial"
 };
 
 fetch(url, {
@@ -6744,10 +10712,121 @@ fetch(url, {
     body: JSON.stringify(body),
 }).then(response =&gt; response.json());</code></pre></div>
 
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/articles';
+$response = $client-&gt;post(
+    $url,
+    [
+        'headers' =&gt; [
+            'Authorization' =&gt; 'Bearer {YOUR_API_TOKEN}',
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+        'json' =&gt; [
+            'title' =&gt; 'Getting Started with Laravel',
+            'slug' =&gt; 'getting-started-with-laravel',
+            'excerpt' =&gt; 'Learn the basics of Laravel framework',
+            'content' =&gt; '&lt;p&gt;Laravel is a web application framework...&lt;/p&gt;',
+            'featured_image' =&gt; 'https://example.com/images/laravel.jpg',
+            'image_alt_text' =&gt; 'Laravel logo',
+            'status' =&gt; 'published',
+            'is_featured' =&gt; false,
+            'is_trending' =&gt; false,
+            'category_id' =&gt; 1,
+            'published_at' =&gt; '2024-01-01 12:00:00',
+            'scheduled_at' =&gt; '2024-01-15 09:00:00',
+            'meta_title' =&gt; 'Getting Started with Laravel - Complete Guide',
+            'meta_description' =&gt; 'A comprehensive guide to getting started with Laravel framework',
+            'meta_keywords' =&gt; 'laravel, php, framework, tutorial',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/articles'
+payload = {
+    "title": "Getting Started with Laravel",
+    "slug": "getting-started-with-laravel",
+    "excerpt": "Learn the basics of Laravel framework",
+    "content": "&lt;p&gt;Laravel is a web application framework...&lt;\/p&gt;",
+    "featured_image": "https:\/\/example.com\/images\/laravel.jpg",
+    "image_alt_text": "Laravel logo",
+    "status": "published",
+    "is_featured": false,
+    "is_trending": false,
+    "category_id": 1,
+    "published_at": "2024-01-01 12:00:00",
+    "scheduled_at": "2024-01-15 09:00:00",
+    "meta_title": "Getting Started with Laravel - Complete Guide",
+    "meta_description": "A comprehensive guide to getting started with Laravel framework",
+    "meta_keywords": "laravel, php, framework, tutorial"
+}
+headers = {
+  'Authorization': 'Bearer {YOUR_API_TOKEN}',
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('POST', url, headers=headers, json=payload)
+response.json()</code></pre></div>
+
 </span>
 
 <span id="example-responses-POSTapi-v1-articles">
-</span>
+            <blockquote>
+            <p>Example response (201):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;data&quot;: {
+        &quot;id&quot;: 1,
+        &quot;title&quot;: &quot;Getting Started with Laravel&quot;,
+        &quot;slug&quot;: &quot;getting-started-with-laravel&quot;,
+        &quot;excerpt&quot;: &quot;Learn the basics of Laravel framework&quot;,
+        &quot;content&quot;: &quot;&lt;p&gt;Laravel is a web application framework...&lt;/p&gt;&quot;,
+        &quot;featured_image&quot;: &quot;https://example.com/images/laravel.jpg&quot;,
+        &quot;status&quot;: &quot;published&quot;,
+        &quot;published_at&quot;: &quot;2024-01-01T12:00:00.000000Z&quot;,
+        &quot;author&quot;: {
+            &quot;id&quot;: 1,
+            &quot;name&quot;: &quot;John Doe&quot;,
+            &quot;email&quot;: &quot;john@example.com&quot;
+        },
+        &quot;category&quot;: {
+            &quot;id&quot;: 1,
+            &quot;name&quot;: &quot;Technology&quot;,
+            &quot;slug&quot;: &quot;technology&quot;
+        }
+    }
+}</code>
+ </pre>
+            <blockquote>
+            <p>Example response (422):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;The given data was invalid.&quot;,
+    &quot;errors&quot;: {
+        &quot;title&quot;: [
+            &quot;The title field is required.&quot;
+        ],
+        &quot;content&quot;: [
+            &quot;The content field is required.&quot;
+        ]
+    }
+}</code>
+ </pre>
+    </span>
 <span id="execution-results-POSTapi-v1-articles" hidden>
     <blockquote>Received response<span
                 id="execution-response-status-POSTapi-v1-articles"></span>:
@@ -6765,7 +10844,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 </span>
 <form id="form-POSTapi-v1-articles" data-method="POST"
       data-path="api/v1/articles"
-      data-authed="0"
+      data-authed="1"
       data-hasfiles="0"
       data-isarraybody="0"
       autocomplete="off"
@@ -6795,6 +10874,18 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <b><code>api/v1/articles</code></b>
         </p>
                 <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Authorization</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Authorization" class="auth-value"               data-endpoint="POSTapi-v1-articles"
+               value="Bearer {YOUR_API_TOKEN}"
+               data-component="header">
+    <br>
+<p>Example: <code>Bearer {YOUR_API_TOKEN}</code></p>
+            </div>
                                 <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
 &nbsp;
@@ -6827,10 +10918,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="title"                data-endpoint="POSTapi-v1-articles"
-               value="b"
+               value="Getting Started with Laravel"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>b</code></p>
+<p>The article title. Must not exceed 255 characters. Example: <code>Getting Started with Laravel</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>slug</code></b>&nbsp;&nbsp;
@@ -6839,10 +10930,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="slug"                data-endpoint="POSTapi-v1-articles"
-               value="n"
+               value="getting-started-with-laravel"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>n</code></p>
+<p>optional The article slug. Auto-generated from title if not provided. Example: <code>getting-started-with-laravel</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>excerpt</code></b>&nbsp;&nbsp;
@@ -6851,10 +10942,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="excerpt"                data-endpoint="POSTapi-v1-articles"
-               value="g"
+               value="Learn the basics of Laravel framework"
                data-component="body">
     <br>
-<p>Must not be greater than 500 characters. Example: <code>g</code></p>
+<p>optional Short description of the article. Max 500 characters. Example: <code>Learn the basics of Laravel framework</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>content</code></b>&nbsp;&nbsp;
@@ -6863,10 +10954,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="content"                data-endpoint="POSTapi-v1-articles"
-               value="architecto"
+               value="<p>Laravel is a web application framework...</p>"
                data-component="body">
     <br>
-<p>Example: <code>architecto</code></p>
+<p>The full article content in HTML or Markdown. Example: <code>&lt;p&gt;Laravel is a web application framework...&lt;/p&gt;</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>featured_image</code></b>&nbsp;&nbsp;
@@ -6875,10 +10966,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="featured_image"                data-endpoint="POSTapi-v1-articles"
-               value="n"
+               value="https://example.com/images/laravel.jpg"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>n</code></p>
+<p>optional URL to the featured image. Example: <code>https://example.com/images/laravel.jpg</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>image_alt_text</code></b>&nbsp;&nbsp;
@@ -6887,10 +10978,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="image_alt_text"                data-endpoint="POSTapi-v1-articles"
-               value="g"
+               value="Laravel logo"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>g</code></p>
+<p>optional Alt text for the featured image. Example: <code>Laravel logo</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>status</code></b>&nbsp;&nbsp;
@@ -6902,9 +10993,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
                value="published"
                data-component="body">
     <br>
-<p>Example: <code>published</code></p>
-Must be one of:
-<ul style="list-style-type: square;"><li><code>draft</code></li> <li><code>published</code></li> <li><code>scheduled</code></li></ul>
+<p>Article status. Must be one of: draft, published, scheduled. Example: <code>published</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>is_featured</code></b>&nbsp;&nbsp;
@@ -6926,7 +11015,7 @@ Must be one of:
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>false</code></p>
+<p>optional Mark as featured article. Example: <code>false</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>is_trending</code></b>&nbsp;&nbsp;
@@ -6948,43 +11037,43 @@ Must be one of:
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>false</code></p>
+<p>optional Mark as trending article. Example: <code>false</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>category_id</code></b>&nbsp;&nbsp;
-<small>string</small>&nbsp;
+<small>integer</small>&nbsp;
  &nbsp;
  &nbsp;
-                <input type="text" style="display: none"
-                              name="category_id"                data-endpoint="POSTapi-v1-articles"
-               value="architecto"
+                <input type="number" style="display: none"
+               step="any"               name="category_id"                data-endpoint="POSTapi-v1-articles"
+               value="1"
                data-component="body">
     <br>
-<p>The <code>id</code> of an existing record in the categories table. Example: <code>architecto</code></p>
+<p>The category ID. Example: <code>1</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>published_at</code></b>&nbsp;&nbsp;
-<small>string</small>&nbsp;
+<small>datetime</small>&nbsp;
 <i>optional</i> &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
                               name="published_at"                data-endpoint="POSTapi-v1-articles"
-               value="2025-11-16T19:22:35"
+               value="2024-01-01 12:00:00"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2025-11-16T19:22:35</code></p>
+<p>optional Publication date. Required if status is published. Example: <code>2024-01-01 12:00:00</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>scheduled_at</code></b>&nbsp;&nbsp;
-<small>string</small>&nbsp;
+<small>datetime</small>&nbsp;
 <i>optional</i> &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
                               name="scheduled_at"                data-endpoint="POSTapi-v1-articles"
-               value="2025-11-16T19:22:35"
+               value="2024-01-15 09:00:00"
                data-component="body">
     <br>
-<p>This field is required when <code>status</code> is <code>scheduled</code>. Must be a valid date. Example: <code>2025-11-16T19:22:35</code></p>
+<p>optional Scheduled publication date. Required if status is scheduled. Example: <code>2024-01-15 09:00:00</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>meta_title</code></b>&nbsp;&nbsp;
@@ -6993,10 +11082,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="meta_title"                data-endpoint="POSTapi-v1-articles"
-               value="n"
+               value="Getting Started with Laravel - Complete Guide"
                data-component="body">
     <br>
-<p>Must not be greater than 70 characters. Example: <code>n</code></p>
+<p>optional SEO meta title. Max 70 characters. Example: <code>Getting Started with Laravel - Complete Guide</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>meta_description</code></b>&nbsp;&nbsp;
@@ -7005,10 +11094,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="meta_description"                data-endpoint="POSTapi-v1-articles"
-               value="g"
+               value="A comprehensive guide to getting started with Laravel framework"
                data-component="body">
     <br>
-<p>Must not be greater than 160 characters. Example: <code>g</code></p>
+<p>optional SEO meta description. Max 160 characters. Example: <code>A comprehensive guide to getting started with Laravel framework</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>meta_keywords</code></b>&nbsp;&nbsp;
@@ -7017,19 +11106,20 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="meta_keywords"                data-endpoint="POSTapi-v1-articles"
-               value="z"
+               value="laravel, php, framework, tutorial"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>z</code></p>
+<p>optional SEO keywords. Example: <code>laravel, php, framework, tutorial</code></p>
         </div>
         </form>
 
-                    <h2 id="posts-PUTapi-v1-articles--post_id-">Update Post (auth)</h2>
+                    <h2 id="posts-PUTapi-v1-articles--post_id-">Update Post</h2>
 
 <p>
+<small class="badge badge-darkred">requires authentication</small>
 </p>
 
-
+<p>Update an existing article. Requires authentication and ownership or admin role.</p>
 
 <span id="example-requests-PUTapi-v1-articles--post_id-">
 <blockquote>Example request:</blockquote>
@@ -7038,21 +11128,22 @@ Must be one of:
 <div class="bash-example">
     <pre><code class="language-bash">curl --request PUT \
     "http://localhost/api/v1/articles/16" \
+    --header "Authorization: Bearer {YOUR_API_TOKEN}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
-    \"title\": \"b\",
-    \"slug\": \"n\",
-    \"excerpt\": \"g\",
-    \"content\": \"architecto\",
-    \"featured_image\": \"n\",
+    \"title\": \"Updated Laravel Guide\",
+    \"slug\": \"updated-laravel-guide\",
+    \"excerpt\": \"Updated guide to Laravel\",
+    \"content\": \"&lt;p&gt;Updated content...&lt;\\/p&gt;\",
+    \"featured_image\": \"https:\\/\\/example.com\\/images\\/updated.jpg\",
     \"image_alt_text\": \"g\",
-    \"status\": \"draft\",
-    \"is_featured\": true,
-    \"is_trending\": false,
-    \"category_id\": \"architecto\",
-    \"published_at\": \"2025-11-16T19:22:35\",
-    \"scheduled_at\": \"2025-11-16T19:22:35\",
+    \"status\": \"published\",
+    \"is_featured\": false,
+    \"is_trending\": true,
+    \"category_id\": 1,
+    \"published_at\": \"2025-11-17T00:14:35\",
+    \"scheduled_at\": \"2025-11-17T00:14:35\",
     \"meta_title\": \"n\",
     \"meta_description\": \"g\",
     \"meta_keywords\": \"z\"
@@ -7066,23 +11157,24 @@ Must be one of:
 );
 
 const headers = {
+    "Authorization": "Bearer {YOUR_API_TOKEN}",
     "Content-Type": "application/json",
     "Accept": "application/json",
 };
 
 let body = {
-    "title": "b",
-    "slug": "n",
-    "excerpt": "g",
-    "content": "architecto",
-    "featured_image": "n",
+    "title": "Updated Laravel Guide",
+    "slug": "updated-laravel-guide",
+    "excerpt": "Updated guide to Laravel",
+    "content": "&lt;p&gt;Updated content...&lt;\/p&gt;",
+    "featured_image": "https:\/\/example.com\/images\/updated.jpg",
     "image_alt_text": "g",
-    "status": "draft",
-    "is_featured": true,
-    "is_trending": false,
-    "category_id": "architecto",
-    "published_at": "2025-11-16T19:22:35",
-    "scheduled_at": "2025-11-16T19:22:35",
+    "status": "published",
+    "is_featured": false,
+    "is_trending": true,
+    "category_id": 1,
+    "published_at": "2025-11-17T00:14:35",
+    "scheduled_at": "2025-11-17T00:14:35",
     "meta_title": "n",
     "meta_description": "g",
     "meta_keywords": "z"
@@ -7094,10 +11186,109 @@ fetch(url, {
     body: JSON.stringify(body),
 }).then(response =&gt; response.json());</code></pre></div>
 
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/articles/16';
+$response = $client-&gt;put(
+    $url,
+    [
+        'headers' =&gt; [
+            'Authorization' =&gt; 'Bearer {YOUR_API_TOKEN}',
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+        'json' =&gt; [
+            'title' =&gt; 'Updated Laravel Guide',
+            'slug' =&gt; 'updated-laravel-guide',
+            'excerpt' =&gt; 'Updated guide to Laravel',
+            'content' =&gt; '&lt;p&gt;Updated content...&lt;/p&gt;',
+            'featured_image' =&gt; 'https://example.com/images/updated.jpg',
+            'image_alt_text' =&gt; 'g',
+            'status' =&gt; 'published',
+            'is_featured' =&gt; false,
+            'is_trending' =&gt; true,
+            'category_id' =&gt; 1,
+            'published_at' =&gt; '2025-11-17T00:14:35',
+            'scheduled_at' =&gt; '2025-11-17T00:14:35',
+            'meta_title' =&gt; 'n',
+            'meta_description' =&gt; 'g',
+            'meta_keywords' =&gt; 'z',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/articles/16'
+payload = {
+    "title": "Updated Laravel Guide",
+    "slug": "updated-laravel-guide",
+    "excerpt": "Updated guide to Laravel",
+    "content": "&lt;p&gt;Updated content...&lt;\/p&gt;",
+    "featured_image": "https:\/\/example.com\/images\/updated.jpg",
+    "image_alt_text": "g",
+    "status": "published",
+    "is_featured": false,
+    "is_trending": true,
+    "category_id": 1,
+    "published_at": "2025-11-17T00:14:35",
+    "scheduled_at": "2025-11-17T00:14:35",
+    "meta_title": "n",
+    "meta_description": "g",
+    "meta_keywords": "z"
+}
+headers = {
+  'Authorization': 'Bearer {YOUR_API_TOKEN}',
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('PUT', url, headers=headers, json=payload)
+response.json()</code></pre></div>
+
 </span>
 
 <span id="example-responses-PUTapi-v1-articles--post_id-">
-</span>
+            <blockquote>
+            <p>Example response (200):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;data&quot;: {
+        &quot;id&quot;: 1,
+        &quot;title&quot;: &quot;Updated Laravel Guide&quot;,
+        &quot;slug&quot;: &quot;updated-laravel-guide&quot;,
+        &quot;content&quot;: &quot;&lt;p&gt;Updated content...&lt;/p&gt;&quot;,
+        &quot;status&quot;: &quot;published&quot;
+    }
+}</code>
+ </pre>
+            <blockquote>
+            <p>Example response (403):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;This action is unauthorized.&quot;
+}</code>
+ </pre>
+            <blockquote>
+            <p>Example response (404):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;Post not found&quot;
+}</code>
+ </pre>
+    </span>
 <span id="execution-results-PUTapi-v1-articles--post_id-" hidden>
     <blockquote>Received response<span
                 id="execution-response-status-PUTapi-v1-articles--post_id-"></span>:
@@ -7115,7 +11306,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 </span>
 <form id="form-PUTapi-v1-articles--post_id-" data-method="PUT"
       data-path="api/v1/articles/{post_id}"
-      data-authed="0"
+      data-authed="1"
       data-hasfiles="0"
       data-isarraybody="0"
       autocomplete="off"
@@ -7145,6 +11336,18 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <b><code>api/v1/articles/{post_id}</code></b>
         </p>
                 <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Authorization</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Authorization" class="auth-value"               data-endpoint="PUTapi-v1-articles--post_id-"
+               value="Bearer {YOUR_API_TOKEN}"
+               data-component="header">
+    <br>
+<p>Example: <code>Bearer {YOUR_API_TOKEN}</code></p>
+            </div>
                                 <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
 &nbsp;
@@ -7182,6 +11385,18 @@ You can check the Dev Tools console for debugging information.</code></pre>
     <br>
 <p>The ID of the post. Example: <code>16</code></p>
             </div>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>post</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="post"                data-endpoint="PUTapi-v1-articles--post_id-"
+               value="1"
+               data-component="url">
+    <br>
+<p>The post ID. Example: <code>1</code></p>
+            </div>
                             <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
         <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>title</code></b>&nbsp;&nbsp;
@@ -7190,10 +11405,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="title"                data-endpoint="PUTapi-v1-articles--post_id-"
-               value="b"
+               value="Updated Laravel Guide"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>b</code></p>
+<p>The article title. Example: <code>Updated Laravel Guide</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>slug</code></b>&nbsp;&nbsp;
@@ -7202,10 +11417,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="slug"                data-endpoint="PUTapi-v1-articles--post_id-"
-               value="n"
+               value="updated-laravel-guide"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>n</code></p>
+<p>optional The article slug. Example: <code>updated-laravel-guide</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>excerpt</code></b>&nbsp;&nbsp;
@@ -7214,10 +11429,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="excerpt"                data-endpoint="PUTapi-v1-articles--post_id-"
-               value="g"
+               value="Updated guide to Laravel"
                data-component="body">
     <br>
-<p>Must not be greater than 500 characters. Example: <code>g</code></p>
+<p>optional Short description. Example: <code>Updated guide to Laravel</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>content</code></b>&nbsp;&nbsp;
@@ -7226,10 +11441,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="content"                data-endpoint="PUTapi-v1-articles--post_id-"
-               value="architecto"
+               value="<p>Updated content...</p>"
                data-component="body">
     <br>
-<p>Example: <code>architecto</code></p>
+<p>The full article content. Example: <code>&lt;p&gt;Updated content...&lt;/p&gt;</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>featured_image</code></b>&nbsp;&nbsp;
@@ -7238,10 +11453,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="featured_image"                data-endpoint="PUTapi-v1-articles--post_id-"
-               value="n"
+               value="https://example.com/images/updated.jpg"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>n</code></p>
+<p>optional Featured image URL. Example: <code>https://example.com/images/updated.jpg</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>image_alt_text</code></b>&nbsp;&nbsp;
@@ -7262,12 +11477,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="status"                data-endpoint="PUTapi-v1-articles--post_id-"
-               value="draft"
+               value="published"
                data-component="body">
     <br>
-<p>Example: <code>draft</code></p>
-Must be one of:
-<ul style="list-style-type: square;"><li><code>draft</code></li> <li><code>published</code></li> <li><code>scheduled</code></li></ul>
+<p>Article status: draft, published, scheduled. Example: <code>published</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>is_featured</code></b>&nbsp;&nbsp;
@@ -7289,7 +11502,7 @@ Must be one of:
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>true</code></p>
+<p>Example: <code>false</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>is_trending</code></b>&nbsp;&nbsp;
@@ -7311,19 +11524,19 @@ Must be one of:
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>false</code></p>
+<p>Example: <code>true</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>category_id</code></b>&nbsp;&nbsp;
-<small>string</small>&nbsp;
+<small>integer</small>&nbsp;
  &nbsp;
  &nbsp;
-                <input type="text" style="display: none"
-                              name="category_id"                data-endpoint="PUTapi-v1-articles--post_id-"
-               value="architecto"
+                <input type="number" style="display: none"
+               step="any"               name="category_id"                data-endpoint="PUTapi-v1-articles--post_id-"
+               value="1"
                data-component="body">
     <br>
-<p>The <code>id</code> of an existing record in the categories table. Example: <code>architecto</code></p>
+<p>The category ID. Example: <code>1</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>published_at</code></b>&nbsp;&nbsp;
@@ -7332,10 +11545,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="published_at"                data-endpoint="PUTapi-v1-articles--post_id-"
-               value="2025-11-16T19:22:35"
+               value="2025-11-17T00:14:35"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2025-11-16T19:22:35</code></p>
+<p>Must be a valid date. Example: <code>2025-11-17T00:14:35</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>scheduled_at</code></b>&nbsp;&nbsp;
@@ -7344,10 +11557,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="scheduled_at"                data-endpoint="PUTapi-v1-articles--post_id-"
-               value="2025-11-16T19:22:35"
+               value="2025-11-17T00:14:35"
                data-component="body">
     <br>
-<p>This field is required when <code>status</code> is <code>scheduled</code>. Must be a valid date. Example: <code>2025-11-16T19:22:35</code></p>
+<p>This field is required when <code>status</code> is <code>scheduled</code>. Must be a valid date. Example: <code>2025-11-17T00:14:35</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>meta_title</code></b>&nbsp;&nbsp;
@@ -7387,12 +11600,14 @@ Must be one of:
         </div>
         </form>
 
-                    <h2 id="posts-DELETEapi-v1-articles--post_id-">Delete Post (auth)</h2>
+                    <h2 id="posts-DELETEapi-v1-articles--post_id-">Delete Post</h2>
 
 <p>
+<small class="badge badge-darkred">requires authentication</small>
 </p>
 
-
+<p>Delete an article. Requires authentication and ownership or admin role.
+The article will be soft-deleted and can be restored later.</p>
 
 <span id="example-requests-DELETEapi-v1-articles--post_id-">
 <blockquote>Example request:</blockquote>
@@ -7401,6 +11616,7 @@ Must be one of:
 <div class="bash-example">
     <pre><code class="language-bash">curl --request DELETE \
     "http://localhost/api/v1/articles/16" \
+    --header "Authorization: Bearer {YOUR_API_TOKEN}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
@@ -7411,6 +11627,7 @@ Must be one of:
 );
 
 const headers = {
+    "Authorization": "Bearer {YOUR_API_TOKEN}",
     "Content-Type": "application/json",
     "Accept": "application/json",
 };
@@ -7420,10 +11637,66 @@ fetch(url, {
     headers,
 }).then(response =&gt; response.json());</code></pre></div>
 
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/articles/16';
+$response = $client-&gt;delete(
+    $url,
+    [
+        'headers' =&gt; [
+            'Authorization' =&gt; 'Bearer {YOUR_API_TOKEN}',
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/articles/16'
+headers = {
+  'Authorization': 'Bearer {YOUR_API_TOKEN}',
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('DELETE', url, headers=headers)
+response.json()</code></pre></div>
+
 </span>
 
 <span id="example-responses-DELETEapi-v1-articles--post_id-">
-</span>
+            <blockquote>
+            <p>Example response (204, Success):</p>
+        </blockquote>
+                <pre>
+<code>Empty response</code>
+ </pre>
+            <blockquote>
+            <p>Example response (403):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;This action is unauthorized.&quot;
+}</code>
+ </pre>
+            <blockquote>
+            <p>Example response (404):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;Post not found&quot;
+}</code>
+ </pre>
+    </span>
 <span id="execution-results-DELETEapi-v1-articles--post_id-" hidden>
     <blockquote>Received response<span
                 id="execution-response-status-DELETEapi-v1-articles--post_id-"></span>:
@@ -7441,7 +11714,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 </span>
 <form id="form-DELETEapi-v1-articles--post_id-" data-method="DELETE"
       data-path="api/v1/articles/{post_id}"
-      data-authed="0"
+      data-authed="1"
       data-hasfiles="0"
       data-isarraybody="0"
       autocomplete="off"
@@ -7471,6 +11744,18 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <b><code>api/v1/articles/{post_id}</code></b>
         </p>
                 <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Authorization</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Authorization" class="auth-value"               data-endpoint="DELETEapi-v1-articles--post_id-"
+               value="Bearer {YOUR_API_TOKEN}"
+               data-component="header">
+    <br>
+<p>Example: <code>Bearer {YOUR_API_TOKEN}</code></p>
+            </div>
                                 <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
 &nbsp;
@@ -7508,6 +11793,18 @@ You can check the Dev Tools console for debugging information.</code></pre>
     <br>
 <p>The ID of the post. Example: <code>16</code></p>
             </div>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>post</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="post"                data-endpoint="DELETEapi-v1-articles--post_id-"
+               value="1"
+               data-component="url">
+    <br>
+<p>The post ID. Example: <code>1</code></p>
+            </div>
                     </form>
 
                 <h1 id="reading-lists">Reading Lists</h1>
@@ -7529,6 +11826,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
     --get "http://localhost/api/v1/reading-lists" \
+    --header "Authorization: Bearer {YOUR_API_TOKEN}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
@@ -7539,6 +11837,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 );
 
 const headers = {
+    "Authorization": "Bearer {YOUR_API_TOKEN}",
     "Content-Type": "application/json",
     "Accept": "application/json",
 };
@@ -7547,6 +11846,38 @@ fetch(url, {
     method: "GET",
     headers,
 }).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/reading-lists';
+$response = $client-&gt;get(
+    $url,
+    [
+        'headers' =&gt; [
+            'Authorization' =&gt; 'Bearer {YOUR_API_TOKEN}',
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/reading-lists'
+headers = {
+  'Authorization': 'Bearer {YOUR_API_TOKEN}',
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('GET', url, headers=headers)
+response.json()</code></pre></div>
 
 </span>
 
@@ -7560,13 +11891,13 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-x-page-load-time: 0.87ms
+x-page-load-time: 3.92ms
 x-db-query-count: 20
-x-memory-peak: 59244544
+x-memory-peak: 63438848
 x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
-content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;nonce-1Kzs5CmWA0yj88uTSYvdxVjyJbadkuyZwBiHNikf&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;nonce-1Kzs5CmWA0yj88uTSYvdxVjyJbadkuyZwBiHNikf&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
 permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
 access-control-allow-origin: *
  </code></pre></details>         <pre>
@@ -7624,6 +11955,18 @@ You can check the Dev Tools console for debugging information.</code></pre>
         </p>
                 <h4 class="fancy-heading-panel"><b>Headers</b></h4>
                                 <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Authorization</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Authorization" class="auth-value"               data-endpoint="GETapi-v1-reading-lists"
+               value="Bearer {YOUR_API_TOKEN}"
+               data-component="header">
+    <br>
+<p>Example: <code>Bearer {YOUR_API_TOKEN}</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
 &nbsp;
  &nbsp;
@@ -7664,6 +12007,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
     "http://localhost/api/v1/reading-lists" \
+    --header "Authorization: Bearer {YOUR_API_TOKEN}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -7680,6 +12024,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 );
 
 const headers = {
+    "Authorization": "Bearer {YOUR_API_TOKEN}",
     "Content-Type": "application/json",
     "Accept": "application/json",
 };
@@ -7695,6 +12040,48 @@ fetch(url, {
     headers,
     body: JSON.stringify(body),
 }).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/reading-lists';
+$response = $client-&gt;post(
+    $url,
+    [
+        'headers' =&gt; [
+            'Authorization' =&gt; 'Bearer {YOUR_API_TOKEN}',
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+        'json' =&gt; [
+            'name' =&gt; 'b',
+            'description' =&gt; 'Et animi quos velit et fugiat.',
+            'is_public' =&gt; true,
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/reading-lists'
+payload = {
+    "name": "b",
+    "description": "Et animi quos velit et fugiat.",
+    "is_public": true
+}
+headers = {
+  'Authorization': 'Bearer {YOUR_API_TOKEN}',
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('POST', url, headers=headers, json=payload)
+response.json()</code></pre></div>
 
 </span>
 
@@ -7747,6 +12134,18 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <b><code>api/v1/reading-lists</code></b>
         </p>
                 <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Authorization</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Authorization" class="auth-value"               data-endpoint="POSTapi-v1-reading-lists"
+               value="Bearer {YOUR_API_TOKEN}"
+               data-component="header">
+    <br>
+<p>Example: <code>Bearer {YOUR_API_TOKEN}</code></p>
+            </div>
                                 <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
 &nbsp;
@@ -7835,6 +12234,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
     --get "http://localhost/api/v1/reading-lists/16" \
+    --header "Authorization: Bearer {YOUR_API_TOKEN}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
@@ -7845,6 +12245,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 );
 
 const headers = {
+    "Authorization": "Bearer {YOUR_API_TOKEN}",
     "Content-Type": "application/json",
     "Accept": "application/json",
 };
@@ -7853,6 +12254,38 @@ fetch(url, {
     method: "GET",
     headers,
 }).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/reading-lists/16';
+$response = $client-&gt;get(
+    $url,
+    [
+        'headers' =&gt; [
+            'Authorization' =&gt; 'Bearer {YOUR_API_TOKEN}',
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/reading-lists/16'
+headers = {
+  'Authorization': 'Bearer {YOUR_API_TOKEN}',
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('GET', url, headers=headers)
+response.json()</code></pre></div>
 
 </span>
 
@@ -7866,13 +12299,13 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-x-page-load-time: 1.05ms
-x-db-query-count: 21
-x-memory-peak: 59244544
+x-page-load-time: 0.96ms
+x-db-query-count: 22
+x-memory-peak: 63438848
 x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
-content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;nonce-thoDdt2hUBTI4uEu20vxZfTa2KRJ8899FkEo97DF&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;nonce-thoDdt2hUBTI4uEu20vxZfTa2KRJ8899FkEo97DF&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
 permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
 access-control-allow-origin: *
  </code></pre></details>         <pre>
@@ -7930,6 +12363,18 @@ You can check the Dev Tools console for debugging information.</code></pre>
         </p>
                 <h4 class="fancy-heading-panel"><b>Headers</b></h4>
                                 <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Authorization</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Authorization" class="auth-value"               data-endpoint="GETapi-v1-reading-lists--collection_id-"
+               value="Bearer {YOUR_API_TOKEN}"
+               data-component="header">
+    <br>
+<p>Example: <code>Bearer {YOUR_API_TOKEN}</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
 &nbsp;
  &nbsp;
@@ -7983,6 +12428,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <div class="bash-example">
     <pre><code class="language-bash">curl --request PUT \
     "http://localhost/api/v1/reading-lists/16" \
+    --header "Authorization: Bearer {YOUR_API_TOKEN}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -7999,6 +12445,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 );
 
 const headers = {
+    "Authorization": "Bearer {YOUR_API_TOKEN}",
     "Content-Type": "application/json",
     "Accept": "application/json",
 };
@@ -8014,6 +12461,48 @@ fetch(url, {
     headers,
     body: JSON.stringify(body),
 }).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/reading-lists/16';
+$response = $client-&gt;put(
+    $url,
+    [
+        'headers' =&gt; [
+            'Authorization' =&gt; 'Bearer {YOUR_API_TOKEN}',
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+        'json' =&gt; [
+            'name' =&gt; 'b',
+            'description' =&gt; 'Et animi quos velit et fugiat.',
+            'is_public' =&gt; false,
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/reading-lists/16'
+payload = {
+    "name": "b",
+    "description": "Et animi quos velit et fugiat.",
+    "is_public": false
+}
+headers = {
+  'Authorization': 'Bearer {YOUR_API_TOKEN}',
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('PUT', url, headers=headers, json=payload)
+response.json()</code></pre></div>
 
 </span>
 
@@ -8066,6 +12555,18 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <b><code>api/v1/reading-lists/{collection_id}</code></b>
         </p>
                 <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Authorization</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Authorization" class="auth-value"               data-endpoint="PUTapi-v1-reading-lists--collection_id-"
+               value="Bearer {YOUR_API_TOKEN}"
+               data-component="header">
+    <br>
+<p>Example: <code>Bearer {YOUR_API_TOKEN}</code></p>
+            </div>
                                 <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
 &nbsp;
@@ -8167,6 +12668,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <div class="bash-example">
     <pre><code class="language-bash">curl --request DELETE \
     "http://localhost/api/v1/reading-lists/16" \
+    --header "Authorization: Bearer {YOUR_API_TOKEN}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
@@ -8177,6 +12679,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 );
 
 const headers = {
+    "Authorization": "Bearer {YOUR_API_TOKEN}",
     "Content-Type": "application/json",
     "Accept": "application/json",
 };
@@ -8185,6 +12688,38 @@ fetch(url, {
     method: "DELETE",
     headers,
 }).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/reading-lists/16';
+$response = $client-&gt;delete(
+    $url,
+    [
+        'headers' =&gt; [
+            'Authorization' =&gt; 'Bearer {YOUR_API_TOKEN}',
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/reading-lists/16'
+headers = {
+  'Authorization': 'Bearer {YOUR_API_TOKEN}',
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('DELETE', url, headers=headers)
+response.json()</code></pre></div>
 
 </span>
 
@@ -8237,6 +12772,18 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <b><code>api/v1/reading-lists/{collection_id}</code></b>
         </p>
                 <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Authorization</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Authorization" class="auth-value"               data-endpoint="DELETEapi-v1-reading-lists--collection_id-"
+               value="Bearer {YOUR_API_TOKEN}"
+               data-component="header">
+    <br>
+<p>Example: <code>Bearer {YOUR_API_TOKEN}</code></p>
+            </div>
                                 <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
 &nbsp;
@@ -8291,6 +12838,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
     "http://localhost/api/v1/reading-lists/16/items" \
+    --header "Authorization: Bearer {YOUR_API_TOKEN}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -8306,6 +12854,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 );
 
 const headers = {
+    "Authorization": "Bearer {YOUR_API_TOKEN}",
     "Content-Type": "application/json",
     "Accept": "application/json",
 };
@@ -8320,6 +12869,46 @@ fetch(url, {
     headers,
     body: JSON.stringify(body),
 }).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/reading-lists/16/items';
+$response = $client-&gt;post(
+    $url,
+    [
+        'headers' =&gt; [
+            'Authorization' =&gt; 'Bearer {YOUR_API_TOKEN}',
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+        'json' =&gt; [
+            'post_id' =&gt; 'architecto',
+            'note' =&gt; 'n',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/reading-lists/16/items'
+payload = {
+    "post_id": "architecto",
+    "note": "n"
+}
+headers = {
+  'Authorization': 'Bearer {YOUR_API_TOKEN}',
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('POST', url, headers=headers, json=payload)
+response.json()</code></pre></div>
 
 </span>
 
@@ -8372,6 +12961,18 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <b><code>api/v1/reading-lists/{collection_id}/items</code></b>
         </p>
                 <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Authorization</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Authorization" class="auth-value"               data-endpoint="POSTapi-v1-reading-lists--collection_id--items"
+               value="Bearer {YOUR_API_TOKEN}"
+               data-component="header">
+    <br>
+<p>Example: <code>Bearer {YOUR_API_TOKEN}</code></p>
+            </div>
                                 <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
 &nbsp;
@@ -8451,6 +13052,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <div class="bash-example">
     <pre><code class="language-bash">curl --request DELETE \
     "http://localhost/api/v1/reading-lists/16/items/16" \
+    --header "Authorization: Bearer {YOUR_API_TOKEN}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
@@ -8461,6 +13063,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 );
 
 const headers = {
+    "Authorization": "Bearer {YOUR_API_TOKEN}",
     "Content-Type": "application/json",
     "Accept": "application/json",
 };
@@ -8469,6 +13072,38 @@ fetch(url, {
     method: "DELETE",
     headers,
 }).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/reading-lists/16/items/16';
+$response = $client-&gt;delete(
+    $url,
+    [
+        'headers' =&gt; [
+            'Authorization' =&gt; 'Bearer {YOUR_API_TOKEN}',
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/reading-lists/16/items/16'
+headers = {
+  'Authorization': 'Bearer {YOUR_API_TOKEN}',
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('DELETE', url, headers=headers)
+response.json()</code></pre></div>
 
 </span>
 
@@ -8521,6 +13156,18 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <b><code>api/v1/reading-lists/{collection_id}/items/{bookmark_id}</code></b>
         </p>
                 <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Authorization</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Authorization" class="auth-value"               data-endpoint="DELETEapi-v1-reading-lists--collection_id--items--bookmark_id-"
+               value="Bearer {YOUR_API_TOKEN}"
+               data-component="header">
+    <br>
+<p>Example: <code>Bearer {YOUR_API_TOKEN}</code></p>
+            </div>
                                 <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
 &nbsp;
@@ -8587,6 +13234,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
     "http://localhost/api/v1/reading-lists/16/reorder" \
+    --header "Authorization: Bearer {YOUR_API_TOKEN}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -8603,6 +13251,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 );
 
 const headers = {
+    "Authorization": "Bearer {YOUR_API_TOKEN}",
     "Content-Type": "application/json",
     "Accept": "application/json",
 };
@@ -8618,6 +13267,48 @@ fetch(url, {
     headers,
     body: JSON.stringify(body),
 }).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/reading-lists/16/reorder';
+$response = $client-&gt;post(
+    $url,
+    [
+        'headers' =&gt; [
+            'Authorization' =&gt; 'Bearer {YOUR_API_TOKEN}',
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+        'json' =&gt; [
+            'bookmark_ids' =&gt; [
+                16,
+            ],
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/reading-lists/16/reorder'
+payload = {
+    "bookmark_ids": [
+        16
+    ]
+}
+headers = {
+  'Authorization': 'Bearer {YOUR_API_TOKEN}',
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('POST', url, headers=headers, json=payload)
+response.json()</code></pre></div>
 
 </span>
 
@@ -8670,6 +13361,18 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <b><code>api/v1/reading-lists/{collection_id}/reorder</code></b>
         </p>
                 <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Authorization</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Authorization" class="auth-value"               data-endpoint="POSTapi-v1-reading-lists--collection_id--reorder"
+               value="Bearer {YOUR_API_TOKEN}"
+               data-component="header">
+    <br>
+<p>Example: <code>Bearer {YOUR_API_TOKEN}</code></p>
+            </div>
                                 <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
 &nbsp;
@@ -8739,6 +13442,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
     "http://localhost/api/v1/reading-lists/16/share" \
+    --header "Authorization: Bearer {YOUR_API_TOKEN}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
@@ -8749,6 +13453,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 );
 
 const headers = {
+    "Authorization": "Bearer {YOUR_API_TOKEN}",
     "Content-Type": "application/json",
     "Accept": "application/json",
 };
@@ -8757,6 +13462,38 @@ fetch(url, {
     method: "POST",
     headers,
 }).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/reading-lists/16/share';
+$response = $client-&gt;post(
+    $url,
+    [
+        'headers' =&gt; [
+            'Authorization' =&gt; 'Bearer {YOUR_API_TOKEN}',
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/reading-lists/16/share'
+headers = {
+  'Authorization': 'Bearer {YOUR_API_TOKEN}',
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('POST', url, headers=headers)
+response.json()</code></pre></div>
 
 </span>
 
@@ -8809,6 +13546,18 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <b><code>api/v1/reading-lists/{collection_id}/share</code></b>
         </p>
                 <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Authorization</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Authorization" class="auth-value"               data-endpoint="POSTapi-v1-reading-lists--collection_id--share"
+               value="Bearer {YOUR_API_TOKEN}"
+               data-component="header">
+    <br>
+<p>Example: <code>Bearer {YOUR_API_TOKEN}</code></p>
+            </div>
                                 <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
 &nbsp;
@@ -8863,6 +13612,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <div class="bash-example">
     <pre><code class="language-bash">curl --request DELETE \
     "http://localhost/api/v1/reading-lists/16/share" \
+    --header "Authorization: Bearer {YOUR_API_TOKEN}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
@@ -8873,6 +13623,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 );
 
 const headers = {
+    "Authorization": "Bearer {YOUR_API_TOKEN}",
     "Content-Type": "application/json",
     "Accept": "application/json",
 };
@@ -8881,6 +13632,38 @@ fetch(url, {
     method: "DELETE",
     headers,
 }).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/reading-lists/16/share';
+$response = $client-&gt;delete(
+    $url,
+    [
+        'headers' =&gt; [
+            'Authorization' =&gt; 'Bearer {YOUR_API_TOKEN}',
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/reading-lists/16/share'
+headers = {
+  'Authorization': 'Bearer {YOUR_API_TOKEN}',
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('DELETE', url, headers=headers)
+response.json()</code></pre></div>
 
 </span>
 
@@ -8933,6 +13716,18 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <b><code>api/v1/reading-lists/{collection_id}/share</code></b>
         </p>
                 <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Authorization</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Authorization" class="auth-value"               data-endpoint="DELETEapi-v1-reading-lists--collection_id--share"
+               value="Bearer {YOUR_API_TOKEN}"
+               data-component="header">
+    <br>
+<p>Example: <code>Bearer {YOUR_API_TOKEN}</code></p>
+            </div>
                                 <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
 &nbsp;
@@ -9005,6 +13800,36 @@ fetch(url, {
     headers,
 }).then(response =&gt; response.json());</code></pre></div>
 
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/reading-lists/shared/architecto';
+$response = $client-&gt;get(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/reading-lists/shared/architecto'
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('GET', url, headers=headers)
+response.json()</code></pre></div>
+
 </span>
 
 <span id="example-responses-GETapi-v1-reading-lists-shared--token-">
@@ -9018,14 +13843,14 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 60
-x-ratelimit-remaining: 50
-x-page-load-time: 8.11ms
-x-db-query-count: 30
-x-memory-peak: 59244544
+x-ratelimit-remaining: 49
+x-page-load-time: 17.54ms
+x-db-query-count: 31
+x-memory-peak: 63438848
 x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
-content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;nonce-k22HR9VK73oSCnA8zasvmdayyjiIoFZN8b7Vr3iS&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;nonce-k22HR9VK73oSCnA8zasvmdayyjiIoFZN8b7Vr3iS&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
+content-security-policy: default-src &#039;self&#039;; base-uri &#039;self&#039;; frame-ancestors &#039;self&#039;; img-src &#039;self&#039; data:; font-src &#039;self&#039; data:; object-src &#039;none&#039;; connect-src &#039;self&#039; http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src &#039;self&#039; &#039;unsafe-inline&#039; http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src &#039;self&#039;; form-action &#039;self&#039;
 permissions-policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()
 access-control-allow-origin: *
  </code></pre></details>         <pre>
@@ -9147,8 +13972,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"limit\": 7,
     \"category\": \"z\",
     \"author\": \"m\",
-    \"date_from\": \"2025-11-16T19:22:35\",
-    \"date_to\": \"2051-12-10\"
+    \"date_from\": \"2025-11-17T00:14:34\",
+    \"date_to\": \"2051-12-11\"
 }"
 </code></pre></div>
 
@@ -9181,8 +14006,8 @@ let body = {
     "limit": 7,
     "category": "z",
     "author": "m",
-    "date_from": "2025-11-16T19:22:35",
-    "date_to": "2051-12-10"
+    "date_from": "2025-11-17T00:14:34",
+    "date_to": "2051-12-11"
 };
 
 fetch(url, {
@@ -9190,6 +14015,72 @@ fetch(url, {
     headers,
     body: JSON.stringify(body),
 }).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/search';
+$response = $client-&gt;get(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+        'query' =&gt; [
+            'q' =&gt; 'laravel',
+            'threshold' =&gt; '60',
+            'limit' =&gt; '15',
+            'category' =&gt; 'technology',
+            'author' =&gt; 'John Doe',
+            'date_from' =&gt; '2024-01-01',
+            'date_to' =&gt; '2024-12-31',
+        ],
+        'json' =&gt; [
+            'q' =&gt; 'b',
+            'threshold' =&gt; 22,
+            'limit' =&gt; 7,
+            'category' =&gt; 'z',
+            'author' =&gt; 'm',
+            'date_from' =&gt; '2025-11-17T00:14:34',
+            'date_to' =&gt; '2051-12-11',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/search'
+payload = {
+    "q": "b",
+    "threshold": 22,
+    "limit": 7,
+    "category": "z",
+    "author": "m",
+    "date_from": "2025-11-17T00:14:34",
+    "date_to": "2051-12-11"
+}
+params = {
+  'q': 'laravel',
+  'threshold': '60',
+  'limit': '15',
+  'category': 'technology',
+  'author': 'John Doe',
+  'date_from': '2024-01-01',
+  'date_to': '2024-12-31',
+}
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('GET', url, headers=headers, json=payload, params=params)
+response.json()</code></pre></div>
 
 </span>
 
@@ -9453,10 +14344,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="date_from"                data-endpoint="GETapi-v1-search"
-               value="2025-11-16T19:22:35"
+               value="2025-11-17T00:14:34"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2025-11-16T19:22:35</code></p>
+<p>Must be a valid date. Example: <code>2025-11-17T00:14:34</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>date_to</code></b>&nbsp;&nbsp;
@@ -9465,10 +14356,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="date_to"                data-endpoint="GETapi-v1-search"
-               value="2051-12-10"
+               value="2051-12-11"
                data-component="body">
     <br>
-<p>Must be a valid date. Must be a date after or equal to <code>date_from</code>. Example: <code>2051-12-10</code></p>
+<p>Must be a valid date. Must be a date after or equal to <code>date_from</code>. Example: <code>2051-12-11</code></p>
         </div>
         </form>
 
@@ -9494,8 +14385,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"limit\": 7,
     \"category\": \"z\",
     \"author\": \"m\",
-    \"date_from\": \"2025-11-16T19:22:35\",
-    \"date_to\": \"2051-12-10\"
+    \"date_from\": \"2025-11-17T00:14:34\",
+    \"date_to\": \"2051-12-11\"
 }"
 </code></pre></div>
 
@@ -9523,8 +14414,8 @@ let body = {
     "limit": 7,
     "category": "z",
     "author": "m",
-    "date_from": "2025-11-16T19:22:35",
-    "date_to": "2051-12-10"
+    "date_from": "2025-11-17T00:14:34",
+    "date_to": "2051-12-11"
 };
 
 fetch(url, {
@@ -9532,6 +14423,62 @@ fetch(url, {
     headers,
     body: JSON.stringify(body),
 }).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/search/suggestions';
+$response = $client-&gt;get(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+        'query' =&gt; [
+            'q' =&gt; 'lara',
+            'limit' =&gt; '5',
+        ],
+        'json' =&gt; [
+            'q' =&gt; 'b',
+            'threshold' =&gt; 22,
+            'limit' =&gt; 7,
+            'category' =&gt; 'z',
+            'author' =&gt; 'm',
+            'date_from' =&gt; '2025-11-17T00:14:34',
+            'date_to' =&gt; '2051-12-11',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/search/suggestions'
+payload = {
+    "q": "b",
+    "threshold": 22,
+    "limit": 7,
+    "category": "z",
+    "author": "m",
+    "date_from": "2025-11-17T00:14:34",
+    "date_to": "2051-12-11"
+}
+params = {
+  'q': 'lara',
+  'limit': '5',
+}
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('GET', url, headers=headers, json=payload, params=params)
+response.json()</code></pre></div>
 
 </span>
 
@@ -9719,10 +14666,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="date_from"                data-endpoint="GETapi-v1-search-suggestions"
-               value="2025-11-16T19:22:35"
+               value="2025-11-17T00:14:34"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2025-11-16T19:22:35</code></p>
+<p>Must be a valid date. Example: <code>2025-11-17T00:14:34</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>date_to</code></b>&nbsp;&nbsp;
@@ -9731,10 +14678,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="date_to"                data-endpoint="GETapi-v1-search-suggestions"
-               value="2051-12-10"
+               value="2051-12-11"
                data-component="body">
     <br>
-<p>Must be a valid date. Must be a date after or equal to <code>date_from</code>. Example: <code>2051-12-10</code></p>
+<p>Must be a valid date. Must be a date after or equal to <code>date_from</code>. Example: <code>2051-12-11</code></p>
         </div>
         </form>
 
@@ -9787,6 +14734,46 @@ fetch(url, {
     headers,
     body: JSON.stringify(body),
 }).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/shares';
+$response = $client-&gt;post(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+        'json' =&gt; [
+            'post_id' =&gt; 1,
+            'provider' =&gt; 'twitter',
+            'share_url' =&gt; 'https://twitter.com/intent/tweet?text=...',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/shares'
+payload = {
+    "post_id": 1,
+    "provider": "twitter",
+    "share_url": "https:\/\/twitter.com\/intent\/tweet?text=..."
+}
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('POST', url, headers=headers, json=payload)
+response.json()</code></pre></div>
 
 </span>
 
@@ -9913,6 +14900,912 @@ You can check the Dev Tools console for debugging information.</code></pre>
         </div>
         </form>
 
+                <h1 id="users">Users</h1>
+
+    <p>API endpoints for managing user profiles and accounts.</p>
+
+                                <h2 id="users-GETapi-v1-users-me">Get Current User</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+<p>Retrieve the authenticated user's profile information.</p>
+
+<span id="example-requests-GETapi-v1-users-me">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost/api/v1/users/me" \
+    --header "Authorization: Bearer {YOUR_API_TOKEN}" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/v1/users/me"
+);
+
+const headers = {
+    "Authorization": "Bearer {YOUR_API_TOKEN}",
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/users/me';
+$response = $client-&gt;get(
+    $url,
+    [
+        'headers' =&gt; [
+            'Authorization' =&gt; 'Bearer {YOUR_API_TOKEN}',
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/users/me'
+headers = {
+  'Authorization': 'Bearer {YOUR_API_TOKEN}',
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('GET', url, headers=headers)
+response.json()</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v1-users-me">
+            <blockquote>
+            <p>Example response (200):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;data&quot;: {
+        &quot;id&quot;: 1,
+        &quot;name&quot;: &quot;John Doe&quot;,
+        &quot;email&quot;: &quot;john@example.com&quot;,
+        &quot;bio&quot;: &quot;Software developer and tech enthusiast&quot;,
+        &quot;avatar&quot;: &quot;https://example.com/avatars/john.jpg&quot;,
+        &quot;profile&quot;: {
+            &quot;website&quot;: &quot;https://johndoe.com&quot;,
+            &quot;twitter_handle&quot;: &quot;@johndoe&quot;,
+            &quot;github_username&quot;: &quot;johndoe&quot;,
+            &quot;location&quot;: &quot;San Francisco, CA&quot;,
+            &quot;company&quot;: &quot;Tech Corp&quot;,
+            &quot;job_title&quot;: &quot;Senior Developer&quot;
+        },
+        &quot;created_at&quot;: &quot;2024-01-01T00:00:00.000000Z&quot;
+    }
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-v1-users-me" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-v1-users-me"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v1-users-me"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v1-users-me" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v1-users-me">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-v1-users-me" data-method="GET"
+      data-path="api/v1/users/me"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v1-users-me', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v1-users-me"
+                    onclick="tryItOut('GETapi-v1-users-me');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v1-users-me"
+                    onclick="cancelTryOut('GETapi-v1-users-me');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v1-users-me"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v1/users/me</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Authorization</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Authorization" class="auth-value"               data-endpoint="GETapi-v1-users-me"
+               value="Bearer {YOUR_API_TOKEN}"
+               data-component="header">
+    <br>
+<p>Example: <code>Bearer {YOUR_API_TOKEN}</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v1-users-me"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v1-users-me"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        </form>
+
+                    <h2 id="users-PUTapi-v1-users-me">Update Current User</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+<p>Update the authenticated user's profile information.</p>
+
+<span id="example-requests-PUTapi-v1-users-me">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request PUT \
+    "http://localhost/api/v1/users/me" \
+    --header "Authorization: Bearer {YOUR_API_TOKEN}" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json" \
+    --data "{
+    \"name\": \"John Doe\",
+    \"email\": \"john@example.com\",
+    \"bio\": \"Software developer and tech enthusiast\",
+    \"website\": \"https:\\/\\/johndoe.com\",
+    \"twitter_handle\": \"@johndoe\",
+    \"github_username\": \"johndoe\",
+    \"linkedin_url\": \"https:\\/\\/linkedin.com\\/in\\/johndoe\",
+    \"location\": \"San Francisco, CA\",
+    \"company\": \"Tech Corp\",
+    \"job_title\": \"Senior Developer\"
+}"
+</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/v1/users/me"
+);
+
+const headers = {
+    "Authorization": "Bearer {YOUR_API_TOKEN}",
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+let body = {
+    "name": "John Doe",
+    "email": "john@example.com",
+    "bio": "Software developer and tech enthusiast",
+    "website": "https:\/\/johndoe.com",
+    "twitter_handle": "@johndoe",
+    "github_username": "johndoe",
+    "linkedin_url": "https:\/\/linkedin.com\/in\/johndoe",
+    "location": "San Francisco, CA",
+    "company": "Tech Corp",
+    "job_title": "Senior Developer"
+};
+
+fetch(url, {
+    method: "PUT",
+    headers,
+    body: JSON.stringify(body),
+}).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/users/me';
+$response = $client-&gt;put(
+    $url,
+    [
+        'headers' =&gt; [
+            'Authorization' =&gt; 'Bearer {YOUR_API_TOKEN}',
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+        'json' =&gt; [
+            'name' =&gt; 'John Doe',
+            'email' =&gt; 'john@example.com',
+            'bio' =&gt; 'Software developer and tech enthusiast',
+            'website' =&gt; 'https://johndoe.com',
+            'twitter_handle' =&gt; '@johndoe',
+            'github_username' =&gt; 'johndoe',
+            'linkedin_url' =&gt; 'https://linkedin.com/in/johndoe',
+            'location' =&gt; 'San Francisco, CA',
+            'company' =&gt; 'Tech Corp',
+            'job_title' =&gt; 'Senior Developer',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/users/me'
+payload = {
+    "name": "John Doe",
+    "email": "john@example.com",
+    "bio": "Software developer and tech enthusiast",
+    "website": "https:\/\/johndoe.com",
+    "twitter_handle": "@johndoe",
+    "github_username": "johndoe",
+    "linkedin_url": "https:\/\/linkedin.com\/in\/johndoe",
+    "location": "San Francisco, CA",
+    "company": "Tech Corp",
+    "job_title": "Senior Developer"
+}
+headers = {
+  'Authorization': 'Bearer {YOUR_API_TOKEN}',
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('PUT', url, headers=headers, json=payload)
+response.json()</code></pre></div>
+
+</span>
+
+<span id="example-responses-PUTapi-v1-users-me">
+            <blockquote>
+            <p>Example response (200):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;data&quot;: {
+        &quot;id&quot;: 1,
+        &quot;name&quot;: &quot;John Doe&quot;,
+        &quot;email&quot;: &quot;john@example.com&quot;,
+        &quot;bio&quot;: &quot;Software developer and tech enthusiast&quot;,
+        &quot;profile&quot;: {
+            &quot;website&quot;: &quot;https://johndoe.com&quot;,
+            &quot;twitter_handle&quot;: &quot;@johndoe&quot;,
+            &quot;location&quot;: &quot;San Francisco, CA&quot;
+        }
+    }
+}</code>
+ </pre>
+            <blockquote>
+            <p>Example response (422):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;The given data was invalid.&quot;,
+    &quot;errors&quot;: {
+        &quot;email&quot;: [
+            &quot;The email has already been taken.&quot;
+        ]
+    }
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-PUTapi-v1-users-me" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-PUTapi-v1-users-me"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-PUTapi-v1-users-me"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-PUTapi-v1-users-me" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-PUTapi-v1-users-me">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-PUTapi-v1-users-me" data-method="PUT"
+      data-path="api/v1/users/me"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('PUTapi-v1-users-me', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-PUTapi-v1-users-me"
+                    onclick="tryItOut('PUTapi-v1-users-me');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-PUTapi-v1-users-me"
+                    onclick="cancelTryOut('PUTapi-v1-users-me');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-PUTapi-v1-users-me"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-darkblue">PUT</small>
+            <b><code>api/v1/users/me</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Authorization</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Authorization" class="auth-value"               data-endpoint="PUTapi-v1-users-me"
+               value="Bearer {YOUR_API_TOKEN}"
+               data-component="header">
+    <br>
+<p>Example: <code>Bearer {YOUR_API_TOKEN}</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="PUTapi-v1-users-me"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="PUTapi-v1-users-me"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+        <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>name</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="name"                data-endpoint="PUTapi-v1-users-me"
+               value="John Doe"
+               data-component="body">
+    <br>
+<p>optional The user's full name. Example: <code>John Doe</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>email</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="email"                data-endpoint="PUTapi-v1-users-me"
+               value="john@example.com"
+               data-component="body">
+    <br>
+<p>optional The user's email address. Must be unique. Example: <code>john@example.com</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>bio</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="bio"                data-endpoint="PUTapi-v1-users-me"
+               value="Software developer and tech enthusiast"
+               data-component="body">
+    <br>
+<p>optional User biography. Max 500 characters. Example: <code>Software developer and tech enthusiast</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>website</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="website"                data-endpoint="PUTapi-v1-users-me"
+               value="https://johndoe.com"
+               data-component="body">
+    <br>
+<p>optional Personal website URL. Example: <code>https://johndoe.com</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>twitter_handle</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="twitter_handle"                data-endpoint="PUTapi-v1-users-me"
+               value="@johndoe"
+               data-component="body">
+    <br>
+<p>optional Twitter username. Example: <code>@johndoe</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>github_username</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="github_username"                data-endpoint="PUTapi-v1-users-me"
+               value="johndoe"
+               data-component="body">
+    <br>
+<p>optional GitHub username. Example: <code>johndoe</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>linkedin_url</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="linkedin_url"                data-endpoint="PUTapi-v1-users-me"
+               value="https://linkedin.com/in/johndoe"
+               data-component="body">
+    <br>
+<p>optional LinkedIn profile URL. Example: <code>https://linkedin.com/in/johndoe</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>location</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="location"                data-endpoint="PUTapi-v1-users-me"
+               value="San Francisco, CA"
+               data-component="body">
+    <br>
+<p>optional User location. Example: <code>San Francisco, CA</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>company</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="company"                data-endpoint="PUTapi-v1-users-me"
+               value="Tech Corp"
+               data-component="body">
+    <br>
+<p>optional Company name. Example: <code>Tech Corp</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>job_title</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="job_title"                data-endpoint="PUTapi-v1-users-me"
+               value="Senior Developer"
+               data-component="body">
+    <br>
+<p>optional Job title. Example: <code>Senior Developer</code></p>
+        </div>
+        </form>
+
+                    <h2 id="users-GETapi-v1-users-suggestions">Get User Suggestions</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+<p>Get a list of suggested users to follow based on activity and popularity.</p>
+
+<span id="example-requests-GETapi-v1-users-suggestions">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost/api/v1/users/suggestions" \
+    --header "Authorization: Bearer {YOUR_API_TOKEN}" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/v1/users/suggestions"
+);
+
+const headers = {
+    "Authorization": "Bearer {YOUR_API_TOKEN}",
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/users/suggestions';
+$response = $client-&gt;get(
+    $url,
+    [
+        'headers' =&gt; [
+            'Authorization' =&gt; 'Bearer {YOUR_API_TOKEN}',
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/users/suggestions'
+headers = {
+  'Authorization': 'Bearer {YOUR_API_TOKEN}',
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('GET', url, headers=headers)
+response.json()</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v1-users-suggestions">
+            <blockquote>
+            <p>Example response (200):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;data&quot;: [
+        {
+            &quot;id&quot;: 2,
+            &quot;name&quot;: &quot;Jane Smith&quot;,
+            &quot;bio&quot;: &quot;Tech writer and blogger&quot;,
+            &quot;avatar&quot;: &quot;https://example.com/avatars/jane.jpg&quot;,
+            &quot;posts_count&quot;: 42,
+            &quot;followers_count&quot;: 320
+        }
+    ]
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-v1-users-suggestions" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-v1-users-suggestions"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v1-users-suggestions"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v1-users-suggestions" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v1-users-suggestions">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-v1-users-suggestions" data-method="GET"
+      data-path="api/v1/users/suggestions"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v1-users-suggestions', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v1-users-suggestions"
+                    onclick="tryItOut('GETapi-v1-users-suggestions');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v1-users-suggestions"
+                    onclick="cancelTryOut('GETapi-v1-users-suggestions');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v1-users-suggestions"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v1/users/suggestions</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Authorization</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Authorization" class="auth-value"               data-endpoint="GETapi-v1-users-suggestions"
+               value="Bearer {YOUR_API_TOKEN}"
+               data-component="header">
+    <br>
+<p>Example: <code>Bearer {YOUR_API_TOKEN}</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v1-users-suggestions"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v1-users-suggestions"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        </form>
+
+                    <h2 id="users-GETapi-v1-users--id-">Get User Profile</h2>
+
+<p>
+</p>
+
+<p>Retrieve a user's public profile information.</p>
+
+<span id="example-requests-GETapi-v1-users--id-">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost/api/v1/users/1" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/v1/users/1"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+
+<div class="php-example">
+    <pre><code class="language-php">$client = new \GuzzleHttp\Client();
+$url = 'http://localhost/api/v1/users/1';
+$response = $client-&gt;get(
+    $url,
+    [
+        'headers' =&gt; [
+            'Content-Type' =&gt; 'application/json',
+            'Accept' =&gt; 'application/json',
+        ],
+    ]
+);
+$body = $response-&gt;getBody();
+print_r(json_decode((string) $body));</code></pre></div>
+
+
+<div class="python-example">
+    <pre><code class="language-python">import requests
+import json
+
+url = 'http://localhost/api/v1/users/1'
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request('GET', url, headers=headers)
+response.json()</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v1-users--id-">
+            <blockquote>
+            <p>Example response (200):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;data&quot;: {
+        &quot;id&quot;: 1,
+        &quot;name&quot;: &quot;John Doe&quot;,
+        &quot;bio&quot;: &quot;Software developer&quot;,
+        &quot;avatar&quot;: &quot;https://example.com/avatars/john.jpg&quot;,
+        &quot;profile&quot;: {
+            &quot;website&quot;: &quot;https://johndoe.com&quot;,
+            &quot;twitter_handle&quot;: &quot;@johndoe&quot;,
+            &quot;location&quot;: &quot;San Francisco, CA&quot;
+        },
+        &quot;posts_count&quot;: 25,
+        &quot;followers_count&quot;: 150,
+        &quot;following_count&quot;: 75
+    }
+}</code>
+ </pre>
+            <blockquote>
+            <p>Example response (404):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;User not found&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-v1-users--id-" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-v1-users--id-"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v1-users--id-"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v1-users--id-" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v1-users--id-">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-v1-users--id-" data-method="GET"
+      data-path="api/v1/users/{id}"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v1-users--id-', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v1-users--id-"
+                    onclick="tryItOut('GETapi-v1-users--id-');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v1-users--id-"
+                    onclick="cancelTryOut('GETapi-v1-users--id-');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v1-users--id-"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v1/users/{id}</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v1-users--id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v1-users--id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="id"                data-endpoint="GETapi-v1-users--id-"
+               value="1"
+               data-component="url">
+    <br>
+<p>The user ID. Example: <code>1</code></p>
+            </div>
+                    </form>
+
             
 
         
@@ -9921,6 +15814,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
                     <div class="lang-selector">
                                                         <button type="button" class="lang-button" data-language-name="bash">bash</button>
                                                         <button type="button" class="lang-button" data-language-name="javascript">javascript</button>
+                                                        <button type="button" class="lang-button" data-language-name="php">php</button>
+                                                        <button type="button" class="lang-button" data-language-name="python">python</button>
                             </div>
             </div>
 </div>

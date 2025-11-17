@@ -3,6 +3,7 @@
 namespace App\Nova;
 
 use App\Nova\Filters\UserRole;
+use App\Services\ContentSanitizer;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\DateTime;
@@ -256,5 +257,19 @@ class User extends Resource
     public function actions(NovaRequest $request): array
     {
         return [];
+    }
+
+    /**
+     * Handle any post-validation processing.
+     */
+    protected static function afterValidation(NovaRequest $request, $validator): void
+    {
+        // Sanitize bio content before saving
+        if ($request->has('bio')) {
+            $sanitizer = app(ContentSanitizer::class);
+            $request->merge([
+                'bio' => $sanitizer->sanitizeBio($request->input('bio')),
+            ]);
+        }
     }
 }

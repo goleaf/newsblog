@@ -13,6 +13,16 @@
                    aria-describedby="newsletter-hint"
                    class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100">
         </div>
+        <div class="flex items-start">
+            <input type="checkbox" 
+                   id="newsletter-gdpr-consent"
+                   name="gdpr_consent" 
+                   required
+                   class="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+            <label for="newsletter-gdpr-consent" class="ml-2 text-xs text-gray-600 dark:text-gray-400">
+                I agree to receive newsletters and accept the <a href="{{ route('gdpr.privacy-policy') }}" class="text-blue-600 hover:text-blue-700 dark:text-blue-400">privacy policy</a>
+            </label>
+        </div>
         <button type="submit" 
                 class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition">
             Subscribe

@@ -43,6 +43,9 @@ return new class extends Migration
      */
     public function down(): void
     {
+        if (config('database.default') === 'sqlite') {
+            return;
+        }
         Schema::table('categories', function (Blueprint $table) {
             $table->dropIndex('categories_parent_id_index');
         });

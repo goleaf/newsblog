@@ -156,6 +156,38 @@
                     @endif
                 </div>
             </div>
+
+            {{-- Recently Fixed Links --}}
+            @if(isset($fixedLinks) && $fixedLinks->isNotEmpty())
+                <div class="mt-8 bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6 text-gray-900 dark:text-gray-100">
+                        <h3 class="text-lg font-semibold mb-4">Recently Fixed</h3>
+                        <ul class="list-disc pl-5 space-y-2">
+                            @foreach($fixedLinks as $link)
+                                <li class="break-all text-sm">
+                                    <a href="{{ $link->url }}" target="_blank" rel="noopener noreferrer" class="text-green-600 dark:text-green-400 hover:underline">{{ $link->url }}</a>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+            @endif
+
+            {{-- Recently Ignored Links --}}
+            @if(isset($ignoredLinks) && $ignoredLinks->isNotEmpty())
+                <div class="mt-8 bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6 text-gray-900 dark:text-gray-100">
+                        <h3 class="text-lg font-semibold mb-4">Recently Ignored</h3>
+                        <ul class="list-disc pl-5 space-y-2">
+                            @foreach($ignoredLinks as $link)
+                                <li class="break-all text-sm">
+                                    <a href="{{ $link->url }}" target="_blank" rel="noopener noreferrer" class="text-gray-600 dark:text-gray-400 hover:underline">{{ $link->url }}</a>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 

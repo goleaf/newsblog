@@ -170,4 +170,129 @@ class SearchController extends Controller
             })->toArray(),
         ];
     }
+
+    /**
+     * Generate comprehensive search insights report.
+     * Implements Requirement 6.1, 8.1 - Generate search insights
+     */
+    public function insights(): View
+    {
+        // Get click-through rate
+        $ctr = $this->searchAnalyticsService->getClickThroughRate('month');
+
+        // Get most clicked posts from search
+        $mostClickedPosts = $this->searchAnalyticsService->getMostClickedPosts(10, 'month');
+
+        // Get search volume trends
+        $searchVolume = $this->getSearchVolumeTrends();
+
+        // Get popular search terms by time of day
+        $searchesByHour = $this->getSearchesByHour();
+
+        // Get average results per query
+        $avgResults = SearchLog::where('created_at', '>=', now()->subMonth())
+            ->avg('result_count');
+
+        // Get search quality metrics
+        $qualityMetrics = [
+            'avg_results' => round($avgResults ?? 0, 2),
+            'ctr' => $ctr,
+            'zero_result_rate' => $this->getZeroResultRate(),
+            'avg_execution_time' => $this->getAvgExecutionTime(),
+        ];
+
+        return view('admin.search.insights', compact(
+            'qualityMetrics',
+            'mostClickedPosts',
+            'searchVolume',
+            'searchesByHour'
+        ));
+    }
+
+    /**
+     * Get search volume trends over time
+     */
+    protected function getSearchVolumeTrends(): array
+    {
+        $months = collect(range(5, 0))->map(function ($monthsAgo) {
+            return now()->subMonths($monthsAgo)->startOfMonth();
+        });
+
+        $driver = DB::getDriverName();
+        $dateExpr = $driver === 'sqlite'
+            ? "strftime('%Y-%m', created_at) as month"
+            : "DATE_FORMAT(created_at, '%Y-%m') as month";
+
+        $searches = SearchLog::query()
+            ->where('created_at', '>=', now()->subMonths(6))
+            ->select(
+                DB::raw($dateExpr),
+                DB::raw('COUNT(*) as total')
+            )
+            ->groupBy('month')
+            ->get()
+            ->keyBy('month');
+
+        return [
+            'labels' => $months->map(fn ($date) => $date->format('M Y'))->toArray(),
+            'data' => $months->map(function ($date) use ($searches) {
+                $key = $date->format('Y-m');
+
+                return $searches->get($key)?->total ?? 0;
+            })->toArray(),
+        ];
+    }
+
+    /**
+     * Get searches by hour of day
+     */
+    protected function getSearchesByHour(): array
+    {
+        $searchesByHour = SearchLog::query()
+            ->where('created_at', '>=', now()->subDays(30))
+            ->select(
+                DB::raw('HOUR(created_at) as hour'),
+                DB::raw('COUNT(*) as total')
+            )
+            ->groupBy('hour')
+            ->get()
+            ->keyBy('hour');
+
+        $hours = collect(range(0, 23));
+
+        return [
+            'labels' => $hours->map(fn ($h) => sprintf('%02d:00', $h))->toArray(),
+            'data' => $hours->map(fn ($h) => $searchesByHour->get($h)?->total ?? 0)->toArray(),
+        ];
+    }
+
+    /**
+     * Get zero result rate percentage
+     */
+    protected function getZeroResultRate(): float
+    {
+        $total = SearchLog::where('created_at', '>=', now()->subMonth())->count();
+
+        if ($total === 0) {
+            return 0.0;
+        }
+
+        $zeroResults = SearchLog::where('created_at', '>=', now()->subMonth())
+            ->where('result_count', 0)
+            ->count();
+
+        return round(($zeroResults / $total) * 100, 2);
+    }
+
+    /**
+     * Get average execution time
+     */
+    protected function getAvgExecutionTime(): float
+    {
+        return round(
+            SearchLog::where('created_at', '>=', now()->subMonth())
+                ->avg('execution_time') ?? 0,
+            2
+        );
+    }
 }

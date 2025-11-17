@@ -21,7 +21,11 @@ class BrokenLinkController extends Controller
             'total_ignored' => BrokenLink::ignored()->count(),
         ];
 
-        return view('admin.broken-links.index', compact('brokenLinks', 'stats'));
+        // Include recent fixed and ignored links for visibility and auditing
+        $fixedLinks = BrokenLink::fixed()->orderByDesc('checked_at')->take(10)->get();
+        $ignoredLinks = BrokenLink::ignored()->orderByDesc('checked_at')->take(10)->get();
+
+        return view('admin.broken-links.index', compact('brokenLinks', 'stats', 'fixedLinks', 'ignoredLinks'));
     }
 
     public function markAsFixed(BrokenLink $brokenLink)

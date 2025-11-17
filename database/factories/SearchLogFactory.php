@@ -44,7 +44,8 @@ class SearchLogFactory extends Factory
             ]),
             'ip_address' => fake()->ipv4(),
             'user_agent' => fake()->userAgent(),
-            'user_id' => fake()->optional(0.6)->numberBetween(1, 10),
+            // Avoid FK failures in tests; explicitly set via withUser() when needed
+            'user_id' => null,
         ];
     }
 

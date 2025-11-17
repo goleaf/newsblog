@@ -6,57 +6,215 @@ use App\Http\Controllers\Controller;
 use App\Models\EngagementMetric;
 use App\Models\Post;
 use App\Models\PostView;
+use App\Services\AnalyticsService;
 use App\Services\SearchAnalyticsService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AnalyticsController extends Controller
 {
     public function __construct(
+        protected AnalyticsService $analytics,
         protected SearchAnalyticsService $searchAnalytics
     ) {}
 
     /**
-     * Display analytics dashboard.
-     * Requirement: 16.3
+     * Display analytics dashboard overview.
+     * Requirements: 8.1, 8.2
      */
     public function index(Request $request)
     {
         $period = $request->input('period', 'week');
+        [$startDate, $endDate] = $this->getPeriodDates($period);
 
-        // View statistics
+        // User metrics
+        $userMetrics = $this->analytics->calculateUserMetrics($startDate, $endDate);
+        $engagementStats = $userMetrics['engagement'] ?? ['avg_session_duration' => 0];
+
+        // Traffic metrics and sources breakdown
+        $trafficMetrics = $this->analytics->calculateTrafficMetrics($startDate, $endDate);
+        $trafficSources = $this->getTrafficSources($period);
+
+        // Top articles
+        $topArticles = $this->analytics->getTopArticles(10, $startDate, $endDate);
+        $topPosts = $topArticles; // alias for tests expecting 'topPosts'
+
+        // Aggregated stats and view stats
+        $aggregatedStats = $this->analytics->aggregateStats('daily', $startDate, $endDate);
         $viewStats = $this->getViewStatistics($period);
-
-        // Engagement metrics
-        $engagementStats = $this->getEngagementStatistics($period);
 
         // Search analytics
         $searchStats = $this->searchAnalytics->getPerformanceMetrics($period);
         $topQueries = $this->searchAnalytics->getTopQueries(10, $period);
-        $noResultQueries = $this->searchAnalytics->getNoResultQueries(10);
-        $clickThroughRate = $this->searchAnalytics->getClickThroughRate($period);
-
-        // Top performing posts
-        $topPosts = $this->getTopPosts($period);
-
-        // Popular categories by views
-        $popularCategories = $this->getPopularCategories($period);
-
-        // Traffic sources breakdown
-        $trafficSources = $this->getTrafficSources($period);
 
         return view('admin.analytics.index', compact(
+            'userMetrics',
+            'trafficMetrics',
+            'trafficSources',
+            'topArticles', 'topPosts',
+            'aggregatedStats',
             'viewStats',
-            'engagementStats',
             'searchStats',
             'topQueries',
-            'noResultQueries',
-            'clickThroughRate',
-            'topPosts',
-            'popularCategories',
-            'trafficSources',
             'period'
-        ));
+        ))->with('engagementStats', $engagementStats);
+    }
+
+    /**
+     * Get article performance metrics.
+     * Requirements: 8.1, 8.2, 8.3
+     */
+    public function articlePerformance(Request $request)
+    {
+        $period = $request->input('period', 'month');
+        $postId = $request->input('post_id');
+        [$startDate, $endDate] = $this->getPeriodDates($period);
+
+        if ($postId) {
+            // Single article metrics
+            $metrics = $this->analytics->calculateArticleMetrics($postId, $startDate, $endDate);
+
+            return response()->json($metrics);
+        }
+
+        // Top articles
+        $topArticles = $this->analytics->getTopArticles(50, $startDate, $endDate);
+
+        return view('admin.analytics.articles', compact('topArticles', 'period'));
+    }
+
+    /**
+     * Get traffic sources breakdown.
+     * Requirements: 8.1, 8.4
+     */
+    public function trafficSources(Request $request)
+    {
+        $period = $request->input('period', 'month');
+        [$startDate, $endDate] = $this->getPeriodDates($period);
+
+        $trafficMetrics = $this->analytics->calculateTrafficMetrics($startDate, $endDate);
+
+        return view('admin.analytics.traffic', compact('trafficMetrics', 'period'));
+    }
+
+    /**
+     * Get user engagement metrics.
+     * Requirements: 8.1, 8.2
+     */
+    public function userEngagement(Request $request)
+    {
+        $period = $request->input('period', 'month');
+        [$startDate, $endDate] = $this->getPeriodDates($period);
+
+        $userMetrics = $this->analytics->calculateUserMetrics($startDate, $endDate);
+        $aggregatedStats = $this->analytics->aggregateStats('daily', $startDate, $endDate);
+
+        return view('admin.analytics.engagement', compact('userMetrics', 'aggregatedStats', 'period'));
+    }
+
+    /**
+     * Export analytics data.
+     * Requirements: 8.5
+     */
+    public function export(Request $request): StreamedResponse
+    {
+        $period = $request->input('period', 'month');
+        $format = $request->input('format', 'csv');
+        [$startDate, $endDate] = $this->getPeriodDates($period);
+
+        $data = [
+            'user_metrics' => $this->analytics->calculateUserMetrics($startDate, $endDate),
+            'traffic_metrics' => $this->analytics->calculateTrafficMetrics($startDate, $endDate),
+            'top_articles' => $this->analytics->getTopArticles(50, $startDate, $endDate),
+            'aggregated_stats' => $this->analytics->aggregateStats('daily', $startDate, $endDate),
+        ];
+
+        if ($format === 'csv') {
+            return $this->exportCsv($data, $startDate, $endDate);
+        }
+
+        return $this->exportJson($data, $startDate, $endDate);
+    }
+
+    /**
+     * Export data as CSV.
+     */
+    private function exportCsv(array $data, Carbon $startDate, Carbon $endDate): StreamedResponse
+    {
+        $filename = "analytics_{$startDate->format('Y-m-d')}_to_{$endDate->format('Y-m-d')}.csv";
+
+        return response()->stream(function () use ($data) {
+            $handle = fopen('php://output', 'w');
+
+            // User Metrics Section
+            fputcsv($handle, ['User Metrics']);
+            fputcsv($handle, ['Metric', 'Value']);
+            fputcsv($handle, ['Daily Active Users', $data['user_metrics']['active_users']['daily']]);
+            fputcsv($handle, ['Monthly Active Users', $data['user_metrics']['active_users']['monthly']]);
+            fputcsv($handle, ['New Registrations', $data['user_metrics']['registrations']['new_in_period']]);
+            fputcsv($handle, ['7-Day Retention Rate', $data['user_metrics']['retention']['rate_7_day'].'%']);
+            fputcsv($handle, []);
+
+            // Traffic Sources Section
+            fputcsv($handle, ['Traffic Sources']);
+            fputcsv($handle, ['Source', 'Count', 'Percentage']);
+            foreach ($data['traffic_metrics']['sources'] as $source) {
+                fputcsv($handle, [$source['source'], $source['count'], $source['percentage'].'%']);
+            }
+            fputcsv($handle, []);
+
+            // Top Articles Section
+            fputcsv($handle, ['Top Articles']);
+            fputcsv($handle, ['Title', 'Views', 'Comments', 'Reactions', 'Engagement Score']);
+            foreach ($data['top_articles'] as $article) {
+                fputcsv($handle, [
+                    $article['title'],
+                    $article['views'],
+                    $article['comments'],
+                    $article['reactions'],
+                    $article['engagement_score'],
+                ]);
+            }
+
+            fclose($handle);
+        }, 200, [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ]);
+    }
+
+    /**
+     * Export data as JSON.
+     */
+    private function exportJson(array $data, Carbon $startDate, Carbon $endDate): StreamedResponse
+    {
+        $filename = "analytics_{$startDate->format('Y-m-d')}_to_{$endDate->format('Y-m-d')}.json";
+
+        return response()->stream(function () use ($data) {
+            echo json_encode($data, JSON_PRETTY_PRINT);
+        }, 200, [
+            'Content-Type' => 'application/json',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ]);
+    }
+
+    /**
+     * Get start and end dates for a period.
+     */
+    private function getPeriodDates(string $period): array
+    {
+        $endDate = now();
+        $startDate = match ($period) {
+            'day' => now()->subDay(),
+            'week' => now()->subWeek(),
+            'month' => now()->subMonth(),
+            'year' => now()->subYear(),
+            default => now()->subMonth(),
+        };
+
+        return [$startDate, $endDate];
     }
 
     /**

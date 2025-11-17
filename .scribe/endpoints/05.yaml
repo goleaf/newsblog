@@ -1,20 +1,328 @@
-name: Newsletters
-description: ''
+name: Users
+description: |-
+
+  API endpoints for managing user profiles and accounts.
 endpoints:
   -
     custom: []
     httpMethods:
       - GET
-    uri: 'api/v1/newsletters/sends/{id}/metrics'
+    uri: api/v1/users/me
     metadata:
       custom: []
-      groupName: Newsletters
-      groupDescription: ''
+      groupName: Users
+      groupDescription: |-
+
+        API endpoints for managing user profiles and accounts.
       subgroup: ''
       subgroupDescription: ''
-      title: 'Get metrics for a specific NewsletterSend.'
-      description: ''
+      title: 'Get Current User'
+      description: "Retrieve the authenticated user's profile information."
       authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_API_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "data": {
+              "id": 1,
+              "name": "John Doe",
+              "email": "john@example.com",
+              "bio": "Software developer and tech enthusiast",
+              "avatar": "https://example.com/avatars/john.jpg",
+              "profile": {
+                "website": "https://johndoe.com",
+                "twitter_handle": "@johndoe",
+                "github_username": "johndoe",
+                "location": "San Francisco, CA",
+                "company": "Tech Corp",
+                "job_title": "Senior Developer"
+              },
+              "created_at": "2024-01-01T00:00:00.000000Z"
+            }
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+    uri: api/v1/users/me
+    metadata:
+      custom: []
+      groupName: Users
+      groupDescription: |-
+
+        API endpoints for managing user profiles and accounts.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Update Current User'
+      description: "Update the authenticated user's profile information."
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_API_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        custom: []
+        name: name
+        description: "optional The user's full name."
+        required: false
+        example: 'John Doe'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      email:
+        custom: []
+        name: email
+        description: "optional The user's email address. Must be unique."
+        required: false
+        example: john@example.com
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      bio:
+        custom: []
+        name: bio
+        description: 'optional User biography. Max 500 characters.'
+        required: false
+        example: 'Software developer and tech enthusiast'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+      website:
+        custom: []
+        name: website
+        description: 'optional Personal website URL.'
+        required: false
+        example: 'https://johndoe.com'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+      twitter_handle:
+        custom: []
+        name: twitter_handle
+        description: 'optional Twitter username.'
+        required: false
+        example: '@johndoe'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+      github_username:
+        custom: []
+        name: github_username
+        description: 'optional GitHub username.'
+        required: false
+        example: johndoe
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+      linkedin_url:
+        custom: []
+        name: linkedin_url
+        description: 'optional LinkedIn profile URL.'
+        required: false
+        example: 'https://linkedin.com/in/johndoe'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+      location:
+        custom: []
+        name: location
+        description: 'optional User location.'
+        required: false
+        example: 'San Francisco, CA'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+      company:
+        custom: []
+        name: company
+        description: 'optional Company name.'
+        required: false
+        example: 'Tech Corp'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+      job_title:
+        custom: []
+        name: job_title
+        description: 'optional Job title.'
+        required: false
+        example: 'Senior Developer'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      name: 'John Doe'
+      email: john@example.com
+      bio: 'Software developer and tech enthusiast'
+      website: 'https://johndoe.com'
+      twitter_handle: '@johndoe'
+      github_username: johndoe
+      linkedin_url: 'https://linkedin.com/in/johndoe'
+      location: 'San Francisco, CA'
+      company: 'Tech Corp'
+      job_title: 'Senior Developer'
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "data": {
+              "id": 1,
+              "name": "John Doe",
+              "email": "john@example.com",
+              "bio": "Software developer and tech enthusiast",
+              "profile": {
+                "website": "https://johndoe.com",
+                "twitter_handle": "@johndoe",
+                "location": "San Francisco, CA"
+              }
+            }
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 422
+        content: |-
+          {
+            "message": "The given data was invalid.",
+            "errors": {
+              "email": ["The email has already been taken."]
+            }
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v1/users/suggestions
+    metadata:
+      custom: []
+      groupName: Users
+      groupDescription: |-
+
+        API endpoints for managing user profiles and accounts.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Get User Suggestions'
+      description: 'Get a list of suggested users to follow based on activity and popularity.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_API_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "data": [
+              {
+                "id": 2,
+                "name": "Jane Smith",
+                "bio": "Tech writer and blogger",
+                "avatar": "https://example.com/avatars/jane.jpg",
+                "posts_count": 42,
+                "followers_count": 320
+              }
+            ]
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/v1/users/{id}'
+    metadata:
+      custom: []
+      groupName: Users
+      groupDescription: |-
+
+        API endpoints for managing user profiles and accounts.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Get User Profile'
+      description: "Retrieve a user's public profile information."
+      authenticated: false
       deprecated: false
     headers:
       Content-Type: application/json
@@ -23,7 +331,7 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The NewsletterSend id.'
+        description: 'The user ID.'
         required: true
         example: 1
         type: integer
@@ -42,7 +350,32 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"opens":3,"clicks":2,"last_opened_at":"2025-11-16T19:20:00Z","last_clicked_at":"2025-11-16T19:22:00Z"}'
+        content: |-
+          {
+            "data": {
+              "id": 1,
+              "name": "John Doe",
+              "bio": "Software developer",
+              "avatar": "https://example.com/avatars/john.jpg",
+              "profile": {
+                "website": "https://johndoe.com",
+                "twitter_handle": "@johndoe",
+                "location": "San Francisco, CA"
+              },
+              "posts_count": 25,
+              "followers_count": 150,
+              "following_count": 75
+            }
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 404
+        content: |-
+          {
+            "message": "User not found"
+          }
         headers: []
         description: ''
     responseFields: []

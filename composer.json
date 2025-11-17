@@ -35,6 +35,7 @@
         "intervention/image-laravel": "^1.5",
         "knuckleswtf/scribe": "^5.5",
         "laravel/framework": "^12.0",
+        "laravel/horizon": "^5.40",
         "laravel/nova": "^5.7.6",
         "laravel/sanctum": "^4.2",
         "laravel/scout": "^10.22",

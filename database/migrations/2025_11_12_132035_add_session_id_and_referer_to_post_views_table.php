@@ -22,6 +22,9 @@ return new class extends Migration
      */
     public function down(): void
     {
+        if (config('database.default') === 'sqlite') {
+            return;
+        }
         Schema::table('post_views', function (Blueprint $table) {
             $table->dropColumn(['session_id', 'referer']);
         });

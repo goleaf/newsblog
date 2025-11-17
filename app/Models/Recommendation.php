@@ -14,8 +14,11 @@ class Recommendation extends Model
         'user_id',
         'post_id',
         'reason',
-        'rank',
-        'meta',
+        'score',
+        'clicked',
+        'generated_at',
+        'clicked_at',
+        'impressions',
     ];
 
     /**
@@ -24,8 +27,11 @@ class Recommendation extends Model
     protected function casts(): array
     {
         return [
-            'rank' => 'integer',
-            'meta' => 'array',
+            'score' => 'float',
+            'clicked' => 'boolean',
+            'generated_at' => 'datetime',
+            'clicked_at' => 'datetime',
+            'impressions' => 'integer',
         ];
     }
 

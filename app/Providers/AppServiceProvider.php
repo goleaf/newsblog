@@ -39,6 +39,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Validation\Rules\Password;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -71,6 +72,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Configure password validation rules
+        Password::defaults(function () {
+            return Password::min(8)
+                ->letters()
+                ->mixedCase()
+                ->numbers()
+                ->symbols()
+                ->uncompromised();
+        });
+
         Post::observe(PostObserver::class);
         Tag::observe(TagObserver::class);
         Category::observe(CategoryObserver::class);
@@ -127,6 +138,9 @@ class AppServiceProvider extends ServiceProvider
                 app(\App\Services\PerformanceMetricsService::class)->trackCacheHit(false);
             });
         }
+
+        // Register Blade directives for fragment caching
+        $this->registerCacheDirectives();
 
         // Share breadcrumbs with all views
         View::composer('*', function ($view) {
@@ -221,6 +235,100 @@ class AppServiceProvider extends ServiceProvider
                         'retry_after' => $headers['Retry-After'] ?? 60,
                     ], 429, $headers);
                 });
+        });
+
+        // Newsletter sending rate limiter (for email provider limits)
+        // Limit to 10 emails per second to avoid overwhelming email provider
+        RateLimiter::for('newsletter-sending', function (): Limit {
+            return Limit::perSecond(10);
+        });
+
+        // API write operations rate limiter (stricter for POST/PUT/DELETE)
+        RateLimiter::for('api-writes', function (Request $request): Limit {
+            $key = $request->user()?->id ? 'user:'.$request->user()->id : 'ip:'.$request->ip();
+            $limit = $request->user() ? 30 : 10; // 30/min for authenticated, 10/min for public
+
+            return Limit::perMinute($limit)
+                ->by($key)
+                ->response(function (Request $request, array $headers) {
+                    Log::warning('Rate limit exceeded for API writes', [
+                        'ip' => $request->ip(),
+                        'user_id' => $request->user()?->id,
+                        'path' => $request->path(),
+                        'method' => $request->method(),
+                    ]);
+
+                    return response()->json([
+                        'message' => 'Too many write requests. Please try again later.',
+                    ], 429, $headers);
+                });
+        });
+
+        // Token creation rate limiter (prevent token spam)
+        RateLimiter::for('token-creation', function (Request $request): Limit {
+            return Limit::perHour(10)
+                ->by($request->user()->id)
+                ->response(function (Request $request, array $headers) {
+                    Log::warning('Rate limit exceeded for token creation', [
+                        'user_id' => $request->user()->id,
+                        'ip' => $request->ip(),
+                    ]);
+
+                    return response()->json([
+                        'message' => 'Too many tokens created. Please try again later.',
+                    ], 429, $headers);
+                });
+        });
+
+        // Strict rate limiter for sensitive operations
+        RateLimiter::for('api-strict', function (Request $request): Limit {
+            return Limit::perMinute(20)
+                ->by($request->user()?->id ?: $request->ip())
+                ->response(function (Request $request, array $headers) {
+                    Log::warning('Strict rate limit exceeded', [
+                        'ip' => $request->ip(),
+                        'user_id' => $request->user()?->id,
+                        'path' => $request->path(),
+                    ]);
+
+                    return response()->json([
+                        'message' => 'Too many requests. Please try again later.',
+                    ], 429, $headers);
+                });
+        });
+    }
+
+    /**
+     * Register Blade directives for fragment caching.
+     */
+    protected function registerCacheDirectives(): void
+    {
+        // @cache directive for fragment caching
+        \Illuminate\Support\Facades\Blade::directive('cache', function ($expression) {
+            return "<?php if(! app()->runningInConsole()): \$__cacheKey = {$expression}[0] ?? 'fragment'; \$__cacheTtl = {$expression}[1] ?? config('cache.ttl.default', 3600); if(! \$__cachedFragment = cache()->get(\$__cacheKey)): ob_start(); ?>";
+        });
+
+        \Illuminate\Support\Facades\Blade::directive('endcache', function () {
+            return '<?php $__cachedFragment = ob_get_clean(); cache()->put($__cacheKey, $__cachedFragment, $__cacheTtl); endif; echo $__cachedFragment; endif; ?>';
+        });
+
+        // @cacheIf directive for conditional caching
+        \Illuminate\Support\Facades\Blade::directive('cacheIf', function ($expression) {
+            return "<?php if(! app()->runningInConsole() && ({$expression}[0])): \$__cacheKey = {$expression}[1] ?? 'fragment'; \$__cacheTtl = {$expression}[2] ?? config('cache.ttl.default', 3600); if(! \$__cachedFragment = cache()->get(\$__cacheKey)): ob_start(); ?>";
+        });
+
+        \Illuminate\Support\Facades\Blade::directive('endcacheIf', function () {
+            return '<?php $__cachedFragment = ob_get_clean(); cache()->put($__cacheKey, $__cachedFragment, $__cacheTtl); endif; echo $__cachedFragment; endif; ?>';
+        });
+
+        // @cdn directive for CDN asset URLs
+        \Illuminate\Support\Facades\Blade::directive('cdn', function ($expression) {
+            return "<?php echo app(\App\Services\CdnService::class)->assetUrl({$expression}); ?>";
+        });
+
+        // @cdnStorage directive for CDN storage URLs
+        \Illuminate\Support\Facades\Blade::directive('cdnStorage', function ($expression) {
+            return "<?php echo app(\App\Services\CdnService::class)->storageUrl({$expression}); ?>";
         });
     }
 }

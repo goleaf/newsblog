@@ -7,33 +7,31 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class PostResource extends JsonResource
 {
+    /**
+     * Transform the resource into an array.
+     *
+     * This resource transforms article/post data for API responses.
+     * - Includes relationships conditionally based on what's loaded
+     * - Formats dates consistently using ISO 8601 format
+     * - Conditionally includes full content only on detail views
+     *
+     * @return array<string, mixed>
+     */
     public function toArray(Request $request): array
     {
         $primaryCategory = $this->whenLoaded('category', function () {
-            return [
-                'id' => $this->category->id,
-                'name' => $this->category->name,
-                'slug' => $this->category->slug,
-            ];
+            return new CategoryResource($this->category);
         });
 
         // Merge primary category into all categories list for convenience
         $allCategories = collect();
         if ($this->relationLoaded('categories')) {
-            $allCategories = $this->categories->map(function ($cat) {
-                return [
-                    'id' => $cat->id,
-                    'name' => $cat->name,
-                    'slug' => $cat->slug,
-                ];
-            });
+            $allCategories = CategoryResource::collection($this->categories);
         }
         if ($this->relationLoaded('category') && $this->category) {
-            $allCategories = $allCategories->prepend([
-                'id' => $this->category->id,
-                'name' => $this->category->name,
-                'slug' => $this->category->slug,
-            ])->unique('id')->values();
+            $allCategories = $allCategories->prepend(new CategoryResource($this->category))
+                ->unique('id')
+                ->values();
         }
 
         return [
@@ -44,65 +42,67 @@ class PostResource extends JsonResource
             // Core content
             'title' => $this->title,
             'excerpt' => $this->excerpt,
-            'content' => $this->content,
+            // Only include full content on detail views (when showing single article)
+            // Check if this is a show route by looking at route parameters
+            'content' => $this->when(
+                $request->route('slug') || $request->route('id') || $request->routeIs('*.show'),
+                $this->content
+            ),
 
             // Media
             'featured_image' => $this->featured_image_url,
-            'featured_image_path' => $this->featured_image,
             'image_alt_text' => $this->image_alt_text,
 
             // Status
-            'status' => $this->status,
+            'status' => $this->status?->value,
             'is_featured' => $this->is_featured,
             'is_trending' => $this->is_trending,
             'view_count' => $this->view_count,
 
-            // Timing
+            // Timing - formatted consistently using ISO 8601
             'reading_time_minutes' => $this->reading_time,
             'reading_time_text' => $this->reading_time_text,
-            'published_at' => $this->published_at?->toISOString(),
-            'scheduled_at' => $this->scheduled_at?->toISOString(),
-            'created_at' => $this->created_at->toISOString(),
-            'updated_at' => $this->updated_at->toISOString(),
+            'published_at' => $this->published_at?->toIso8601String(),
+            'scheduled_at' => $this->scheduled_at?->toIso8601String(),
+            'created_at' => $this->created_at->toIso8601String(),
+            'updated_at' => $this->updated_at->toIso8601String(),
 
-            // Author
+            // Author - conditionally included
             'author' => $this->whenLoaded('user', function () {
-                return [
-                    'id' => $this->user->id,
-                    'name' => $this->user->name,
-                    'email' => $this->user->email,
-                    'avatar_url' => $this->user->avatar_url ?? null,
-                ];
+                return new UserResource($this->user);
             }),
 
-            // Categories
-            'primary_category' => $primaryCategory,
-            'categories' => $allCategories,
+            // Categories - conditionally included
+            'category' => $primaryCategory,
+            'categories' => $this->when($allCategories->isNotEmpty(), $allCategories),
 
-            // Tags (keywords)
+            // Tags - conditionally included
             'tags' => $this->whenLoaded('tags', function () {
-                return $this->tags->map(function ($tag) {
-                    return [
-                        'id' => $tag->id,
-                        'name' => $tag->name,
-                        'slug' => $tag->slug,
-                    ];
-                });
+                return TagResource::collection($this->tags);
             }),
 
             // Counts
-            'comments_count' => $this->when($this->relationLoaded('comments'), fn () => $this->comments->count()),
-            'bookmarks_count' => $this->when(isset($this->bookmarks_count), fn () => $this->bookmarks_count),
+            'comments_count' => $this->when(
+                $this->relationLoaded('comments'),
+                fn () => $this->comments->count()
+            ),
+            'bookmarks_count' => $this->when(
+                isset($this->bookmarks_count),
+                fn () => $this->bookmarks_count
+            ),
 
             // URLs
             'url' => route('post.show', $this->slug),
 
-            // SEO
-            'meta_title' => $this->meta_title,
-            'meta_description' => $this->meta_description,
-            'meta_keywords' => $this->meta_keywords,
-            'meta_tags' => $this->getMetaTags(),
-            'structured_data' => $this->getStructuredData(),
+            // SEO - only on detail views
+            'meta_title' => $this->when(
+                $request->route('slug') || $request->route('id') || $request->routeIs('*.show'),
+                $this->meta_title
+            ),
+            'meta_description' => $this->when(
+                $request->route('slug') || $request->route('id') || $request->routeIs('*.show'),
+                $this->meta_description
+            ),
         ];
     }
 }

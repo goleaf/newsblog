@@ -3,7 +3,6 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Tag>
@@ -17,11 +16,12 @@ class TagFactory extends Factory
      */
     public function definition(): array
     {
-        $name = fake()->word();
+        $name = fake()->unique()->words(2, true);
 
         return [
             'name' => $name,
-            'slug' => Str::slug($name),
+            // Let model events derive slug from the final name (including test overrides)
+            'slug' => null,
             'description' => fake()->optional()->sentence(),
         ];
     }

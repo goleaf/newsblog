@@ -104,4 +104,23 @@ class Notification extends Model
     {
         return is_null($this->read_at);
     }
+
+    /**
+     * Get the icon for the notification type.
+     */
+    public function getIconAttribute(): string
+    {
+        return match ($this->type) {
+            self::TYPE_COMMENT_REPLY => 'chat-bubble-left-right',
+            self::TYPE_POST_PUBLISHED => 'document-text',
+            self::TYPE_COMMENT_APPROVED => 'check-circle',
+            self::TYPE_NEW_FOLLOWER => 'user-plus',
+            self::TYPE_BOOKMARK_REMINDER => 'bookmark',
+            self::TYPE_SERIES_UPDATED => 'collection',
+            'comment_reaction' => 'heart',
+            'mention' => 'at-symbol',
+            'author_new_article' => 'newspaper',
+            default => 'bell',
+        };
+    }
 }

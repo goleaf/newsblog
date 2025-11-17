@@ -1,0 +1,438 @@
+/**
+ * Mobile Reading Experience Styles
+ * Optimized typography and layout for mobile article reading
+ * Requirements: 17.3, 17.4
+ */
+
+/* ===================================
+   Mobile Article Content
+   =================================== */
+
+.article-content-mobile,
+.prose-mobile {
+    /* Base font size: minimum 16px for readability (Requirement 17.3) */
+    font-size: 16px;
+    line-height: 1.7;
+    color: #1f2937;
+    word-spacing: 0.05em;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.dark .article-content-mobile,
+.dark .prose-mobile {
+    color: #f3f4f6;
+}
+
+/* Responsive font scaling */
+@media (min-width: 375px) {
+    .article-content-mobile,
+    .prose-mobile {
+        font-size: 17px;
+    }
+}
+
+@media (min-width: 768px) {
+    .article-content-mobile,
+    .prose-mobile {
+        font-size: 18px;
+        line-height: 1.75;
+    }
+}
+
+@media (min-width: 1024px) {
+    .article-content-mobile,
+    .prose-mobile {
+        font-size: 19px;
+        line-height: 1.8;
+    }
+}
+
+/* ===================================
+   Mobile Article Headings
+   =================================== */
+
+.article-content-mobile h1,
+.prose-mobile h1 {
+    font-size: 1.75rem;
+    line-height: 1.2;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+}
+
+.article-content-mobile h2,
+.prose-mobile h2 {
+    font-size: 1.5rem;
+    line-height: 1.3;
+    margin-top: 1.75rem;
+    margin-bottom: 0.875rem;
+    font-weight: 700;
+}
+
+.article-content-mobile h3,
+.prose-mobile h3 {
+    font-size: 1.25rem;
+    line-height: 1.4;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+}
+
+@media (min-width: 768px) {
+    .article-content-mobile h1,
+    .prose-mobile h1 {
+        font-size: 2.25rem;
+    }
+    
+    .article-content-mobile h2,
+    .prose-mobile h2 {
+        font-size: 1.875rem;
+    }
+    
+    .article-content-mobile h3,
+    .prose-mobile h3 {
+        font-size: 1.5rem;
+    }
+}
+
+/* ===================================
+   Mobile Paragraphs
+   =================================== */
+
+.article-content-mobile p,
+.prose-mobile p {
+    margin-bottom: 1.25rem;
+    line-height: 1.7;
+}
+
+@media (min-width: 768px) {
+    .article-content-mobile p,
+    .prose-mobile p {
+        margin-bottom: 1.5rem;
+        line-height: 1.75;
+    }
+}
+
+/* First paragraph drop cap (optional enhancement) */
+.article-content-mobile p:first-of-type::first-letter,
+.prose-mobile p:first-of-type::first-letter {
+    font-size: 3.5em;
+    line-height: 0.9;
+    float: left;
+    margin: 0.1em 0.1em 0 0;
+    font-weight: 700;
+}
+
+/* ===================================
+   Mobile Lists
+   =================================== */
+
+.article-content-mobile ul,
+.article-content-mobile ol,
+.prose-mobile ul,
+.prose-mobile ol {
+    margin-bottom: 1.25rem;
+    padding-left: 1.5rem;
+}
+
+.article-content-mobile li,
+.prose-mobile li {
+    margin-bottom: 0.5rem;
+    line-height: 1.7;
+}
+
+@media (min-width: 768px) {
+    .article-content-mobile ul,
+    .article-content-mobile ol,
+    .prose-mobile ul,
+    .prose-mobile ol {
+        padding-left: 2rem;
+    }
+}
+
+/* ===================================
+   Mobile Code Blocks
+   =================================== */
+
+.article-content-mobile pre,
+.prose-mobile pre {
+    margin-bottom: 1.25rem;
+    padding: 1rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+@media (min-width: 768px) {
+    .article-content-mobile pre,
+    .prose-mobile pre {
+        font-size: 0.9375rem;
+        padding: 1.25rem;
+    }
+}
+
+.article-content-mobile code,
+.prose-mobile code {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.875em;
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.25rem;
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.dark .article-content-mobile code,
+.dark .prose-mobile code {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* ===================================
+   Mobile Images
+   =================================== */
+
+.article-content-mobile img,
+.prose-mobile img {
+    max-width: 100%;
+    height: auto;
+    margin: 1.5rem auto;
+    display: block;
+    border-radius: 0.5rem;
+}
+
+@media (min-width: 768px) {
+    .article-content-mobile img,
+    .prose-mobile img {
+        margin: 2rem auto;
+    }
+}
+
+/* Image captions */
+.article-content-mobile figcaption,
+.prose-mobile figcaption {
+    text-align: center;
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin-top: 0.5rem;
+    font-style: italic;
+}
+
+.dark .article-content-mobile figcaption,
+.dark .prose-mobile figcaption {
+    color: #9ca3af;
+}
+
+/* ===================================
+   Mobile Blockquotes
+   =================================== */
+
+.article-content-mobile blockquote,
+.prose-mobile blockquote {
+    margin: 1.5rem 0;
+    padding: 1rem 1.25rem;
+    border-left: 4px solid #3b82f6;
+    background-color: rgba(59, 130, 246, 0.05);
+    font-style: italic;
+    border-radius: 0 0.5rem 0.5rem 0;
+}
+
+.dark .article-content-mobile blockquote,
+.dark .prose-mobile blockquote {
+    background-color: rgba(59, 130, 246, 0.1);
+    border-left-color: #60a5fa;
+}
+
+@media (min-width: 768px) {
+    .article-content-mobile blockquote,
+    .prose-mobile blockquote {
+        margin: 2rem 0;
+        padding: 1.25rem 1.5rem;
+    }
+}
+
+/* ===================================
+   Mobile Tables
+   =================================== */
+
+.article-content-mobile table,
+.prose-mobile table {
+    width: 100%;
+    margin-bottom: 1.5rem;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+@media (max-width: 767px) {
+    .article-content-mobile table,
+    .prose-mobile table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+.article-content-mobile th,
+.article-content-mobile td,
+.prose-mobile th,
+.prose-mobile td {
+    padding: 0.75rem;
+    border: 1px solid #e5e7eb;
+    text-align: left;
+}
+
+.dark .article-content-mobile th,
+.dark .article-content-mobile td,
+.dark .prose-mobile th,
+.dark .prose-mobile td {
+    border-color: #374151;
+}
+
+.article-content-mobile th,
+.prose-mobile th {
+    background-color: #f3f4f6;
+    font-weight: 600;
+}
+
+.dark .article-content-mobile th,
+.dark .prose-mobile th {
+    background-color: #1f2937;
+}
+
+/* ===================================
+   Mobile Links
+   =================================== */
+
+.article-content-mobile a,
+.prose-mobile a {
+    color: #3b82f6;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+    transition: color 0.2s ease;
+}
+
+.article-content-mobile a:hover,
+.prose-mobile a:hover {
+    color: #2563eb;
+}
+
+.dark .article-content-mobile a,
+.dark .prose-mobile a {
+    color: #60a5fa;
+}
+
+.dark .article-content-mobile a:hover,
+.dark .prose-mobile a:hover {
+    color: #93c5fd;
+}
+
+/* Ensure touch targets for links */
+@media (max-width: 1023px) {
+    .article-content-mobile a,
+    .prose-mobile a {
+        padding: 0.125rem 0;
+        display: inline-block;
+    }
+}
+
+/* ===================================
+   Mobile Horizontal Rules
+   =================================== */
+
+.article-content-mobile hr,
+.prose-mobile hr {
+    margin: 2rem 0;
+    border: none;
+    border-top: 2px solid #e5e7eb;
+}
+
+.dark .article-content-mobile hr,
+.dark .prose-mobile hr {
+    border-top-color: #374151;
+}
+
+/* ===================================
+   Reading Width Optimization
+   =================================== */
+
+.article-width-mobile {
+    max-width: 100%;
+    padding: 0 1rem;
+}
+
+@media (min-width: 640px) {
+    .article-width-mobile {
+        padding: 0 1.5rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .article-width-mobile {
+        max-width: 65ch; /* Optimal line length for reading */
+        margin-left: auto;
+        margin-right: auto;
+        padding: 0 2rem;
+    }
+}
+
+/* ===================================
+   Mobile Reading Progress Indicator
+   =================================== */
+
+.reading-progress-mobile {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(to right, #3b82f6, #8b5cf6);
+    transform-origin: left;
+    z-index: 9999;
+}
+
+/* ===================================
+   Prevent Text Selection Issues on Mobile
+   =================================== */
+
+.article-content-mobile,
+.prose-mobile {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+}
+
+/* ===================================
+   Optimize Touch Scrolling
+   =================================== */
+
+.article-content-mobile,
+.prose-mobile {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+}
+
+/* ===================================
+   Mobile-Specific Utilities
+   =================================== */
+
+/* Hide elements on mobile for cleaner reading */
+@media (max-width: 767px) {
+    .hide-on-mobile-reading {
+        display: none;
+    }
+}
+
+/* Reduce margins on mobile for better space utilization */
+@media (max-width: 767px) {
+    .article-content-mobile > *:first-child,
+    .prose-mobile > *:first-child {
+        margin-top: 0;
+    }
+    
+    .article-content-mobile > *:last-child,
+    .prose-mobile > *:last-child {
+        margin-bottom: 0;
+    }
+}

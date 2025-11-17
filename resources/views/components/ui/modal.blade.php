@@ -23,7 +23,8 @@
         open: false,
         init() {
             $store.modal.register('{{ $id }}');
-            this.$watch('$store.modal.modals.{{ $id }}.open', value => {
+            // Use bracket notation to support IDs with hyphens
+            this.$watch("$store.modal.modals['{{ $id }}'].open", value => {
                 this.open = value;
             });
         }

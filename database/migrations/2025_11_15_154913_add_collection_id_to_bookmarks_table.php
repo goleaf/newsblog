@@ -24,6 +24,12 @@ return new class extends Migration
      */
     public function down(): void
     {
+        // SQLite in testing may not support dropping columns; skip in that case
+        $driver = config('database.default');
+        if ($driver === 'sqlite') {
+            return;
+        }
+
         Schema::table('bookmarks', function (Blueprint $table) {
             $table->dropForeign(['collection_id']);
             $table->dropColumn(['collection_id', 'order']);

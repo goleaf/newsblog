@@ -114,4 +114,28 @@ return [
 
     'prefix' => env('CACHE_PREFIX', Str::slug((string) env('APP_NAME', 'laravel')).'-cache-'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Cache Time-To-Live (TTL) Defaults
+    |--------------------------------------------------------------------------
+    |
+    | Default TTL values for different types of cached data. These values
+    | are in seconds and can be overridden when caching specific items.
+    |
+    */
+
+    'ttl' => [
+        'default' => env('CACHE_TTL_DEFAULT', 3600), // 1 hour
+        'short' => env('CACHE_TTL_SHORT', 300), // 5 minutes
+        'medium' => env('CACHE_TTL_MEDIUM', 1800), // 30 minutes
+        'long' => env('CACHE_TTL_LONG', 86400), // 24 hours
+        'articles' => env('CACHE_TTL_ARTICLES', 3600), // 1 hour
+        'categories' => env('CACHE_TTL_CATEGORIES', 7200), // 2 hours
+        'tags' => env('CACHE_TTL_TAGS', 7200), // 2 hours
+        'users' => env('CACHE_TTL_USERS', 1800), // 30 minutes
+        'search' => env('CACHE_TTL_SEARCH', 900), // 15 minutes
+        'analytics' => env('CACHE_TTL_ANALYTICS', 3600), // 1 hour
+        'recommendations' => env('CACHE_TTL_RECOMMENDATIONS', 1800), // 30 minutes
+    ],
+
 ];

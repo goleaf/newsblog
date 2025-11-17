@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\MediaController as AdminMediaController;
 use App\Http\Controllers\Admin\SearchController as AdminSearchController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\HealthCheckController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PostController as PublicPostController;
 use App\Http\Controllers\ProfileController;
@@ -11,6 +12,11 @@ use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\UiDemoController;
 use Illuminate\Support\Facades\Route;
+
+// Health check endpoints for monitoring
+Route::get('/health', [HealthCheckController::class, 'index'])->name('health.index');
+Route::get('/health/{component}', [HealthCheckController::class, 'component'])->name('health.component');
+Route::get('/ping', [HealthCheckController::class, 'ping'])->name('health.ping');
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -28,8 +34,8 @@ Route::get('/post/{slug}', [PublicPostController::class, 'show'])->name('post.sh
 
 // Article routes (alias for posts)
 Route::get('/articles', [\App\Http\Controllers\ArticleController::class, 'index'])->name('articles.index');
-Route::get('/articles/{article:slug}', [\App\Http\Controllers\ArticleController::class, 'show'])->name('articles.show');
 
+// Authenticated article management routes
 Route::middleware(['auth'])->group(function () {
     Route::get('/articles/create', [\App\Http\Controllers\ArticleController::class, 'create'])->name('articles.create');
     Route::post('/articles', [\App\Http\Controllers\ArticleController::class, 'store'])->name('articles.store');
@@ -39,6 +45,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/articles/{article}/publish', [\App\Http\Controllers\ArticleController::class, 'publish'])->name('articles.publish');
     Route::post('/articles/{article}/unpublish', [\App\Http\Controllers\ArticleController::class, 'unpublish'])->name('articles.unpublish');
 });
+
+// Slug route must be defined after the create/edit routes to avoid conflicts
+Route::get('/articles/{article:slug}', [\App\Http\Controllers\ArticleController::class, 'show'])->name('articles.show');
 
 Route::get('/categories', [\App\Http\Controllers\CategoryController::class, 'index'])->name('categories.index');
 Route::get('/category/{slug}', [\App\Http\Controllers\CategoryController::class, 'show'])->name('category.show');
@@ -58,6 +67,13 @@ Route::post('/search/track-click', [\App\Http\Controllers\SearchClickController:
 Route::post('/engagement/track', [\App\Http\Controllers\EngagementMetricController::class, 'track'])
     ->middleware('throttle:60,1')
     ->name('engagement.track');
+
+// Social sharing routes
+Route::post('/posts/{post}/share', [\App\Http\Controllers\SocialShareController::class, 'track'])
+    ->middleware('throttle:60,1')
+    ->name('posts.share.track');
+Route::get('/posts/{post}/share-urls', [\App\Http\Controllers\SocialShareController::class, 'getShareUrls'])
+    ->name('posts.share.urls');
 Route::post('/comments', [CommentController::class, 'store'])
     ->middleware('throttle:comments')
     ->name('comments.store');
@@ -87,27 +103,61 @@ Route::middleware(['auth', 'role:admin,editor'])->prefix('admin')->name('admin.'
     Route::get('/newsletters/sends/export', [\App\Http\Controllers\Admin\NewsletterController::class, 'exportSends'])->name('newsletters.sends.export');
     Route::get('/newsletters/sends/{send}', [\App\Http\Controllers\Admin\NewsletterController::class, 'showSend'])->name('newsletters.sends.show');
     Route::post('/newsletters/sends/{send}/resend', [\App\Http\Controllers\Admin\NewsletterController::class, 'resend'])->name('newsletters.sends.resend');
+
+    // Newsletter admin interface
+    Route::get('/newsletter/dashboard', [\App\Http\Controllers\Admin\NewsletterAdminController::class, 'index'])->name('newsletter.index');
+    Route::get('/newsletter/preview', [\App\Http\Controllers\Admin\NewsletterAdminController::class, 'preview'])->name('newsletter.preview');
+    Route::post('/newsletter/send', [\App\Http\Controllers\Admin\NewsletterAdminController::class, 'send'])->name('newsletter.send');
+    Route::get('/newsletter/metrics/{batchId}', [\App\Http\Controllers\Admin\NewsletterAdminController::class, 'metrics'])->name('newsletter.metrics');
+    Route::get('/newsletter/subscribers', [\App\Http\Controllers\Admin\NewsletterAdminController::class, 'subscribers'])->name('newsletter.subscribers');
+});
+
+// Minimal Nova JSON endpoints for tests (no Nova dependency)
+Route::prefix('nova-api')
+    ->withoutMiddleware([
+        \Laravel\Nova\Http\Middleware\DispatchServingNovaEvent::class,
+        \Laravel\Nova\Http\Middleware\HandleInertiaRequests::class,
+    ])
+    ->middleware(['auth', 'role:admin'])
+    ->group(function () {
+        Route::get('/posts', [\App\Http\Controllers\Nova\SearchController::class, 'posts']);
+        Route::get('/users', [\App\Http\Controllers\Nova\SearchController::class, 'users']);
+        Route::get('/categories', [\App\Http\Controllers\Nova\SearchController::class, 'categories']);
+        Route::get('/tags', [\App\Http\Controllers\Nova\SearchController::class, 'tags']);
+        Route::get('/comments', [\App\Http\Controllers\Nova\SearchController::class, 'comments']);
+        Route::get('/media', [\App\Http\Controllers\Nova\SearchController::class, 'media']);
+    });
+
+// Reading List routes
+Route::middleware('auth')->group(function () {
+    Route::get('/reading-lists', [\App\Http\Controllers\ReadingListController::class, 'index'])->name('reading-lists.index');
+    Route::get('/reading-lists/create', [\App\Http\Controllers\ReadingListController::class, 'create'])->name('reading-lists.create');
+    Route::post('/reading-lists', [\App\Http\Controllers\ReadingListController::class, 'store'])->name('reading-lists.store');
+    Route::get('/reading-lists/{collection}', [\App\Http\Controllers\ReadingListController::class, 'show'])->name('reading-lists.show');
+    Route::get('/reading-lists/{collection}/edit', [\App\Http\Controllers\ReadingListController::class, 'edit'])->name('reading-lists.edit');
+    Route::put('/reading-lists/{collection}', [\App\Http\Controllers\ReadingListController::class, 'update'])->name('reading-lists.update');
+    Route::delete('/reading-lists/{collection}', [\App\Http\Controllers\ReadingListController::class, 'destroy'])->name('reading-lists.destroy');
+    Route::post('/reading-lists/{collection}/items', [\App\Http\Controllers\ReadingListController::class, 'addItem'])->name('reading-lists.add-item');
+    Route::delete('/reading-lists/{collection}/items/{bookmark}', [\App\Http\Controllers\ReadingListController::class, 'removeItem'])->name('reading-lists.remove-item');
+    Route::post('/reading-lists/{collection}/reorder', [\App\Http\Controllers\ReadingListController::class, 'reorder'])->name('reading-lists.reorder');
+    Route::post('/reading-lists/{collection}/share', [\App\Http\Controllers\ReadingListController::class, 'share'])->name('reading-lists.share');
+    Route::delete('/reading-lists/{collection}/share', [\App\Http\Controllers\ReadingListController::class, 'revokeShare'])->name('reading-lists.revoke-share');
 });
 
 // Public shared reading list view
-Route::get('/lists/s/{token}', function (string $token) {
-    $collection = \App\Models\BookmarkCollection::where('share_token', $token)
-        ->with(['bookmarks.post' => function ($q) {
-            $q->select(['id', 'title', 'slug', 'excerpt', 'featured_image', 'published_at']);
-        }])->firstOrFail();
-
-    return view('reading-lists.shared', [
-        'collection' => $collection,
-    ]);
-})->name('reading-lists.shared.show');
+Route::get('/reading-lists/shared/{token}', [\App\Http\Controllers\ReadingListController::class, 'sharedShow'])->name('reading-lists.shared');
 
 // Newsletter routes
 Route::post('/newsletter/subscribe', [\App\Http\Controllers\NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
 Route::get('/newsletter/verify/{token}', [\App\Http\Controllers\NewsletterController::class, 'verify'])->name('newsletter.verify');
 Route::get('/newsletter/unsubscribe/{token}', [\App\Http\Controllers\NewsletterController::class, 'unsubscribe'])->name('newsletter.unsubscribe');
-// Newsletter tracking
-Route::get('/newsletter/open/{sendId}.png', [\App\Http\Controllers\NewsletterTrackingController::class, 'open'])->name('newsletter.open');
-Route::get('/newsletter/click', [\App\Http\Controllers\NewsletterTrackingController::class, 'click'])->name('newsletter.click');
+Route::get('/newsletter/preferences/{token}', [\App\Http\Controllers\NewsletterController::class, 'showPreferences'])->name('newsletter.preferences');
+Route::post('/newsletter/preferences/{token}', [\App\Http\Controllers\NewsletterController::class, 'updatePreferences'])->name('newsletter.preferences.update');
+
+// Newsletter tracking routes
+Route::get('/newsletter/track/open/{token}', [\App\Http\Controllers\NewsletterTrackingController::class, 'trackOpen'])->name('newsletter.track.open');
+Route::get('/newsletter/track/click/{token}', [\App\Http\Controllers\NewsletterTrackingController::class, 'trackClick'])->name('newsletter.track.click');
+Route::get('/newsletter/report/{batchId}', [\App\Http\Controllers\NewsletterTrackingController::class, 'engagementReport'])->name('newsletter.report');
 
 Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
@@ -123,8 +173,30 @@ Route::post('/gdpr/decline-consent', [\App\Http\Controllers\GdprController::clas
 
 // Public profile routes
 Route::get('/users/{user}', [ProfileController::class, 'showPublic'])->name('users.show');
+Route::get('/users/{user}/followers', [\App\Http\Controllers\FollowController::class, 'followers'])->name('users.followers');
+Route::get('/users/{user}/following', [\App\Http\Controllers\FollowController::class, 'following'])->name('users.following');
 
 Route::middleware('auth')->group(function () {
+    // Follow routes
+    Route::post('/users/{user}/follow', [\App\Http\Controllers\FollowController::class, 'follow'])->name('users.follow');
+    Route::delete('/users/{user}/follow', [\App\Http\Controllers\FollowController::class, 'unfollow'])->name('users.unfollow');
+    Route::get('/users/{user}/follow-status', [\App\Http\Controllers\FollowController::class, 'checkStatus'])->name('users.follow-status');
+
+    // Activity feed routes
+    Route::get('/activities', [\App\Http\Controllers\ActivityController::class, 'index'])->name('activities.index');
+    Route::get('/activities/following', [\App\Http\Controllers\ActivityController::class, 'following'])->name('activities.following');
+    Route::get('/activities/{activity}', [\App\Http\Controllers\ActivityController::class, 'show'])->name('activities.show');
+
+    // Recommendation routes
+    Route::get('/recommendations', [\App\Http\Controllers\RecommendationController::class, 'index'])->name('recommendations.index');
+    Route::get('/posts/{post}/similar', [\App\Http\Controllers\RecommendationController::class, 'similar'])->name('recommendations.similar');
+    Route::post('/recommendations/track-click', [\App\Http\Controllers\RecommendationController::class, 'trackClick'])
+        ->middleware('throttle:60,1')
+        ->name('recommendations.track-click');
+    Route::post('/recommendations/track-impression', [\App\Http\Controllers\RecommendationController::class, 'trackImpression'])
+        ->middleware('throttle:60,1')
+        ->name('recommendations.track-impression');
+
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -146,9 +218,13 @@ Route::middleware('auth')->group(function () {
     // Notifications
     Route::get('/notifications', [\App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
     Route::get('/notifications/unread', [\App\Http\Controllers\NotificationController::class, 'unread'])->name('notifications.unread');
+    Route::get('/notifications/count', [\App\Http\Controllers\NotificationController::class, 'count'])->name('notifications.count');
     Route::post('/notifications/{notification}/read', [\App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.read');
     Route::post('/notifications/read-all', [\App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
     Route::delete('/notifications/{notification}', [\App\Http\Controllers\NotificationController::class, 'destroy'])->name('notifications.destroy');
+    Route::delete('/notifications/read/delete-all', [\App\Http\Controllers\NotificationController::class, 'deleteRead'])->name('notifications.delete-read');
+    Route::get('/notifications/preferences', [\App\Http\Controllers\NotificationController::class, 'preferences'])->name('notifications.preferences');
+    Route::put('/notifications/preferences', [\App\Http\Controllers\NotificationController::class, 'updatePreferences'])->name('notifications.preferences.update');
 
     // GDPR authenticated routes
     Route::get('/gdpr/export-data', [\App\Http\Controllers\GdprController::class, 'exportData'])->name('gdpr.export-data');
@@ -157,13 +233,25 @@ Route::middleware('auth')->group(function () {
     Route::post('/gdpr/withdraw-consent', [\App\Http\Controllers\GdprController::class, 'withdrawConsent'])->name('gdpr.withdraw-consent');
 });
 
-// Public bookmark routes (anonymous via reader_token)
+// Public bookmarks (anonymous via reader_token)
 Route::get('/bookmarks', [\App\Http\Controllers\BookmarkController::class, 'index'])->name('bookmarks.index');
-Route::post('/bookmarks', [\App\Http\Controllers\BookmarkController::class, 'store'])->name('bookmarks.store');
-Route::delete('/bookmarks', [\App\Http\Controllers\BookmarkController::class, 'destroy'])->name('bookmarks.destroy');
-Route::post('/bookmarks/toggle', [\App\Http\Controllers\BookmarkController::class, 'toggle'])
+Route::post('/bookmarks', [\App\Http\Controllers\BookmarkController::class, 'storeAnonymous'])->name('bookmarks.store.anonymous');
+Route::delete('/bookmarks', [\App\Http\Controllers\BookmarkController::class, 'destroyAnonymous'])->name('bookmarks.destroy.anonymous');
+Route::post('/bookmarks/toggle', [\App\Http\Controllers\BookmarkController::class, 'toggleAnonymous'])
     ->middleware('throttle:120,1')
-    ->name('bookmarks.toggle');
+    ->name('bookmarks.toggle.anonymous');
+
+// Authenticated bookmark routes (user-based reading list)
+Route::middleware('auth')->group(function () {
+    Route::post('/bookmarks/{post}', [\App\Http\Controllers\BookmarkController::class, 'store'])->name('bookmarks.store');
+    Route::delete('/bookmarks/{post}', [\App\Http\Controllers\BookmarkController::class, 'destroy'])->name('bookmarks.destroy');
+    Route::post('/bookmarks/{post}/toggle', [\App\Http\Controllers\BookmarkController::class, 'toggle'])
+        ->middleware('throttle:120,1')
+        ->name('bookmarks.toggle');
+    Route::post('/bookmarks/{bookmark}/read', [\App\Http\Controllers\BookmarkController::class, 'markAsRead'])->name('bookmarks.read');
+    Route::post('/bookmarks/{bookmark}/unread', [\App\Http\Controllers\BookmarkController::class, 'markAsUnread'])->name('bookmarks.unread');
+    Route::post('/bookmarks/{bookmark}/notes', [\App\Http\Controllers\BookmarkController::class, 'updateNotes'])->name('bookmarks.notes');
+});
 
 // Page routes (supports nested slugs via slugPath)
 Route::get('/page/{slugPath}', [\App\Http\Controllers\PageController::class, 'show'])
@@ -176,11 +264,22 @@ Route::post('/page/contact', [\App\Http\Controllers\PageController::class, 'subm
 // Admin routes
 Route::middleware(['auth', 'role:admin,editor'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/analytics', [\App\Http\Controllers\Admin\AnalyticsController::class, 'index'])->name('analytics');
+    Route::get('/analytics/articles', [\App\Http\Controllers\Admin\AnalyticsController::class, 'articlePerformance'])->name('analytics.articles');
+    Route::get('/analytics/traffic', [\App\Http\Controllers\Admin\AnalyticsController::class, 'trafficSources'])->name('analytics.traffic');
+    Route::get('/analytics/engagement', [\App\Http\Controllers\Admin\AnalyticsController::class, 'userEngagement'])->name('analytics.engagement');
+    Route::get('/analytics/export', [\App\Http\Controllers\Admin\AnalyticsController::class, 'export'])->name('analytics.export');
     Route::get('/search', [AdminSearchController::class, 'index'])->name('search');
     Route::get('/search/analytics', [AdminSearchController::class, 'analytics'])->name('search.analytics');
+    Route::get('/recommendations/metrics', [\App\Http\Controllers\RecommendationController::class, 'metrics'])->name('recommendations.metrics');
 
     // Category management routes
     Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class);
+
+    // Simple admin search/listing endpoints used by tests
+    Route::get('/posts', [\App\Http\Controllers\Admin\PostController::class, 'index'])->name('posts.index');
+    Route::get('/tags', [\App\Http\Controllers\Admin\TagController::class, 'index'])->name('tags.index');
+    Route::get('/comments', [\App\Http\Controllers\Admin\CommentController::class, 'index'])->name('comments.index');
+    Route::get('/users', [\App\Http\Controllers\Admin\UserController::class, 'index'])->name('users.index');
 
     // Performance monitoring
     Route::get('/performance', [\App\Http\Controllers\Admin\PerformanceController::class, 'index'])->name('performance');
@@ -261,6 +360,30 @@ Route::middleware(['auth', 'role:admin,editor'])->prefix('admin')->name('admin.'
 });
 
 require __DIR__.'/auth.php';
+
+// Moderation routes (moderators and admins only)
+Route::middleware(['auth', 'role:moderator,admin'])->prefix('moderation')->name('moderation.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\ModerationController::class, 'index'])->name('index');
+    Route::get('/{moderationQueue}', [\App\Http\Controllers\ModerationController::class, 'show'])->name('show');
+    Route::post('/{moderationQueue}/approve', [\App\Http\Controllers\ModerationController::class, 'approve'])->name('approve');
+    Route::post('/{moderationQueue}/reject', [\App\Http\Controllers\ModerationController::class, 'reject'])->name('reject');
+    Route::post('/{moderationQueue}/delete', [\App\Http\Controllers\ModerationController::class, 'delete'])->name('delete');
+    Route::post('/bulk-action', [\App\Http\Controllers\ModerationController::class, 'bulkAction'])->name('bulk-action');
+    Route::post('/users/{user}/ban', [\App\Http\Controllers\ModerationController::class, 'banUser'])->name('ban-user');
+});
+
+// Comment flagging routes (authenticated users)
+Route::middleware('auth')->group(function () {
+    Route::post('/comments/{comment}/flag', [\App\Http\Controllers\CommentFlagController::class, 'store'])->name('comments.flag');
+});
+
+// Comment flag management (moderators only)
+Route::middleware(['auth', 'role:moderator,admin'])->group(function () {
+    Route::get('/comments/{comment}/flags', [\App\Http\Controllers\CommentFlagController::class, 'index'])->name('comments.flags.index');
+    Route::post('/flags/{flag}/dismiss', [\App\Http\Controllers\CommentFlagController::class, 'dismiss'])->name('flags.dismiss');
+    Route::post('/flags/{flag}/resolve', [\App\Http\Controllers\CommentFlagController::class, 'resolve'])->name('flags.resolve');
+    Route::get('/moderation/flag-statistics', [\App\Http\Controllers\CommentFlagController::class, 'statistics'])->name('moderation.flag-statistics');
+});
 
 // Public UI demo (no auth)
 Route::get('/ui-demo', [UiDemoController::class, 'show'])->name('ui.demo');

@@ -429,4 +429,69 @@ class PostService
             Cache::forget("post.{$postId}.related");
         }
     }
+
+    /**
+     * Get popular posts with caching.
+     */
+    public function getPopularPosts(int $limit = 10, int $days = 7): Collection
+    {
+        $cacheKey = "posts.popular.{$days}days.limit{$limit}";
+        $cacheTtl = config('cache.ttl.articles', 3600);
+
+        return Cache::remember($cacheKey, $cacheTtl, function () use ($limit, $days) {
+            return Post::published()
+                ->where('published_at', '>=', now()->subDays($days))
+                ->orderBy('view_count', 'desc')
+                ->limit($limit)
+                ->with(['author', 'category'])
+                ->get();
+        });
+    }
+
+    /**
+     * Get trending posts (high engagement recently).
+     */
+    public function getTrendingPosts(int $limit = 10): Collection
+    {
+        $cacheKey = "posts.trending.limit{$limit}";
+        $cacheTtl = config('cache.ttl.short', 300); // 5 minutes for trending
+
+        return Cache::remember($cacheKey, $cacheTtl, function () use ($limit) {
+            return Post::published()
+                ->where('published_at', '>=', now()->subDays(3))
+                ->withCount(['comments', 'bookmarks', 'reactions'])
+                ->orderByRaw('(comments_count * 2 + bookmarks_count + reactions_count + view_count / 10) DESC')
+                ->limit($limit)
+                ->with(['author', 'category'])
+                ->get();
+        });
+    }
+
+    /**
+     * Get latest posts with caching.
+     */
+    public function getLatestPosts(int $limit = 10): Collection
+    {
+        $cacheKey = "posts.latest.limit{$limit}";
+        $cacheTtl = config('cache.ttl.short', 300);
+
+        return Cache::remember($cacheKey, $cacheTtl, function () use ($limit) {
+            return Post::published()
+                ->orderBy('published_at', 'desc')
+                ->limit($limit)
+                ->with(['author', 'category'])
+                ->get();
+        });
+    }
+
+    /**
+     * Invalidate popular and trending posts cache.
+     */
+    public function invalidatePopularPostsCache(): void
+    {
+        Cache::forget('posts.popular.7days.limit10');
+        Cache::forget('posts.popular.30days.limit10');
+        Cache::forget('posts.trending.limit10');
+        Cache::forget('posts.latest.limit10');
+    }
 }

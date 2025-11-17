@@ -14,6 +14,7 @@ class Newsletter extends Model
     protected $fillable = [
         'email',
         'status',
+        'frequency',
         'verified_at',
         'token',
         'verification_token',

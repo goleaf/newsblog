@@ -25,6 +25,9 @@ class SecurityHeaders
         // Prevent clickjacking attacks - SAMEORIGIN allows framing from same origin
         $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
 
+        // Enable XSS protection (legacy header, CSP is preferred but included for older browsers)
+        $response->headers->set('X-XSS-Protection', '1; mode=block');
+
         // Refuse to be framed by other origins at the CSP level as well
         // (modern replacement for X-Frame-Options)
         $cspFrameAncestors = "frame-ancestors 'self'";
@@ -38,33 +41,38 @@ class SecurityHeaders
         $env = config('app.env');
         $isLocalOrTesting = in_array($env, ['local', 'development', 'testing'], true);
 
+        // Default policy (production / staging): include CSP nonce and avoid inline execution
         $scriptSrc = ["'self'", "'nonce-{$nonce}'"];
         $styleSrc = ["'self'", "'nonce-{$nonce}'"];
         $connectSrc = ["'self'"];
         $imgSrc = ["'self'", 'data:'];
-        $fontSrc = ["'self'", 'data:'];
+        $fontSrc = ["'self'", 'data:', 'https://fonts.bunny.net', 'https://fonts.gstatic.com'];
 
         if ($isLocalOrTesting) {
-            // Allow Vite dev server and HMR
-            $viteHosts = [
+            // Local / testing: remove nonce requirements so inline scripts/styles work
+            // and enable dev hosts + relaxed policies for DX.
+            $scriptSrc = [
+                "'self'",
+                "'unsafe-inline'",
+                "'unsafe-eval'",
+                'http://127.0.0.1:5173',
+                'https://newsblog.test:5173',
+                'https://cdn.jsdelivr.net',
+                'https://unpkg.com',
+                'https://cdnjs.cloudflare.com',
+            ];
+            $styleSrc = [
+                "'self'",
+                "'unsafe-inline'",
+                'http://127.0.0.1:5173',
+                'https://newsblog.test:5173',
+                'https://fonts.bunny.net',
+            ];
+            $connectSrc = array_merge($connectSrc, [
                 'http://127.0.0.1:5173',
                 'ws://127.0.0.1:5173',
                 'https://newsblog.test:5173',
                 'wss://newsblog.test:5173',
-            ];
-
-            $scriptSrc = array_merge($scriptSrc, ["'unsafe-inline'", "'unsafe-eval'"], ['http://127.0.0.1:5173', 'https://newsblog.test:5173']);
-            $styleSrc = array_merge($styleSrc, ["'unsafe-inline'"], ['http://127.0.0.1:5173', 'https://newsblog.test:5173']);
-            $connectSrc = array_merge($connectSrc, $viteHosts);
-
-            // Allow common CDN script/style sources used in dev/admin pages
-            $scriptSrc = array_merge($scriptSrc, [
-                'https://cdn.jsdelivr.net',
-                'https://unpkg.com',
-                'https://cdnjs.cloudflare.com',
-            ]);
-            $styleSrc = array_merge($styleSrc, [
-                'https://fonts.bunny.net',
             ]);
         } else {
             // Alpine may require 'unsafe-eval' for expression parsing

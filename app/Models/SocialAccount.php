@@ -23,6 +23,18 @@ class SocialAccount extends Model
     ];
 
     /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'provider_token' => 'encrypted',
+        ];
+    }
+
+    /**
      * Get the user that owns the social account.
      */
     public function user(): BelongsTo

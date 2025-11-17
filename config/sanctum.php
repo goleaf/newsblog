@@ -45,9 +45,11 @@ return [
     | considered expired. This will override any values set in the token's
     | "expires_at" attribute, but first-party sessions are not affected.
     |
+    | Default: 525600 minutes (1 year)
+    |
     */
 
-    'expiration' => null,
+    'expiration' => env('SANCTUM_EXPIRATION', 525600),
 
     /*
     |--------------------------------------------------------------------------
@@ -79,6 +81,45 @@ return [
         'authenticate_session' => Laravel\Sanctum\Http\Middleware\AuthenticateSession::class,
         'encrypt_cookies' => Illuminate\Cookie\Middleware\EncryptCookies::class,
         'validate_csrf_token' => Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Token Abilities
+    |--------------------------------------------------------------------------
+    |
+    | Define the available token abilities that can be assigned to API tokens.
+    | These abilities can be used to restrict what actions a token can perform.
+    |
+    */
+
+    'abilities' => [
+        // Article abilities
+        'articles:read' => 'Read articles',
+        'articles:create' => 'Create articles',
+        'articles:update' => 'Update articles',
+        'articles:delete' => 'Delete articles',
+
+        // Comment abilities
+        'comments:read' => 'Read comments',
+        'comments:create' => 'Create comments',
+        'comments:update' => 'Update comments',
+        'comments:delete' => 'Delete comments',
+
+        // User abilities
+        'users:read' => 'Read user profiles',
+        'users:update' => 'Update user profile',
+
+        // Bookmark abilities
+        'bookmarks:read' => 'Read bookmarks',
+        'bookmarks:create' => 'Create bookmarks',
+        'bookmarks:delete' => 'Delete bookmarks',
+
+        // Search abilities
+        'search' => 'Search articles',
+
+        // Full access
+        '*' => 'Full access to all endpoints',
     ],
 
 ];

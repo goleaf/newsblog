@@ -13,16 +13,38 @@ use Illuminate\Support\Facades\Route;
 Route::get('/nova-api/system-health', [SystemHealthController::class, 'index'])
     ->name('nova.system-health');
 
-Route::prefix('v1')->middleware(['throttle:api'])->group(function () {
-    // Public endpoints
+// Minimal Nova search API endpoints (admin only)
+Route::prefix('nova-api')
+    ->withoutMiddleware([
+        \Laravel\Nova\Http\Middleware\DispatchServingNovaEvent::class,
+        \Laravel\Nova\Http\Middleware\HandleInertiaRequests::class,
+    ])
+    ->middleware(['auth', 'role:admin'])
+    ->group(function () {
+        Route::get('/posts', [\App\Http\Controllers\Nova\SearchController::class, 'posts']);
+        Route::get('/users', [\App\Http\Controllers\Nova\SearchController::class, 'users']);
+        Route::get('/categories', [\App\Http\Controllers\Nova\SearchController::class, 'categories']);
+        Route::get('/tags', [\App\Http\Controllers\Nova\SearchController::class, 'tags']);
+        Route::get('/comments', [\App\Http\Controllers\Nova\SearchController::class, 'comments']);
+        Route::get('/media', [\App\Http\Controllers\Nova\SearchController::class, 'media']);
+    });
+
+Route::prefix('v1')->middleware(['throttle:api', 'rate-limit-headers'])->group(function () {
+    // Public endpoints - Articles (Posts)
+    Route::get('/articles', [PostController::class, 'index'])->name('api.articles.index');
+    Route::get('/articles/{id}', [PostController::class, 'show'])->name('api.articles.show');
+
+    // Legacy post endpoints (for backward compatibility)
     Route::get('/posts', [PostController::class, 'index']);
     Route::get('/posts/{slug}', [PostController::class, 'show']);
-    Route::get('/categories', [\App\Http\Controllers\Api\CategoryController::class, 'index']);
-    Route::get('/categories/{id}/articles', [\App\Http\Controllers\Api\CategoryController::class, 'articles']);
+
+    Route::get('/categories', [\App\Http\Controllers\Api\CategoryController::class, 'index'])->name('api.categories.index');
+    Route::get('/categories/{id}/articles', [\App\Http\Controllers\Api\CategoryController::class, 'articles'])->name('api.categories.articles');
     Route::get('/tags', [\App\Http\Controllers\Api\TagController::class, 'index']);
     Route::get('/tags/search', [\App\Http\Controllers\Api\TagController::class, 'search']);
     Route::get('/tags/{id}/articles', [\App\Http\Controllers\Api\TagController::class, 'articles']);
-    Route::get('/comments', [\App\Http\Controllers\Api\CommentController::class, 'index']);
+    // Article comments (public)
+    Route::get('/articles/{article}/comments', [\App\Http\Controllers\Api\CommentController::class, 'index'])->name('api.articles.comments.index');
 
     // Social share tracking (public)
     Route::post('/shares', [\App\Http\Controllers\Api\SocialShareController::class, 'store']);
@@ -48,33 +70,68 @@ Route::prefix('v1')->middleware(['throttle:api'])->group(function () {
 
     // Authenticated endpoints
     Route::middleware('auth:sanctum')->group(function () {
-        Route::get('/users/me', [\App\Http\Controllers\Api\UserController::class, 'me']);
-        Route::get('/bookmarks', [\App\Http\Controllers\Api\BookmarkController::class, 'index']);
-        // Post CRUD
-        Route::post('/articles', [PostController::class, 'store']);
-        Route::put('/articles/{post}', [PostController::class, 'update']);
-        Route::delete('/articles/{post}', [PostController::class, 'destroy']);
+        // User endpoints - specific routes before wildcard
+        Route::get('/users/me', [\App\Http\Controllers\Api\UserController::class, 'me'])->name('api.users.me');
+        Route::put('/users/me', [\App\Http\Controllers\Api\UserController::class, 'update'])
+            ->middleware('throttle:api-writes')
+            ->name('api.users.update');
+        Route::get('/users/suggestions', [\App\Http\Controllers\Api\UserController::class, 'suggestions'])->name('api.users.suggestions');
+
+        // Bookmarks
+        Route::get('/bookmarks', [\App\Http\Controllers\Api\BookmarkController::class, 'index'])->name('api.bookmarks.index');
+        Route::post('/bookmarks', [\App\Http\Controllers\Api\BookmarkController::class, 'store'])
+            ->middleware('throttle:api-writes')
+            ->name('api.bookmarks.store');
+        Route::delete('/bookmarks/{id}', [\App\Http\Controllers\Api\BookmarkController::class, 'destroy'])
+            ->middleware('throttle:api-writes')
+            ->name('api.bookmarks.destroy');
+
+        // Article CRUD (auth required)
+        Route::post('/articles', [PostController::class, 'store'])
+            ->middleware('throttle:api-writes')
+            ->name('api.articles.store');
+        Route::put('/articles/{post}', [PostController::class, 'update'])
+            ->middleware('throttle:api-writes')
+            ->name('api.articles.update');
+        Route::delete('/articles/{post}', [PostController::class, 'destroy'])
+            ->middleware('throttle:api-writes')
+            ->name('api.articles.destroy');
 
         // Interactions
-        Route::post('/posts/{postId}/reactions', [PostInteractionController::class, 'react']);
-        Route::post('/posts/{postId}/bookmark', [PostInteractionController::class, 'bookmark']);
-        Route::post('/comments/{commentId}/reactions', [\App\Http\Controllers\Api\CommentReactionController::class, 'react']);
-        Route::post('/comments/{commentId}/flags', [\App\Http\Controllers\Api\CommentFlagController::class, 'store']);
-        Route::post('/comments', [\App\Http\Controllers\Api\CommentController::class, 'store']);
-        Route::put('/comments/{comment}', [\App\Http\Controllers\Api\CommentController::class, 'update']);
-        Route::delete('/comments/{comment}', [\App\Http\Controllers\Api\CommentController::class, 'destroy']);
+        Route::post('/posts/{postId}/reactions', [PostInteractionController::class, 'react'])
+            ->middleware('throttle:api-writes');
+        Route::post('/posts/{postId}/bookmark', [PostInteractionController::class, 'bookmark'])
+            ->middleware('throttle:api-writes');
+        Route::post('/comments/{commentId}/reactions', [\App\Http\Controllers\Api\CommentReactionController::class, 'react'])
+            ->middleware('throttle:api-writes');
+        Route::get('/comments/{commentId}/reactions', [\App\Http\Controllers\Api\CommentReactionController::class, 'getCounts']);
+        Route::post('/comments/{commentId}/flags', [\App\Http\Controllers\Api\CommentFlagController::class, 'store'])
+            ->middleware('throttle:comments');
+        // Article comments (auth required)
+        Route::post('/articles/{article}/comments', [\App\Http\Controllers\Api\CommentController::class, 'store'])
+            ->middleware('throttle:comments')
+            ->name('api.articles.comments.store');
+        Route::put('/comments/{comment}', [\App\Http\Controllers\Api\CommentController::class, 'update'])
+            ->middleware('throttle:api-writes');
+        Route::delete('/comments/{comment}', [\App\Http\Controllers\Api\CommentController::class, 'destroy'])
+            ->middleware('throttle:api-writes')
+            ->name('api.comments.destroy');
 
         // Sanctum token management
+        Route::get('/tokens/abilities', [\App\Http\Controllers\Api\TokenController::class, 'abilities']);
         Route::get('/tokens', [\App\Http\Controllers\Api\TokenController::class, 'index']);
-        Route::post('/tokens', [\App\Http\Controllers\Api\TokenController::class, 'store']);
-        Route::delete('/tokens/{tokenId}', [\App\Http\Controllers\Api\TokenController::class, 'destroy']);
+        Route::post('/tokens', [\App\Http\Controllers\Api\TokenController::class, 'store'])
+            ->middleware('throttle:token-creation');
+        Route::put('/tokens/{tokenId}', [\App\Http\Controllers\Api\TokenController::class, 'update'])
+            ->middleware('throttle:api-strict');
+        Route::delete('/tokens/{tokenId}', [\App\Http\Controllers\Api\TokenController::class, 'destroy'])
+            ->middleware('throttle:api-strict');
 
         // Follow system
         Route::post('/users/{user}/follow', [\App\Http\Controllers\Api\FollowController::class, 'follow']);
         Route::delete('/users/{user}/follow', [\App\Http\Controllers\Api\FollowController::class, 'unfollow']);
         Route::get('/users/{user}/followers', [\App\Http\Controllers\Api\FollowController::class, 'followers']);
         Route::get('/users/{user}/following', [\App\Http\Controllers\Api\FollowController::class, 'following']);
-        Route::get('/users/suggestions', [\App\Http\Controllers\Api\FollowController::class, 'suggestions']);
 
         // Activity feeds
         Route::get('/activity/me', [\App\Http\Controllers\Api\ActivityController::class, 'my']);
@@ -106,7 +163,11 @@ Route::prefix('v1')->middleware(['throttle:api'])->group(function () {
     });
 
     // Public shared reading list
-    Route::get('/reading-lists/shared/{token}', [\App\Http\Controllers\Api\ReadingListController::class, 'sharedShow']);
+    Route::get('/reading-lists/shared/{token}', [\App\Http\Controllers\Api\ReadingListController::class, 'sharedShow'])
+        ->name('reading-lists.shared.show');
+
+    // Public user profile - must be after authenticated routes to avoid conflicts
+    Route::get('/users/{id}', [\App\Http\Controllers\Api\UserController::class, 'show'])->name('api.users.show');
 
     // Moderation endpoints (admin/editor only)
     Route::middleware(['auth:sanctum', 'role:admin,editor'])->group(function () {

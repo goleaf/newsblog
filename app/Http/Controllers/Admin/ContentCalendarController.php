@@ -44,22 +44,31 @@ class ContentCalendarController extends Controller
             $view = 'month';
         }
 
-        // Build base query within range
+        // Build base query within range (normalize to day boundaries)
+        $rangeStartDay = $rangeStart->copy()->startOfDay();
+        $rangeEndDay = $rangeEnd->copy()->endOfDay();
+
         $query = Post::query()
             ->with(['user', 'category'])
-            ->where(function ($q) use ($rangeStart, $rangeEnd) {
-                $q->whereBetween('published_at', [$rangeStart, $rangeEnd])
-                    ->orWhereBetween('scheduled_at', [$rangeStart, $rangeEnd]);
+            ->where(function ($q) use ($rangeStartDay, $rangeEndDay) {
+                $q->whereBetween('published_at', [$rangeStartDay, $rangeEndDay])
+                    ->orWhereBetween('scheduled_at', [$rangeStartDay, $rangeEndDay]);
             })
             ->when($authorId, fn ($q) => $q->where('user_id', $authorId))
             ->when($categoryId, fn ($q) => $q->where('category_id', $categoryId));
 
         $posts = $query->get()
+            ->filter(function ($post) use ($rangeStartDay, $rangeEndDay) {
+                $status = $post->status instanceof \App\Enums\PostStatus ? $post->status->value : $post->status;
+                $date = ($status === 'scheduled' && $post->scheduled_at) ? $post->scheduled_at : $post->published_at;
+
+                return $date && $date->between($rangeStartDay, $rangeEndDay);
+            })
             ->groupBy(function ($post) {
-                $date = $post->status === 'scheduled' && $post->scheduled_at
-                    ? $post->scheduled_at
-                    : $post->published_at;
-                return $date ? $date->format('Y-m-d') : null;
+                $status = $post->status instanceof \App\Enums\PostStatus ? $post->status->value : $post->status;
+                $date = ($status === 'scheduled' && $post->scheduled_at) ? $post->scheduled_at : $post->published_at;
+
+                return $date?->format('Y-m-d');
             })
             ->filter(fn ($group, $key) => $key !== null);
 
@@ -278,6 +287,7 @@ class ContentCalendarController extends Controller
                 $gap++;
             }
         }
+
         return $gap;
     }
 }

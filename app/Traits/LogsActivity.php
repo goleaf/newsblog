@@ -57,13 +57,18 @@ trait LogsActivity
 
     protected function getActivityProperties(string $event): array
     {
-        if ($event === 'updated') {
-            return [
+        // Use raw attribute arrays to avoid triggering expensive casts during tests
+        // and to ensure enum-backed attributes do not cause instantiation errors.
+        // - For "created": capture the current raw attributes
+        // - For "updated": capture original raw attributes and the current raw attributes
+        // - For "deleted": capture the original raw attributes
+        return match ($event) {
+            'updated' => [
                 'old' => $this->getOriginal(),
-                'new' => $this->getChanges(),
-            ];
-        }
-
-        return $this->toArray();
+                'new' => $this->getAttributes(),
+            ],
+            'deleted' => $this->getOriginal(),
+            default => $this->getAttributes(),
+        };
     }
 }

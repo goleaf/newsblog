@@ -63,7 +63,8 @@ class AdminNewsletterSendsFiltersTest extends TestCase
             'to' => now()->toDateString(),
         ]));
         $csv->assertOk();
-        $csv->assertHeader('content-type', 'text/csv');
+        // Symfony appends charset to text/* content types; accept full header value
+        $csv->assertHeader('content-type', 'text/csv; charset=UTF-8');
         $csv->assertSee('batch_id,total,sent,queued,failed,opens,clicks,ctr');
         $csv->assertSee('202511160900');
     }

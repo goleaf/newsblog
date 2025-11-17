@@ -68,9 +68,32 @@ return [
             'driver' => 'redis',
             'connection' => env('REDIS_QUEUE_CONNECTION', 'default'),
             'queue' => env('REDIS_QUEUE', 'default'),
-            'retry_after' => (int) env('REDIS_QUEUE_RETRY_AFTER', 90),
+            'retry_after' => (int) env('REDIS_QUEUE_RETRY_AFTER', 180),
             'block_for' => null,
             'after_commit' => false,
+            'timeout' => (int) env('REDIS_QUEUE_TIMEOUT', 120),
+        ],
+
+        // High priority queue for critical operations
+        'redis-high' => [
+            'driver' => 'redis',
+            'connection' => env('REDIS_QUEUE_CONNECTION', 'default'),
+            'queue' => 'high',
+            'retry_after' => (int) env('REDIS_QUEUE_RETRY_AFTER', 180),
+            'block_for' => null,
+            'after_commit' => false,
+            'timeout' => (int) env('REDIS_QUEUE_TIMEOUT', 120),
+        ],
+
+        // Low priority queue for background tasks
+        'redis-low' => [
+            'driver' => 'redis',
+            'connection' => env('REDIS_QUEUE_CONNECTION', 'default'),
+            'queue' => 'low',
+            'retry_after' => (int) env('REDIS_QUEUE_RETRY_AFTER', 180),
+            'block_for' => null,
+            'after_commit' => false,
+            'timeout' => (int) env('REDIS_QUEUE_TIMEOUT', 120),
         ],
 
         'deferred' => [

@@ -8,7 +8,7 @@ use App\Nova\Metrics\MemoryUsage;
 use App\Nova\Metrics\MemoryUsageTrend;
 use App\Nova\Metrics\QueryCountTrend;
 use App\Nova\Metrics\SlowQueriesTable;
-use Laravel\Nova\Dashboards\Dashboard;
+use Laravel\Nova\Dashboard;
 
 class Performance extends Dashboard
 {
@@ -42,4 +42,3 @@ class Performance extends Dashboard
         return 'performance';
     }
 }
-

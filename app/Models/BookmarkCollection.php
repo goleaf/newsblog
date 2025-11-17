@@ -18,6 +18,7 @@ class BookmarkCollection extends Model
         'is_public',
         'share_token',
         'order',
+        'view_count',
     ];
 
     protected $casts = [
@@ -42,5 +43,10 @@ class BookmarkCollection extends Model
     public function scopeForUser($query, $userId)
     {
         return $query->where('user_id', $userId)->orderBy('order');
+    }
+
+    public function incrementViewCount(): void
+    {
+        $this->increment('view_count');
     }
 }

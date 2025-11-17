@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import responsive design utilities */
+@import './responsive.css';
+
+/* Import mobile reading experience styles */
+@import './mobile-reading.css';
+
+/* Import accessibility styles */
+@import './accessibility.css';
+
 @layer base {
     [x-cloak] {
         display: none !important;

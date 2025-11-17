@@ -7,7 +7,10 @@ use App\Jobs\Analytics\AggregateWeeklyStatsJob;
 use App\Jobs\Analytics\CalculateDailyMetricsJob;
 use App\Jobs\Analytics\CleanOldAnalyticsDataJob;
 use App\Jobs\Analytics\GenerateMonthlyReportJob;
+use App\Jobs\CalculateArticleSimilaritiesJob;
 use App\Jobs\CleanupOldNotifications;
+use App\Jobs\GenerateUserRecommendationsJob;
+use App\Jobs\UpdateRecommendationScoresJob;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
@@ -59,19 +62,43 @@ Schedule::job(new CleanOldAnalyticsDataJob(90))
     ->withoutOverlapping()
     ->description('Clean old analytics data (search logs)');
 
-// Newsletter schedules (basic) – queue sends for verified subscribers
-Schedule::command('newsletters:send --subject="Daily News" --content="<p>Your daily news digest.</p>"')
-    ->dailyAt('09:00')
+// Newsletter schedules - automatically send based on subscriber preferences
+Schedule::command('newsletter:send daily')
+    ->dailyAt('08:00')
     ->withoutOverlapping()
-    ->description('Queue daily newsletter sends');
+    ->description('Send daily newsletters to subscribers');
 
-Schedule::command('newsletters:send --subject="Weekly Digest" --content="<p>Your weekly news roundup.</p>"')
-    ->weeklyOn(1, '09:30') // Monday 09:30
+Schedule::command('newsletter:send weekly')
+    ->weeklyOn(1, '08:00') // Monday 08:00
     ->withoutOverlapping()
-    ->description('Queue weekly newsletter sends');
+    ->description('Send weekly newsletters to subscribers');
+
+Schedule::command('newsletter:send monthly')
+    ->monthlyOn(1, '08:00') // 1st of month at 08:00
+    ->withoutOverlapping()
+    ->description('Send monthly newsletters to subscribers');
 
 // Warm cache daily
 Schedule::command(WarmCache::class)
     ->dailyAt('04:00')
     ->withoutOverlapping()
     ->description('Pre-warm application caches for common pages');
+
+// Recommendation system schedules
+Schedule::job(new CalculateArticleSimilaritiesJob)
+    ->dailyAt('02:00')
+    ->name('calculate-article-similarities')
+    ->withoutOverlapping()
+    ->description('Calculate similarity scores between articles');
+
+Schedule::job(new GenerateUserRecommendationsJob)
+    ->dailyAt('03:00')
+    ->name('generate-user-recommendations')
+    ->withoutOverlapping()
+    ->description('Generate personalized recommendations for users');
+
+Schedule::job(new UpdateRecommendationScoresJob)
+    ->hourly()
+    ->name('update-recommendation-scores')
+    ->withoutOverlapping()
+    ->description('Update recommendation scores based on freshness and engagement');

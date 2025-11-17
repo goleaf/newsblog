@@ -79,7 +79,7 @@ class NewsContentGeneratorService
 
             $targetWords = rand($minWords, $maxWords);
 
-            $content = $this->buildArticleContent($title, $tags, $targetWords);
+            $content = $this->buildArticleContent($title, $tags, $targetWords, $minWords);
 
             $wordCount = str_word_count(strip_tags($content));
 
@@ -136,29 +136,41 @@ class NewsContentGeneratorService
     /**
      * Build article content using templates and patterns.
      */
-    protected function buildArticleContent(string $title, array $tags, int $targetWords): string
+    protected function buildArticleContent(string $title, array $tags, int $targetWords, int $minWords): string
     {
         $topic = $this->extractTopic($title);
         $sections = [];
 
         // Introduction
-        $sections[] = $this->buildSection('introduction', $topic, $tags);
+        $sections[] = $this->buildSection('introduction', $topic, $tags, $targetWords);
 
         // Main content sections
-        $sections[] = $this->buildSection('background', $topic, $tags);
-        $sections[] = $this->buildSection('technical_details', $topic, $tags);
-        $sections[] = $this->buildSection('benefits', $topic, $tags);
+        $sections[] = $this->buildSection('background', $topic, $tags, $targetWords);
+        $sections[] = $this->buildSection('technical_details', $topic, $tags, $targetWords);
+        $sections[] = $this->buildSection('benefits', $topic, $tags, $targetWords);
 
         // Add more sections if needed to reach target word count
         $currentWords = str_word_count(strip_tags(implode('', $sections)));
 
         if ($currentWords < $targetWords * 0.7) {
-            $sections[] = $this->buildSection('challenges', $topic, $tags);
-            $sections[] = $this->buildSection('future', $topic, $tags);
+            $sections[] = $this->buildSection('challenges', $topic, $tags, $targetWords);
+            $sections[] = $this->buildSection('future', $topic, $tags, $targetWords);
         }
 
         // Conclusion
-        $sections[] = $this->buildSection('conclusion', $topic, $tags);
+        $sections[] = $this->buildSection('conclusion', $topic, $tags, $targetWords);
+
+        // Ensure minimum word count by adding extra sections if necessary (bounded to avoid overrun)
+        $maxExtra = 6;
+        $extra = 0;
+        while ($extra < $maxExtra) {
+            $currentWords = str_word_count(strip_tags(implode('', $sections)));
+            if ($currentWords >= $minWords) {
+                break;
+            }
+            $sections[] = $this->buildSection('background', $topic, $tags, $targetWords);
+            $extra++;
+        }
 
         return implode("\n\n", $sections);
     }
@@ -166,7 +178,7 @@ class NewsContentGeneratorService
     /**
      * Build a content section using templates.
      */
-    protected function buildSection(string $sectionType, string $topic, array $tags): string
+    protected function buildSection(string $sectionType, string $topic, array $tags, int $targetWords): string
     {
         $templates = $this->sectionTemplates[$sectionType] ?? [];
 
@@ -177,12 +189,12 @@ class NewsContentGeneratorService
         $template = $templates[array_rand($templates)];
         $intro = str_replace('{topic}', $topic, $template);
 
-        // Add 2-4 paragraphs of content
-        $paragraphCount = rand(2, 4);
+        // Add paragraphs of content; scale down when lower target word count
+        $paragraphCount = $targetWords <= 800 ? rand(1, 2) : rand(2, 4);
         $paragraphs = [$intro];
 
         for ($i = 0; $i < $paragraphCount; $i++) {
-            $paragraphs[] = $this->generateParagraph($topic, $tags);
+            $paragraphs[] = $this->generateParagraph($topic, $tags, $targetWords);
         }
 
         // Wrap in section with heading
@@ -196,10 +208,10 @@ class NewsContentGeneratorService
     /**
      * Generate a paragraph of content.
      */
-    protected function generateParagraph(string $topic, array $tags): string
+    protected function generateParagraph(string $topic, array $tags, int $targetWords = 1200): string
     {
         $sentences = [];
-        $sentenceCount = rand(3, 5);
+        $sentenceCount = $targetWords <= 800 ? rand(2, 3) : rand(3, 5);
 
         for ($i = 0; $i < $sentenceCount; $i++) {
             $pattern = $this->contentPatterns[array_rand($this->contentPatterns)];

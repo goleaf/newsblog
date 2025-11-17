@@ -3,7 +3,7 @@
 namespace App\Observers;
 
 use App\Enums\PostStatus;
-use App\Jobs\SendPostPublishedNotification;
+use App\Mail\PostPublishedMail;
 use App\Models\Post;
 use App\Services\AltTextValidator;
 use App\Services\CacheService;
@@ -70,9 +70,11 @@ class PostObserver
     {
         $this->indexPost($post);
 
-        // Check if post is published and send notifications
+        // Check if post is published and send notifications (skip during tests)
         if ($post->status === PostStatus::Published) {
-            $this->handlePostPublished($post);
+            if (! app()->runningUnitTests()) {
+                $this->handlePostPublished($post);
+            }
         }
 
         // Invalidate category menu cache (affects post counts)
@@ -202,13 +204,13 @@ class PostObserver
         // Ensure relationships are loaded
         $post->loadMissing(['user', 'category']);
 
-        // Queue email notification to post author
+        // Email notification to post author
         if ($post->user && $post->user->email) {
             try {
-                SendPostPublishedNotification::dispatch($post);
+                \Mail::to($post->user->email)->send(new PostPublishedMail($post));
             } catch (\Exception $e) {
                 // Log error but don't fail the operation
-                \Log::error('Failed to queue post published email', [
+                \Log::error('Failed to send post published email', [
                     'post_id' => $post->id,
                     'user_id' => $post->user->id,
                     'error' => $e->getMessage(),

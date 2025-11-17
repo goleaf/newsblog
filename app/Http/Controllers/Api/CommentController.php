@@ -13,18 +13,36 @@ use App\Support\Html\SimpleSanitizer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
+/**
+ * @group Comments
+ *
+ * API endpoints for managing article comments and replies.
+ */
 class CommentController extends Controller
 {
     public function __construct(private SpamDetectionService $spam) {}
 
-    public function index(Request $request): JsonResponse
+    public function index(Request $request, $article): JsonResponse
     {
-        $request->validate(['post_id' => ['required', 'integer', 'exists:posts,id']]);
+        // Support both route parameter and query parameter for backward compatibility
+        $postId = is_numeric($article) ? $article : ($request->integer('post_id') ?: null);
+
+        if (! $postId) {
+            return response()->json(['message' => 'Article ID is required'], 400);
+        }
 
         $comments = Comment::query()
             ->approved()
-            ->forPost($request->integer('post_id'))
-            ->withCount('replies')
+            ->forPost($postId)
+            ->with([
+                'user:id,name,avatar',
+                'parent:id,user_id,content',
+                'parent.user:id,name',
+            ])
+            ->withCount(['replies' => function ($query) {
+                $query->where('status', CommentStatus::Approved);
+            }])
+            ->select(['id', 'post_id', 'user_id', 'parent_id', 'content', 'status', 'created_at', 'updated_at'])
             ->latest()
             ->paginate(20);
 
@@ -38,10 +56,17 @@ class CommentController extends Controller
         ]);
     }
 
-    public function store(StoreCommentRequest $request): JsonResponse
+    public function store(StoreCommentRequest $request, $article): JsonResponse
     {
         $validated = $request->validated();
         $validated['content'] = SimpleSanitizer::sanitize($validated['content']);
+
+        // Use article from route parameter, fallback to request data for backward compatibility
+        $postId = is_numeric($article) ? $article : ($validated['post_id'] ?? null);
+
+        if (! $postId) {
+            return response()->json(['message' => 'Article ID is required'], 400);
+        }
 
         $context = [
             'time_on_page' => $validated['page_load_time'] ?? null,
@@ -52,7 +77,7 @@ class CommentController extends Controller
         $isSpam = $this->spam->isSpam($validated['content'], $context);
 
         $comment = Comment::create([
-            'post_id' => $validated['post_id'],
+            'post_id' => $postId,
             'author_name' => $validated['author_name'],
             'author_email' => $validated['author_email'],
             'content' => $validated['content'],

@@ -3,14 +3,50 @@
 namespace App\Services;
 
 use App\Models\User;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
+use Symfony\Component\HttpFoundation\Cookie as CookieContract;
 
 class GdprService
 {
     /**
-     * Export all user data in JSON format
+     * Store cookie consent.
+     */
+    public function storeConsent(bool $accepted): CookieContract
+    {
+        return Cookie::make(
+            'gdpr_consent',
+            $accepted ? 'accepted' : 'declined',
+            60 * 24 * 365, // 1 year
+            '/',
+            null,
+            true, // secure
+            true, // httpOnly
+            false,
+            'lax'
+        );
+    }
+
+    /**
+     * Withdraw consent and return cookies to delete.
+     */
+    public function withdrawConsent(): array
+    {
+        $cookies = [];
+
+        // Delete consent cookie
+        $cookies[] = Cookie::forget('gdpr_consent');
+
+        // Delete any analytics or tracking cookies
+        $cookies[] = Cookie::forget('_ga');
+        $cookies[] = Cookie::forget('_gid');
+        $cookies[] = Cookie::forget('_gat');
+
+        return $cookies;
+    }
+
+    /**
+     * Export all user data in a machine-readable format.
      */
     public function exportUserData(User $user): array
     {
@@ -19,13 +55,8 @@ class GdprService
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
-                'role' => $user->role,
-                'bio' => $user->bio,
-                'avatar' => $user->avatar,
-                'status' => $user->status,
-                'created_at' => $user->created_at?->toIso8601String(),
-                'updated_at' => $user->updated_at?->toIso8601String(),
-                'email_verified_at' => $user->email_verified_at?->toIso8601String(),
+                'created_at' => $user->created_at->toIso8601String(),
+                'last_login_at' => $user->last_login_at?->toIso8601String(),
             ],
             'posts' => $user->posts()->get()->map(function ($post) {
                 return [
@@ -34,9 +65,9 @@ class GdprService
                     'slug' => $post->slug,
                     'excerpt' => $post->excerpt,
                     'content' => $post->content,
-                    'status' => $post->status,
+                    'status' => $post->status->value,
                     'published_at' => $post->published_at?->toIso8601String(),
-                    'created_at' => $post->created_at?->toIso8601String(),
+                    'created_at' => $post->created_at->toIso8601String(),
                 ];
             })->toArray(),
             'comments' => $user->comments()->get()->map(function ($comment) {
@@ -44,144 +75,136 @@ class GdprService
                     'id' => $comment->id,
                     'post_id' => $comment->post_id,
                     'content' => $comment->content,
-                    'status' => $comment->status,
-                    'created_at' => $comment->created_at?->toIso8601String(),
+                    'status' => $comment->status->value,
+                    'created_at' => $comment->created_at->toIso8601String(),
                 ];
             })->toArray(),
-            'bookmarks' => $user->bookmarks()->with('post:id,title,slug')->get()->map(function ($bookmark) {
+            'bookmarks' => $user->bookmarks()->with('post')->get()->map(function ($bookmark) {
                 return [
-                    'post_id' => $bookmark->post_id,
-                    'post_title' => $bookmark->post?->title,
-                    'created_at' => $bookmark->created_at?->toIso8601String(),
+                    'post_title' => $bookmark->post->title,
+                    'post_slug' => $bookmark->post->slug,
+                    'is_read' => $bookmark->is_read,
+                    'notes' => $bookmark->notes,
+                    'created_at' => $bookmark->created_at->toIso8601String(),
                 ];
             })->toArray(),
-            'reactions' => $user->reactions()->with('post:id,title')->get()->map(function ($reaction) {
+            'reactions' => $user->reactions()->get()->map(function ($reaction) {
                 return [
                     'post_id' => $reaction->post_id,
-                    'post_title' => $reaction->post?->title,
                     'type' => $reaction->type,
-                    'created_at' => $reaction->created_at?->toIso8601String(),
+                    'created_at' => $reaction->created_at->toIso8601String(),
                 ];
             })->toArray(),
             'media' => $user->media()->get()->map(function ($media) {
                 return [
                     'id' => $media->id,
-                    'filename' => $media->filename,
-                    'original_filename' => $media->original_filename,
-                    'mime_type' => $media->mime_type,
-                    'size' => $media->size,
-                    'created_at' => $media->created_at?->toIso8601String(),
+                    'file_path' => $media->file_path,
+                    'file_type' => $media->file_type,
+                    'created_at' => $media->created_at->toIso8601String(),
                 ];
             })->toArray(),
         ];
     }
 
     /**
-     * Anonymize user data for account deletion
+     * Delete all user data and anonymize references.
      */
-    public function anonymizeUser(User $user): void
+    public function deleteUserData(User $user): void
     {
         DB::transaction(function () use ($user) {
-            // Anonymize user data
-            $user->update([
-                'name' => 'Deleted User',
-                'email' => 'deleted_'.Str::random(10).'@deleted.local',
-                'password' => Hash::make(Str::random(32)),
-                'bio' => null,
-                'avatar' => null,
-                'status' => 'deleted',
+            // Anonymize user's posts instead of deleting them
+            $user->posts()->update([
+                'author_id' => null,
             ]);
 
-            // Anonymize comments
-            $user->comments()->update([
-                'author_name' => 'Deleted User',
-                'author_email' => 'deleted@deleted.local',
-                'ip_address' => null,
-                'user_agent' => null,
-            ]);
+            // Delete user's comments
+            $user->comments()->delete();
 
             // Delete bookmarks
             $user->bookmarks()->delete();
 
-            // Delete reactions
-            $user->reactions()->delete();
+            // Delete reading lists
+            $user->readingLists()->delete();
 
-            // Delete media files
-            foreach ($user->media as $media) {
-                // Delete physical files
-                if ($media->disk && $media->path) {
-                    \Storage::disk($media->disk)->delete($media->path);
-                }
-                $media->delete();
-            }
+            // Delete follows
+            $user->followers()->detach();
+            $user->following()->detach();
 
-            // Anonymize posts (keep content but remove author association)
-            $user->posts()->update([
-                'user_id' => null,
-            ]);
-        });
-    }
+            // Delete activities
+            $user->activities()->delete();
 
-    /**
-     * Delete user account and all associated data
-     */
-    public function deleteUserAccount(User $user): void
-    {
-        DB::transaction(function () use ($user) {
-            // Delete all user relationships
-            $user->bookmarks()->delete();
-            $user->reactions()->delete();
-            $user->comments()->delete();
+            // Delete notifications
+            $user->notifications()->delete();
 
-            // Delete media files
-            foreach ($user->media as $media) {
-                if ($media->disk && $media->path) {
-                    \Storage::disk($media->disk)->delete($media->path);
-                }
-                $media->delete();
-            }
+            // Delete social accounts
+            $user->socialAccounts()->delete();
 
-            // Delete posts
-            $user->posts()->delete();
+            // Delete user profile
+            $user->profile?->delete();
 
-            // Finally delete the user
+            // Delete user preferences
+            $user->preferences?->delete();
+
+            // Delete notification preferences
+            $user->notificationPreferences?->delete();
+
+            // Delete API tokens
+            $user->tokens()->delete();
+
+            // Delete the user
             $user->delete();
         });
     }
 
     /**
-     * Check if user has given cookie consent
+     * Anonymize user data without deleting the account.
      */
-    public function hasConsent(string $cookieName = 'gdpr_consent'): bool
+    public function anonymizeUser(User $user): void
     {
-        return request()->cookie($cookieName) === 'accepted';
-    }
+        DB::transaction(function () use ($user) {
+            // Anonymize user information
+            $user->update([
+                'name' => 'Deleted User',
+                'email' => 'deleted_'.$user->id.'@example.com',
+                'avatar' => null,
+                'bio' => null,
+            ]);
 
-    /**
-     * Store cookie consent
-     */
-    public function storeConsent(bool $accepted): \Symfony\Component\HttpFoundation\Cookie
-    {
-        $value = $accepted ? 'accepted' : 'declined';
+            // Delete profile
+            $user->profile?->delete();
 
-        return cookie('gdpr_consent', $value, 60 * 24 * 365); // 1 year
-    }
+            // Delete social accounts
+            $user->socialAccounts()->delete();
 
-    /**
-     * Withdraw consent and delete non-essential cookies
-     */
-    public function withdrawConsent(): array
-    {
-        $cookiesToDelete = [
-            'gdpr_consent',
-            // Add other non-essential cookies here
-        ];
+            // Keep posts but anonymize author
+            $user->posts()->update([
+                'author_id' => null,
+            ]);
 
-        $cookies = [];
-        foreach ($cookiesToDelete as $cookieName) {
-            $cookies[] = cookie()->forget($cookieName);
-        }
+            // Delete comments
+            $user->comments()->delete();
 
-        return $cookies;
+            // Delete bookmarks
+            $user->bookmarks()->delete();
+
+            // Delete reading lists
+            $user->readingLists()->delete();
+
+            // Delete follows
+            $user->followers()->detach();
+            $user->following()->detach();
+
+            // Delete activities
+            $user->activities()->delete();
+
+            // Delete notifications
+            $user->notifications()->delete();
+
+            // Delete API tokens
+            $user->tokens()->delete();
+
+            // Delete notification preferences
+            $user->notificationPreferences?->delete();
+        });
     }
 }

@@ -41,13 +41,301 @@ endpoints:
           content-type: application/json
           x-ratelimit-limit: '60'
           x-ratelimit-remaining: '59'
-          x-page-load-time: 9174.78ms
+          x-page-load-time: 301.21ms
           x-db-query-count: '2'
           x-memory-peak: '48758784'
           x-content-type-options: nosniff
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
-          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'nonce-IP5Dtur181zDCPOj08n2O8tw9i3TzBDUTtqTskVm' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'nonce-IP5Dtur181zDCPOj08n2O8tw9i3TzBDUTtqTskVm' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
+          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
+          permissions-policy: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()'
+          access-control-allow-origin: '*'
+        description: null
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/nova-api/posts
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"message":"Unauthenticated."}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          x-page-load-time: 8.06ms
+          x-db-query-count: '2'
+          x-memory-peak: '50855936'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
+          permissions-policy: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()'
+          access-control-allow-origin: '*'
+        description: null
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/nova-api/users
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"message":"Unauthenticated."}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          x-page-load-time: 1.25ms
+          x-db-query-count: '2'
+          x-memory-peak: '50855936'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
+          permissions-policy: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()'
+          access-control-allow-origin: '*'
+        description: null
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/nova-api/categories
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"message":"Unauthenticated."}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          x-page-load-time: 2.4ms
+          x-db-query-count: '2'
+          x-memory-peak: '50855936'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
+          permissions-policy: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()'
+          access-control-allow-origin: '*'
+        description: null
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/nova-api/tags
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"message":"Unauthenticated."}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          x-page-load-time: 1.56ms
+          x-db-query-count: '2'
+          x-memory-peak: '50855936'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
+          permissions-policy: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()'
+          access-control-allow-origin: '*'
+        description: null
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/nova-api/comments
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"message":"Unauthenticated."}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          x-page-load-time: 1.36ms
+          x-db-query-count: '2'
+          x-memory-peak: '50855936'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
+          permissions-policy: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()'
+          access-control-allow-origin: '*'
+        description: null
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/nova-api/media
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"message":"Unauthenticated."}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          x-page-load-time: 1.27ms
+          x-db-query-count: '2'
+          x-memory-peak: '50855936'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
           permissions-policy: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()'
           access-control-allow-origin: '*'
         description: null
@@ -91,13 +379,13 @@ endpoints:
           content-type: application/json
           x-ratelimit-limit: '60'
           x-ratelimit-remaining: '58'
-          x-page-load-time: 24.42ms
+          x-page-load-time: 15.53ms
           x-db-query-count: '4'
-          x-memory-peak: '50855936'
+          x-memory-peak: '52953088'
           x-content-type-options: nosniff
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
-          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'nonce-dsAewRKMQn1tUZCZzFcJLXf52Y2FicC4K2LPvJOS' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'nonce-dsAewRKMQn1tUZCZzFcJLXf52Y2FicC4K2LPvJOS' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
+          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
           permissions-policy: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()'
           access-control-allow-origin: '*'
         description: null
@@ -156,13 +444,13 @@ endpoints:
           content-type: application/json
           x-ratelimit-limit: '60'
           x-ratelimit-remaining: '57'
-          x-page-load-time: 16.18ms
+          x-page-load-time: 10.65ms
           x-db-query-count: '6'
-          x-memory-peak: '50855936'
+          x-memory-peak: '52953088'
           x-content-type-options: nosniff
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
-          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'nonce-vr8xdfR4s2SO67zj9B0ICrAMOUYFIMpapTItuoqh' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'nonce-vr8xdfR4s2SO67zj9B0ICrAMOUYFIMpapTItuoqh' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
+          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
           permissions-policy: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()'
           access-control-allow-origin: '*'
         description: null
@@ -206,13 +494,63 @@ endpoints:
           content-type: application/json
           x-ratelimit-limit: '60'
           x-ratelimit-remaining: '56'
-          x-page-load-time: 7.68ms
+          x-page-load-time: 6.09ms
           x-db-query-count: '7'
-          x-memory-peak: '50855936'
+          x-memory-peak: '52953088'
           x-content-type-options: nosniff
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
-          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'nonce-kBDJaMqMGlxxspL2GU88MNa4qSZhuRhq9Og2oHh8' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'nonce-kBDJaMqMGlxxspL2GU88MNa4qSZhuRhq9Og2oHh8' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
+          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
+          permissions-policy: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()'
+          access-control-allow-origin: '*'
+        description: null
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v1/tags/search
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '[]'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          x-ratelimit-limit: '60'
+          x-ratelimit-remaining: '55'
+          x-page-load-time: 27.13ms
+          x-db-query-count: '7'
+          x-memory-peak: '52953088'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
           permissions-policy: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()'
           access-control-allow-origin: '*'
         description: null
@@ -270,76 +608,14 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '60'
-          x-ratelimit-remaining: '55'
-          x-page-load-time: 9.25ms
-          x-db-query-count: '9'
-          x-memory-peak: '50855936'
-          x-content-type-options: nosniff
-          x-frame-options: SAMEORIGIN
-          referrer-policy: strict-origin-when-cross-origin
-          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'nonce-Mlc4C0Xk8LIWkI0CKGxAjwIkIdk1wzsfsRI9kl6l' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'nonce-Mlc4C0Xk8LIWkI0CKGxAjwIkIdk1wzsfsRI9kl6l' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
-          permissions-policy: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()'
-          access-control-allow-origin: '*'
-        description: null
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - GET
-    uri: api/v1/comments
-    metadata:
-      custom: []
-      groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
-      authenticated: false
-      deprecated: false
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters:
-      post_id:
-        custom: []
-        name: post_id
-        description: 'The <code>id</code> of an existing record in the posts table.'
-        required: true
-        example: 16
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanBodyParameters:
-      post_id: 16
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 422
-        content: '{"message":"The selected post id is invalid.","errors":{"post_id":["The selected post id is invalid."]}}'
-        headers:
-          cache-control: 'no-cache, private'
-          content-type: application/json
-          x-ratelimit-limit: '60'
           x-ratelimit-remaining: '54'
-          x-page-load-time: 47.31ms
-          x-db-query-count: '10'
+          x-page-load-time: 28.91ms
+          x-db-query-count: '9'
           x-memory-peak: '52953088'
           x-content-type-options: nosniff
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
-          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'nonce-Z2D4Dgf1rJz11C0a67a6s4sORK9kTOon4jbJKMi6' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'nonce-Z2D4Dgf1rJz11C0a67a6s4sORK9kTOon4jbJKMi6' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
+          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
           permissions-policy: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()'
           access-control-allow-origin: '*'
         description: null
@@ -359,7 +635,7 @@ endpoints:
       groupDescription: ''
       subgroup: ''
       subgroupDescription: ''
-      title: ''
+      title: "List user's uploaded media with optional filtering."
       description: ''
       authenticated: false
       deprecated: false
@@ -413,19 +689,19 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"current_page":1,"data":[],"first_page_url":"http:\/\/localhost\/api\/v1\/media?page=1","from":null,"last_page":1,"last_page_url":"http:\/\/localhost\/api\/v1\/media?page=1","links":[{"url":null,"label":"&laquo; Previous","page":null,"active":false},{"url":"http:\/\/localhost\/api\/v1\/media?page=1","label":"1","page":1,"active":true},{"url":null,"label":"Next &raquo;","page":null,"active":false}],"next_page_url":null,"path":"http:\/\/localhost\/api\/v1\/media","per_page":7,"prev_page_url":null,"to":null,"total":0}'
+        content: '{"data":[],"meta":{"current_page":1,"last_page":1,"per_page":7,"total":0}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '60'
-          x-ratelimit-remaining: '53'
-          x-page-load-time: 17.48ms
-          x-db-query-count: '11'
-          x-memory-peak: '52953088'
+          x-ratelimit-remaining: '52'
+          x-page-load-time: 29.26ms
+          x-db-query-count: '10'
+          x-memory-peak: '55050240'
           x-content-type-options: nosniff
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
-          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'nonce-FGguI9XVDhXj158XrbgO7oCGXe54S5A7XkQaTVY5' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'nonce-FGguI9XVDhXj158XrbgO7oCGXe54S5A7XkQaTVY5' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
+          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
           permissions-policy: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()'
           access-control-allow-origin: '*'
         description: null
@@ -445,7 +721,7 @@ endpoints:
       groupDescription: ''
       subgroup: ''
       subgroupDescription: ''
-      title: ''
+      title: 'Upload a new image.'
       description: ''
       authenticated: false
       deprecated: false
@@ -523,7 +799,7 @@ endpoints:
       groupDescription: ''
       subgroup: ''
       subgroupDescription: ''
-      title: ''
+      title: 'Delete an uploaded image and its variants.'
       description: ''
       authenticated: false
       deprecated: false
@@ -608,19 +884,19 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"lat":-89,"lon":-179,"data":{"temperature":-42.8,"windspeed":13.3,"weathercode":1,"time":"2025-11-16T19:15","units":{"temperature":"\u00b0C","windspeed":"km\/h"},"source":"open-meteo"}}'
+        content: '{"lat":-89,"lon":-179,"data":{"temperature":-43,"windspeed":12.2,"weathercode":1,"time":"2025-11-17T00:00","units":{"temperature":"\u00b0C","windspeed":"km\/h"},"source":"open-meteo"}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '60'
-          x-ratelimit-remaining: '52'
-          x-page-load-time: 259.23ms
-          x-db-query-count: '12'
-          x-memory-peak: '57147392'
+          x-ratelimit-remaining: '51'
+          x-page-load-time: 355.75ms
+          x-db-query-count: '11'
+          x-memory-peak: '59244544'
           x-content-type-options: nosniff
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
-          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'nonce-hvPrFfmwzr2GmtoNFBfn4gbUmF2Bf7uu5GBkrFN4' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'nonce-hvPrFfmwzr2GmtoNFBfn4gbUmF2Bf7uu5GBkrFN4' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
+          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
           permissions-policy: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()'
           access-control-allow-origin: '*'
         description: null
@@ -675,110 +951,14 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '60'
-          x-ratelimit-remaining: '51'
-          x-page-load-time: 304.79ms
-          x-db-query-count: '12'
-          x-memory-peak: '57147392'
+          x-ratelimit-remaining: '50'
+          x-page-load-time: 245.9ms
+          x-db-query-count: '11'
+          x-memory-peak: '59244544'
           x-content-type-options: nosniff
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
-          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'nonce-8CdqZn08RzswA67ATYYNgKmBRGdSlLXbo0B63gQE' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'nonce-8CdqZn08RzswA67ATYYNgKmBRGdSlLXbo0B63gQE' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
-          permissions-policy: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()'
-          access-control-allow-origin: '*'
-        description: null
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - GET
-    uri: api/v1/users/me
-    metadata:
-      custom: []
-      groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
-      authenticated: false
-      deprecated: false
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 401
-        content: '{"message":"Unauthenticated."}'
-        headers:
-          cache-control: 'no-cache, private'
-          content-type: application/json
-          x-page-load-time: 1.72ms
-          x-db-query-count: '12'
-          x-memory-peak: '57147392'
-          x-content-type-options: nosniff
-          x-frame-options: SAMEORIGIN
-          referrer-policy: strict-origin-when-cross-origin
-          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'nonce-oupl0TOvs2gTSlMSdvjNhyVWhwcnHAufmRtjRm6v' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'nonce-oupl0TOvs2gTSlMSdvjNhyVWhwcnHAufmRtjRm6v' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
-          permissions-policy: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()'
-          access-control-allow-origin: '*'
-        description: null
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - GET
-    uri: api/v1/bookmarks
-    metadata:
-      custom: []
-      groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
-      authenticated: false
-      deprecated: false
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 401
-        content: '{"message":"Unauthenticated."}'
-        headers:
-          cache-control: 'no-cache, private'
-          content-type: application/json
-          x-page-load-time: 1.41ms
-          x-db-query-count: '12'
-          x-memory-peak: '57147392'
-          x-content-type-options: nosniff
-          x-frame-options: SAMEORIGIN
-          referrer-policy: strict-origin-when-cross-origin
-          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'nonce-ch0VYMS2UYNPxzNWF9pH54dJm0TPXUdJMKEt72XH' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'nonce-ch0VYMS2UYNPxzNWF9pH54dJm0TPXUdJMKEt72XH' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
+          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
           permissions-policy: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()'
           access-control-allow-origin: '*'
         description: null
@@ -896,7 +1076,7 @@ endpoints:
       groupDescription: ''
       subgroup: ''
       subgroupDescription: ''
-      title: ''
+      title: 'Store or toggle a reaction on a comment.'
       description: ''
       authenticated: false
       deprecated: false
@@ -935,6 +1115,66 @@ endpoints:
       type: architecto
     fileParameters: []
     responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/v1/comments/{commentId}/reactions'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Get reaction counts for a comment.'
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      commentId:
+        custom: []
+        name: commentId
+        description: ''
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      commentId: architecto
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"message":"Unauthenticated."}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          x-page-load-time: 2.16ms
+          x-db-query-count: '15'
+          x-memory-peak: '61341696'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
+          permissions-policy: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()'
+          access-control-allow-origin: '*'
+        description: null
     responseFields: []
     auth: []
     controller: null
@@ -1000,217 +1240,6 @@ endpoints:
     cleanBodyParameters:
       reason: architecto
       notes: 'n'
-    fileParameters: []
-    responses: []
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - POST
-    uri: api/v1/comments
-    metadata:
-      custom: []
-      groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
-      authenticated: false
-      deprecated: false
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters:
-      post_id:
-        custom: []
-        name: post_id
-        description: 'The <code>id</code> of an existing record in the posts table.'
-        required: true
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      author_name:
-        custom: []
-        name: author_name
-        description: 'Must not be greater than 255 characters.'
-        required: true
-        example: 'n'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      author_email:
-        custom: []
-        name: author_email
-        description: 'Must be a valid email address. Must not be greater than 255 characters.'
-        required: true
-        example: ashly64@example.com
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      content:
-        custom: []
-        name: content
-        description: 'Must not be greater than 5000 characters.'
-        required: true
-        example: v
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      parent_id:
-        custom: []
-        name: parent_id
-        description: 'The <code>id</code> of an existing record in the comments table.'
-        required: false
-        example: null
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      honeypot:
-        custom: []
-        name: honeypot
-        description: ''
-        required: false
-        example: null
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      page_load_time:
-        custom: []
-        name: page_load_time
-        description: ''
-        required: false
-        example: 4326.41688
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-    cleanBodyParameters:
-      post_id: architecto
-      author_name: 'n'
-      author_email: ashly64@example.com
-      content: v
-      page_load_time: 4326.41688
-    fileParameters: []
-    responses: []
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - PUT
-    uri: 'api/v1/comments/{comment_id}'
-    metadata:
-      custom: []
-      groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
-      authenticated: false
-      deprecated: false
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      comment_id:
-        custom: []
-        name: comment_id
-        description: 'The ID of the comment.'
-        required: true
-        example: 16
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      comment_id: 16
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters:
-      content:
-        custom: []
-        name: content
-        description: 'Must be at least 2 characters. Must not be greater than 5000 characters.'
-        required: true
-        example: b
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanBodyParameters:
-      content: b
-    fileParameters: []
-    responses: []
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - DELETE
-    uri: 'api/v1/comments/{comment_id}'
-    metadata:
-      custom: []
-      groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
-      authenticated: false
-      deprecated: false
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      comment_id:
-        custom: []
-        name: comment_id
-        description: 'The ID of the comment.'
-        required: true
-        example: 16
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      comment_id: 16
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
     fileParameters: []
     responses: []
     responseFields: []
@@ -1349,13 +1378,13 @@ endpoints:
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-page-load-time: 1.51ms
-          x-db-query-count: '18'
-          x-memory-peak: '59244544'
+          x-page-load-time: 0.74ms
+          x-db-query-count: '17'
+          x-memory-peak: '61341696'
           x-content-type-options: nosniff
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
-          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'nonce-IHggwpJ3SWmNFnPsJM8ZiWqBOldmxghN1TmW9qc6' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'nonce-IHggwpJ3SWmNFnPsJM8ZiWqBOldmxghN1TmW9qc6' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
+          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
           permissions-policy: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()'
           access-control-allow-origin: '*'
         description: null
@@ -1409,61 +1438,13 @@ endpoints:
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-page-load-time: 1.17ms
-          x-db-query-count: '18'
-          x-memory-peak: '59244544'
+          x-page-load-time: 0.73ms
+          x-db-query-count: '17'
+          x-memory-peak: '61341696'
           x-content-type-options: nosniff
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
-          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'nonce-Z8jClXo1eTz9rpcEhfpwHGiVGmj4EFkY3tQ96KKV' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'nonce-Z8jClXo1eTz9rpcEhfpwHGiVGmj4EFkY3tQ96KKV' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
-          permissions-policy: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()'
-          access-control-allow-origin: '*'
-        description: null
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - GET
-    uri: api/v1/users/suggestions
-    metadata:
-      custom: []
-      groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
-      authenticated: false
-      deprecated: false
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 401
-        content: '{"message":"Unauthenticated."}'
-        headers:
-          cache-control: 'no-cache, private'
-          content-type: application/json
-          x-page-load-time: 1.24ms
-          x-db-query-count: '18'
-          x-memory-peak: '59244544'
-          x-content-type-options: nosniff
-          x-frame-options: SAMEORIGIN
-          referrer-policy: strict-origin-when-cross-origin
-          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'nonce-3uVpTlVb6tyCCGD96REAe8DgeXV1DlMk85Q4QMQ8' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'nonce-3uVpTlVb6tyCCGD96REAe8DgeXV1DlMk85Q4QMQ8' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
+          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
           permissions-policy: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()'
           access-control-allow-origin: '*'
         description: null
@@ -1505,13 +1486,13 @@ endpoints:
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-page-load-time: 0.67ms
-          x-db-query-count: '18'
-          x-memory-peak: '59244544'
+          x-page-load-time: 0.7ms
+          x-db-query-count: '17'
+          x-memory-peak: '61341696'
           x-content-type-options: nosniff
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
-          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'nonce-d08Aclh6tSXtezzGoHKpMINU7WtXBVUwLzpFos49' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'nonce-d08Aclh6tSXtezzGoHKpMINU7WtXBVUwLzpFos49' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
+          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
           permissions-policy: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()'
           access-control-allow-origin: '*'
         description: null
@@ -1553,13 +1534,13 @@ endpoints:
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-page-load-time: 1.09ms
-          x-db-query-count: '18'
-          x-memory-peak: '59244544'
+          x-page-load-time: 0.97ms
+          x-db-query-count: '17'
+          x-memory-peak: '61341696'
           x-content-type-options: nosniff
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
-          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'nonce-rZiXyeLp6cWXmGATsCGyoLs1iKBFwYLfNK6eL5fm' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'nonce-rZiXyeLp6cWXmGATsCGyoLs1iKBFwYLfNK6eL5fm' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
+          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
           permissions-policy: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()'
           access-control-allow-origin: '*'
         description: null
@@ -1601,13 +1582,13 @@ endpoints:
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-page-load-time: 0.95ms
-          x-db-query-count: '18'
-          x-memory-peak: '59244544'
+          x-page-load-time: 0.7ms
+          x-db-query-count: '17'
+          x-memory-peak: '61341696'
           x-content-type-options: nosniff
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
-          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'nonce-cZJBHzpiJ0Lsayk77Acmz2I9HPG2TatoS8rfYBvQ' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'nonce-cZJBHzpiJ0Lsayk77Acmz2I9HPG2TatoS8rfYBvQ' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
+          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
           permissions-policy: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()'
           access-control-allow-origin: '*'
         description: null
@@ -1650,12 +1631,12 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-page-load-time: 1.72ms
-          x-db-query-count: '18'
-          x-memory-peak: '59244544'
+          x-db-query-count: '17'
+          x-memory-peak: '61341696'
           x-content-type-options: nosniff
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
-          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'nonce-4H6RLOIyUI36eIjQJUx0z57ZqFeCLeMV8aRNmQkX' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'nonce-4H6RLOIyUI36eIjQJUx0z57ZqFeCLeMV8aRNmQkX' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
+          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
           permissions-policy: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()'
           access-control-allow-origin: '*'
         description: null
@@ -1814,13 +1795,13 @@ endpoints:
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-page-load-time: 1.07ms
-          x-db-query-count: '20'
-          x-memory-peak: '59244544'
+          x-page-load-time: 0.81ms
+          x-db-query-count: '19'
+          x-memory-peak: '61341696'
           x-content-type-options: nosniff
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
-          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'nonce-P5Cl0BG5zbWK2WWKiXsdUA6SBI8ZZVROmm63NQLr' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'nonce-P5Cl0BG5zbWK2WWKiXsdUA6SBI8ZZVROmm63NQLr' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
+          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
           permissions-policy: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()'
           access-control-allow-origin: '*'
         description: null
@@ -1857,7 +1838,7 @@ endpoints:
         name: email_enabled
         description: ''
         required: false
-        example: true
+        example: false
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -1879,7 +1860,7 @@ endpoints:
         name: digest_frequency
         description: ''
         required: false
-        example: none
+        example: weekly
         type: string
         enumValues:
           - none
@@ -1900,9 +1881,9 @@ endpoints:
         nullable: true
         deprecated: false
     cleanBodyParameters:
-      email_enabled: true
+      email_enabled: false
       push_enabled: true
-      digest_frequency: none
+      digest_frequency: weekly
     fileParameters: []
     responses: []
     responseFields: []
@@ -1943,13 +1924,13 @@ endpoints:
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
-          x-page-load-time: 2.03ms
-          x-db-query-count: '30'
-          x-memory-peak: '61341696'
+          x-page-load-time: 1.66ms
+          x-db-query-count: '31'
+          x-memory-peak: '63438848'
           x-content-type-options: nosniff
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
-          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'nonce-0aNwXe6JM1VK3H9xNoqGTpgX8sDTmvbgNEi0iOyj' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'nonce-0aNwXe6JM1VK3H9xNoqGTpgX8sDTmvbgNEi0iOyj' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
+          content-security-policy: "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173 https://newsblog.test:5173 wss://newsblog.test:5173; script-src 'self' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173 https://newsblog.test:5173 https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' http://127.0.0.1:5173 https://newsblog.test:5173 https://fonts.bunny.net; frame-src 'self'; form-action 'self'"
           permissions-policy: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), bluetooth=()'
           access-control-allow-origin: '*'
         description: null
@@ -1998,7 +1979,7 @@ endpoints:
         name: status
         description: ''
         required: true
-        example: resolved
+        example: rejected
         type: string
         enumValues:
           - reviewed
@@ -2019,7 +2000,7 @@ endpoints:
         nullable: true
         deprecated: false
     cleanBodyParameters:
-      status: resolved
+      status: rejected
       notes: b
     fileParameters: []
     responses: []
@@ -2068,7 +2049,7 @@ endpoints:
         name: status
         description: ''
         required: true
-        example: resolved
+        example: rejected
         type: string
         enumValues:
           - reviewed
@@ -2080,7 +2061,7 @@ endpoints:
     cleanBodyParameters:
       ids:
         - 16
-      status: resolved
+      status: rejected
     fileParameters: []
     responses: []
     responseFields: []
