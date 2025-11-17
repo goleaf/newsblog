@@ -7,6 +7,7 @@ use App\Models\Page;
 use App\Models\Post;
 use App\Models\Tag;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 
 class SitemapService
@@ -64,50 +65,56 @@ class SitemapService
             'priority' => '1.0',
         ];
 
-        // Add posts
-        Post::published()
-            ->select(['slug', 'updated_at', 'published_at'])
-            ->orderBy('updated_at', 'desc')
-            ->chunk(1000, function ($posts) use (&$urls) {
-                foreach ($posts as $post) {
-                    $urls[] = [
-                        'loc' => route('post.show', $post->slug),
-                        'lastmod' => $post->updated_at->toIso8601String(),
-                        'changefreq' => 'weekly',
-                        'priority' => '0.8',
-                    ];
-                }
-            });
+        // Add posts (guard for early test migrations)
+        if (Schema::hasTable('posts')) {
+            Post::published()
+                ->select(['slug', 'updated_at', 'published_at'])
+                ->orderBy('updated_at', 'desc')
+                ->chunk(1000, function ($posts) use (&$urls) {
+                    foreach ($posts as $post) {
+                        $urls[] = [
+                            'loc' => route('post.show', $post->slug),
+                            'lastmod' => $post->updated_at->toIso8601String(),
+                            'changefreq' => 'weekly',
+                            'priority' => '0.8',
+                        ];
+                    }
+                });
+        }
 
         // Add categories
-        Category::active()
-            ->select(['slug', 'updated_at'])
-            ->orderBy('updated_at', 'desc')
-            ->get()
-            ->each(function ($category) use (&$urls) {
-                $urls[] = [
-                    'loc' => route('category.show', $category->slug),
-                    'lastmod' => $category->updated_at->toIso8601String(),
-                    'changefreq' => 'weekly',
-                    'priority' => '0.7',
-                ];
-            });
+        if (Schema::hasTable('categories')) {
+            Category::active()
+                ->select(['slug', 'updated_at'])
+                ->orderBy('updated_at', 'desc')
+                ->get()
+                ->each(function ($category) use (&$urls) {
+                    $urls[] = [
+                        'loc' => route('category.show', $category->slug),
+                        'lastmod' => $category->updated_at->toIso8601String(),
+                        'changefreq' => 'weekly',
+                        'priority' => '0.7',
+                    ];
+                });
+        }
 
         // Add tags
-        Tag::select(['slug', 'updated_at'])
-            ->orderBy('updated_at', 'desc')
-            ->get()
-            ->each(function ($tag) use (&$urls) {
-                $urls[] = [
-                    'loc' => route('tag.show', $tag->slug),
-                    'lastmod' => $tag->updated_at->toIso8601String(),
-                    'changefreq' => 'weekly',
-                    'priority' => '0.6',
-                ];
-            });
+        if (Schema::hasTable('tags')) {
+            Tag::select(['slug', 'updated_at'])
+                ->orderBy('updated_at', 'desc')
+                ->get()
+                ->each(function ($tag) use (&$urls) {
+                    $urls[] = [
+                        'loc' => route('tag.show', $tag->slug),
+                        'lastmod' => $tag->updated_at->toIso8601String(),
+                        'changefreq' => 'weekly',
+                        'priority' => '0.6',
+                    ];
+                });
+        }
 
         // Add pages (only if route exists)
-        if (\Illuminate\Support\Facades\Route::has('page.show')) {
+        if (Schema::hasTable('pages') && \Illuminate\Support\Facades\Route::has('page.show')) {
             Page::active()
                 ->select(['id', 'slug', 'updated_at', 'parent_id'])
                 ->orderBy('updated_at', 'desc')
